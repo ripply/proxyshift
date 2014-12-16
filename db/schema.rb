@@ -21,13 +21,13 @@ ActiveRecord::Schema.define(version: 20141215024109) do
   end
 
   create_table "districts", force: true do |t|
-    t.string   "location"
+    t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "regions", force: true do |t|
-    t.string   "Name"
+    t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
