@@ -41,6 +41,7 @@ ActiveRecord::Schema.define(version: 20141215024109) do
 
   create_table "types", force: true do |t|
     t.boolean  "admin"
+    t.boolean  "not_deletable"
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
