@@ -6,8 +6,8 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
-
+# TODO: Check into using Fixtures for these maybe? (not 100% sure what fixtures are)
 # User account types
 Type.create(name: 'Admin', admin: true, not_deletable: true)
-Type.create(name: 'User', admin: false)
+Type.create(name: 'User', admin: false, not_deletable: false)
 
