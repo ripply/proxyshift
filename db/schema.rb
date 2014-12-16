@@ -33,7 +33,8 @@ ActiveRecord::Schema.define(version: 20141215024109) do
   end
 
   create_table "stores", force: true do |t|
-    t.integer  "number"
+    t.integer  "store_number"
+    t.string   "name"
     t.string   "location"
     t.datetime "created_at"
     t.datetime "updated_at"
