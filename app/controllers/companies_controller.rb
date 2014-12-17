@@ -14,8 +14,17 @@ class CompaniesController < ApplicationController
 
   def create
     @company = Company.new(company_params)
-    @company.save
-    redirect_to @company
+    if @company.save
+      redirect_to @company
+    else
+      @errors = @company.errors
+      session[:return_to] = request.referer
+      render template: 'companies/_errors.html.erb'
+    end
+  end
+
+  def error
+
   end
 
   def new
