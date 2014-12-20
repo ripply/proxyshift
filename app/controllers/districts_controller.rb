@@ -1,9 +1,15 @@
-class DistrictsController < ApplicationController
+class DistrictsController < ErrorHandlerController
   def new
 
   end
 
-  def create
-    render plain: params[:district][:location]
+  protected
+
+  def model_class
+    District
+  end
+
+  def require_params
+    params.require(:district).permit(:name)
   end
 end
