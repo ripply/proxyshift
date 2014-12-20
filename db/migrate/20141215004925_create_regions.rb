@@ -3,7 +3,7 @@ class CreateRegions < ActiveRecord::Migration
     create_table :regions do |t|
       t.string :name
 
-      t.references :companies
+      t.references :company
 
       t.timestamps
     end

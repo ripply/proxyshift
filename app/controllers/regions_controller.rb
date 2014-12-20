@@ -1,4 +1,9 @@
 class RegionsController < ErrorHandlerController
+
+  def new
+
+  end
+
   protected
 
   def model_class

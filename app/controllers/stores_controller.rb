@@ -1,4 +1,8 @@
 class StoresController < ErrorHandlerController
+  def new
+
+  end
+
   protected
 
   def model_class

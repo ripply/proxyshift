@@ -1,4 +1,8 @@
 class TypeController < ErrorHandlerController
+  def new
+
+  end
+
   protected
 
   def model_class

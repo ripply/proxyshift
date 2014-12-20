@@ -1,4 +1,8 @@
 class UsersController < ErrorHandlerController
+  def new
+
+  end
+
   protected
 
   def model_class

@@ -22,14 +22,14 @@ ActiveRecord::Schema.define(version: 20141215024109) do
 
   create_table "districts", force: true do |t|
     t.string   "name"
-    t.integer  "regions_id"
+    t.integer  "region_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "regions", force: true do |t|
     t.string   "name"
-    t.integer  "companies_id"
+    t.integer  "company_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -38,7 +38,7 @@ ActiveRecord::Schema.define(version: 20141215024109) do
     t.integer  "store_number"
     t.string   "name"
     t.string   "location"
-    t.integer  "districts_id"
+    t.integer  "district_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

@@ -1,0 +1,5 @@
+<%= simple_form_for Region.new do |f| %>
+  <%= f.input :name, label: 'Region name' %>
+  <%= f.association :company %>
+  <%= f.button :submit %>
+<% end %>

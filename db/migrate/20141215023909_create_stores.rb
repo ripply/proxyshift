@@ -5,7 +5,7 @@ class CreateStores < ActiveRecord::Migration
       t.string :name
       t.string :location
 
-      t.references :districts
+      t.references :district
 
       t.timestamps
     end
