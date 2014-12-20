@@ -43,3 +43,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw]
 
 # Simplifies form building, even automates generating boxes for model associations
 gem 'simple_form'
+
+# Bootstrap: makes making mobile friendly websites easy
+gem 'bootstrap-sass', '~> 3.2.0'
+gem 'autoprefixer-rails'
