@@ -1,5 +1,7 @@
-<%= simple_form_for Region.new do |f| %>
-  <%= f.input :name, label: 'Region name' %>
-  <%= f.association :company %>
+<%= simple_form_for User.new, :url => users_path do |f| %>
+  <%= f.input :account, label: 'Account name' %>
+  <%= f.input :email, label: 'Email address' %>
+  <%= f.input :password %>
+  <%= f.association :type %>
   <%= f.button :submit %>
 <% end %>

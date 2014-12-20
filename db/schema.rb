@@ -55,7 +55,7 @@ ActiveRecord::Schema.define(version: 20141215024109) do
     t.string   "account"
     t.string   "email"
     t.string   "password"
-    t.integer  "type_id"
+    t.integer  "types_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
