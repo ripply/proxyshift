@@ -3,7 +3,7 @@
   <p>Unknown error occurred</p>
 <% else %>
   <% @errors.messages.each do |key, value| %>
-    <p><%= key %>: <%= value.join ' ' %></p>
+    <p><%= key %>: <%= value.join ', ' %></p>
   <% end %>
 <% end %>
 <% session[:redirect_in] ||= 5 %>
