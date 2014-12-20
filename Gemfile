@@ -41,3 +41,5 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw]
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 
+# Simplifies form building, even automates generating boxes for model associations
+gem 'simple_form'
