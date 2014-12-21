@@ -1,0 +1,6 @@
+<%= simple_form_for Store.new, :url => stores_path do |f| %>
+  <%= f.input :name, label: 'Store name' %>
+  <%= f.input :location, label: 'Location' %>
+  <%= f.association :district %>
+  <%= f.button :submit %>
+<% end %>

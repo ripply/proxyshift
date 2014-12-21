@@ -26,6 +26,9 @@ gem 'sdoc', '~> 0.4.0',          group: :doc
 # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
 gem 'spring',        group: :development
 
+# Rails x64 support
+gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw]
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
@@ -38,4 +41,9 @@ gem 'spring',        group: :development
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 
-gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw]
+# Simplifies form building, even automates generating boxes for model associations
+gem 'simple_form'
+
+# Bootstrap: makes making mobile friendly websites easy
+gem 'bootstrap-sass', '~> 3.2.0'
+gem 'autoprefixer-rails'

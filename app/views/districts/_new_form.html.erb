@@ -1,0 +1,5 @@
+<%= simple_form_for District.new do |f| %>
+  <%= f.input :name, label: 'District name' %>
+  <%= f.association :region %>
+  <%= f.button :submit %>
+<% end %>

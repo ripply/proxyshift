@@ -22,25 +22,30 @@ ActiveRecord::Schema.define(version: 20141215024109) do
 
   create_table "districts", force: true do |t|
     t.string   "name"
+    t.integer  "region_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "regions", force: true do |t|
     t.string   "name"
+    t.integer  "company_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "stores", force: true do |t|
-    t.integer  "number"
+    t.integer  "store_number"
+    t.string   "name"
     t.string   "location"
+    t.integer  "district_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "types", force: true do |t|
     t.boolean  "admin"
+    t.boolean  "not_deletable"
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -50,6 +55,7 @@ ActiveRecord::Schema.define(version: 20141215024109) do
     t.string   "account"
     t.string   "email"
     t.string   "password"
+    t.integer  "types_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

@@ -1,4 +1,4 @@
-class CompaniesController < ApplicationController
+class CompaniesController < ErrorHandlerController
 
   def list
 
@@ -12,10 +12,8 @@ class CompaniesController < ApplicationController
     end
   end
 
-  def create
-    @company = Company.new(company_params)
-    @company.save
-    redirect_to @company
+  def error
+
   end
 
   def new
@@ -28,7 +26,11 @@ class CompaniesController < ApplicationController
 
   private
 
-  def company_params
+  def model_class
+    Company
+  end
+
+  def require_params
     params.require(:company).permit(:name, :website)
   end
 end

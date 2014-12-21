@@ -1,5 +1,5 @@
 class Type < ActiveRecord::Base
-  validates :admin, presence: true
+  validates :name, presence: true, uniqueness: true
 
   belongs_to :users
 end
