@@ -3,7 +3,12 @@ require_relative 'category'
 class DynamicRouter
 
   #
-  # This method needs to be run within the Rails.Application.routes.draw context
+  # This method appends strings to results parameter
+  #
+  # @param Array<String> results
+  # @param String base_uri
+  # @param ActiveRecord::Base parent
+  # @param ActiveRecord::Base category
   #
 
   def self.recurse(results, base_uri, parent, category)
@@ -13,11 +18,11 @@ class DynamicRouter
     category.children.each do |child|
       DynamicRouter.recurse results, child_base_uri, category, child
     end
+    results
   end
 
   def self.load
     Rails.application.routes.draw do
-      puts "!???????????????????"
       routes_strings = []
       Category.where(:parent_id => nil).each do |root|
         DynamicRouter.recurse routes_strings, '/', nil, root
