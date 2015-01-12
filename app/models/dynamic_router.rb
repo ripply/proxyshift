@@ -1,27 +1,32 @@
+require_relative 'category'
+
 class DynamicRouter
 
   #
   # This method needs to be run within the Rails.Application.routes.draw context
   #
 
-  def self.recurse(base_uri, parent, category)
+  def self.recurse(results, base_uri, parent, category)
     child_base_uri = "#{base_uri}/#{category.name}"
     puts "Routing #{child_base_uri}"
-    get child_base_uri, :to => "categories#show", defaults: { id: category.id }
+    results << "get '#{child_base_uri}', :to => 'categories#show', defaults: { id: #{category.id} }"
     category.children.each do |child|
-      recurse child_base_uri, category, child
+      DynamicRouter.recurse results, child_base_uri, category, child
     end
   end
 
   def self.load
-    Rails.Application.routes.draw do
-      Categories.where(:parent_id => nil).each do |root|
-        recurse '/', nil, root
+    Rails.application.routes.draw do
+      puts "!???????????????????"
+      routes_strings = []
+      Category.where(:parent_id => nil).each do |root|
+        DynamicRouter.recurse routes_strings, '/', nil, root
       end
+      instance_eval(routes_strings.join("\n"), 'routes', 0)
     end
   end
 
   def self.reload
-    Rails.Application.routes_reloader.reload!
+    Rails.application.routes_reloader.reload!
   end
 end

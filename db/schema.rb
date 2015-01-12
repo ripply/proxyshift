@@ -16,6 +16,7 @@ ActiveRecord::Schema.define(version: 20150111021002) do
   create_table "categories", force: true do |t|
     t.string   "name"
     t.integer  "parent_id"
+    t.integer  "root",          default: 0
     t.integer  "categories_id"
     t.datetime "created_at"
     t.datetime "updated_at"

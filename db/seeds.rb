@@ -11,3 +11,7 @@
 Type.create(name: 'Admin', admin: true, not_deletable: true)
 Type.create(name: 'User', admin: false, not_deletable: false)
 
+root = Category.create(name: 'root', parent_id: nil, root: true)
+districts = Category.create(name: 'districts', parent_id: root.id, root: false)
+regions = Category.create(name: 'regions', parent_id: districts.id, root: false)
+districts_two = Category.create(name: 'districts_two', parent_id: root.id, root: false)
