@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150111021002) do
+ActiveRecord::Schema.define(version: 20150112223344) do
 
   create_table "categories", force: true do |t|
     t.string   "name"
@@ -22,32 +22,11 @@ ActiveRecord::Schema.define(version: 20150111021002) do
     t.datetime "updated_at"
   end
 
-  create_table "companies", force: true do |t|
-    t.string   "name"
-    t.string   "website"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "districts", force: true do |t|
-    t.string   "name"
-    t.integer  "region_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "regions", force: true do |t|
-    t.string   "name"
-    t.integer  "company_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "stores", force: true do |t|
-    t.integer  "store_number"
-    t.string   "name"
-    t.string   "location"
-    t.integer  "district_id"
+  create_table "shifts", force: true do |t|
+    t.date     "start"
+    t.date     "end"
+    t.boolean  "splittable"
+    t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
