@@ -2,44 +2,106 @@ require 'test_helper'
 
 class ShiftsControllerTest < ActionController::TestCase
   setup do
-    @shift = shifts(:one)
+    [
+      :four_hour_shift,
+      :two_hour_shift
+    ].each do |shift|
+      this_shift = shifts shift
+      @shift ||= this_shift
+      self.instance_variable_set("@#{shift.to_s}", this_shift)
+    end
+    @now = DateTime.now
   end
 
-  test "should get index" do
+  def generate_random_shift_length(now = nil)
+    (rand 23) + 1
+  end
+
+  test 'should get index' do
     get :index
     assert_response :success
     assert_not_nil assigns(:shifts)
   end
 
-  test "should get new" do
+  test 'should get new' do
     get :new
     assert_response :success
   end
 
-  test "should create shift" do
+  test 'should create shift' do
     assert_difference('Shift.count') do
-      post :create, shift: {  }
+      post :create, shift: {
+        start: @now,
+        end: @now + 8.hours
+      }
     end
 
     assert_redirected_to shift_path(assigns(:shift))
   end
 
-  test "should show shift" do
+  test 'should not create shift with ending date before start' do
+    assert_no_difference('Shift.count') do
+      post :create, shift: {
+        start: @now + generate_random_shift_length,
+        end: @now
+      }
+    end
+  end
+
+  test 'should show shift' do
     get :show, id: @shift
     assert_response :success
   end
 
-  test "should get edit" do
+  test 'should get edit' do
     get :edit, id: @shift
     assert_response :success
   end
 
-  test "should update shift" do
-    patch :update, id: @shift, shift: {  }
-    assert_redirected_to shift_path(assigns(:shift))
+  test 'should update shift' do
+    shift = @four_hour_shift
+    [
+      :+,
+      :-
+    ].each do |method|
+      (1..5).each do
+        day_offset = rand 400
+        hour_offset = rand 30
+        shift_start = @now.send(method, day_offset.day.send(method, hour_offset))
+        shift_end = @now
+
+        if shift_end < shift_start
+          shift_end = shift_start + (rand 24).hours
+        end
+
+        old_start = shift.start
+        old_end = shift.end
+
+        patch :update, id: shift, shift: {
+          start: shift_start,
+          end: shift_end
+        }
+        assert_redirected_to shift_path(assigns(:shift))
+
+        updated_shift = Shift.find_by(id: shift.id)
+
+        assert updated_shift.start != old_start, "Starting time was not updated #{updated_shift.start} == #{old_start}"
+        assert updated_shift.end != old_end, "Ending time was not updated #{updated_shift.end} == #{old_end}"
+      end
+    end
   end
 
-  test "should destroy shift" do
+  test 'shift should not update when setting end before start' do
+    assert @shift.start < @shift.end, "Initial ending time (#{@shift.end}) is before starting time (#{@shift.start})"
+
+    patch :update, id: @shift, shift: {
+        end: @shift.start - 1.hour
+    }
+
+    assert @shift.start < @shift.end
+  end
+
+  test 'should destroy shift' do
     assert_difference('Shift.count', -1) do
       delete :destroy, id: @shift
     end

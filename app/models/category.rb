@@ -1,4 +1,6 @@
 class Category < ActiveRecord::Base
+  scope :root_nodes, where(:root => 1)
+
   validates :name, :presence => true
 
   has_many :children, class_name: "Category", foreign_key: "parent_id"

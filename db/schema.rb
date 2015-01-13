@@ -23,8 +23,8 @@ ActiveRecord::Schema.define(version: 20150112223344) do
   end
 
   create_table "shifts", force: true do |t|
-    t.date     "start"
-    t.date     "end"
+    t.datetime "start"
+    t.datetime "end"
     t.boolean  "splittable"
     t.integer  "user_id"
     t.datetime "created_at"
