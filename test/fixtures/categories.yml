@@ -4,8 +4,28 @@
 # model remove the '{}' from the fixture names and add the columns immediately
 # below each fixture, per the syntax in the comments below
 #
-one: {}
-# column: value
+root:
+  id: 0
+  name: 'root'
+  parent_id: nil
+  root: 1
 #
-two: {}
-#  column: value
+regions:
+  id: 1
+  name: 'regions'
+  parent_id: 0
+  root: 0
+#
+districts:
+  id: 2
+  name: 'districts'
+  parent_id: 1
+  root: 0
+#
+regions_two:
+  id: 3
+  name: 'regions_two'
+  parent_id: 0
+  root: 0
+#
+

@@ -2,7 +2,13 @@ require 'test_helper'
 
 class CategoriesControllerTest < ActionController::TestCase
   setup do
-    @category = categories(:one)
+    @category = categories(:root)
+  end
+
+  test 'dynamic routing works as intended' do
+    assert_recognizes '/root', { controller: 'categories', action: 'show', id: 0, :route => 'root_' },
+      {},
+      {:route => 'root_'}
   end
 
   test "should get index" do

@@ -26,14 +26,16 @@ class DynamicRouter
           break
         end
       end
-      route = "#{route.to_s}_".to_sym
+      route = "#{route.to_s}_".to_sym if exists
     end while exists
-
     results << "get '#{child_base_uri}', :to => 'categories#show', as: '#{route}', defaults: { id: #{category.id}, route: '#{route}'}"
+    # TODO: edit_route could be in use maybe
     results << "get '#{child_base_uri}/edit', :to => 'categories#edit', as: 'edit_#{route}', defaults: { id: #{category.id}, route: '#{route}'}"
+    # TODO: new_route could be in use maybe
     results << "get '#{child_base_uri}/new', :to => 'categories#new', as: 'new_#{route}', defaults: { id: #{category.id}, route: '#{route}'}"
     category.children.each do |child|
-      DynamicRouter.recurse results, child_base_uri, category, child
+      puts "Recursing into: #{child.to_s}"
+      DynamicRouter.recurse results, child_base_uri, category, child unless child == category
     end
 
     results
@@ -47,7 +49,7 @@ class DynamicRouter
   def self.load
     Rails.application.routes.draw do
       routes_strings = []
-      Category.where(:parent_id => nil).each do |root|
+      Category.where(:root => 1).each do |root|
         DynamicRouter.recurse routes_strings, '/', nil, root
       end
       begin
