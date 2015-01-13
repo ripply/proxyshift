@@ -30,10 +30,12 @@ class DynamicRouter
     end while exists
 
     results << "get '#{child_base_uri}', :to => 'categories#show', as: '#{route}', defaults: { id: #{category.id}, route: '#{route}'}"
+    results << "get '#{child_base_uri}/edit', :to => 'categories#edit', as: 'edit_#{route}', defaults: { id: #{category.id}, route: '#{route}'}"
+    results << "get '#{child_base_uri}/new', :to => 'categories#new', as: 'new_#{route}', defaults: { id: #{category.id}, route: '#{route}'}"
     category.children.each do |child|
       DynamicRouter.recurse results, child_base_uri, category, child
     end
-    
+
     results
   end
 
