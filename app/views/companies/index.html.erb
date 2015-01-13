@@ -1,8 +1,0 @@
-<table>
-  <% @companies.each do |company| %>
-    <tr>
-      <td><%= link_to company.name, company%></td><td><a href="<%= company.website %>"><%= company.website %></a></td>
-    </tr>
-  <% end %>
-</table>
-<%= link_to 'Create a new company' , controller: 'companies', action: 'new' %>
