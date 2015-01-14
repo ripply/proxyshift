@@ -5,6 +5,8 @@ class SessionsController < ApplicationController
   def new
     if User.count == 0
       redirect_to signup_path
+    elsif signed_in?
+      redirect_to '/loggedinyeyeye'
     end
     @title = 'Sign in'
   end
@@ -12,18 +14,11 @@ class SessionsController < ApplicationController
   def create
     user = User.find_by_username(params[:session][:username])
     if user && user.authenticate(params[:session][:password])
-      puts 'YEPPPP'
       sign_in user
-      redirect_back_or user
+      redirect_back_or '/loggedinyeyeye'
     else
-      if user.authenticate(params[:password])
-        puts 'AUTHENTICATED??'
-      else
-        puts "FAILE AUTHENTICXATE"
-      end
-      puts "NOPEEEE"
-      flash.now.alert = "Invalid email or password"
-      render "new"
+      flash.now.alert = 'Invalid username or password'
+      render 'new'
     end
     #user = User.find_by(username: params[:session][:username])
     #if user && user.authenticate(params[:session][:password])

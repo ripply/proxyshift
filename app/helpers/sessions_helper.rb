@@ -11,7 +11,7 @@ module SessionsHelper
   end
 
   def current_user
-    @current_user ||= user_from_remember_token
+    @current_user ||= user_from_session
   end
 
   def signed_in?
@@ -43,12 +43,12 @@ module SessionsHelper
 
   private
 
-  def user_from_remember_token
-    #User.authenticate_with_salt(*remember_token)
+  def user_from_session
+    User.find_by_id user_id
   end
 
-  def remember_token
-    cookies.signed[:remember_token] || [nil, nil]
+  def user_id
+    session[:user_id]
   end
 
   def remember_location
