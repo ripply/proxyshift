@@ -12,7 +12,7 @@ Rails.application.routes.draw do
   root 'pages#home'
 
   resources :types, only: [:new, :create, :destroy, :show]
-  resources :users, only: [:new, :create, :destroy, :show]
+  resources :users, only: [:new, :create, :destroy, :show, :index]
   resources :sessions, only: [:new, :create, :destroy]
 
   match '/signup', to: 'users#new', via: 'get'
