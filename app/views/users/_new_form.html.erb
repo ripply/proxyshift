@@ -1,7 +1,7 @@
-<%= simple_form_for User.new, :url => users_path do |f| %>
-  <%= f.input :account, label: 'Account name' %>
+<%= simple_form_for @user, :url => users_path do |f| %>
+  <%= f.input :username, label: 'Username' %>
   <%= f.input :email, label: 'Email address' %>
   <%= f.input :password %>
-  <%= f.association :type %>
+  <%= f.input :password_confirmation %>
   <%= f.button :submit %>
 <% end %>

@@ -11,6 +11,8 @@ class User < ActiveRecord::Base
     3
   end
 
+  #attr_accessor :password
+
   validates :username,
             presence: true,
             length: {
@@ -18,20 +20,24 @@ class User < ActiveRecord::Base
                 maximum: User.maximum_account_length
             }
 
+  validates_uniqueness_of :username
+
   validates :email,
             presence: true,
             length: {
                 minimum: User.minimum_email_length
             }
+
+  validates_uniqueness_of :email
+
   # http://apidock.com/rails/ActiveModel/Validations/ClassMethods/validates
   validates :email,
             format: {
                 with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i,
                 on: :create
             }
-  # TODO: http://api.rubyonrails.org/classes/ActiveModel/SecurePassword/ClassMethods.html#method-i-has_secure_password
-  validates :password,
-            presence: true
+
+  has_secure_password
 
   has_one :type
   has_many :shifts

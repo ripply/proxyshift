@@ -21,7 +21,8 @@ class UsersControllerTest < ActionController::TestCase
       post :create, user: {
         username: 'test user',
         email: 'example@example.org',
-        password: 'secret'
+        password: 'secret',
+        password_confirmation: 'secret'
       }
     end
 

@@ -48,6 +48,7 @@ class DynamicRouter
 
   def self.load
     Rails.application.routes.draw do
+      #return unless ActiveRecord::Base.connection.table_exists? 'categories'
       routes_strings = []
       Category.where(:root => 1).each do |root|
         DynamicRouter.recurse routes_strings, '/', nil, root

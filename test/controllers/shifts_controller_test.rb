@@ -14,7 +14,7 @@ class ShiftsControllerTest < ActionController::TestCase
   end
 
   def generate_random_shift_length(now = nil)
-    (rand 23) + 1
+    (rand 400) + 1
   end
 
   test 'should get index' do
@@ -107,5 +107,9 @@ class ShiftsControllerTest < ActionController::TestCase
     end
 
     assert_redirected_to shifts_path
+  end
+
+  test 'should be able to associate a shift with a user' do
+    assert false
   end
 end

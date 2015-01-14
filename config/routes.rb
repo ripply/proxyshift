@@ -9,10 +9,15 @@ Rails.application.routes.draw do
   # See how all your routes lay out with "rake routes".
 
   # You can have the root of your site routed with "root"
-  root 'welcome#index'
+  root 'pages#home'
 
-  resources :types
-  resources :users
+  resources :types, only: [:new, :create, :destroy, :show]
+  resources :users, only: [:new, :create, :destroy, :show]
+  resources :sessions, only: [:new, :create, :destroy]
+
+  match '/signup', to: 'users#new', via: 'get'
+  match '/signin', to: 'sessions#new', via: 'get'
+  match '/signout', to: 'sessions#destroy', via: 'delete'
 
   DynamicRouter.load
 

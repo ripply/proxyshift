@@ -30,7 +30,7 @@ gem 'spring',        group: :development
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw]
 
 # Use ActiveModel has_secure_password
-# gem 'bcrypt', '~> 3.1.7'
+gem 'bcrypt', '~> 3.1.7'
 
 # Use unicorn as the app server
 # gem 'unicorn'
@@ -47,3 +47,8 @@ gem 'simple_form'
 # Bootstrap: makes making mobile friendly websites easy
 gem 'bootstrap-sass', '~> 3.2.0'
 gem 'autoprefixer-rails'
+
+group :development, :test do
+  gem 'byebug',      '3.4.0'
+  gem 'web-console', '2.0.0.beta3'
+end
