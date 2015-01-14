@@ -1,4 +1,29 @@
 <p id="notice"><%= notice %></p>
 
-<%= link_to 'Edit', edit_user_path(@user) %> |
-<%= link_to 'Back', users_path %>
+<center>
+  <font face="Arial"><b>You will be redirected in
+    <span id="redirect2"></span>
+    seconds.</b></font>
+</center>
+
+<script>
+    var targetURL="http://localhost:3000/"
+    var countdownfrom=5
+
+
+    var currentsecond=document.getElementById('redirect2').innerHTML=countdownfrom+1
+    function countredirect(){
+        if (currentsecond!=1){
+            currentsecond-=1
+            document.getElementById('redirect2').innerHTML=currentsecond
+        }
+        else{
+            window.location=targetURL
+            return
+        }
+        setTimeout("countredirect()",1000)
+    }
+
+    countredirect()
+    //-->
+</script>
