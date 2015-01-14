@@ -11,7 +11,7 @@ class User < ActiveRecord::Base
     3
   end
 
-  validates :account,
+  validates :username,
             presence: true,
             length: {
                 minimum: User.minimum_account_length,

@@ -40,7 +40,7 @@ ActiveRecord::Schema.define(version: 20150112223344) do
   end
 
   create_table "users", force: true do |t|
-    t.string   "account"
+    t.string   "username"
     t.string   "email"
     t.string   "password"
     t.integer  "types_id"

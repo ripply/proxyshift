@@ -7,7 +7,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test 'should not save with just account' do
-    user = User.new account: 'test_account'
+    user = User.new username: 'test_account'
     assert_not user.save, 'Saved with just account'
   end
 
@@ -22,19 +22,20 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test 'should save if account, email, password specified and valid' do
-    user = User.new account: 'test_account', email: 'example@example.org', password: 'secret'
+    user = User.new username: 'test_account', email: 'example@example.org', password: 'secret'
     assert user.save, 'Failed to save with valid data'
   end
 
   test 'should fail if invalid email given' do
     [
-        'example',
-        'example@asdf',
-        '12341234',
-        '12341234@microsoft',
-        '!@#$!@#$!@#'
+      'example',
+      'example@asdf',
+      '12341234',
+      '12341234@microsoft',
+      '!@#$!@#$!@#'
     ].each do |invalid_email|
-      user = User.new account: 'test_account', email: invalid_email, password: 'secret'
+      user = User.new username: 'test_account', email: invalid_email, password: 'secret'
+      assert_not user.valid?, 'User account is valid and it should not be'
       assert_not user.save, "Saved with invalid email address: #{invalid_email}"
     end
   end
