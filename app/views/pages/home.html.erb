@@ -1,6 +1,5 @@
 HOMEE<p>
 <%= @title %>
 </p>
-<%= link_to_if signed_in?, 'Sign out', signout_path, method: :delete %>
-<%= link_to_unless signed_in?, 'Login', signin_path %>
+<%= render 'login_logout' %>
 <%= link_to 'Sign up now!', signup_path %>

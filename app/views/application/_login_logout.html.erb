@@ -1,0 +1,7 @@
+<%=
+if signed_in?
+  link_to 'Logout', signout_path, method: :delete
+else
+  link_to 'login', signin_path
+end
+%>

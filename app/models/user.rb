@@ -11,8 +11,6 @@ class User < ActiveRecord::Base
     3
   end
 
-  #attr_accessor :password
-
   validates :username,
             presence: true,
             length: {
