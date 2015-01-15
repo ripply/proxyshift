@@ -8,7 +8,7 @@ class SessionsController < ApplicationController
     elsif signed_in?
       redirect_to users_path
     end
-    @title = 'Sign in'
+    @title = 'title.signin'
   end
 
   def create

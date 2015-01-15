@@ -1,7 +1,7 @@
 <%= simple_form_for @user, :url => users_path do |f| %>
-  <%= f.input :username, label: 'Username' %>
-  <%= f.input :email, label: 'Email address' %>
-  <%= f.input :password %>
-  <%= f.input :password_confirmation %>
+  <%= f.input :username, label: t('forms.username') %>
+  <%= f.input :email, label: t('forms.email_address') %>
+  <%= f.input :password, label: t('forms.password') %>
+  <%= f.input :password_confirmation, label: t('forms.password_confirmation') %>
   <%= f.button :submit %>
 <% end %>

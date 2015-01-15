@@ -3,9 +3,9 @@ class PagesController < ApplicationController
   include SessionsHelper
 
   def home
-    @title = 'Welcome'
+    @title = 'title.welcome'
     if signed_in?
-      @title = 'SIGNED IN!!!'
+      @title = 'title.signed_in'
     end
   end
 

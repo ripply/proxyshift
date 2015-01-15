@@ -1,7 +1,7 @@
 <%=
 if signed_in?
-  link_to 'Logout', signout_path, method: :delete
+  link_to t('home.logout'), signout_path, method: :delete
 else
-  link_to 'login', signin_path
+  link_to t('home.login'), signin_path
 end
 %>

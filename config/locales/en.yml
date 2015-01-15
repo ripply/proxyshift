@@ -20,4 +20,18 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  home:
+    hello: 'Hello world'
+    login: 'Login'
+    logout: 'Logout'
+    signup: 'Sign up now!'
+    signin: 'Signin'
+  title:
+    default: 'Scheduling App'
+    welcome: 'Welcome!'
+    signed_in: 'You are Signed in'
+  forms:
+    username: 'Username'
+    email_address: 'Email address'
+    password: 'Password'
+    password_confirmation: 'Password confirmation'

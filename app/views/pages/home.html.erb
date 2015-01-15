@@ -1,8 +1,5 @@
-HOMEE<p>
-<%= @title %>
-</p>
 <%= render 'login_logout' %>
-<%= link_to 'Sign up now!', signup_path %>
+<%= link_to t(:signup), signup_path %>
 <%=
 if signed_in?
   render 'user_home_page'
