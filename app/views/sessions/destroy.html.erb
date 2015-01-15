@@ -1,3 +1,5 @@
-<% unless signed_in? %>
+<% if signed_in? %>
+  You were not signed in
+<% else %>
   Signed out
 <% end %>

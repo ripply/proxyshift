@@ -3,3 +3,10 @@ HOMEE<p>
 </p>
 <%= render 'login_logout' %>
 <%= link_to 'Sign up now!', signup_path %>
+<%=
+if signed_in?
+  render 'user_home_page'
+else
+  render 'home_page'
+end
+%>
