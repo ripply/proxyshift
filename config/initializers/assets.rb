@@ -2,6 +2,7 @@
 
 # Version of your assets, change this if you want to expire all your assets.
 Rails.application.config.assets.version = '1.0'
+Rails.application.config.assets.precompile += %w( redirect.js )
 
 # Precompile additional assets.
 # application.js, application.css.sass, and all non-JS/CSS in app/assets folder are already added.
