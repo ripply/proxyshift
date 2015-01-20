@@ -1,21 +1,11 @@
 class User < ActiveRecord::Base
-  def self.minimum_account_length
-    3
-  end
-
-  def self.maximum_account_length
-    25
-  end
-
-  def self.minimum_email_length
-    3
-  end
+  include UsersHelper
 
   validates :username,
             presence: true,
             length: {
-                minimum: User.minimum_account_length,
-                maximum: User.maximum_account_length
+                minimum: UsersHelper.minimum_account_length,
+                maximum: UsersHelper.maximum_account_length
             }
 
   validates_uniqueness_of :username
@@ -23,7 +13,7 @@ class User < ActiveRecord::Base
   validates :email,
             presence: true,
             length: {
-                minimum: User.minimum_email_length
+                minimum: UsersHelper.minimum_email_length
             }
 
   validates_uniqueness_of :email
@@ -39,4 +29,6 @@ class User < ActiveRecord::Base
 
   has_one :type
   has_many :shifts
+
+  has_settings :language
 end

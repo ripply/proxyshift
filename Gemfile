@@ -51,3 +51,6 @@ gem 'autoprefixer-rails'
 group :development, :test do
   gem 'byebug',      '3.4.0'
 end
+
+# https://github.com/ledermann/rails-settings
+gem 'ledermann-rails-settings'
