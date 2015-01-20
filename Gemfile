@@ -57,3 +57,8 @@ gem 'ledermann-rails-settings'
 
 gem 'fullcalendar-rails'
 gem 'momentjs-rails'
+
+# rabl and oj is a JSON parser that it requires
+gem 'rabl'
+# Also add either `oj` or `yajl-ruby` as the JSON parser
+gem 'oj'
