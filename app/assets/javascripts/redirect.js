@@ -7,7 +7,13 @@ var countdownfrom = 6;
 function countRedirect(){
     if (countdownfrom!=1){
         countdownfrom-=1;
-        document.getElementById('redirect').innerHTML = countdownfrom;
+        var redirect = document.getElementById('redirect');
+        if (redirect == null){
+            return;
+        }
+        else{
+            redirect.innerHTML = countdownfrom;
+        }
     }
     else{
         window.location=targetURL;
