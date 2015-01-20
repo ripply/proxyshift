@@ -54,3 +54,6 @@ end
 
 # https://github.com/ledermann/rails-settings
 gem 'ledermann-rails-settings'
+
+gem 'fullcalendar-rails'
+gem 'momentjs-rails'
