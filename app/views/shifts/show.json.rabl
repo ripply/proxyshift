@@ -3,11 +3,11 @@ object @shift
 attributes :id#, :start, :end
 
 node :start do |u|
-  u.start.to_s
+  u.start.rcf822
 end
 
 node :end do |u|
-  u.end.to_s
+  u.aend.rcf822
 end
 
 node :url do |u|
