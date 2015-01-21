@@ -17,6 +17,22 @@ class ShiftsControllerTest < ActionController::TestCase
     (rand 400) + 1
   end
 
+  def assert_contains_all_information_about_shift(json_object)
+    assert json_object.has_key?('id'), "Missing :id, #{json_object.to_s}"
+    id = json_object['id']
+    shift = Shift.find_by_id(id)
+    assert !(shift.nil?)
+    [
+      :start,
+      :end
+    ].each do |attribute|
+      assert json_object.has_key? attribute.to_s
+      attribute_value = json_object[attribute.to_s]
+      expected_value = shift.send(attribute).to_s
+      assert attribute_value == expected_value, "Attribute #{attribute}(#{attribute_value}) is not equal to (#{expected_value})\nKeys: #{json_object.keys}\nObject: #{json_object.to_s}"
+    end
+  end
+
   test 'should get index' do
     get :index
     assert_response :success
@@ -114,11 +130,11 @@ class ShiftsControllerTest < ActionController::TestCase
   end
 
   test 'API - /shifts.json sends empty response with no shifts' do
-    assert_routing '/shifts.json', { :controller => 'shifts', :action => 'index', :format => 'json' }
+    assert_routing '/shifts.json', {:controller => 'shifts', :action => 'index', :format => 'json'}
 
     Shift.delete_all
 
-    get :index, { 'format' => 'json' }
+    get :index, {'format' => 'json'}
 
     assert response.status == 200, "Incorrect response: #{response.status}"
 
@@ -128,11 +144,11 @@ class ShiftsControllerTest < ActionController::TestCase
   end
 
   test 'API - /shifts.json sends all shifts' do
-    assert_routing '/shifts.json', { :controller => 'shifts', :action => 'index', :format => 'json' }
+    assert_routing '/shifts.json', {:controller => 'shifts', :action => 'index', :format => 'json'}
 
     assert Shift.count != 0, 'Shifts need to exist as a precondition for this test'
 
-    get :index, { 'format' => 'json' }
+    get :index, {'format' => 'json'}
 
     assert response.status == 200
 
@@ -140,13 +156,30 @@ class ShiftsControllerTest < ActionController::TestCase
 
     assert body.length == Shift.count, "Length of response(#{body.length}) does not match shift count(#{Shift.count})"
 
-    puts 'wat'
     body.each do |key, value|
-      puts key
-      puts value
+      key.each do |obj_name, obj_val|
+        assert obj_name.to_s == 'shift', "Object name is incorrect(#{obj_name.to_s}) it should be shift"
+        assert_contains_all_information_about_shift obj_val
+      end
     end
+  end
 
-    assert false, "#{body.to_s}"
+  test 'API - /shifts/#.json sends individual shift' do
+    assert_routing '/shifts/0.json', {:controller => 'shifts', :action => 'show', :id => '0', :format => 'json'}
 
+    assert Shift.count != 0, 'Shifts need to exist as a precondition for this test'
+
+    get :show, {'id' => @shift.id, 'format' => 'json'}
+
+    assert response.status == 200, "Incorrect response code: #{response.status}"
+
+    body = JSON.parse(response.body)
+
+    assert body.length == 1, 'Returned multiple shifts, expected one'
+
+    body.each do |key, value|
+      assert key.to_s == 'shift', "Object name is incorrect(#{key.to_s}) it should be shift"
+      assert_contains_all_information_about_shift value
+    end
   end
 end
