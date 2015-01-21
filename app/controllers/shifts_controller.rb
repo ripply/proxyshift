@@ -1,6 +1,8 @@
 class ShiftsController < ApplicationController
   before_action :set_shift, only: [:show, :edit, :update, :destroy]
 
+  respond_to :json, :xml
+
   # GET /shifts
   # GET /shifts.json
   def index

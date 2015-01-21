@@ -15,3 +15,7 @@ root = Category.create(name: 'root', parent_id: nil, root: true)
 districts = Category.create(name: 'districts', parent_id: root.id, root: false)
 regions = Category.create(name: 'regions', parent_id: districts.id, root: false)
 districts_two = Category.create(name: 'districts_two', parent_id: root.id, root: false)
+
+now = DateTime.now
+later = now + 1.days
+Shift.create(start: now, end: later)

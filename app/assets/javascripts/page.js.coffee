@@ -13,24 +13,24 @@ $(document).ready ->
     height: 500,
     slotMinutes: 30,
 
-    eventSources: [{
-      url: '/events',
+    shiftSources: [{
+      url: '/shifts',
     }],
 
     timeFormat: 'h:mm t{ - h:mm t} ',
     dragOpacity: "0.5"
 
-    eventDrop: (event, dayDelta, minuteDelta, allDay, revertFunc) ->
-      updateEvent(event);
+    shiftDrop: (shift, dayDelta, minuteDelta, allDay, revertFunc) ->
+      updateShift(shift);
 
-    eventResize: (event, dayDelta, minuteDelta, revertFunc) ->
-      updateEvent(event);
+    shiftResize: (shift, dayDelta, minuteDelta, revertFunc) ->
+      updateShift(shift);
 
 
-updateEvent = (the_event) ->
-  $.update "/events/" + the_event.id,
-    event:
-      title: the_event.title,
-      starts_at: "" + the_event.start,
-      ends_at: "" + the_event.end,
-      description: the_event.description
+updateShift = (the_shift) ->
+  $.update "/shifts/" + the_shiftt.id,
+    shift:
+      title: the_shift.title,
+      starts_at: "" + the_shift.start,
+      ends_at: "" + the_shift.end,
+      description: the_shift.description

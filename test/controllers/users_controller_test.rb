@@ -51,4 +51,49 @@ class UsersControllerTest < ActionController::TestCase
 
     assert_redirected_to users_path
   end
+
+  test 'API - /users.json sends empty response with no users' do
+    assert_routing '/users.json', { :controller => 'users', :action => 'index', :format => 'json' }
+
+    User.delete_all
+
+    get :index, { 'format' => 'json' }
+
+    assert response.status == 200, "Incorrect response: #{response.status}"
+
+    body = JSON.parse(response.body)
+
+    assert body.length == 0, "Length of response should be zero it is #{body.length}"
+  end
+
+  test 'API - /users.json sends all users' do
+    assert_routing '/users.json', { :controller => 'users', :action => 'index', :format => 'json' }
+
+    assert User.count != 0, 'Users need to exist as a precondition for this test'
+
+    get :index, { 'format' => 'json' }
+
+    assert response.status == 200
+
+    body = JSON.parse(response.body)
+
+    assert body.length == Shift.count, "Length of response(#{body.length}) does not match shift count(#{User.count})"
+
+    puts 'wat'
+    body.each do |key, value|
+      puts key
+      puts value
+    end
+
+    assert false, "#{body.to_s}"
+
+  end
+
+  test 'API - /users.json only super admin can see every user' do
+    assert false, 'NYI'
+  end
+
+  test 'API - /users.json shows users that you admin' do
+    assert false, 'NYI'
+  end
 end

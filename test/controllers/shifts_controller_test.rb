@@ -112,4 +112,41 @@ class ShiftsControllerTest < ActionController::TestCase
   test 'should be able to associate a shift with a user' do
     assert false
   end
+
+  test 'API - /shifts.json sends empty response with no shifts' do
+    assert_routing '/shifts.json', { :controller => 'shifts', :action => 'index', :format => 'json' }
+
+    Shift.delete_all
+
+    get :index, { 'format' => 'json' }
+
+    assert response.status == 200, "Incorrect response: #{response.status}"
+
+    body = JSON.parse(response.body)
+
+    assert body.length == 0, "Length of response should be zero it is #{body.length}"
+  end
+
+  test 'API - /shifts.json sends all shifts' do
+    assert_routing '/shifts.json', { :controller => 'shifts', :action => 'index', :format => 'json' }
+
+    assert Shift.count != 0, 'Shifts need to exist as a precondition for this test'
+
+    get :index, { 'format' => 'json' }
+
+    assert response.status == 200
+
+    body = JSON.parse(response.body)
+
+    assert body.length == Shift.count, "Length of response(#{body.length}) does not match shift count(#{Shift.count})"
+
+    puts 'wat'
+    body.each do |key, value|
+      puts key
+      puts value
+    end
+
+    assert false, "#{body.to_s}"
+
+  end
 end
