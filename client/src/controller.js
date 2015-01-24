@@ -1,5 +1,5 @@
 var Marionette = require('backbone.marionette'),
-    ContactsView = require('./views/contacts'),
+    ShiftsView = require('./views/shifts'),
     ContactDetailsView = require('./views/contact_details'),
     AddContactView = require('./views/add');
 

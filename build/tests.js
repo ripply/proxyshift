@@ -57,8 +57,8 @@ describe('view:add', function() {
 var Marionette = require('backbone.marionette'),
     Controller = require('./controller'),
     Router = require('./router'),
-    ContactModel = require('./models/contact'),
-    ContactsCollection = require('./collections/contacts');
+    ContactModel = require('./models/shift'),
+    ContactsCollection = require('./collections/shifts');
 
 module.exports = App = function App() {};
 
@@ -101,16 +101,16 @@ App.prototype.start = function(){
     App.core.start();
 };
 
-},{"./collections/contacts":4,"./controller":5,"./models/contact":6,"./router":7}],4:[function(require,module,exports){
+},{"./collections/shifts":4,"./controller":5,"./models/shift":6,"./router":7}],4:[function(require,module,exports){
 var Backbone = require('backbone'),
-    ContactModel = require('../models/contact');
+    ShiftModel = require('../models/shift');
 
-module.exports = ContactsCollection = Backbone.Collection.extend({
-    model:  ContactModel,
-    url: '/api/contacts'
+module.exports = ShiftsCollection = Backbone.Shift.extend({
+    model:  ShiftModel,
+    url: '/api/shifts'
 });
 
-},{"../models/contact":6}],5:[function(require,module,exports){
+},{"../models/shift":6}],5:[function(require,module,exports){
 var Marionette = require('backbone.marionette'),
     ContactsView = require('./views/contacts'),
     ContactDetailsView = require('./views/contact_details'),
@@ -161,9 +161,9 @@ module.exports = Controller = Marionette.Controller.extend({
 },{"./views/add":8,"./views/contact_details":9,"./views/contacts":10}],6:[function(require,module,exports){
 var Backbone = require('backbone');
 
-module.exports = ContactModel = Backbone.Model.extend({
+module.exports = ShiftModel = Backbone.Model.extend({
     idAttribute: '_id',
-    urlRoot: 'api/contacts'
+    urlRoot: 'api/shifts'
 });
 
 },{}],7:[function(require,module,exports){

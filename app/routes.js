@@ -1,11 +1,11 @@
 var home = require('../controllers/home'),
-    contacts = require('../controllers/contacts');
+    shifts = require('../controllers/shifts');
 
 module.exports.initialize = function(app) {
     app.get('/', home.index);
-    app.get('/api/contacts', contacts.index);
-    app.get('/api/contacts/:id', contacts.getById);
-    app.post('/api/contacts', contacts.add);
-    // app.put('/api/contacts', contacts.update);
-    app.delete('/api/contacts/:id', contacts.delete);
+    app.get('/api/shifts', shifts.index);
+    app.get('/api/shifts/:id', shifts.getById);
+    app.post('/api/shifts', shifts.add);
+    app.put('/api/shifts', shifts.update);
+    app.delete('/api/shifts/:id', shifts.delete);
 };
