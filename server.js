@@ -2,18 +2,18 @@ var express = require('express'),
     http = require('http'),
     path = require('path'),
     routes = require('./app/routes'),
-    //exphbs = require('express3-handlebars'),
+    exphbs = require('express3-handlebars'),
     mongoose = require('mongoose'),
     seeder = require('./app/seeder'),
     app = express();
 
 app.set('port', process.env.PORT || 3300);
 app.set('views', __dirname + '/views');
-app.configure(function () {
-    app.engine('html', require('uinexpress').__express)
-    app.set('view engine', 'html')
-});
-//app.set('view engine', 'handlebars');
+app.engine('handlebars', exphbs({
+    defaultLayout: 'main',
+    layoutsDir: app.get('views') + '/layouts'
+}));
+app.set('view engine', 'handlebars');
 
 app.use(express.logger('dev'));
 app.use(express.json());

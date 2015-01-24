@@ -4,34 +4,49 @@ var mongoose = require('mongoose'),
 
 module.exports = {
     check: function() {
-        models.Shift.find({}, function(err, shifts) {
-            if (shifts.length === 0) {
-                console.log('no shifts found, seeding...');
-                var newShift = new models.Shift({
-                    start: Date.now(),
-                    end: Date.now() + (60 * 60)
+        models.Contact.find({}, function(err, contacts) {
+            if (contacts.length === 0) {
+                console.log('no contacts found, seeding...');
+                var newContact = new models.Contact({
+                    email: 'jkat98@gmail.com',
+                    name: {
+                        first: 'Jason',
+                        last: 'Krol'
+                    },
+                    phone: '215-123-1234',
+                    gravatar: md5('jkat98@gmail.com')
                 });
-                newShift.save(function(err, shift) {
-                    console.log('successfully inserted shift: ' + shift._id);
-                });
-
-                newShift = new models.Shift({
-                    start: Date.now(),
-                    end: Date.now() + (60 * 60)
-                });
-                newShift.save(function(err, shift) {
-                    console.log('successfully inserted shift: ' + shift._id);
+                newContact.save(function(err, contact) {
+                    console.log('successfully inserted contact: ' + contact._id);
                 });
 
-                newShift = new models.Shift({
-                    start: Date.now(),
-                    end: Date.now() + (60 * 60)
+                newContact = new models.Contact({
+                    email: 'testerson@example.com',
+                    name: {
+                        first: 'Steve',
+                        last: 'Testerson'
+                    },
+                    phone: '215-123-1234',
+                    gravatar: md5('testerson@example.com')
                 });
-                newShift.save(function(err, shift) {
-                    console.log('successfully inserted shift: ' + shift._id);
+                newContact.save(function(err, contact) {
+                    console.log('successfully inserted contact: ' + contact._id);
+                });
+
+                newContact = new models.Contact({
+                    email: 'nancy@testerson.com',
+                    name: {
+                        first: 'Nancy',
+                        last: 'Testerson'
+                    },
+                    phone: '215-123-1234',
+                    gravatar: md5('nancy@testerson.com')
+                });
+                newContact.save(function(err, contact) {
+                    console.log('successfully inserted contact: ' + contact._id);
                 });
             } else {
-                console.log('found ' + shifts.length + ' existing shifts!');
+                console.log('found ' + contacts.length + ' existing contacts!');
             }
         });
     }
