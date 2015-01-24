@@ -5,7 +5,6 @@ var mongoose = require('mongoose'),
 module.exports = {
     check: function() {
         models.Shift.find({}, function(err, shifts) {
-            console.log(shifts);
             if (shifts.length === 0) {
                 console.log('no shifts found, seeding...');
                 var newShift = new models.Shift({
@@ -33,7 +32,7 @@ module.exports = {
                 });
             } else {
                 console.log('found ' + shifts.length + ' existing shifts!');
-
+                console.log(shifts);
             }
         });
     }

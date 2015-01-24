@@ -3,8 +3,16 @@ var mongoose = require('mongoose'),
     ObjectId = Schema.ObjectId;
 
 var Shift = new Schema({
-    start: {type: Date},
-    end:   {type: Date}
+    start: {type: Date, required: true},
+    end:   {type: Date, required: true}
+});
+
+Shift.pre('validate', function (next) {
+    if (this.start > this.end)  {
+        next(new Error('Ending time must be after starting time'));
+    } else {
+        next();
+    }
 });
 
 module.exports = {
