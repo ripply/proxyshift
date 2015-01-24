@@ -1,31 +1,31 @@
 var Marionette = require('backbone.marionette'),
-    ContactsView = require('./views/contacts'),
-    ContactDetailsView = require('./views/contact_details'),
-    AddContactView = require('./views/add');
+    ShiftsView = require('./views/shifts'),
+    ShiftDetailsView = require('./views/shifts'),
+    AddShiftView = require('./views/add');
 
 module.exports = Controller = Marionette.Controller.extend({
     initialize: function() {
         App.core.vent.trigger('app:log', 'Controller: Initializing');
-        window.App.views.contactsView = new ContactsView({ collection: window.App.data.contacts });
+        window.App.views.shiftsView = new ShiftsView({ collection: window.App.data.shifts });
     },
 
     home: function() {
         App.core.vent.trigger('app:log', 'Controller: "Home" route hit.');
-        var view = window.App.views.contactsView;
+        var view = window.App.views.shiftsView;
         this.renderView(view);
         window.App.router.navigate('#');
     },
 
-    details: function(id) {
-        App.core.vent.trigger('app:log', 'Controller: "Contact Details" route hit.');
-        var view = new ContactDetailsView({ model: window.App.data.contacts.get(id)});
+    shiftDetails: function(id) {
+        App.core.vent.trigger('app:log', 'Controller: "Shift Details" route hit.');
+        var view = new ShiftDetailsView({ model: window.App.data.shifts.get(id)});
         this.renderView(view);
-        window.App.router.navigate('details/' + id);
+        window.App.router.navigate('shifts/' + id);
     },
 
     add: function() {
-        App.core.vent.trigger('app:log', 'Controller: "Add Contact" route hit.');
-        var view = new AddContactView();
+        App.core.vent.trigger('app:log', 'Controller: "Add Shift" route hit.');
+        var view = new AddShiftView();
         this.renderView(view);
         window.App.router.navigate('add');
     },

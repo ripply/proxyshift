@@ -1,8 +1,8 @@
 var Marionette = require('backbone.marionette'),
     Controller = require('./controller'),
     Router = require('./router'),
-    ContactModel = require('./models/contact'),
-    ContactsCollection = require('./collections/contacts');
+    ContactModel = require('./models/shift'),
+    ContactsCollection = require('./collections/shifts');
 
 module.exports = App = function App() {};
 

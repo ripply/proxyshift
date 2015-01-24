@@ -2,8 +2,8 @@
 var Marionette = require('backbone.marionette'),
     Controller = require('./controller'),
     Router = require('./router'),
-    ContactModel = require('./models/contact'),
-    ContactsCollection = require('./collections/contacts');
+    ContactModel = require('./models/shift'),
+    ContactsCollection = require('./collections/shifts');
 
 module.exports = App = function App() {};
 
@@ -46,44 +46,44 @@ App.prototype.start = function(){
     App.core.start();
 };
 
-},{"./collections/contacts":2,"./controller":3,"./models/contact":5,"./router":6}],2:[function(require,module,exports){
+},{"./collections/shifts":2,"./controller":3,"./models/shift":5,"./router":6}],2:[function(require,module,exports){
 var Backbone = require('backbone'),
-    ContactModel = require('../models/contact');
+    ShiftModel = require('../models/shift');
 
-module.exports = ContactsCollection = Backbone.Collection.extend({
-    model:  ContactModel,
-    url: '/api/contacts'
+module.exports = ShiftsCollection = Backbone.Collection.extend({
+    model:  ShiftModel,
+    url: '/api/shifts'
 });
 
-},{"../models/contact":5}],3:[function(require,module,exports){
+},{"../models/shift":5}],3:[function(require,module,exports){
 var Marionette = require('backbone.marionette'),
-    ContactsView = require('./views/contacts'),
-    ContactDetailsView = require('./views/contact_details'),
-    AddContactView = require('./views/add');
+    ShiftsView = require('./views/shifts'),
+    ShiftDetailsView = require('./views/shifts'),
+    AddShiftView = require('./views/add');
 
 module.exports = Controller = Marionette.Controller.extend({
     initialize: function() {
         App.core.vent.trigger('app:log', 'Controller: Initializing');
-        window.App.views.contactsView = new ContactsView({ collection: window.App.data.contacts });
+        window.App.views.shiftsView = new ShiftsView({ collection: window.App.data.shifts });
     },
 
     home: function() {
         App.core.vent.trigger('app:log', 'Controller: "Home" route hit.');
-        var view = window.App.views.contactsView;
+        var view = window.App.views.shiftsView;
         this.renderView(view);
         window.App.router.navigate('#');
     },
 
-    details: function(id) {
-        App.core.vent.trigger('app:log', 'Controller: "Contact Details" route hit.');
-        var view = new ContactDetailsView({ model: window.App.data.contacts.get(id)});
+    shiftDetails: function(id) {
+        App.core.vent.trigger('app:log', 'Controller: "Shift Details" route hit.');
+        var view = new ShiftDetailsView({ model: window.App.data.shifts.get(id)});
         this.renderView(view);
-        window.App.router.navigate('details/' + id);
+        window.App.router.navigate('shifts/' + id);
     },
 
     add: function() {
-        App.core.vent.trigger('app:log', 'Controller: "Add Contact" route hit.');
-        var view = new AddContactView();
+        App.core.vent.trigger('app:log', 'Controller: "Add Shift" route hit.');
+        var view = new AddShiftView();
         this.renderView(view);
         window.App.router.navigate('add');
     },
@@ -103,7 +103,7 @@ module.exports = Controller = Marionette.Controller.extend({
     }
 });
 
-},{"./views/add":7,"./views/contact_details":8,"./views/contacts":9}],4:[function(require,module,exports){
+},{"./views/add":7,"./views/shifts":8}],4:[function(require,module,exports){
 var App = require('./app');
 var myapp = new App();
 myapp.start();
@@ -113,7 +113,7 @@ var Backbone = require('backbone');
 
 module.exports = ContactModel = Backbone.Model.extend({
     idAttribute: '_id',
-    urlRoot: 'api/contacts'
+    urlRoot: 'api/shifts'
 });
 
 },{}],6:[function(require,module,exports){
@@ -122,7 +122,7 @@ var Marionette = require('backbone.marionette');
 module.exports = Router = Marionette.AppRouter.extend({
     appRoutes: {
         ''  : 'home',
-        'details/:id' : 'details',
+        'shifts/:id' : 'shiftDetails',
         'add' : 'add'
     }
 });
@@ -138,38 +138,34 @@ module.exports = AddView = Marionette.ItemView.extend({
 
     save: function(e) {
         e.preventDefault();
-        var newContact = {
-            name: {
-                first: this.$el.find('#name_first').val(),
-                last: this.$el.find('#name_last').val()
-            },
-            email: this.$el.find('#email').val(),
-            phone: this.$el.find('#phone').val()
+        var newShift = {
+            start: this.$el.find('#start').val(),
+            end: this.$el.find('#end').val(),
         };
 
-        window.App.data.contacts.create(newContact);
-        window.App.core.vent.trigger('app:log', 'Add View: Saved new contact!');
+        window.App.data.contacts.create(newShift);
+        window.App.core.vent.trigger('app:log', 'Add View: Saved new shift!');
         window.App.controller.home();
     }
 });
 
-},{"../../templates/add.hbs":10}],8:[function(require,module,exports){
+},{"../../templates/add.hbs":9}],8:[function(require,module,exports){
 var Marionette = require('backbone.marionette');
 
-module.exports = ContactDetailsView = Marionette.ItemView.extend({
-    template: require('../../templates/contact_details.hbs'),
+module.exports = ShiftDetailsView = Marionette.ItemView.extend({
+    template: require('../../templates/shift_detail.hbs'),
     events: {
         'click a.back': 'goBack',
-        'click a.delete': 'deleteContact'
+        'click a.delete': 'deleteShift'
     },
 
     goBack: function(e) {
         e.preventDefault();
         window.App.controller.home();
     },
-    deleteContact: function(e) {
+    deleteShift: function(e) {
         e.preventDefault();
-        console.log('Deleting contact');
+        console.log('Deleting shift');
         window.App.data.contacts.remove(this.model);
 
         // this will actually send a DELETE to the server:
@@ -179,32 +175,7 @@ module.exports = ContactDetailsView = Marionette.ItemView.extend({
     }
 });
 
-},{"../../templates/contact_details.hbs":11}],9:[function(require,module,exports){
-var Marionette = require('backbone.marionette');
-
-var itemView = Marionette.ItemView.extend({
-    template: require('../../templates/contact_small.hbs'),
-    initialize: function() {
-        this.listenTo(this.model, 'change', this.render);
-    },
-    events: {
-        'click': 'showDetails'
-    },
-
-    showDetails: function() {
-        window.App.core.vent.trigger('app:log', 'Contacts View: showDetails hit.');
-        window.App.controller.details(this.model.id);
-    }
-});
-
-module.exports = CollectionView = Marionette.CollectionView.extend({
-    initialize: function() {
-        this.listenTo(this.collection, 'change', this.render);
-    },
-    itemView: itemView
-});
-
-},{"../../templates/contact_small.hbs":12}],10:[function(require,module,exports){
+},{"../../templates/shift_detail.hbs":10}],9:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var Handlebars = require('hbsfy/runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
@@ -213,64 +184,31 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"add_contact\">\n    <label for=\"name_first\">First Name:</label> <input type=\"text\" id=\"name_first\" /><br/>\n    <label for=\"name_last\">Last Name:</label> <input type=\"text\" id=\"name_last\" /><br/>\n    <label for=\"email\">Email:</label> <input type=\"text\" id=\"email\" /><br/>\n    <label for=\"phone\">Phone:</label> <input type=\"text\" id=\"phone\" /><br/>\n    <br/>\n    <a href=\"#\" class=\"save-button\">Save Contact</a> | <a href=\"#\"><< Back</a>\n</div>\n";
+  return "<div class=\"add_contact\">\n    <label for=\"start\">Start:</label> <input type=\"text\" id=\"start\" /><br/>\n    <label for=\"end\">End:</label> <input type=\"text\" id=\"end\" /><br/>\n    <br/>\n    <a href=\"#\" class=\"save-button\">Save Shift</a> | <a href=\"#\"><< Back</a>\n</div>\n";
   });
 
-},{"hbsfy/runtime":16}],11:[function(require,module,exports){
+},{"hbsfy/runtime":14}],10:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var Handlebars = require('hbsfy/runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, stack2, functionType="function", escapeExpression=this.escapeExpression;
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"contact_full\">\n    <img src=\"http://www.gravatar.com/avatar/";
-  if (stack1 = helpers.gravatar) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.gravatar; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += "<div class=\"shift_full\">\n    <strong>Start:</strong> ";
+  if (stack1 = helpers.start) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.start; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "?d=monsterid&s=250\"/>\n    <br/><br/>\n    <strong>Name:</strong> "
-    + escapeExpression(((stack1 = ((stack1 = depth0.name),stack1 == null || stack1 === false ? stack1 : stack1.first)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " "
-    + escapeExpression(((stack1 = ((stack1 = depth0.name),stack1 == null || stack1 === false ? stack1 : stack1.last)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "<br/>\n    <strong>Email:</strong> ";
-  if (stack2 = helpers.email) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
-  else { stack2 = depth0.email; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
-  buffer += escapeExpression(stack2)
-    + "<br/>\n    <strong>Phone:</strong> ";
-  if (stack2 = helpers.phone) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
-  else { stack2 = depth0.phone; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
-  buffer += escapeExpression(stack2)
-    + "<br/><br/>\n\n</div>\n\n<a href=\"#\" class=\"back\"><< Back</a> | <a href=\"#\" class=\"delete\">Delete Contact</a>\n";
+    + "<br/>\n    <strong>End:</strong> ";
+  if (stack1 = helpers.end) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.end; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "<br/>\n</div>\n\n<a href=\"#\" class=\"back\"><< Back</a> | <a href=\"#\" class=\"delete\">Delete Shift</a>\n";
   return buffer;
   });
 
-},{"hbsfy/runtime":16}],12:[function(require,module,exports){
-// hbsfy compiled Handlebars template
-var Handlebars = require('hbsfy/runtime');
-module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, stack2, functionType="function", escapeExpression=this.escapeExpression;
-
-
-  buffer += "<div class=\"contact_small\">\n    <img src=\"http://www.gravatar.com/avatar/";
-  if (stack1 = helpers.gravatar) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.gravatar; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "?d=monsterid&s=45\"/>\n    <strong>"
-    + escapeExpression(((stack1 = ((stack1 = depth0.name),stack1 == null || stack1 === false ? stack1 : stack1.first)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + " "
-    + escapeExpression(((stack1 = ((stack1 = depth0.name),stack1 == null || stack1 === false ? stack1 : stack1.last)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</strong><br/>\n    ";
-  if (stack2 = helpers.email) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
-  else { stack2 = depth0.email; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
-  buffer += escapeExpression(stack2)
-    + "\n</div>\n";
-  return buffer;
-  });
-
-},{"hbsfy/runtime":16}],13:[function(require,module,exports){
+},{"hbsfy/runtime":14}],11:[function(require,module,exports){
 /*jshint eqnull: true */
 
 module.exports.create = function() {
@@ -438,7 +376,7 @@ Handlebars.registerHelper('log', function(context, options) {
 return Handlebars;
 };
 
-},{}],14:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 exports.attach = function(Handlebars) {
 
 // BEGIN(BROWSER)
@@ -546,7 +484,7 @@ return Handlebars;
 
 };
 
-},{}],15:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 exports.attach = function(Handlebars) {
 
 var toString = Object.prototype.toString;
@@ -631,7 +569,7 @@ Handlebars.Utils = {
 return Handlebars;
 };
 
-},{}],16:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 var hbsBase = require("handlebars/lib/handlebars/base");
 var hbsUtils = require("handlebars/lib/handlebars/utils");
 var hbsRuntime = require("handlebars/lib/handlebars/runtime");
@@ -642,5 +580,5 @@ hbsRuntime.attach(Handlebars);
 
 module.exports = Handlebars;
 
-},{"handlebars/lib/handlebars/base":13,"handlebars/lib/handlebars/runtime":14,"handlebars/lib/handlebars/utils":15}]},{},[4])
+},{"handlebars/lib/handlebars/base":11,"handlebars/lib/handlebars/runtime":12,"handlebars/lib/handlebars/utils":13}]},{},[4])
 ;
