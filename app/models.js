@@ -3,8 +3,12 @@ var mongoose = require('mongoose'),
     ObjectId = Schema.ObjectId;
 
 var Shift = new Schema({
-    start: {type: Date, required: true},
-    end:   {type: Date, required: true}
+    title:       {type: String},
+    description: {type: String},
+    allDay:      {type: Boolean, default: false},
+    recurring:   {type: Boolean, default: false},
+    start:       {type: Date, required: true},
+    end:         {type: Date, required: true}
 });
 
 Shift.pre('validate', function (next) {

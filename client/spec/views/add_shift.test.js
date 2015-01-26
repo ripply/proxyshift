@@ -1,4 +1,4 @@
-var AddView = require('../../src/views/add.js'),
+var AddView = require('../../src/views/shifts/add_shift.js'),
     $ = require('jquery');
 
 describe('view:add', function() {

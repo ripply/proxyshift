@@ -5,10 +5,13 @@ var express = require('express'),
     exphbs = require('express3-handlebars'),
     mongoose = require('mongoose'),
     seeder = require('./app/seeder'),
+    passport = require('passport'),
+    passportLocal = require('passport-local').Strategy,
     app = express();
 
 app.set('port', process.env.PORT || 3300);
 app.set('views', __dirname + '/views');
+app.set('view cache', process.env.NODE_ENV !== 'development');
 app.engine('handlebars', exphbs({
     defaultLayout: 'main',
     layoutsDir: app.get('views') + '/layouts'
@@ -20,8 +23,16 @@ app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
 app.use(express.cookieParser('some-secret-value-here'));
+app.use(express.session({ cookie: { maxAge: 60000 }}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(app.router);
 app.use('/', express.static(path.join(__dirname, 'public')));
+
+app.post('/login', passport.authenticate('local', { successRedirect: '/',
+    failureRedirect: '/login' }));
 
 // development only
 if ('development' == app.get('env')) {

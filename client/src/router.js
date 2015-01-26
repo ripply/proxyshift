@@ -4,6 +4,7 @@ module.exports = Router = Marionette.AppRouter.extend({
     appRoutes: {
         ''  : 'home',
         'shifts/:id' : 'shiftDetails',
-        'add' : 'add'
+        'add' : 'add',
+        'calendar' : 'calendar'
     }
 });

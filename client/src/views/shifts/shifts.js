@@ -1,7 +1,7 @@
 var Marionette = require('backbone.marionette');
 
 module.exports = ShiftDetailsView = Marionette.ItemView.extend({
-    template: require('../../templates/shift_detail.hbs'),
+    template: require('../../../templates/shifts/shift_detail.hbs'),
     events: {
         'click a.back': 'goBack',
         'click a.delete': 'deleteShift'

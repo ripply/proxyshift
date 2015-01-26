@@ -1,7 +1,7 @@
 var Marionette = require('backbone.marionette');
 
 module.exports = AddView = Marionette.ItemView.extend({
-    template: require('../../templates/add.hbs'),
+    template: require('../../../templates/shifts/add_shift.hbs'),
     events: {
         'click a.save-button': 'save'
     },
@@ -9,6 +9,8 @@ module.exports = AddView = Marionette.ItemView.extend({
     save: function(e) {
         e.preventDefault();
         var newShift = {
+            title: this.$el.find('#title').val,
+            description: this.$el.find('#description').val,
             start: this.$el.find('#start').val(),
             end: this.$el.find('#end').val(),
         };

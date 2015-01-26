@@ -52,6 +52,13 @@ module.exports = function(grunt) {
                                 backbone: 'Backbone',
                                 underscore: '_'
                             }
+                        },
+                        'moment': {
+                            path: 'client/requires/moment/js/moment.min.js',
+                            exports: 'moment'
+                        },
+                        'fullcalendar-browser': {
+                            exports: 'fullcalendar-browser'
                         }
                     }
                 }

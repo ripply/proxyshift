@@ -1,8 +1,8 @@
 var Marionette = require('backbone.marionette'),
     Controller = require('./controller'),
     Router = require('./router'),
-    ContactModel = require('./models/shift'),
-    ContactsCollection = require('./collections/shifts');
+    ShiftModel = require('./models/shift'),
+    ShiftsCollection = require('./collections/shifts');
 
 module.exports = App = function App() {};
 
@@ -16,10 +16,10 @@ App.prototype.start = function(){
         App.data = {};
 
         // load up some initial data:
-        var contacts = new ContactsCollection();
-        contacts.fetch({
+        var shifts = new ShiftsCollection();
+        shifts.fetch({
             success: function() {
-                App.data.contacts = contacts;
+                App.data.shifts = shifts;
                 App.core.vent.trigger('app:start');
             }
         });
