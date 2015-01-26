@@ -28,6 +28,9 @@ module.exports = function(grunt) {
                 src: ['client/requires/**/*.js'],
                 dest: 'build/vendor.js',
                 options: {
+                    //transform: [
+//                        'deamdify'
+//                    ],
                     shim: {
                         jquery: {
                             path: 'client/requires/jquery/js/jquery.js',
@@ -53,12 +56,12 @@ module.exports = function(grunt) {
                                 underscore: '_'
                             }
                         },
-                        'moment': {
-                            path: 'client/requires/moment/js/moment.min.js',
-                            exports: 'moment'
-                        },
-                        'fullcalendar-browser': {
-                            exports: 'fullcalendar-browser'
+                        'fullcalendar': {
+                            path: 'client/requires/fullcalendar/js/fullcalendar.js',
+                            exports: 'fullcalendar',
+                            depends: {
+                                moment: 'moment'
+                            }
                         }
                     }
                 }
@@ -69,7 +72,7 @@ module.exports = function(grunt) {
                 },
                 options: {
                     transform: ['hbsfy'],
-                    external: ['jquery', 'underscore', 'backbone', 'backbone.marionette']
+                    external: ['jquery', 'underscore', 'backbone', 'backbone.marionette', 'moment', 'fullcalendar']
                 }
             },
             test: {
