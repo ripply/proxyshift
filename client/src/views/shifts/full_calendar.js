@@ -6,16 +6,16 @@ var Marionette = require('backbone.marionette');
 module.exports = FullCalendarView = Marionette.ItemView.extend({
     template: require('../../../templates/shifts/calendar.hbs'),
 
-    initialize: function () {
+    //initialize: function () {
         //_.bindAll(this);
-        console.log('this.options.el');
-        console.log(this.options.el);
-        this.options.model.bind('reset', this.addAll);
-    },
+        //console.log('this.options.el');
+        //console.log(this.options.el);
+        //this.options.model.bind('reset', this.addAll);
+    //},
     render: function () {
-        console.log('this.options.el');
-        console.log(this.options.el);
-        this.options.el.fullCalendar({
+        //console.log('this.options.el');
+        //console.log(this.options.el);
+        /*this.options.el.fullCalendar({
             header: {
                 left: 'prev,next today',
                 center: 'title',
@@ -27,8 +27,9 @@ module.exports = FullCalendarView = Marionette.ItemView.extend({
             editable: true
         });
         console.log('.fullCalendar call success!!!');
+        */
     },
     addAll: function () {
-        this.options.el.fullCalendar('addEventSource', this.collection.toJSON());
+        //this.options.el.fullCalendar('addEventSource', this.collection.toJSON());
     }
 });

@@ -1,24 +1,23 @@
 var Marionette = require('backbone.marionette');
 
-module.exports = ShiftDetailsView = Marionette.ItemView.extend({
-    template: require('../../../templates/shifts/shift_detail.hbs'),
+var itemView = Marionette.ItemView.extend({
+    template: require('../../../templates/shifts/shift_small.hbs'),
+    initialize: function() {
+        this.listenTo(this.model, 'change', this.render);
+    },
     events: {
-        'click a.back': 'goBack',
-        'click a.delete': 'deleteShift'
+        'click': 'showDetails'
     },
 
-    goBack: function(e) {
-        e.preventDefault();
-        window.App.controller.home();
-    },
-    deleteShift: function(e) {
-        e.preventDefault();
-        console.log('Deleting shift');
-        window.App.data.contacts.remove(this.model);
-
-        // this will actually send a DELETE to the server:
-        this.model.destroy();
-
-        window.App.controller.home();
+    showDetails: function() {
+        window.App.core.vent.trigger('app:log', 'Shifts View: showDetails hit.');
+        window.App.controller.details(this.model.id);
     }
+});
+
+module.exports = CollectionView = Marionette.CollectionView.extend({
+    initialize: function() {
+        this.listenTo(this.collection, 'change', this.render);
+    },
+    itemView: itemView
 });

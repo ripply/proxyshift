@@ -1,6 +1,6 @@
 var Marionette = require('backbone.marionette'),
     ShiftsView = require('./views/shifts/shifts'),
-    ShiftDetailsView = require('./views/shifts/shifts'),
+    ShiftDetailsView = require('./views/shifts/shift_detail'),
     FullCalendarView = require('./views/shifts/full_calendar'),
     LoginView = require('./views/users/login'),
     AddShiftView = require('./views/shifts/add_shift');
@@ -28,9 +28,9 @@ module.exports = Controller = Marionette.Controller.extend({
     calendar: function() {
         App.core.vent.trigger('app:log', 'Controller: "Calendar" route hit.');
         console.log('Model: ' + window.App.data.shifts);
-        var view = new FullCalendarView({ model: window.App.data.shifts, el: $('#calendar') });
+        var view = new FullCalendarView({ model: window.App.data.shifts });
         this.renderView(view);
-        window.App.router.navigate('calendar/' + id);
+        window.App.router.navigate('calendar/');
     },
 
     add: function() {
