@@ -8,7 +8,8 @@ module.exports = FullCalendarView = Marionette.ItemView.extend({
 
     initialize: function () {
         //_.bindAll(this);
-
+        console.log('this.options.el');
+        console.log(this.options.el);
         this.options.model.bind('reset', this.addAll);
     },
     render: function () {
@@ -25,6 +26,7 @@ module.exports = FullCalendarView = Marionette.ItemView.extend({
             selectHelper: true,
             editable: true
         });
+        console.log('.fullCalendar call success!!!');
     },
     addAll: function () {
         this.options.el.fullCalendar('addEventSource', this.collection.toJSON());

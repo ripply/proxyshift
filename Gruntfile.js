@@ -28,9 +28,9 @@ module.exports = function(grunt) {
                 src: ['client/requires/**/*.js'],
                 dest: 'build/vendor.js',
                 options: {
-                    //transform: [
-//                        'deamdify'
-//                    ],
+                    transform: [
+                        'deamdify'
+                    ],
                     shim: {
                         jquery: {
                             path: 'client/requires/jquery/js/jquery.js',
@@ -47,6 +47,10 @@ module.exports = function(grunt) {
                                 underscore: 'underscore'
                             }
                         },
+                        moment: {
+                            path: 'client/requires/moment/js/moment.min.js',
+                            exports: 'moment'
+                        },
                         'backbone.marionette': {
                             path: 'client/requires/backbone.marionette/js/backbone.marionette.js',
                             exports: 'Marionette',
@@ -56,7 +60,7 @@ module.exports = function(grunt) {
                                 underscore: '_'
                             }
                         },
-                        'fullcalendar': {
+                        'fullcalendar-browser': {
                             path: 'client/requires/fullcalendar/js/fullcalendar.js',
                             exports: 'fullcalendar',
                             depends: {

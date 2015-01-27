@@ -15,15 +15,16 @@
     "test": "grunt test"
   },
   "dependencies": {
-    "express": "~3.4.2",
-    "mongoose": "~3.8.3",
-    "handlebars-runtime": "~1.0.12",
-    "express3-handlebars": "~0.5.0",
     "MD5": "~1.2.0",
-    "passport": "~0.2.1",
-    "passport-local": "~1.0.0",
+    "browserify-shim": "^3.8.2",
+    "express": "~3.4.2",
+    "express3-handlebars": "~0.5.0",
     "moment": "~2.9.0",
-    "fullcalendar-browser": "~1.5.4-1"
+    "fullcalendar-browser": "~1.5.4-1",
+    "handlebars-runtime": "~1.0.12",
+    "mongoose": "~3.8.3",
+    "passport": "~0.2.1",
+    "passport-local": "~1.0.0"
   },
   "devDependencies": {
     "bower": "~1.2.8",
