@@ -28,7 +28,7 @@ module.exports = Controller = Marionette.Controller.extend({
     calendar: function() {
         App.core.vent.trigger('app:log', 'Controller: "Calendar" route hit.');
         console.log('Model: ' + window.App.data.shifts);
-        var view = new FullCalendarView({ model: window.App.data.shifts });
+        var view = new FullCalendarView({ model: window.App.data.shifts, el: $("#calendar") });
         this.renderView(view);
         window.App.router.navigate('calendar/');
     },
