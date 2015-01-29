@@ -30,7 +30,7 @@ module.exports = Controller = Marionette.Controller.extend({
         console.log('Model: ' + window.App.data.shifts);
         var view = new FullCalendarView({ model: window.App.data.shifts, el: $("#calendar") });
         this.renderView(view);
-        window.App.router.navigate('calendar/');
+        window.App.router.navigate('calendar');
     },
 
     add: function() {
