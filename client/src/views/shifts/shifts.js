@@ -1,9 +1,7 @@
 var Marionette = require('backbone.marionette');
 
-var itemviewwut = require('../../../templates/shifts/shift_small.hbs');
-
 var itemView = Marionette.ItemView.extend({
-    template: itemviewwut,
+    template: require('../../../templates/shifts/shift_small.hbs'),
     initialize: function() {
         this.listenTo(this.model, 'change', this.render);
     },

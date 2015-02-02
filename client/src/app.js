@@ -1,7 +1,9 @@
 var Marionette = require('backbone.marionette'),
     Controller = require('./controller'),
     Router = require('./router'),
-    MainRegion = require('./regions/main'),
+    HeaderRegion = require('./regions/header'),
+    ContentRegion = require('./regions/content'),
+    FooterRegion = require('./regions/footer'),
     ShiftModel = require('./models/shift'),
     ShiftsCollection = require('./collections/shifts');
 
@@ -11,7 +13,9 @@ App.prototype.start = function(){
     App.core = new Marionette.Application();
 
     App.core.addRegions({
-        mainRegion: MainRegion
+        contentRegion : ContentRegion,
+        headerRegion : HeaderRegion,
+        footerRegion : FooterRegion
     });
 
     App.core.on("initialize:before", function (options) {
