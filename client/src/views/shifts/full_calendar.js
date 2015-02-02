@@ -10,7 +10,7 @@ module.exports = FullCalendarView = Marionette.ItemView.extend({
         //_.bindAll(this);
         this.options.collection.bind('reset', this.addAll);
     },
-    onRender: function() {
+    onShow: function() {
         console.log("FullCalendarViar#onRender");
         console.log(this.options.element);
         this.updateElement();
