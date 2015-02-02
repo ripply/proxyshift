@@ -1,6 +1,7 @@
 var Marionette = require('backbone.marionette'),
     Controller = require('./controller'),
     Router = require('./router'),
+    MainRegion = require('./regions/main'),
     ShiftModel = require('./models/shift'),
     ShiftsCollection = require('./collections/shifts');
 
@@ -9,11 +10,16 @@ module.exports = App = function App() {};
 App.prototype.start = function(){
     App.core = new Marionette.Application();
 
+    App.core.addRegions({
+        mainRegion: MainRegion
+    });
+
     App.core.on("initialize:before", function (options) {
         App.core.vent.trigger('app:log', 'App: Initializing');
 
         App.views = {};
         App.data = {};
+        App.regions = {};
 
         // load up some initial data:
         var shifts = new ShiftsCollection();
@@ -44,3 +50,4 @@ App.prototype.start = function(){
 
     App.core.start();
 };
+

@@ -12,7 +12,7 @@ module.exports = AddView = Marionette.ItemView.extend({
             title: this.$el.find('#title').val,
             description: this.$el.find('#description').val,
             start: this.$el.find('#start').val(),
-            end: this.$el.find('#end').val(),
+            end: this.$el.find('#end').val()
         };
 
         window.App.data.contacts.create(newShift);

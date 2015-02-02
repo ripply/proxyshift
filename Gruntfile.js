@@ -44,12 +44,16 @@ module.exports = function(grunt) {
                             path: 'client/requires/backbone/js/backbone.js',
                             exports: 'Backbone',
                             depends: {
+                                jquery: '$',
                                 underscore: 'underscore'
                             }
                         },
                         moment: {
                             path: 'client/requires/moment/js/moment.min.js',
-                            exports: 'moment'
+                            exports: 'moment',
+                            depends: {
+                                jquery: '$'
+                            }
                         },
                         'backbone.marionette': {
                             path: 'client/requires/backbone.marionette/js/backbone.marionette.js',
@@ -64,6 +68,7 @@ module.exports = function(grunt) {
                             path: 'client/requires/fullcalendar/js/fullcalendar.js',
                             exports: 'fullcalendar',
                             depends: {
+                                jquery: '$',
                                 moment: 'moment'
                             }
                         }
@@ -98,7 +103,8 @@ module.exports = function(grunt) {
                     'build/<%= pkg.name %>.css': [
                         'client/styles/reset.css',
                         'client/requires/*/css/*',
-                        'client/styles/less/main.less'
+                        'client/styles/less/main.less',
+                        'client/requires/fullcalendar/js/fullcalendar.css'
                     ]
                 }
             }
@@ -155,15 +161,15 @@ module.exports = function(grunt) {
         watch: {
             scripts: {
                 files: ['client/templates/*.hbs', 'client/src/**/*.js'],
-                tasks: ['clean:dev', 'browserify:app', 'concat', 'copy:dev']
+                tasks: ['clean:dev', 'browserify:vendor', 'browserify:app', 'concat', 'copy:dev']
             },
             less: {
                 files: ['client/styles/**/*.less'],
                 tasks: ['less:transpile', 'copy:dev']
             },
             test: {
-                files: ['build/app.js', 'client/spec/**/*.test.js'],
-                tasks: ['browserify:test']
+                files: ['build/app.js', 'client/spec/**/*.test.js', 'client/requires/**/*.js'],
+                tasks: ['browserify:vendor', 'browserify:test']
             },
             karma: {
                 files: ['build/tests.js'],
@@ -248,7 +254,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('init:dev', ['clean', 'bower', 'browserify:vendor']);
 
-    grunt.registerTask('build:dev', ['clean:dev', 'browserify:app', 'browserify:test', 'jshint:dev', 'less:transpile', 'concat', 'copy:dev']);
+    grunt.registerTask('build:dev', ['clean:dev', 'browserify:vendor', 'browserify:app', 'browserify:test', 'jshint:dev', 'less:transpile', 'concat', 'copy:dev']);
     grunt.registerTask('build:prod', ['clean:prod', 'browserify:vendor', 'browserify:app', 'jshint:all', 'less:transpile', 'concat', 'cssmin', 'uglify', 'copy:prod']);
 
     grunt.registerTask('heroku', ['init:dev', 'build:dev']);
