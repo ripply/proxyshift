@@ -35,5 +35,20 @@ module.exports = {
                 console.log(shifts);
             }
         });
+        models.Users.find({}, function(err, users) {
+            if (users.length == 0) {
+                console.log('No users found, seeding...');
+                var user = new models.Users({ username: 'asdf', email: 'asdf@example.com', password: 'asdf' });
+                user.save(function(err) {
+                    if(err) {
+                        console.log(err);
+                    } else {
+                        console.log('user: ' + user.username + " saved.");
+                    }
+                });
+            } else {
+                console.log('There are ' + users.length + ' existing users!');
+            }
+        });
     }
 };

@@ -1,8 +1,10 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
-    ObjectId = Schema.ObjectId;
+    ObjectId = Schema.ObjectId,
+    bcrypt = require('bcrypt'),
+    SALT_WORK_FACTOR = 10;;
 
-var Shift = new Schema({
+var shiftSchema = new Schema({
     title:       {type: String},
     description: {type: String},
     allDay:      {type: Boolean, default: false},
@@ -11,7 +13,7 @@ var Shift = new Schema({
     end:         {type: Date, required: true}
 });
 
-Shift.pre('validate', function (next) {
+shiftSchema.pre('validate', function (next) {
     if (this.start > this.end)  {
         next(new Error('Ending time must be after starting time'));
     } else {
@@ -19,6 +21,36 @@ Shift.pre('validate', function (next) {
     }
 });
 
+var userSchema = new Schema({
+    username:    {type: String, required: true, unique: true},
+    email:       {type: String, required: true, unique: true},
+    password:    {type: String, required: true}
+});
+
+userSchema.pre('save', function(next) {
+    var user = this;
+
+    if(!user.isModified('password')) return next();
+
+    bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
+        if(err) return next(err);
+
+        bcrypt.hash(user.password, salt, function(err, hash) {
+            if(err) return next(err);
+            user.password = hash;
+            next();
+        });
+    });
+});
+
+userSchema.methods.comparePassword = function(candidatePassword, cb) {
+    bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
+        if(err) return cb(err);
+        cb(null, isMatch);
+    });
+};
+
 module.exports = {
-    Shift: mongoose.model('Shift', Shift)
+    Shift: mongoose.model('Shift', shiftSchema),
+    Users: mongoose.model('Users', userSchema)
 };

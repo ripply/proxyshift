@@ -22,6 +22,7 @@ app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
+// TODO: Autogenerate this secret and save it in the database
 app.use(express.cookieParser('some-secret-value-here'));
 app.use(express.session({ cookie: { maxAge: 60000 }}));
 
@@ -29,10 +30,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(app.router);
+// serves clients our files in public
 app.use('/', express.static(path.join(__dirname, 'public')));
-
-app.post('/login', passport.authenticate('local', { successRedirect: '/',
-    failureRedirect: '/login' }));
 
 // development only
 if ('development' == app.get('env')) {
