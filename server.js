@@ -7,6 +7,7 @@ var express = require('express'),
     seeder = require('./app/seeder'),
     passport = require('passport'),
     passportLocal = require('passport-local').Strategy,
+    compression = require('compression'),
     app = express();
 
 app.set('port', process.env.PORT || 3300);
@@ -25,6 +26,10 @@ app.use(express.methodOverride());
 // TODO: Autogenerate this secret and save it in the database
 app.use(express.cookieParser('some-secret-value-here'));
 app.use(express.session({ cookie: { maxAge: 60000 }}));
+
+app.use(compression());
+
+app.use(express.csrf());
 
 app.use(passport.initialize());
 app.use(passport.session());

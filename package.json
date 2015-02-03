@@ -16,16 +16,17 @@
   },
   "dependencies": {
     "MD5": "~1.2.0",
+    "bcrypt": "~0.8.1",
     "browserify-shim": "^3.8.2",
+    "compression": "^1.4.0",
     "express": "~3.4.2",
     "express3-handlebars": "~0.5.0",
-    "moment": "~2.9.0",
     "fullcalendar-browser": "~1.5.4-1",
     "handlebars-runtime": "~1.0.12",
+    "moment": "~2.9.0",
     "mongoose": "~3.8.3",
     "passport": "~0.2.1",
-    "passport-local": "~1.0.0",
-    "bcrypt": "~0.8.1"
+    "passport-local": "~1.0.0"
   },
   "devDependencies": {
     "bower": "~1.2.8",
