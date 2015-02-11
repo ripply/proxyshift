@@ -3,7 +3,7 @@ var Backbone = require('backbone');
 module.exports = UserModel = Backbone.Model.extend({
 
     initialize: function(){
-        _.bindAll(this);
+        //_.bindAll(this);
     },
 
     defaults: {

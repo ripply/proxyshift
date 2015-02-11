@@ -8,14 +8,18 @@ var express = require('express'),
     passport = require('passport'),
     passportLocal = require('passport-local').Strategy,
     compression = require('compression'),
+    csrf = require('csurf'),
     app = express();
 
 app.set('port', process.env.PORT || 3300);
 app.set('views', __dirname + '/views');
 app.set('view cache', process.env.NODE_ENV !== 'development');
+
+var hbs = exphbs.create();
+
 app.engine('handlebars', exphbs({
     defaultLayout: 'main',
-    layoutsDir: app.get('views') + '/layouts'
+    layoutsDir: app.get('views') + '/layouts',
 }));
 app.set('view engine', 'handlebars');
 
@@ -29,10 +33,31 @@ app.use(express.session({ cookie: { maxAge: 60000 }}));
 
 app.use(compression());
 
-app.use(express.csrf());
+app.use(csrf({ cookie: true }));
+
+// error handler
+/*
+app.use(function (err, req, res, next) {
+    if (err.code !== 'EBADCSRFTOKEN') return next(err)
+
+    // handle CSRF token errors here
+    console.log("INVALID CSRF TOKEN!?");
+    console.log(req.body);
+    res.status(403)
+    res.send('session has expired or form tampered with')
+});
+*/
+// http://www.mircozeiss.com/using-csrf-with-express-and-angular/
+/*app.use(function(req, res, next) {
+    console.log("Creating session cookie...");
+    console.log(req.csrfToken());
+    res.cookie('XSRF-TOKEN', req.csrfToken());
+    console.log("Running next middleware");
+    next();
+});*/
 
 app.use(passport.initialize());
-app.use(passport.session());
+app.use(passport.session({secret: 'supersecretstuff'}));
 
 app.use(app.router);
 // serves clients our files in public

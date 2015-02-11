@@ -37,7 +37,8 @@ module.exports = function(grunt) {
                             exports: '$'
                         },
                         jquerycookie: {
-                            path: 'client/requires/jquery-cookie',
+                            path: 'client/requires/jquery-cookie/jquery.cookie.js',
+                            exports: '$',
                             depends: {
                                 jquery: '$'
                             }

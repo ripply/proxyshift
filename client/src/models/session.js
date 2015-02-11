@@ -1,5 +1,5 @@
 var Backbone = require('backbone');
-var Users = require('./user_model');
+var UserModel = require('./user_model');
 
 module.exports = SessionModel = Backbone.Model.extend({
 
@@ -7,27 +7,63 @@ module.exports = SessionModel = Backbone.Model.extend({
     // These will be overriden after the initial checkAuth
     defaults: {
         logged_in: false,
-        user_id: ''
+        id: ''
     },
 
     initialize: function(){
-        _.bindAll(this);
+        _.bindAll.apply(_, [this].concat(_.functions(this)));
 
         // Singleton user object
         // Access or listen on this throughout any module with app.session.user
         this.user = new UserModel({});
+
+        var url = $(location).attr('href');
+        // https://gist.github.com/alanhamlett/6316427
+        console.log('Setting up ajaxSetup');
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                console.log('beforeSend!!!');
+                if (settings.type == 'POST' || settings.type == 'PUT' || settings.type == 'DELETE') {
+                    if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                        // Only send the token to relative URLs i.e. locally.
+                        console.log('setting header');
+                        xhr.setRequestHeader("x-csrf-token", $.cookie('csrftoken'));
+                    }
+                }
+            }
+        });
     },
 
+    //urlRoot: 'session',
 
     url: function(){
-        return app.API + '/auth';
+        return 'session';
     },
 
     // Fxn to update user attributes after recieving API response
     updateSessionUser: function( userData ){
-        this.user.set(_.pick(userData, _.keys(this.user.defaults)));
+        //this.user.set(_.pick(userData, _.keys(this.user.defaults)));
     },
 
+    checkAuthCache: {
+        result: null,
+        needs_update: true
+    },
+
+    invalidateAuthCache: function() {
+        this.checkAuthCache.needs_update = true;
+        this.checkAuthCache.result = null;
+    },
+
+    updateAuthCache: function(result) {
+        this.checkAuthCache.needs_update = (result === null);
+        this.checkAuthCache.result = result;
+        return result;
+    },
+
+    authCacheInvalid: function() {
+        return this.checkAuthCache.needs_update;
+    },
 
     /*
      * Check for session from API
@@ -36,23 +72,46 @@ module.exports = SessionModel = Backbone.Model.extend({
      */
     checkAuth: function(callback, args) {
         var self = this;
-        this.fetch({
-            success: function(mod, res){
-                if(!res.error && res.user){
-                    self.updateSessionUser(res.user);
-                    self.set({ logged_in : true });
-                    if('success' in callback) callback.success(mod, res);
-                } else {
-                    self.set({ logged_in : false });
-                    if('error' in callback) callback.error(mod, res);
+        //TODO: This needs a timeout value
+        var updateAuthCache = this.updateAuthCache;
+        var checkAuthCache = this.checkAuthCache;
+        if (checkAuthCache.needs_update) {
+            this.fetch({
+                success: function (mod, res) {
+                    if (!res.error) {
+                        //self.updateSessionUser(res.user);
+                        self.set({logged_in: true});
+                        if ('success' in callback) {
+                            updateAuthCache(function(callback) {
+                                callback.success(mod, res);
+                            })(callback);
+                        }
+                    } else {
+                        self.set({logged_in: false});
+                        if ('error' in callback) {
+                            updateAuthCache(function(callback) {
+                                callback.error(mod, res);
+                            })(callback);
+                        }
+                    }
+                }, error: function (mod, res) {
+                    self.set({logged_in: false});
+                    if ('error' in callback) {
+                        updateAuthCache(function(callback) {
+                            callback.error(mod, res);
+                        })(callback);
+                    }
                 }
-            }, error:function(mod, res){
-                self.set({ logged_in : false });
-                if('error' in callback) callback.error(mod, res);
-            }
-        }).complete( function(){
-            if('complete' in callback) callback.complete();
-        });
+            }).complete(function () {
+                if ('complete' in callback) {
+                    updateAuthCache(function(callback) {
+                        callback.complete();
+                    })(callback);
+                }
+            });
+        } else {
+            checkAuthCache.result(callback);
+        }
     },
 
 
@@ -64,25 +123,19 @@ module.exports = SessionModel = Backbone.Model.extend({
     postAuth: function(opts, callback, args){
         var self = this;
         var postData = _.omit(opts, 'method');
-        if(DEBUG) console.log(postData);
         $.ajax({
             url: this.url() + '/' + opts.method,
             contentType: 'application/json',
             dataType: 'json',
             type: 'POST',
-            beforeSend: function(xhr) {
-                // Set the CSRF Token in the header for security
-                var token = $('meta[name="csrf-token"]').attr('content');
-                if (token) xhr.setRequestHeader('X-CSRF-Token', token);
-            },
-            data:  JSON.stringify( _.omit(opts, 'method') ),
+            data:  JSON.stringify( postData ),
             success: function(res){
 
                 if( !res.error ){
                     if(_.indexOf(['login', 'signup'], opts.method) !== -1){
 
-                        self.updateSessionUser( res.user || {} );
-                        self.set({ user_id: res.user.id, logged_in: true });
+                        self.updateSessionUser( res || {} );
+                        self.set({ id: res.id, logged_in: true });
                     } else {
                         self.set({ logged_in: false });
                     }
@@ -100,20 +153,38 @@ module.exports = SessionModel = Backbone.Model.extend({
         });
     },
 
+    loggedIn: function() {
+        return this.checkAuth({
+            success: function() {
+                return true;
+            },
+            error: function() {
+                return false;
+            }
+        });
+    },
+
+    userId: function() {
+        return this.defaults.user_id;
+    },
 
     login: function(opts, callback, args){
+        this.invalidateAuthCache();
         this.postAuth(_.extend(opts, { method: 'login' }), callback);
     },
 
     logout: function(opts, callback, args){
+        this.invalidateAuthCache();
         this.postAuth(_.extend(opts, { method: 'logout' }), callback);
     },
 
     signup: function(opts, callback, args){
+        this.invalidateAuthCache();
         this.postAuth(_.extend(opts, { method: 'signup' }), callback);
     },
 
     removeAccount: function(opts, callback, args){
+        this.invalidateAuthCache();
         this.postAuth(_.extend(opts, { method: 'remove_account' }), callback);
     }
 

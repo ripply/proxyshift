@@ -5,6 +5,7 @@ var Marionette = require('backbone.marionette'),
     ContentRegion = require('./regions/content'),
     FooterRegion = require('./regions/footer'),
     ShiftModel = require('./models/shift'),
+    SessionModel = require('./models/session'),
     ShiftsCollection = require('./collections/shifts');
 
 module.exports = App = function App() {};
@@ -25,6 +26,21 @@ App.prototype.start = function(){
         App.data = {};
         App.regions = {};
 
+        App.session = new SessionModel();
+
+        /*
+        //TODO: Loading view here
+
+        App.session.checkAuth({
+            success: function () {
+                console.log("checkAuth SUCCESS!");
+                App.core.vent.trigger('app:start');
+            },
+            error: function () {
+                console.log("checkAuth failed");
+            }
+        });
+
         // load up some initial data:
         var shifts = new ShiftsCollection();
         shifts.fetch({
@@ -33,7 +49,13 @@ App.prototype.start = function(){
                 App.core.vent.trigger('app:start');
             }
         });
+        */
+        App.core.vent.trigger('app:start');
     });
+
+    App.showAlert = function(message, err, type) {
+        console.log('FIXME: App.showAlert NYI, message: ' + message);
+    };
 
     App.core.vent.bind('app:start', function(options){
         App.core.vent.trigger('app:log', 'App: Starting');

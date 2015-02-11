@@ -1,5 +1,7 @@
 var home = require('../controllers/home'),
     shifts = require('../controllers/shifts'),
+    users = require('../controllers/users'),
+    _ = require('underscore'),
     passport = require('passport');
 
 require('./configure_passport');
@@ -19,36 +21,64 @@ function ensureAuthenticated(req, res, next) {
     res.send(401);
 }
 
+function ensureCsrf(err, req, res, next) {
+    console.log(err.code);
+    if (err.code !== 'EBADCSRFTOKEN') return next(err);
+
+    // handle CSRF token errors here
+    console.log("CSRF Token missing!!");
+    res.status(403);
+    res.send('session has expired or form tampered with');
+}
+
 module.exports.initialize = function(app) {
     app.use(function(req, res, next) {
-        console.log('wut');
-        console.log(req.body);
+        console.log('Received request');
+
         next();
     });
     app.get('/', home.index);
     /*app.post('/login', passport.authenticate('local',
         { successRedirect: '/', failureRedirect: '/login' }));*/
-    app.post('/login', function(req, res, next) {
+    // API calls must be authenticated
+    app.post('/api/*', ensureCsrf, ensureAuthenticated);
+    app.get('/api/*', ensureAuthenticated);
+
+    app.post('/session/login', function(req, res, next) {
+        //console.log(req.crsfToken());
         if (!req.is('application/json')) {
+            console.log('Client sent non json data to /login');
             res.send(400);
-            next();
+            return;
         }
         console.log(req.protocol);
         console.log("/login");
         console.log(req.body);
-        passport.authenticate('local', function(err, user, info) {
+        console.log('authenticating...');
+        passport.authenticate('local', {session: true}, function (err, user, info) {
             if (err) { return next(err); }
             if (!user) { return res.send(401); }
-            req.logIn(user, function(err) {
+            req.login(user, function (err) {
                 if (err) { return next(err); }
                 // 201 Created: The request has been fulfilled and resulted in a new resource being created.
-                return res.send(201);
+                //return res.send(200);
+                return res.send(user);
             });
         })(req, res, next);
     });
 
-    // API calls must be authenticated
-    //app.get('/api/*', ensureAuthenticated);
+    app.get('/session', function(req, res){
+        console.log(req.session.passport);
+        var defaults = {
+            id: 0,
+            username: '',
+            name: '',
+            email: ''
+        };
+        res.send(_.pick(req.user, _.keys(defaults)));
+    });
+
+    app.get('/api/user/:id', users.getById);
 
     // API calls go below here
     app.get('/api/shifts', shifts.index);

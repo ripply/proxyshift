@@ -1,0 +1,51 @@
+var models = require('../app/models');
+
+module.exports = {
+    index: function(req, res) {
+        models.Users.find({}, function(err, data) {
+            res.json(data);
+        });
+    },
+    getById: function(req, res) {
+        models.Users.find({ _id: req.params.id }, function(err, shift) {
+            if (err) {
+                res.json({error: 'Users not found.'});
+            } else {
+                res.json(shift);
+            }
+        });
+    },
+    add: function(req, res) {
+        console.log('Users add:');
+        console.log(req.body);
+        var newUsers = new models.Users(req.body);
+        newUsers.save(function(err, shift) {
+            if (err) {
+                res.json({error: 'Error adding shift.'});
+            } else {
+                res.json(shift);
+            }
+        });
+    },
+    update: function(req, res) {
+        console.log(req.body);
+        models.Users.update({ _id: req.body.id }, req.body, function(err, updated) {
+            if (err) {
+                res.json({error: 'Users not found.'});
+            } else {
+                res.json(updated);
+            }
+        })
+    },
+    delete: function(req, res) {
+        models.Users.findOne({ _id: req.params.id }, function(err, shift) {
+            if (err) {
+                res.json({error: 'Users not found.'});
+            } else {
+                shift.remove(function(err, shift){
+                    res.json(200, {status: 'Success'});
+                })
+            }
+        });
+    }
+};

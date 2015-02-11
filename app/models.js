@@ -2,7 +2,7 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId,
     bcrypt = require('bcrypt'),
-    SALT_WORK_FACTOR = 10;;
+    SALT_WORK_FACTOR = 10;
 
 var shiftSchema = new Schema({
     title:       {type: String},
@@ -22,6 +22,7 @@ shiftSchema.pre('validate', function (next) {
 });
 
 var userSchema = new Schema({
+    name:        {type: String, required: false},
     username:    {type: String, required: true, unique: true},
     email:       {type: String, required: true, unique: true},
     password:    {type: String, required: true}
@@ -49,6 +50,13 @@ userSchema.methods.comparePassword = function(candidatePassword, cb) {
         cb(null, isMatch);
     });
 };
+
+userSchema.method('toJSON', function() {
+    var user = this.toObject();
+    delete user.password;
+    delete user.__v;
+    return user;
+});
 
 module.exports = {
     Shift: mongoose.model('Shift', shiftSchema),
