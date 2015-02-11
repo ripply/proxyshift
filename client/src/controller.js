@@ -20,11 +20,7 @@ module.exports = Controller = Marionette.Controller.extend({
             //TODO: Loading screen
             console.log('TODO: Trigger loading screen here while querying server if logged in');
         }
-        if (App.session.loggedIn()) {
-            callback.success();
-        } else {
-            callback.error();
-        }
+        App.session.loggedIn(callback);
     },
 
     loginFailedCallback: function() {

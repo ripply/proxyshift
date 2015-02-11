@@ -76,39 +76,45 @@ module.exports = SessionModel = Backbone.Model.extend({
         var updateAuthCache = this.updateAuthCache;
         var checkAuthCache = this.checkAuthCache;
         if (checkAuthCache.needs_update) {
-            this.fetch({
-                success: function (mod, res) {
-                    if (!res.error) {
-                        //self.updateSessionUser(res.user);
-                        self.set({logged_in: true});
-                        if ('success' in callback) {
-                            updateAuthCache(function(callback) {
-                                callback.success(mod, res);
-                            })(callback);
+            if (this.get('logged_in')) {
+                return updateAuthCache(function(callback) {
+                    return callback.success();
+                })(callback);
+            } else {
+                this.fetch({
+                    success: function (mod, res) {
+                        if (!res.error) {
+                            //self.updateSessionUser(res.user);
+                            self.set({logged_in: true});
+                            if ('success' in callback) {
+                                updateAuthCache(function (callback) {
+                                    callback.success(mod, res);
+                                })(callback);
+                            }
+                        } else {
+                            self.set({logged_in: false});
+                            if ('error' in callback) {
+                                updateAuthCache(function (callback) {
+                                    callback.error(mod, res);
+                                })(callback);
+                            }
                         }
-                    } else {
+                    }, error: function (mod, res) {
                         self.set({logged_in: false});
                         if ('error' in callback) {
-                            updateAuthCache(function(callback) {
+                            updateAuthCache(function (callback) {
                                 callback.error(mod, res);
                             })(callback);
                         }
                     }
-                }, error: function (mod, res) {
-                    self.set({logged_in: false});
-                    if ('error' in callback) {
-                        updateAuthCache(function(callback) {
-                            callback.error(mod, res);
+                }).complete(function () {
+                    if ('complete' in callback) {
+                        updateAuthCache(function (callback) {
+                            callback.complete();
                         })(callback);
                     }
-                }
-            }).complete(function () {
-                if ('complete' in callback) {
-                    updateAuthCache(function(callback) {
-                        callback.complete();
-                    })(callback);
-                }
-            });
+                });
+            }
         } else {
             checkAuthCache.result(callback);
         }
@@ -153,15 +159,8 @@ module.exports = SessionModel = Backbone.Model.extend({
         });
     },
 
-    loggedIn: function() {
-        return this.checkAuth({
-            success: function() {
-                return true;
-            },
-            error: function() {
-                return false;
-            }
-        });
+    loggedIn: function(next) {
+        this.checkAuth(next);
     },
 
     userId: function() {

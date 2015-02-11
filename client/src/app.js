@@ -28,9 +28,9 @@ App.prototype.start = function(){
 
         App.session = new SessionModel();
 
-        /*
-        //TODO: Loading view here
 
+        //TODO: Loading view here
+/*
         App.session.checkAuth({
             success: function () {
                 console.log("checkAuth SUCCESS!");
@@ -40,9 +40,11 @@ App.prototype.start = function(){
                 console.log("checkAuth failed");
             }
         });
-
+*/
         // load up some initial data:
         var shifts = new ShiftsCollection();
+        App.data.shifts = shifts;
+        /*
         shifts.fetch({
             success: function() {
                 App.data.shifts = shifts;
