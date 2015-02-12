@@ -19,6 +19,28 @@ App.prototype.start = function(){
         footerRegion : FooterRegion
     });
 
+    App.modelErrorHandler = function(model, res, options) {
+        console.log("received error code");
+        switch (res.status) {
+            case 0:
+                console.log("trouble contacting server");
+                App.core.vent.trigger('app:connectionIssue');
+                break;
+            case 401:
+                console.log("Error fetching shifts, navigating to login");
+                App.core.vent.trigger('app:logout');
+                break;
+            default:
+                App.core.vent.trigger('app:verifyLoginStatus');
+                break;
+        }
+    };
+
+    App.core.vent.bind('app:connectionIssue', function(options) {
+        // TODO: Record timestamps here in a variable and do something it it keep happening
+        App.core.vent.trigger('app:log', "Experiencing connection issues...");
+    });
+
     App.core.on("initialize:before", function (options) {
         App.core.vent.trigger('app:log', 'App: Initializing');
 
@@ -28,32 +50,9 @@ App.prototype.start = function(){
 
         App.session = new SessionModel();
 
-        //TODO: Loading view here
-/*
-        App.session.checkAuth({
-            success: function () {
-                console.log("checkAuth SUCCESS!");
-                App.core.vent.trigger('app:start');
-            },
-            error: function () {
-                console.log("checkAuth failed");
-            }
-        });
-*/
-        // load up some initial data:
         App.data.shifts = new ShiftsCollection();
-        App.data.shifts.on('error', function() {
-            console.log("Error fetching shifts, navigating to login");
-            App.core.vent.trigger('app:logout');
-        });
-        /*
-        shifts.fetch({
-            success: function() {
-                App.data.shifts = shifts;
-                App.core.vent.trigger('app:start');
-            }
-        });
-        */
+        App.data.shifts.on('error', App.modelErrorHandler);
+
         App.core.vent.trigger('app:start');
     });
 
