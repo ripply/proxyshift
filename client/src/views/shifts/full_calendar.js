@@ -9,6 +9,14 @@ module.exports = FullCalendarView = Marionette.ItemView.extend({
     initialize: function() {
         //_.bindAll(this);
         this.options.collection.bind('reset', this.addAll);
+        this.options.collection.fetch({
+            success: function() {
+                console.log('retrieved shift collection');
+            },
+            error: function() {
+                console.log('failed to retrieve shift collection');
+            }
+        });
     },
     onShow: function() {
         console.log("FullCalendarViar#onRender");
