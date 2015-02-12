@@ -9,6 +9,8 @@ var express = require('express'),
     passportLocal = require('passport-local').Strategy,
     compression = require('compression'),
     csrf = require('csurf'),
+    log4js = require('log4js'),
+    morgan = require('morgan'),
     app = express();
 
 app.set('port', process.env.PORT || 3300);
@@ -23,7 +25,20 @@ app.engine('handlebars', exphbs({
 }));
 app.set('view engine', 'handlebars');
 
-app.use(express.logger('dev'));
+if (false) {
+    var appLog = log4js.getLogger();
+    var httpLog = morgan({
+        "format": "default",
+        "stream": {
+            write: function (str) {
+                appLog.debug(str);
+            }
+        }
+    });
+    app.use(httpLog);
+} else {
+    app.use(express.logger('dev'));
+}
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
