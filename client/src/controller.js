@@ -32,9 +32,9 @@ module.exports = Controller = Marionette.Controller.extend({
         App.core.vent.trigger('app:log', 'Controller: "Home" route hit.');
         this.renderView({
             success: function() {
-                App.core.headerRegion.show(new TestHeaderView());
-                var view = window.App.views.shiftsView;
-                App.core.contentRegion.show(view);
+                //App.core.headerRegion.show(new TestHeaderView());
+                //var view = window.App.views.shiftsView;
+                //App.core.contentRegion.show(view);
                 //this.renderView(view);
                 window.App.router.navigate('#');
             }
