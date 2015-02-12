@@ -2,6 +2,7 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId,
     bcrypt = require('bcrypt'),
+    passport = require('passport'),
     SALT_WORK_FACTOR = 10;
 
 var shiftSchema = new Schema({
@@ -58,7 +59,19 @@ userSchema.method('toJSON', function() {
     return user;
 });
 
+users = mongoose.model('Users', userSchema);
+
+passport.serializeUser(function(user, done) {
+    done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+    users.findById(id, function(err, user) {
+        done(err, user);
+    });
+});
+
 module.exports = {
     Shift: mongoose.model('Shift', shiftSchema),
-    Users: mongoose.model('Users', userSchema)
+    Users: users
 };

@@ -57,7 +57,7 @@ app.use(function (err, req, res, next) {
 });*/
 
 app.use(passport.initialize());
-app.use(passport.session({secret: 'supersecretstuff'}));
+app.use(passport.session());
 
 app.use(app.router);
 // serves clients our files in public

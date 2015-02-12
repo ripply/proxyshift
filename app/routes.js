@@ -67,8 +67,8 @@ module.exports.initialize = function(app) {
         })(req, res, next);
     });
 
-    app.get('/session', function(req, res){
-        console.log(req.session.passport);
+    app.get('/session', ensureAuthenticated, function(req, res){
+
         var defaults = {
             id: 0,
             username: '',
