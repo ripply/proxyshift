@@ -7,10 +7,19 @@ var Marionette = require('backbone.marionette'),
     AddShiftView = require('./views/shifts/add_shift'),
     LoadingView = require('./views/loading_view');
 
+Backbone.sync = function(method, model) {
+    alert(method + ": " + JSON.stringify(model));
+    model.set('id', 1);
+};
+
 module.exports = Controller = Marionette.Controller.extend({
     initialize: function() {
         _.bindAll.apply(_, [this].concat(_.functions(this)));
         App.core.vent.trigger('app:log', 'Controller: Initializing');
+        App.core.vent.bind('app:401', function(options) {
+            App.core.vent.trigger('app:log', 'App: 401 hit, rendering #login view');
+            this.home();
+        });
         window.App.views.loadingView = new LoadingView();
         //window.App.views.shiftsView = new ShiftsView({ collection: window.App.data.shifts });
     },
