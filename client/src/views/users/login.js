@@ -22,12 +22,10 @@ module.exports = LoginView = Marionette.ItemView.extend({
                 password: this.$("#login-password-input").val()
             }, {
                 success: function(mod, res){
-                    console.log("SUCCESS", mod, res);
-
+                    App.core.vent.trigger('app:login');
                 },
                 error: function(err){
-                    console.log("ERROR", err);
-                    App.showAlert('Bummer dude!', err.error, 'alert-danger');
+                    App.core.vent.trigger('app:alert', 'Bummer dude!');
                 }
             });
         } else {

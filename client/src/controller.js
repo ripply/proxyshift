@@ -16,8 +16,16 @@ module.exports = Controller = Marionette.Controller.extend({
         App.core.vent.bind('app:logout', function(options) {
             App.core.vent.trigger('app:log', 'User was logged out');
             App.showAlert('You have been logged out');
+            App.wasLoggedOut = true;
             App.session.loggedOut();
             self.login();
+        });
+        App.core.vent.bind('app:login', function(options) {
+            App.core.vent.trigger('app:log', 'User was logged in');
+            if (App.wasLoggedOut) {
+                Backbone.history.history.back();
+                App.wasLoggedOut = false;
+            }
         });
         window.App.views.loadingView = new LoadingView();
         //window.App.views.shiftsView = new ShiftsView({ collection: window.App.data.shifts });

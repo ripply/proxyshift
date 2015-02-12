@@ -61,6 +61,10 @@ App.prototype.start = function(){
         console.log('FIXME: App.showAlert NYI, message: ' + message);
     };
 
+    App.core.vent.bind('app:alert', function(message) {
+        App.showAlert(message);
+    });
+
     App.core.vent.bind('app:start', function(options){
         App.core.vent.trigger('app:log', 'App: Starting');
         if (Backbone.history) {
