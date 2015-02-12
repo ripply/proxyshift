@@ -142,7 +142,7 @@ module.exports = SessionModel = Backbone.Model.extend({
                         self.updateSessionUser( res || {} );
                         self.set({ id: res.id, logged_in: true });
                     } else {
-                        self.set({ logged_in: false });
+                        self.loggedOut();
                     }
 
                     if(callback && 'success' in callback) callback.success(res);
@@ -160,6 +160,11 @@ module.exports = SessionModel = Backbone.Model.extend({
 
     loggedIn: function(next) {
         this.checkAuth(next);
+    },
+
+    loggedOut: function() {
+        this.invalidateAuthCache();
+        this.set({ logged_in: false });
     },
 
     userId: function() {

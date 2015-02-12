@@ -28,7 +28,6 @@ App.prototype.start = function(){
 
         App.session = new SessionModel();
 
-
         //TODO: Loading view here
 /*
         App.session.checkAuth({
@@ -42,8 +41,11 @@ App.prototype.start = function(){
         });
 */
         // load up some initial data:
-        var shifts = new ShiftsCollection();
-        App.data.shifts = shifts;
+        App.data.shifts = new ShiftsCollection();
+        App.data.shifts.on('error', function() {
+            console.log("Error fetching shifts, navigating to login");
+            App.core.vent.trigger('app:logout');
+        });
         /*
         shifts.fetch({
             success: function() {
