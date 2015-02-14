@@ -3,6 +3,7 @@ var mongoose = require('mongoose'),
     ObjectId = Schema.ObjectId,
     bcrypt = require('bcrypt'),
     passport = require('passport'),
+    utils = require('./utils'),
     SALT_WORK_FACTOR = 10;
 
 var shiftSchema = new Schema({
@@ -59,19 +60,138 @@ userSchema.method('toJSON', function() {
     return user;
 });
 
-users = mongoose.model('Users', userSchema);
+Users = mongoose.model('Users', userSchema);
 
 passport.serializeUser(function(user, done) {
     done(null, user.id);
 });
 
 passport.deserializeUser(function(id, done) {
-    users.findById(id, function(err, user) {
+    Users.findById(id, function(err, user) {
         done(err, user);
     });
 });
 
+
+var tokenSchema = new Schema({
+    _uid: {type: mongoose.Schema.Types.ObjectId,
+           ref: 'Users',
+           unique: true,
+           required: true},
+    token: [{
+        expires: {type: Date},
+        key:     {type: String, unique: true}
+    }]
+});
+
+// https://github.com/jaredhanson/passport-remember-me/blob/master/examples/login/server.js
+
+var Token = mongoose.model('Token', tokenSchema);
+
+function consumeRememberMeToken(token, next) {
+    console.log("trying to consume token..");
+    var query = {'token.key': token};
+    Token.find(query, function(err, foundTokens) {
+        if (!err) {
+            if (foundTokens.length > 0) {
+                var foundToken = foundTokens[0];
+
+                var uid = foundToken._uid;
+                var tokens = foundToken.token;
+                if (tokens.length > 0) {
+                    var now = Date.now();
+                    for (var i = 0; i < tokens.length; i++) {
+                        if (tokens[i].key == token) {
+                            if (now < tokens[i].expires) {
+                                // token is good, remove it
+                                tokens.splice(i, 1);
+                                foundToken.save();
+                                return next(null, uid);
+                            } else {
+                                return next(null, uid);
+                            }
+                        }
+                    }
+                    // else didn't find any tokens, fallthrough below
+                } else {
+                    console.log("No tokens issued");
+                    return next('No tokens issued for user', null);
+                }
+            }
+        } // else an error occurred
+        console.log("Failed to find token: " + token);
+        Token.find({}, function(err, tokens) {
+            console.log("Found tokens: ");
+            console.log(tokens);
+        });
+        return next(null, null);
+    });
+}
+
+var max_tokens = 2;
+var tokens_expire_in_x_days = 14;
+
+function saveRememberMeToken(token, uid, next) {
+    Users.findById(uid, function(err, foundUser) {
+        if (err) { return next(err); }
+        Token.find({_uid: uid}, function (err2, foundTokens) {
+            if (err2) {
+                next(err2);
+            } else {
+                var expires = new Date();
+                expires.setDate(expires.getDate() + tokens_expire_in_x_days);
+
+                if (foundTokens.length == 0) {
+                    var newToken = new Token({
+                        _uid: foundUser.id,
+                        token: [{
+                            key: token,
+                            expires: expires
+                        }]
+                    });
+
+                    return newToken.save(next);
+                } else {
+                    var foundToken = foundTokens[0];
+                    console.log("Saving token: " + token);
+                    foundToken.token.push({
+                        key: token,
+                        expires: expires
+                    });
+                    var now = new Date();
+                    foundToken.token = foundToken.token.filter(function (value, index, array) {
+                        if (now > value.expires) {
+                            console.log("Purging expired token: " + value.key + " that expired on " + value.expires);
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    });
+                    while (foundToken.token.length > max_tokens) {
+                        console.log("Removing token " + foundToken.token[0].key + " from database: reached maximum number of tokens for user (" + foundToken.token.length + "/" + max_tokens + ")");
+                        foundToken.token.shift();
+                    }
+                    return foundToken.save(next);
+                }
+            }
+        });
+    });
+}
+
+function issueToken(user, done) {
+    var token = utils.randomString(64);
+    return saveRememberMeToken(token, user.id, function(err) {
+        if (err) { return done(err); }
+        return done(null, token);
+    });
+}
+
 module.exports = {
     Shift: mongoose.model('Shift', shiftSchema),
-    Users: users
+    Users: Users,
+    Token: Token,
+
+    consumeRememberMeToken: consumeRememberMeToken,
+    issueToken: issueToken
 };
+

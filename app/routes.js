@@ -2,6 +2,8 @@ var home = require('../controllers/home'),
     shifts = require('../controllers/shifts'),
     users = require('../controllers/users'),
     _ = require('underscore'),
+    utils = require('./utils'),
+    models = require('./models'),
     passport = require('passport');
 
 require('./configure_passport');
@@ -15,9 +17,11 @@ function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
         console.log("Authorized user");
         return next();
+    } else {
+        console.log("Authentication failed");
     }
     // 401 is Unauthorized response
-    console.log("Denying access");
+    console.log(req.baseUrl);
     res.send(401);
 }
 
@@ -38,18 +42,12 @@ module.exports.initialize = function(app) {
         next();
     });
     app.get('/', home.index);
-    /*app.post('/login', passport.authenticate('local',
-        { successRedirect: '/', failureRedirect: '/login' }));*/
-    // API calls must be authenticated
-    app.post('/api/*', ensureCsrf, ensureAuthenticated);
-    app.get('/api/*', ensureAuthenticated);
 
     app.post('/session/login', function(req, res, next) {
         //console.log(req.crsfToken());
         if (!req.is('application/json')) {
             console.log('Client sent non json data to /login');
-            res.send(400);
-            return;
+            return res.send(400);
         }
         console.log(req.protocol);
         console.log("/login");
@@ -57,14 +55,35 @@ module.exports.initialize = function(app) {
         console.log('authenticating...');
         passport.authenticate('local', {session: true}, function (err, user, info) {
             if (err) { return next(err); }
+            // authentication failed, send 401 unauthorized
             if (!user) { return res.send(401); }
             req.login(user, function (err) {
                 if (err) { return next(err); }
-                // 201 Created: The request has been fulfilled and resulted in a new resource being created.
-                //return res.send(200);
-                return res.send(user);
+
+                if (err) { return next(err); }
+                // https://github.com/jaredhanson/passport-remember-me#setting-the-remember-me-cookie
+                // issue a remember me cookie if the option was checked
+                console.log("Checking for rembmer me");
+                console.log(req.body);
+                if (req.body.remember_me) {
+                    console.log("Remember me found!!");
+
+                    models.issueToken(req.user, function(err, token) {
+                        if (err) { return next(err); }
+                        res.cookie('remember_me', token, { path: '/', httpOnly: true, maxAge: 604800000 });
+                        res.send(user);
+                    });
+                } else {
+                    console.log('remember me not found');
+                    // send user information since user is found
+                    // *SHOULD NEVER CONTAIN SENSITIVE DATA*
+                    res.send(user);
+                }
             });
         })(req, res, next);
+        next();
+    }, function(req, res, next) {
+
     });
 
     app.get('/session', ensureAuthenticated, function(req, res){
@@ -75,8 +94,18 @@ module.exports.initialize = function(app) {
             name: '',
             email: ''
         };
+        // only send information in the above hash to client
         res.send(_.pick(req.user, _.keys(defaults)));
     });
+
+    /**********************************************
+     *              API METHODS
+     **********************************************/
+
+    // API post calls must be authenticated and contain CSRF token
+    app.post('/api/*', ensureCsrf, ensureAuthenticated);
+    // API get calls just need authentication
+    app.get('/api/*', ensureAuthenticated);
 
     app.get('/api/user/:id', users.getById);
 

@@ -1,5 +1,7 @@
 var passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy,
+    RememberMeStrategy = require('passport-remember-me').Strategy,
+    Utils = require('./utils'),
     models = require('./models');
 
 // from https://github.com/jaredhanson/passport-local/blob/master/examples/express3-mongoose/app.js
@@ -41,3 +43,24 @@ passport.use(new LocalStrategy(function(username, password, done) {
         });
     });
 }));
+
+// https://github.com/jaredhanson/passport-remember-me/blob/master/examples/login/server.js
+// Remember Me cookie strategy
+//   This strategy consumes a remember me token, supplying the user the
+//   token was originally issued to.  The token is single-use, so a new
+//   token is then issued to replace it.
+passport.use(new RememberMeStrategy(
+    function(token, done) {
+        models.consumeRememberMeToken(token, function(err, uid) {
+            if (err) { return done(err); }
+            if (!uid) { return done(null, false); }
+
+            models.Users.findById(uid, function(err, user) {
+                if (err) { return done(err); }
+                if (!user) { return done(null, false); }
+                return done(null, user);
+            });
+        });
+    },
+    models.issueToken
+));

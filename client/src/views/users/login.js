@@ -9,7 +9,7 @@ module.exports = LoginView = Marionette.ItemView.extend({
         'click a#login-btn': 'onLoginAttempt'
     },
 
-    goBack: function(e) {
+    goBack: function() {
         e.preventDefault();
         window.App.controller.home();
     },
@@ -17,10 +17,14 @@ module.exports = LoginView = Marionette.ItemView.extend({
         e.preventDefault();
 
         if(this.$("#login-form").parsley('validate')){
-            App.session.login({
+            options = {
                 username: this.$("#login-username-input").val(),
                 password: this.$("#login-password-input").val()
-            }, {
+            };
+            if (this.$("#login-remember-me").prop('checked')) {
+                options.remember_me = true;
+            }
+            App.session.login(options, {
                 success: function(mod, res){
                     App.core.vent.trigger('app:login');
                 },

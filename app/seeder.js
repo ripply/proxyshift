@@ -50,5 +50,13 @@ module.exports = {
                 console.log('There are ' + users.length + ' existing users!');
             }
         });
+        models.Token.find({}, function(err, tokens) {
+            if (tokens.length == 0) {
+                console.log("There are no remember me tokens");
+            } else {
+                console.log("Remember me tokens exist");
+                console.log(tokens);
+            }
+        });
     }
 };

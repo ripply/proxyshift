@@ -133,12 +133,11 @@ module.exports = SessionModel = Backbone.Model.extend({
             contentType: 'application/json',
             dataType: 'json',
             type: 'POST',
-            data:  JSON.stringify( postData ),
+            data: JSON.stringify( postData ),
             success: function(res){
 
                 if( !res.error ){
                     if(_.indexOf(['login', 'signup'], opts.method) !== -1){
-
                         self.updateSessionUser( res || {} );
                         self.set({ id: res.id, logged_in: true });
                     } else {

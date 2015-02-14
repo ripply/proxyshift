@@ -78,6 +78,14 @@ module.exports = function(grunt) {
                                 jquery: '$',
                                 moment: 'moment'
                             }
+                        },
+                        'gcal': {
+                            path: 'client/requires/fullcalendar/js/gcal.js',
+                            exports: 'gcal',
+                            depends: {
+                                jquery: '$',
+                                'fullcalendar-browser': 'fullcalendar'
+                            }
                         }
                     }
                 }
@@ -167,7 +175,7 @@ module.exports = function(grunt) {
         // for changes to the front-end code
         watch: {
             scripts: {
-                files: ['client/templates/*.hbs', 'client/src/**/*.js'],
+                files: ['client/templates/**/*.hbs', 'client/src/**/*.js'],
                 tasks: ['clean:dev', 'browserify:vendor', 'browserify:app', 'concat', 'copy:dev']
             },
             less: {
@@ -175,8 +183,8 @@ module.exports = function(grunt) {
                 tasks: ['less:transpile', 'copy:dev']
             },
             test: {
-                files: ['build/app.js', 'client/spec/**/*.test.js', 'client/requires/**/*.js'],
-                tasks: ['browserify:vendor', 'browserify:test']
+                files: ['build/app.js', 'client/spec/**/*.test.js'],
+                tasks: ['browserify:test']
             },
             karma: {
                 files: ['build/tests.js'],
