@@ -86,7 +86,7 @@ module.exports.initialize = function(app) {
 
     });
 
-    app.post('/session/logout', ensureAuthenticated, function(req, res, next) {
+    app.post('/session/logout', ensureCsrf, ensureAuthenticated, function(req, res, next) {
 
         console.log("Received rememberme cookie of: ");
         if ('remember_me' in req.cookies) {
@@ -120,6 +120,7 @@ module.exports.initialize = function(app) {
 
     // API post calls must be authenticated and contain CSRF token
     app.post('/api/*', ensureCsrf, ensureAuthenticated);
+    app.delete('/api/*', ensureCsrf, ensureAuthenticated);
     // API get calls just need authentication
     app.get('/api/*', ensureAuthenticated);
 
