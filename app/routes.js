@@ -86,7 +86,14 @@ module.exports.initialize = function(app) {
 
     });
 
-    app.get('/session', ensureAuthenticated, function(req, res){
+    app.post('/session/logout', ensureAuthenticated, function(req, res, next) {
+        req.logout();
+        res.clearCookie('remember_me');
+        // client session.postAuth method expects JSON, it will error if sent a blank response
+        res.send({});
+    });
+
+    app.get('/session', ensureAuthenticated, function(req, res, next){
 
         var defaults = {
             id: 0,
@@ -95,7 +102,9 @@ module.exports.initialize = function(app) {
             email: ''
         };
         // only send information in the above hash to client
-        res.send(_.pick(req.user, _.keys(defaults)));
+        res.statusCode = 200;
+        res.body = _.pick(req.user, _.keys(defaults));
+        next();
     });
 
     /**********************************************

@@ -103,6 +103,21 @@ module.exports = Controller = Marionette.Controller.extend({
         window.App.router.navigate('login');
     },
 
+    logout: function() {
+        App.core.vent.trigger('app:log', 'Controller: "Logout" route hit.');
+        var self = this;
+        App.session.logout({}, {
+            success: function() {
+                self.login();
+            },
+            error: function(err) {
+                //TODO: Try logging out again
+                console.log("Problem logging out: " + err);
+            }
+        });
+
+    },
+
     renderView: function(next) {
         if (!('error' in next)) {
             next.error = this.loginFailedCallback;
