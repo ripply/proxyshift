@@ -87,6 +87,13 @@ module.exports.initialize = function(app) {
     });
 
     app.post('/session/logout', ensureAuthenticated, function(req, res, next) {
+
+        console.log("Received rememberme cookie of: ");
+        if ('remember_me' in req.cookies) {
+            models.consumeRememberMeToken(req.cookies.remember_me, function(err, next) {
+                console.log("User logged out: Purged token");
+            });
+        }
         req.logout();
         res.clearCookie('remember_me');
         // client session.postAuth method expects JSON, it will error if sent a blank response
