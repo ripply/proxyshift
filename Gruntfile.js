@@ -86,6 +86,13 @@ module.exports = function(grunt) {
                                 jquery: '$',
                                 'fullcalendar-browser': 'fullcalendar'
                             }
+                        },
+                        'bootstrap': {
+                            path: 'client/requires/bootstrap/bootstrap.js',
+                            exports: 'bootstrap',
+                            depends: {
+                                jquery: 'jQuery'
+                            }
                         }
                     }
                 }
@@ -119,6 +126,7 @@ module.exports = function(grunt) {
                         'client/styles/reset.css',
                         'client/requires/*/css/*',
                         'client/styles/less/main.less',
+                        'client/requires/bootstrap/bootstrap.css',
                         'client/requires/fullcalendar/js/fullcalendar.css'
                     ]
                 }
