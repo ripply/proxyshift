@@ -6,7 +6,7 @@ module.exports = LoginView = Marionette.ItemView.extend({
     events: {
         'click a.back': 'goBack',
         'click a.submit': 'submit',
-        'click a#login-btn': 'onLoginAttempt'
+        'click #login-btn': 'onLoginAttempt'
     },
 
     goBack: function() {

@@ -1,26 +1,14 @@
-<form id="login-form" class="form" data-validate="parsley">
-    <fieldset>
-        <div class="control-group">
-            <div class="controls">
-                <input type="text" id="login-username-input" name="username" placeholder="Username" value="username"
-                       data-required="true" data-notblank="true">
-                <span class="help-block"></span>
-            </div>
-        </div>
-        <div class="control-group mb20">
-            <div class="controls">
-                <input class="input-medium" type="password" id="login-password-input" placeholder="Password" name="password"
-                       value="" data-required="true" data-notblank="true" data-rangelength="[5,25]">
-                <span class="help-block"></span>
-            </div>
-        </div>
-        <div class="control-group">
-            <div class="controls">
-                <input type="checkbox" id="login-remember-me">
-                Remember me
-            </div>
-        </div>
-        <a href="#login" id="login-btn" class="btn btn-primary btn-lg" data-bypass>Login</a>
 
-    </fieldset>
-</form>
+    <form id="login-form" class="form-signin">
+        <h2 class="form-signin-heading">Please sign in</h2>
+        <label for="inputEmail" class="sr-only">Username</label>
+        <input type="username" id="login-username-input" class="form-control" placeholder="Username" required autofocus>
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input type="password" id="login-password-input" class="form-control" placeholder="Password" required>
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" id="remember-me"> Remember me
+            </label>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" id="login-btn" type="submit">Sign in</button>
+    </form>
