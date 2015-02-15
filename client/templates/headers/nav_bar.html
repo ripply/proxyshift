@@ -11,15 +11,17 @@
             <a class="navbar-brand" href="#">{{project}}</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
+            {{#if left}}
             <ul class="nav navbar-nav">
                 {{#each left}}
-                {{>navitem}}
+                  {{>navitem}}
                 {{/each}}
             </ul>
-            {{#right}}
+            {{/if}}
+            {{#if right}}
             <ul class="nav navbar-nav navbar-right">
                 {{#each right}}
-                {{>navitem}}
+                  {{>navitem}}
                 {{/each}}
             </ul>
             {{/if}}
@@ -39,7 +41,7 @@
             {{#if header}}
         <li class="dropdown-header">{{name}}</li>
             {{else}}
-        {{>linkNavItem}}
+              {{>linkNavItem}}
             {{/if}}
           {{/if}}
         {{/each}}
@@ -51,5 +53,11 @@
 <!-- {{/navitem}} -->
 
 <!-- {{>linkNavItem}} -->
+{{#if login}}
+  {{#session}}
+<li><a href="{{session.logged_in ? logout.url:login.url}}">{{session.logged_in ? logout.name:login.name}}</a></li>
+  {{/if}}
+{{else}}
 <li {{active(route) ? 'class="active"':''}}><a href="{{linkUrl(route, url)}}">{{name}}</a></li>
+{{/if}}
 <!-- {{/linkNavItem}} -->

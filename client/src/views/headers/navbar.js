@@ -12,15 +12,14 @@ module.exports = NavBar = Ractive.extend({
         // left side of nav bar
         left: [
             {
-                name: 'test',
-                url: '#test',
-                route: 'home',
-                menu: 'asdf'
+                name: 'New shift',
+                url: '#add',
+                route: 'add',
             },
             {
-                name: 'test2',
-                url: '#test2',
-                route: 'home2'
+                name: 'Calendar',
+                url: '#calendar',
+                route: 'calendar'
             },
             {
                 name: 'Dropdown',
@@ -50,15 +49,19 @@ module.exports = NavBar = Ractive.extend({
         // Right uses identical format as left
         right: [
             {
-                name: 'test',
-                url: '#test',
-                route: 'home',
-                menu: 'asdf'
+                name: 'About',
+                url: '#about',
+                route: 'about'
             },
             {
-                name: 'test2',
-                url: '#test2',
-                route: 'home2'
+                login: {
+                    name: 'Login',
+                    url: '#login'
+                },
+                logout: {
+                    name: 'Logout',
+                    url: '#logout'
+                }
             }
         ],
         active: function(route) {
