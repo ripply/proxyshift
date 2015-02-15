@@ -52,7 +52,10 @@ App.prototype.start = function(){
         App.regions = {};
 
         App.session = new SessionModel();
-        App.views.loggedInStausView = new LoggedInStatusView(App.session);
+        App.views.loggedInStatusView = new LoggedInStatusView();
+        App.views.loggedInStatusView.set({
+            session: App.session
+        });
 
         App.data.shifts = new ShiftsCollection();
         App.data.shifts.on('error', App.modelErrorHandler);

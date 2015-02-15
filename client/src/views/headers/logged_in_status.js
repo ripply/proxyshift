@@ -5,11 +5,12 @@ module.exports = LoggedInStausView = Ractive.extend({
 
     el: "#loginStatus",
 
-    init: function(backboneModel) {
+    init: function() {
         console.log("Initializing RACTIVE VIEW!!");
-        this.set({
-            session: backboneModel
-        });
+    },
+
+    loggedIn: function() {
+
     }
 });
 

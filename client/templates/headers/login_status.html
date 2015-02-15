@@ -1,1 +1,3 @@
-<a href='#{{loggedIn ? "logout":"login"}}'>{{loggedIn ? "Logout":"Login"}}</a>
+{{#with session}}
+<a href='#{{logged_in ? "logout":"login"}}'>{{logged_in ? "Logout":"Login"}}</a>
+{{/with}}
