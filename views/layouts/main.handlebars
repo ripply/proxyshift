@@ -1,15 +1,23 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-      <title>My App</title>
-      <link rel="stylesheet" type="text/css" href="css/myapp.css">
-      <meta name="csrf-token" content="{{csrf}}">
-  </head>
-  <body>
-    <div id="page">
-      {{{body}}}
-    </div>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My App</title>
 
-    <script type="text/javascript" src="js/myapp.js"></script>
-  </body>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" href="css/myapp.css">
+    <meta name="csrf-token" content="{{csrf}}">
+</head>
+<body>
+  <div id="page">
+    {{{body}}}
+  </div>
+
+  <script type="text/javascript" src="js/myapp.js"></script>
+</body>
 </html>
