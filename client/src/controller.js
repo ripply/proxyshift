@@ -29,28 +29,7 @@ module.exports = Controller = Marionette.Controller.extend({
             }
             App.core.vent.trigger('app:start:login');
         });
-        App.core.vent.bind('app:state:login', function(options) {
-            App.core.vent.trigger('app:log', 'User was logged in from the start');
-
-            //var view = new LoggedInHeaderView();
-            //App.core.loginRegion.show(view);
-        });
-        App.core.vent.bind('app:state:logout', function(options) {
-            App.core.vent.trigger('app:log', 'Logged out!');
-
-            //var view = new LoggedOutHeaderView();
-            //App.core.loginRegion.show(view);
-        });
-        App.session.loggedInCallback = {
-            success: function() {
-                App.core.vent.trigger('app:state:login');
-            },
-            error: function() {
-                App.core.vent.trigger('app:state:logout');
-            }
-        };
         App.views.loadingView = new LoadingView();
-        //App.core.loginRegion.show(new LoginCheckLoadingHeaderView());
         App.session.loggedIn({
             success: function() {
                 // do nothing
@@ -59,7 +38,6 @@ module.exports = Controller = Marionette.Controller.extend({
                 // do nothing
             }
         });
-        //window.App.views.shiftsView = new ShiftsView({ collection: window.App.data.shifts });
     },
 
     loadingPrecondition: function(callback) {

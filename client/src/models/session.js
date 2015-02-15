@@ -65,17 +65,7 @@ module.exports = SessionModel = Backbone.Model.extend({
     },
 
     setLoggedIn: function(logged_in) {
-        var triggerEvent = (this.get('logged_in') != logged_in);
         this.set({logged_in: logged_in});
-        if (triggerEvent) {
-            if (this.loggedInCallback) {
-                if (logged_in) {
-                    this.loggedInCallback.success();
-                } else {
-                    this.loggedInCallback.error();
-                }
-            }
-        }
     },
 
     /*
