@@ -6,7 +6,7 @@ module.exports = SessionModel = Backbone.Model.extend({
     // Initialize with negative/empty defaults
     // These will be overriden after the initial checkAuth
     defaults: {
-        logged_in: false,
+        logged_in: null,
         id: ''
     },
 
@@ -64,6 +64,20 @@ module.exports = SessionModel = Backbone.Model.extend({
         return this.checkAuthCache.needs_update;
     },
 
+    setLoggedIn: function(logged_in) {
+        var triggerEvent = (this.get('logged_in') != logged_in);
+        this.set({logged_in: logged_in});
+        if (triggerEvent) {
+            if (this.loggedInCallback) {
+                if (logged_in) {
+                    this.loggedInCallback.success();
+                } else {
+                    this.loggedInCallback.error();
+                }
+            }
+        }
+    },
+
     /*
      * Check for session from API
      * The API will parse client cookies using its secret token
@@ -84,7 +98,7 @@ module.exports = SessionModel = Backbone.Model.extend({
                     success: function (mod, res) {
                         if (!res.error) {
                             //self.updateSessionUser(res.user);
-                            self.set({logged_in: true});
+                            self.setLoggedIn(true);
                             if ('success' in callback) {
                                 updateAuthCache(function (callback) {
                                     callback.success(mod, res);
@@ -99,7 +113,7 @@ module.exports = SessionModel = Backbone.Model.extend({
                             }
                         }
                     }, error: function (mod, res) {
-                        self.set({logged_in: false});
+                        self.setLoggedIn(false);
                         if ('error' in callback) {
                             updateAuthCache(function (callback) {
                                 callback.error(mod, res);
@@ -135,10 +149,10 @@ module.exports = SessionModel = Backbone.Model.extend({
             type: 'POST',
             data: JSON.stringify( postData ),
             success: function(res){
-
                 if( !res.error ){
                     if(_.indexOf(['login', 'signup'], opts.method) !== -1){
                         self.updateSessionUser( res || {} );
+                        self.setLoggedIn(true);
                         self.set({ id: res.id, logged_in: true });
                     } else {
                         self.loggedOut();
@@ -163,7 +177,7 @@ module.exports = SessionModel = Backbone.Model.extend({
 
     loggedOut: function() {
         this.invalidateAuthCache();
-        this.set({ logged_in: false });
+        this.setLoggedIn(false);
     },
 
     userId: function() {

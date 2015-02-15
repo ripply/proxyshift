@@ -110,8 +110,7 @@ module.exports.initialize = function(app) {
         };
         // only send information in the above hash to client
         res.statusCode = 200;
-        res.body = _.pick(req.user, _.keys(defaults));
-        next();
+        res.send(_.pick(req.user, _.keys(defaults)));
     });
 
     /**********************************************
