@@ -183,8 +183,8 @@ module.exports = function(grunt) {
         // for changes to the front-end code
         watch: {
             scripts: {
-                files: ['client/templates/**/*.hbs', 'client/src/**/*.js'],
-                tasks: ['clean:dev', 'browserify:vendor', 'browserify:app', 'concat', 'copy:dev']
+                files: ['client/templates/**/*', 'client/src/**/*.js', 'views/**/*'],
+                tasks: ['clean:dev', 'browserify:app', 'concat', 'copy:dev']
             },
             less: {
                 files: ['client/styles/**/*.less'],
