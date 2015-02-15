@@ -6,6 +6,7 @@ var Marionette = require('backbone.marionette'),
     FullCalendarView = require('./views/shifts/full_calendar'),
     LoginView = require('./views/users/login'),
     AddShiftView = require('./views/shifts/add_shift'),
+    NavBar = require('./views/headers/navbar'),
     LoadingView = require('./views/loading_view');
 
 module.exports = Controller = Marionette.Controller.extend({
@@ -38,6 +39,8 @@ module.exports = Controller = Marionette.Controller.extend({
                 // do nothing
             }
         });
+        App.views.navBar = new NavBar();
+        App.views.navBar.setSession(App.session);
     },
 
     loadingPrecondition: function(callback) {
