@@ -95,7 +95,7 @@ module.exports = function(grunt) {
                     'build/app.js': ['client/src/main.js']
                 },
                 options: {
-                    transform: ['hbsfy'],
+                    transform: ['ractivate', 'hbsfy'],
                     external: ['jquery', 'underscore', 'backbone', 'backbone.marionette', 'moment', 'fullcalendar']
                 }
             },
@@ -106,7 +106,7 @@ module.exports = function(grunt) {
                     ]
                 },
                 options: {
-                    transform: ['hbsfy'],
+                    transform: ['ractivate', 'hbsfy'],
                     external: ['jquery', 'underscore', 'backbone', 'backbone.marionette']
                 }
             }

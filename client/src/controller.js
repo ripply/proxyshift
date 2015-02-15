@@ -5,9 +5,6 @@ var Marionette = require('backbone.marionette'),
     ShiftDetailsView = require('./views/shifts/shift_detail'),
     FullCalendarView = require('./views/shifts/full_calendar'),
     LoginView = require('./views/users/login'),
-    LoggedInHeaderView = require('./views/headers/logged_in_header'),
-    LoggedOutHeaderView = require('./views/headers/logged_out_header'),
-    LoginCheckLoadingHeaderView = require('./views/headers/login_check_loading_header'),
     AddShiftView = require('./views/shifts/add_shift'),
     LoadingView = require('./views/loading_view');
 
@@ -35,14 +32,14 @@ module.exports = Controller = Marionette.Controller.extend({
         App.core.vent.bind('app:state:login', function(options) {
             App.core.vent.trigger('app:log', 'User was logged in from the start');
 
-            var view = new LoggedInHeaderView();
-            App.core.loginRegion.show(view);
+            //var view = new LoggedInHeaderView();
+            //App.core.loginRegion.show(view);
         });
         App.core.vent.bind('app:state:logout', function(options) {
             App.core.vent.trigger('app:log', 'Logged out!');
 
-            var view = new LoggedOutHeaderView();
-            App.core.loginRegion.show(view);
+            //var view = new LoggedOutHeaderView();
+            //App.core.loginRegion.show(view);
         });
         App.session.loggedInCallback = {
             success: function() {
@@ -53,7 +50,7 @@ module.exports = Controller = Marionette.Controller.extend({
             }
         };
         App.views.loadingView = new LoadingView();
-        App.core.loginRegion.show(new LoginCheckLoadingHeaderView());
+        //App.core.loginRegion.show(new LoginCheckLoadingHeaderView());
         App.session.loggedIn({
             success: function() {
                 // do nothing

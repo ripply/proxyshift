@@ -5,6 +5,7 @@ var Marionette = require('backbone.marionette'),
     LoginRegion = require('./regions/login'),
     ContentRegion = require('./regions/content'),
     FooterRegion = require('./regions/footer'),
+    LoggedInStatusView = require('./views/headers/logged_in_status'),
     ShiftModel = require('./models/shift'),
     SessionModel = require('./models/session'),
     ShiftsCollection = require('./collections/shifts');
@@ -51,6 +52,7 @@ App.prototype.start = function(){
         App.regions = {};
 
         App.session = new SessionModel();
+        App.views.loggedInStausView = new LoggedInStatusView(App.session);
 
         App.data.shifts = new ShiftsCollection();
         App.data.shifts.on('error', App.modelErrorHandler);
