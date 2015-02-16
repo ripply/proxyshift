@@ -91,7 +91,7 @@ module.exports = Controller = Marionette.Controller.extend({
         this.renderView({
             success: function () {
                 console.log('Model: ' + window.App.data.shifts);
-                var view = new FullCalendarView({collection: window.App.data.shifts, element: $("#calendar")});
+                var view = new FullCalendarView({collection: window.App.data.shifts, element: $("#full-calendar")});
                 App.core.contentRegion.show(view);
                 //this.renderView(view);
                 window.App.router.navigate('calendar');
