@@ -7,6 +7,15 @@ module.exports = NavBar = Ractive.extend({
 
     el: "#header",
 
+    init: function(options) {
+        _.bindAll.apply(_, [this].concat(_.functions(this)));
+        if (this.routeChangeSource) {
+            this.routeChangeSource.bind('app:route:after', _.bind(this.routeChanged, this, this));
+        }
+
+
+    },
+
     data: {
         project: 'Scheduling App',
         // left side of nav bar
@@ -64,30 +73,30 @@ module.exports = NavBar = Ractive.extend({
                 }
             }
         ],
-        active: function(route) {
-            if (route) {
-                return Backbone.history.fragment == route;
-            } else {
-                return false;
-            }
-        },
-        linkUrl: function(route, url) {
-            if (route) {
-                if (Backbone.history.fragment == route) {
-                    // link is active
-                    return '';
-                } else {
-                    return url;
-                }
-            } else {
-                return url;
-            }
+        linkUrl: function(route, url, active) {
+            return url;
         }
     },
 
     setSession: function(session) {
         this.set({
             session: session
+        });
+    },
+
+    routeChanged: function(self, routeName, routeArgs) {
+        // set active property for each item in left/right
+        // then trigger update
+        _.each(['left', 'right'], function(element, index, list) {
+            _.each(self.get(element), function(element2, index2, list2) {
+                element2.active = (element2.route === routeName);
+                if (element2.menu) {
+                    _.each(element2.menu, function(menuItem, menuIndex, menu) {
+                        menuItem.active = (menuItem.route === routeName);
+                    });
+                }
+                self.update(element);
+            });
         });
     }
 

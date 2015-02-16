@@ -58,6 +58,6 @@
 <li><a href="{{session.logged_in ? logout.url:login.url}}">{{session.logged_in ? logout.name:login.name}}</a></li>
   {{/if}}
 {{else}}
-<li {{active(route) ? 'class="active"':''}}><a href="{{linkUrl(route, url)}}">{{name}}</a></li>
+<li {{active == true ? 'class="active"':''}}><a href="{{linkUrl(route, url, active)}}">{{name}}</a></li>
 {{/if}}
 <!-- {{/linkNavItem}} -->

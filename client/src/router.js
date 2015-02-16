@@ -8,5 +8,13 @@ module.exports = Router = Marionette.AppRouter.extend({
         'calendar' : 'calendar',
         'login' : 'login',
         'logout' : 'logout'
+    },
+
+    before: function(route, params) {
+        App.core.vent.trigger('app:route:before', route, params);
+    },
+
+    after: function(route, params) {
+        App.core.vent.trigger('app:route:after', route, params);
     }
 });

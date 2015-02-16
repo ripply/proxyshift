@@ -39,8 +39,13 @@ module.exports = Controller = Marionette.Controller.extend({
                 // do nothing
             }
         });
-        App.views.navBar = new NavBar();
-        App.views.navBar.setSession(App.session);
+        App.views.navBar = new NavBar({
+            // method to listen for route changes
+            routeChangeSource: App.core.vent,
+            data: {
+                session: App.session
+            }
+        });
     },
 
     loadingPrecondition: function(callback) {
