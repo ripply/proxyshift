@@ -34,7 +34,8 @@ module.exports = FullCalendarView = Marionette.ItemView.extend({
             },
             selectable: true,
             selectHelper: true,
-            editable: true
+            editable: true,
+            lang: 'en'
         });
         console.log('#fullCalendar call success!!!');
         this.addAll();
