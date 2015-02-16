@@ -7,6 +7,7 @@ var Marionette = require('backbone.marionette'),
     LoginView = require('./views/users/login'),
     AddShiftView = require('./views/shifts/add_shift'),
     NavBar = require('./views/headers/navbar'),
+    CategoriesEdit = require('./views/categories/categories_edit'),
     LoadingView = require('./views/loading_view');
 
 module.exports = Controller = Marionette.Controller.extend({
@@ -95,6 +96,17 @@ module.exports = Controller = Marionette.Controller.extend({
                 App.core.contentRegion.show(view);
                 //this.renderView(view);
                 window.App.router.navigate('calendar');
+            }
+        });
+    },
+
+    categories: function() {
+        App.core.vent.trigger('app:log', 'Controller: "Categories" route hit.');
+        this.renderView({
+            success: function () {
+                console.log("new categoriesedit()");
+                var view = new CategoriesEdit();
+                window.App.router.navigate('categories');
             }
         });
     },

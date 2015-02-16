@@ -23,12 +23,17 @@ module.exports = NavBar = Ractive.extend({
             {
                 name: 'New shift',
                 url: '#add',
-                route: 'add',
+                route: 'add'
             },
             {
                 name: 'Calendar',
                 url: '#calendar',
                 route: 'calendar'
+            },
+            {
+                name: 'Categories',
+                url: '#categories',
+                route: 'categories'
             },
             {
                 name: 'Dropdown',

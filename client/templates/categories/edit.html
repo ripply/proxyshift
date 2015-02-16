@@ -1,0 +1,17 @@
+----
+{{#each tree}}
+  tree!
+  {{>recurse}}
+  end recurse!
+{{/each}}
+----
+<!-- {{>recurse}} -->
+Name: {{name}}<br>
+Depth: {{depth}}<br>
+{{#if children}}
+Children: {{children}}<br>
+  {{#each children}}
+    {{>recurse}}
+  {{/each}}
+{{/if}}
+<!-- {{/recurse}} -->
