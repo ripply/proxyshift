@@ -12,7 +12,8 @@
     "parsleyjs": "~2.0.7",
     "jquery-cookie": "~1.4.1",
     "ractive": "~0.6.1",
-    "ractive-adaptors-backbone": "~0.2.0"
+    "ractive-adaptors-backbone": "~0.2.0",
+    "routefilter": "~0.2.1"
   },
   "devDependencies": {
     "jasmine": "~1.3.1"
