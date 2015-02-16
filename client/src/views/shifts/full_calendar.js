@@ -37,11 +37,21 @@ module.exports = FullCalendarView = Marionette.ItemView.extend({
             editable: true
         });
         console.log('#fullCalendar call success!!!');
+        this.addAll();
     },
     addAll: function() {
         console.log('AddAll!!!!');
         this.updateElement();
-        this.options.element.fullCalendar('addEventSource', this.collection.toJSON());
+        var self = this;
+        this.collection.fetch({
+            success: function() {
+                var shifts = self.collection.toJSON();
+                if (shifts.length === 0) {
+                    console.log("WARNING: THERE ARE ZERO SHIFTS BEING GIVEN TO THE CALENDAR");
+                }
+                self.options.element.fullCalendar('addEventSource', shifts);
+            }
+        });
     },
     updateElement: function() {
         if (!this.options.element.length) {
