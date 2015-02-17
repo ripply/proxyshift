@@ -1,28 +1,27 @@
-<div style="overflow:auto;">
+<div>
 {{#each tree}}
   {{>recurse}}
 {{/each}}
 </div>
 <!-- {{>recurse}} -->
-<div>
-    <div style='display:inline-block; width: {{width(depth, 10)}}%; background-color: red;'>&nbsp;</div>
-    <div style="display:inline-block;">
-        <div style="display:inline-block;">
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="{{name}}">
-                <span class="input-group-btn">
-                    <button type="button" class="btn btn-default" style="display:inline-block;" aria-label="Left Align">
-                        <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
-                    </button>
-                    <button type="button" class="btn btn-default" style="display:inline-block;" aria-label="Left Align">
-                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                    </button>
-                </span>
-            </div><!-- /input-group -->
-        </div><!-- /.col-lg-6 -->
+<div class="row">
+    <!-- TODO: FIXME THIS IS UGLY AS FK -->
+    <div style='width: {{width(depth, 10)}}%; background-color: red; float: left; height: 100%;'>&nbsp;</div>
+    <!-- END TODO -->
+    <div style="display:inline-block; width: {{100 - width(depth, 10)}}%;">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="{{name}}">
+            <span class="input-group-btn">
+                <button type="button" class="btn btn-default" aria-label="Left Align">
+                    <span class="glyphicon glyphicon-minus" aria-hidden="true" style="display:inline-block;"></span>
+                </button>
+                <button type="button" class="btn btn-default" style="display:inline-block;" aria-label="Left Align">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                </button>
+            </span>
+        </div><!-- /input-group -->
     </div><!-- /.row -->
-
-</div><br>
+</div>
 <!-- Name: {{name}}<br>
 Depth: {{depth}}<br> -->
 {{#if children}}
