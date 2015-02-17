@@ -7,16 +7,100 @@ module.exports = CategoriesEdit = Ractive.extend({
 
     el: "#content",
 
+    removeChildren: function(id) {
+        // Compute tree, then just use that to get the nodes to delete
+        // there should never be any cycles in this tree
+        var categories = this.get('categories');
+
+        var tree = this.get('tree');
+
+        if (tree.length === 0) { return; }
+
+        var removeChild = function(childNode) {
+            if (childNode === undefined) { return; }
+            if (childNode.children !== undefined) {
+                _.each(childNode.children, function(child, index, list) {
+                    removeChild(child);
+                });
+            }
+
+        };
+
+        var traverseTreeForChild = function(currentNode, lookingForId) {
+            if (currentNode === undefined) { return null; }
+            if (currentNode.id === lookingForId) { return currentNode; }
+            if (currentNode.children === undefined) { return null; }
+
+            var foundChild;
+            // recurse into children
+            for (var i = 0; i < currentNode.children.length; i++) {
+                foundChild = traverseTreeForChild();
+                if (foundChild !== null) {
+                    return foundChild;
+                }
+            }
+
+            return null;
+        };
+
+        var foundNode;
+
+        for (var i = 0; i < tree.length; i++) {
+            foundNode = traverseTreeForChild(tree[i], id);
+            if (foundNode !== null) {
+                removeChild(foundNode.children[j]);
+                return;
+            }
+        }
+    },
+
+    init: function(options) {
+        this.on({
+            'delCategory': function(event, id) {
+                var categories = this.get('categories');
+                var self = this;
+                if (categories.length > 1) {
+                    // find the category object in the object with the specified id
+                    // delete its children
+                    // then delete it
+                    _.each(categories, function(category, index, list){
+                        if (category !== undefined) {
+                            if (category.id == id) {
+                                self.removeChildren(categories.id);
+                                delete categories[index];
+                            }
+                        }
+                    });
+                }
+                this.update();
+            },
+            'newCategory': function(event, parentId) {
+                var categories = this.get('categories');
+                var maxId = _.reduce(categories, function(memo, num) {
+                    return (memo > num ? memo:num);
+                }, 0);
+                categories.push({
+                    id: maxId + 1,
+                    parent: parentId,
+                    name: ''
+                });
+                this.update();
+            }
+        });
+    },
+
     data: {
         categories: [
             {
                 id: 0,
-                name: 'country'
+                name: 'country',
+                inUse: true
             },
             {
                 id: 1,
                 name: 'region',
-                parent: 0
+                parent: 0,
+                inUse: true
             },
             {
                 id: 2,
@@ -41,7 +125,6 @@ module.exports = CategoriesEdit = Ractive.extend({
 
     computed: {
         tree: function() {
-            console.log('TREE COMPUTED!!');
             var categories = this.get('categories');
             // find nodes without parents
             var roots = [];
@@ -73,7 +156,6 @@ module.exports = CategoriesEdit = Ractive.extend({
                 }
             }
             self.set('maxDepth', maxDepth);
-            console.log(roots);
             return roots;
         }
     },

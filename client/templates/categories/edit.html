@@ -12,10 +12,10 @@
         <div class="input-group">
             <input type="text" class="form-control" placeholder="{{name}}">
             <span class="input-group-btn">
-                <button type="button" class="btn btn-default" aria-label="Left Align">
+                <button type="button" class="btn btn-default" aria-label="Left Align" on-click="delCategory:{{id}}">
                     <span class="glyphicon glyphicon-minus" aria-hidden="true" style="display:inline-block;"></span>
                 </button>
-                <button type="button" class="btn btn-default" style="display:inline-block;" aria-label="Left Align">
+                <button type="button" class="btn btn-default" style="display:inline-block;" aria-label="Left Align" on-click="newCategory:{{id}}">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                 </button>
             </span>
