@@ -32,7 +32,11 @@ module.exports = CategoriesEdit = Ractive.extend({
                 id: 4,
                 name: 'parent2'
             }
-        ]
+        ],
+        width: function(depth, absoluteMaximumDepth) {
+            var interval = (1 / absoluteMaximumDepth) * 100;
+            return interval * depth;
+        }
     },
 
     computed: {
@@ -44,8 +48,12 @@ module.exports = CategoriesEdit = Ractive.extend({
             var consumed = {};
             var notConsumed = {};
             var self = this;
+            var maxDepth = 0;
             var treeizeCapture = function(value, prop, list) {
                 self.treeize(roots, consumed, notConsumed,
+                    function(newMaxDepth) {
+                        maxDepth = (newMaxDepth > maxDepth ? newMaxDepth:maxDepth);
+                    },
                     value, prop, list);
             };
             _.each(categories, treeizeCapture);
@@ -64,6 +72,7 @@ module.exports = CategoriesEdit = Ractive.extend({
                     break;
                 }
             }
+            self.set('maxDepth', maxDepth);
             console.log(roots);
             return roots;
         }
@@ -78,9 +87,9 @@ module.exports = CategoriesEdit = Ractive.extend({
      * @param prop
      * @param list
      */
-    treeize: function(roots, consumed, notConsumed, value, prop, list) {
+    treeize: function(roots, consumed, notConsumed, maxDepth, value, prop, list) {
         var child, root, parent = null;
-        if (value.parent != null) {
+        if (value.parent !== undefined) {
             // has a parent! so this is a child node
             if (consumed[value.parent]) {
                 // parent has already been consumed, so it should exist somewhere
@@ -91,6 +100,11 @@ module.exports = CategoriesEdit = Ractive.extend({
                     parent.children = [];
                 }
                 child = _.clone(value);
+                child.depth = parent.depth + 1;
+                // keep track of what the maximum depth is
+                // this callback should set and update the maximum if this is bigger
+                maxDepth(child.depth);
+
                 parent.children.push(child);
                 consumed[child.id] = child;
                 delete notConsumed[value.id];
