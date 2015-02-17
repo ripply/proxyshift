@@ -186,10 +186,68 @@ function issueToken(user, done) {
     });
 }
 
+var categorySchema = new Schema({
+    name:        {type: String,
+                  unique: true,
+                  lowercase: true,
+                  trim: true},
+    parent:      {type: mongoose.Schema.Types.ObjectId,
+                  ref: 'Category',
+                  required: false}
+});
+
+var Category = mongoose.model('Category', categorySchema);
+
+categorySchema.methods.children = function() {
+    if (this.parent === undefined || this.parent === null) {
+        return [];
+    } else {
+        return Category.find({parent: this._id})
+    }
+};
+
+categorySchema.methods.addChild = function(name, next) {
+    new Category({
+        name: name,
+        parent: this._id
+    }).save(next);
+};
+
+var addChildrenToQueue = function(queue, existingChildren, parent) {
+    _.each(parent.children, function(child, index, list) {
+        if (child._id in existingChildren) {
+            // skip this child, a loop exists
+        } else {
+            queue.push(child);
+            existingChildren[child._id] = child;
+        }
+    });
+};
+
+categorySchema.pre('remove', function(next) {
+    // remove children
+    var children = {};
+    var queue = [this];
+    while (queue.length > 0) {
+        var child = queue.shift();
+        addChildrenToQueue(queue, children, child);
+    }
+
+    _.each(children, function(value, prop, index, list) {
+        // TODO: IF THIS FAILS WE NEED TO RECOVER
+        // SO DB IS ALWAYS IN A CONSISTENT STATE
+        // MONGODB DOES NOT SUPPORT TRANSACTIONS
+        Category.where().findOneAndRemove(function(err) {
+            if (err) { next(err); }
+        });
+    });
+});
+
 module.exports = {
     Shift: mongoose.model('Shift', shiftSchema),
     Users: Users,
     Token: Token,
+    Category: Category,
 
     consumeRememberMeToken: consumeRememberMeToken,
     issueToken: issueToken
