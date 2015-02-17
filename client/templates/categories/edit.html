@@ -1,7 +1,13 @@
 <div>
-{{#each tree}}
-  {{>recurse}}
-{{/each}}
+    {{#if tree}}
+        {{#each tree}}
+             {{>recurse}}
+        {{/each}}
+    {{else}}
+        There are no categories defined yet <button type="button" class="btn btn-default" style="display:inline-block;" aria-label="Left Align" on-click="newCategory">
+    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+</button>
+    {{/if}}
 </div>
 <!-- {{>recurse}} -->
 <div class="row">
