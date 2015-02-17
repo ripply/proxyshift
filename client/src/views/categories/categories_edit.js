@@ -77,7 +77,7 @@ module.exports = CategoriesEdit = Ractive.extend({
             'newCategory': function(event, parentId) {
                 var categories = this.get('categories');
                 var maxId = _.reduce(categories, function(memo, num) {
-                    return (memo > num ? memo:num);
+                    return (memo > num.id ? memo:num.id);
                 }, 0);
                 categories.push({
                     id: maxId + 1,
