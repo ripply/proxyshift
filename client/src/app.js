@@ -7,7 +7,8 @@ var Marionette = require('backbone.marionette'),
     FooterRegion = require('./regions/footer'),
     ShiftModel = require('./models/shift'),
     SessionModel = require('./models/session'),
-    ShiftsCollection = require('./collections/shifts');
+    ShiftsCollection = require('./collections/shifts'),
+    CategoriesCollection = require('./collections/categories');
 
 module.exports = App = function App() {};
 
@@ -54,6 +55,8 @@ App.prototype.start = function(){
 
         App.data.shifts = new ShiftsCollection();
         App.data.shifts.on('error', App.modelErrorHandler);
+        App.data.categories = new CategoriesCollection();
+        App.data.categories.on('error', App.modelErrorHandler);
 
         App.core.vent.trigger('app:start');
     });
@@ -77,6 +80,10 @@ App.prototype.start = function(){
 
         //new up and views and render for base app here...
         App.core.vent.trigger('app:log', 'App: Done starting and running!');
+    });
+
+    App.core.vent.bind('error', function(msg) {
+        App.core.vent.trigger('app:log', msg);
     });
 
     App.core.vent.bind('app:log', function(msg) {

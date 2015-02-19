@@ -58,5 +58,34 @@ module.exports = {
                 console.log(tokens);
             }
         });
+        models.Category.find({}, function(err, categories) {
+            if (categories.length < 4) {
+                var rootCategory = new models.Category({
+                    name: 'root category!'
+                });
+                rootCategory.save(function(err, category) {
+                    if (!err) {
+                        console.log("successfully created root category");
+                    }
+                });
+                firstChild = new models.Category({
+                    parent: rootCategory._id,
+                    name: "First child"
+                });
+                firstChild.save();
+                secondChild = new models.Category({
+                    parent: firstChild._id,
+                    name: "second child"
+                });
+                secondChild.save();
+                otherChild = new models.Category({
+                    parent: rootCategory._id,
+                    name: 'other child'
+                });
+                otherChild.save();
+            } else {
+                console.log(categories.length + " categories found");
+            }
+        });
     }
 };

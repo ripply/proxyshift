@@ -76,6 +76,10 @@ module.exports = CategoriesEdit = Ractive.extend({
             },
             'newCategory': function(event, parentId) {
                 var categories = this.get('categories');
+                if (categories === undefined) {
+                    App.core.vent.trigger('error', "Problem with model, cannot create a new category");
+                    return;
+                }
                 var maxId = _.reduce(categories, function(memo, num) {
                     return (memo > num.id ? memo:num.id);
                 }, 0);
@@ -90,7 +94,7 @@ module.exports = CategoriesEdit = Ractive.extend({
     },
 
     data: {
-        categories: [
+/*        categories: [
             {
                 id: 0,
                 name: 'country',
@@ -116,7 +120,7 @@ module.exports = CategoriesEdit = Ractive.extend({
                 id: 4,
                 name: 'parent2'
             }
-        ],
+        ],*/
         width: function(depth, absoluteMaximumDepth) {
             var interval = (1 / absoluteMaximumDepth) * 100;
             return interval * depth;

@@ -105,7 +105,10 @@ module.exports = Controller = Marionette.Controller.extend({
         this.renderView({
             success: function () {
                 console.log("new categoriesedit()");
-                var view = new CategoriesEdit();
+                var view = new CategoriesEdit({
+                    categories: App.data.categories
+                });
+                App.data.categories.fetch();
                 window.App.router.navigate('categories');
             }
         });

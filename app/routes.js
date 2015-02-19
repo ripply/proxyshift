@@ -1,6 +1,7 @@
 var home = require('../controllers/home'),
     shifts = require('../controllers/shifts'),
     users = require('../controllers/users'),
+    categories = require('../controllers/categories'),
     _ = require('underscore'),
     utils = require('./utils'),
     models = require('./models'),
@@ -131,4 +132,10 @@ module.exports.initialize = function(app) {
     app.post('/api/shifts', shifts.add);
     // app.put('/api/shifts', shifts.update);
     app.delete('/api/shifts/:id', shifts.delete);
+
+    app.get('/api/categories', categories.index);
+    app.get('/api/categories/:id', categories.getById);
+    app.get('/api/categories', categories.index);
+    app.post('/api/categories', categories.add);
+    app.delete('/api/categories/:id', categories.delete);
 };
