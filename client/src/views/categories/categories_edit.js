@@ -16,6 +16,10 @@ module.exports = CategoriesEdit = Ractive.extend({
 
         if (tree.length === 0) { return; }
 
+        /**
+         * Removes the given node from its parents and removes its children
+         * @param childNode
+         */
         var removeChild = function(childNode) {
             if (childNode === undefined) { return; }
             if (childNode.children !== undefined) {
@@ -26,6 +30,12 @@ module.exports = CategoriesEdit = Ractive.extend({
 
         };
 
+        /**
+         * Searches a tree for a specific node with an id
+         * @param currentNode
+         * @param lookingForId
+         * @returns {*}
+         */
         var traverseTreeForChild = function(currentNode, lookingForId) {
             if (currentNode === undefined) { return null; }
             if (currentNode.id === lookingForId) { return currentNode; }
@@ -45,6 +55,9 @@ module.exports = CategoriesEdit = Ractive.extend({
 
         var foundNode;
 
+        // Iterate over each tree root and
+        // remove a node from each with the given id if they exist
+        // TODO: This does not handle the case where a root has duplicate ids... I think
         for (var i = 0; i < tree.length; i++) {
             foundNode = traverseTreeForChild(tree[i], id);
             if (foundNode !== null) {
@@ -55,7 +68,9 @@ module.exports = CategoriesEdit = Ractive.extend({
     },
 
     init: function(options) {
+        var self = this;
         this.on({
+            // Delete a category
             'delCategory': function(event, id) {
                 var categories = this.get('categories');
                 var self = this;
@@ -74,15 +89,19 @@ module.exports = CategoriesEdit = Ractive.extend({
                 }
                 this.update();
             },
+            // Create an empty category
             'newCategory': function(event, parentId) {
                 var categories = this.get('categories');
                 if (categories === undefined) {
                     App.core.vent.trigger('error', "Problem with model, cannot create a new category");
                     return;
                 }
-                var maxId = _.reduce(categories, function(memo, num) {
+
+                var maxId = _.reduce(self.loopOver(categories), function(memo, num) {
                     return (memo > num.id ? memo:num.id);
                 }, 0);
+
+                // Backbone will also accept this so no need to do something special
                 categories.push({
                     id: maxId + 1,
                     parent: parentId,
@@ -122,12 +141,19 @@ module.exports = CategoriesEdit = Ractive.extend({
             }
         ],*/
         width: function(depth, absoluteMaximumDepth) {
+            if (depth === undefined || absoluteMaximumDepth === undefined) {
+                console.log("When computing width of div, arguments are invalid: depth=" + depth + ", maximumDepth=" + absoluteMaximumDepth);
+            }
             var interval = (1 / absoluteMaximumDepth) * 100;
             return interval * depth;
         }
     },
 
     computed: {
+        /**
+         * Creates a tree like hash from an array
+         * @returns {Array}
+         */
         tree: function() {
             var categories = this.get('categories');
             // find nodes without parents
@@ -143,9 +169,17 @@ module.exports = CategoriesEdit = Ractive.extend({
                     },
                     value, prop, list);
             };
-            _.each(categories, treeizeCapture);
+            // perform first pass over categories
+            // the first pass will start at roots and try to add as many children as it can without backtracking
+            // there will most likely be leftovers that were not handled
+            _.each(this.loopOver(categories), treeizeCapture);
             while (Object.keys(notConsumed).length !== 0) {
                 var beforeSize = Object.keys(notConsumed).length;
+                // here we try to continue creating the tree
+                // if there is no change to unconsumed nodes then we stop
+                // they might be unconsumed because something could have gone wrong
+                // for example, a node has a parent but that parent is not in the given set
+                // this would obviously be a server error, but it is here for completeness
                 _.each(notConsumed, treeizeCapture);
                 if (beforeSize == Object.keys(notConsumed).length) {
                     // set contains nonconnected nodes
@@ -165,6 +199,23 @@ module.exports = CategoriesEdit = Ractive.extend({
     },
 
     /**
+     * Returns what to loop over given a model.
+     *
+     * If the model is a Backbone model then it will loop over the models attribute
+     * Otherwise the argument will be returned
+     *
+     * @param categories
+     * @returns {*}
+     */
+    loopOver: function(categories) {
+        if ('models' in categories) {
+            return categories.models;
+        } else {
+            return categories;
+        }
+    },
+
+    /**
      * _.each() function that creates a tree structure from a list
      * @param roots
      * @param consumed
@@ -175,21 +226,42 @@ module.exports = CategoriesEdit = Ractive.extend({
      */
     treeize: function(roots, consumed, notConsumed, maxDepth, value, prop, list) {
         var child, root, parent = null;
-        if (value.parent !== undefined) {
+        var copyAttributesToObject = function(object) {
+            // if it is a Backbone model
+            // we need to set the attributes in normal methods
+            // instead of using getters/setters
+            // normally the backbone adapter would handle this for the templates
+            // but since we are making a custom tree object
+            // the template does not know that each child is a backbone model
+            if ('attributes' in object) {
+                _.each(object.attributes, function(value, prop, list) {
+                    object[prop] = value;
+                });
+            }
+        };
+
+        if (value.get('parent') !== undefined) {
             // has a parent! so this is a child node
-            if (consumed[value.parent]) {
+            if (consumed[value.get('parent')]) {
                 // parent has already been consumed, so it should exist somewhere
                 // in the roots tree
                 // consumed holds references to the cloned node inside roots
-                parent = consumed[value.parent];
+                parent = consumed[value.get('parent')];
                 if (parent.children === undefined) {
                     parent.children = [];
                 }
                 child = _.clone(value);
-                child.depth = parent.depth + 1;
+
+                copyAttributesToObject(child);
+
+                var depth = parent.depth;
+                if (depth == undefined) {
+                    depth = parent.get('depth');
+                }
+                child.depth = depth + 1;
                 // keep track of what the maximum depth is
                 // this callback should set and update the maximum if this is bigger
-                maxDepth(child.depth);
+                maxDepth(depth);
 
                 parent.children.push(child);
                 consumed[child.id] = child;
@@ -207,7 +279,10 @@ module.exports = CategoriesEdit = Ractive.extend({
             }
         } else {
             root = _.clone(value);
-            root.depth = 0;
+            root.set('depth', 0);
+
+            copyAttributesToObject(root);
+
             roots.push(root);
             consumed[root.id] = root;
         }
