@@ -15,7 +15,7 @@ module.exports = AddView = Marionette.ItemView.extend({
             end: this.$el.find('#end').val()
         };
 
-        window.App.data.contacts.create(newShift);
+        window.App.data.shifts.create(newShift);
         window.App.core.vent.trigger('app:log', 'Add View: Saved new shift!');
         window.App.controller.home();
     }
