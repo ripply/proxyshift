@@ -7,67 +7,89 @@ module.exports = CategoriesEdit = Ractive.extend({
 
     el: "#content",
 
+    /**
+     * Removes the given node from its parents and removes its children
+     * @param childNode
+     */
+    removeChild: function(childNode, pending) {
+        if (childNode === undefined) { return; }
+
+        if (pending === undefined || pending === null) {
+            pending = [];
+        }
+
+        pending.push(childNode);
+
+        if (childNode.children !== undefined) {
+            var self = this;
+            _.each(childNode.children, function(child, index, list) {
+                if (child in pending) {
+                    // do nothing to prevent infinite recursion
+                } else {
+                    pending.push(child);
+                    self.removeChild(child, pending);
+                }
+            });
+        }
+
+        // remove child
+        var nodes = this.get('categories');
+        if (nodes.remove(childNode) === undefined) {
+            console.log("Child to remove does not exist in categories");
+        }
+    },
+
+    /**
+     * Searches a tree for a specific node with an id
+     * @param currentNode
+     * @param lookingForId
+     * @returns {*}
+     */
+    traverseTreeForChild: function(currentNode, lookingForId) {
+        if (lookingForId === undefined) { return null; }
+        if (currentNode === undefined) { return null; }
+        if (currentNode.id === lookingForId) { return currentNode; }
+        if (currentNode.children === undefined) { return null; }
+
+        var foundChild;
+        // recurse into children
+        var children = currentNode.children;
+        for (var i = 0; i < children.length; i++) {
+            foundChild = this.traverseTreeForChild(children[i], lookingForId);
+            if (foundChild !== null) {
+                return foundChild;
+            }
+        }
+
+        return null;
+    },
+
     removeChildren: function(id) {
         // Compute tree, then just use that to get the nodes to delete
         // there should never be any cycles in this tree
         var categories = this.get('categories');
-
         var tree = this.get('tree');
 
+        // no children to remove if there is no tree
         if (tree.length === 0) { return; }
 
-        /**
-         * Removes the given node from its parents and removes its children
-         * @param childNode
-         */
-        var removeChild = function(childNode) {
-            if (childNode === undefined) { return; }
-            if (childNode.children !== undefined) {
-                _.each(childNode.children, function(child, index, list) {
-                    removeChild(child);
-                });
-            }
-
-        };
-
-        /**
-         * Searches a tree for a specific node with an id
-         * @param currentNode
-         * @param lookingForId
-         * @returns {*}
-         */
-        var traverseTreeForChild = function(currentNode, lookingForId) {
-            if (currentNode === undefined) { return null; }
-            if (currentNode.id === lookingForId) { return currentNode; }
-            if (currentNode.children === undefined) { return null; }
-
-            var foundChild;
-            // recurse into children
-            for (var i = 0; i < currentNode.children.length; i++) {
-                foundChild = traverseTreeForChild();
-                if (foundChild !== null) {
-                    return foundChild;
-                }
-            }
-
-            return null;
-        };
-
         var foundNode;
-
         // Iterate over each tree root and
         // remove a node from each with the given id if they exist
         // TODO: This does not handle the case where a root has duplicate ids... I think
         for (var i = 0; i < tree.length; i++) {
-            foundNode = traverseTreeForChild(tree[i], id);
+            foundNode = this.traverseTreeForChild(tree[i], id);
             if (foundNode !== null) {
-                removeChild(foundNode.children[j]);
+                this.removeChild(foundNode);
                 return;
             }
         }
+
+        console.log("Failed to locate id " + id + " to remove");
     },
 
     init: function(options) {
+        _.bindAll(this, 'removeChild', 'removeChildren');
         var self = this;
         this.on({
             // Delete a category
@@ -78,10 +100,10 @@ module.exports = CategoriesEdit = Ractive.extend({
                     // find the category object in the object with the specified id
                     // delete its children
                     // then delete it
-                    _.each(categories, function(category, index, list){
+                    _.each(self.loopOver(categories), function(category, index, list){
                         if (category !== undefined) {
-                            if (category.id == id) {
-                                self.removeChildren(categories.id);
+                            if (category.id === id) {
+                                self.removeChildren(category.id);
                                 delete categories[index];
                             }
                         }
@@ -103,7 +125,7 @@ module.exports = CategoriesEdit = Ractive.extend({
 
                 // Backbone will also accept this so no need to do something special
                 categories.push({
-                    id: maxId + 1,
+                    _id: maxId + 1,
                     parent: parentId,
                     name: ''
                 });
@@ -255,7 +277,7 @@ module.exports = CategoriesEdit = Ractive.extend({
                 copyAttributesToObject(child);
 
                 var depth = parent.depth;
-                if (depth == undefined) {
+                if (depth === undefined) {
                     depth = parent.get('depth');
                 }
                 child.depth = depth + 1;
