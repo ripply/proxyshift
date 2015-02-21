@@ -88,8 +88,14 @@ module.exports = CategoriesEdit = Ractive.extend({
         console.log("Failed to locate id " + id + " to remove");
     },
 
+    generateNewId: function() {
+        var maxId = _.reduce(self.loopOver(categories), function(memo, num) {
+            return (memo > num.id ? memo:num.id);
+        }, 0);
+    },
+
     init: function(options) {
-        _.bindAll(this, 'removeChild', 'removeChildren');
+        _.bindAll(this, 'removeChild', 'removeChildren', 'generateNewId');
         var self = this;
         this.on({
             // Delete a category
@@ -119,17 +125,26 @@ module.exports = CategoriesEdit = Ractive.extend({
                     return;
                 }
 
-                var maxId = _.reduce(self.loopOver(categories), function(memo, num) {
-                    return (memo > num.id ? memo:num.id);
+                var newCategoryCount = _.reduce(self.loopOver(categories), function(memo, num) {
+                    if (num.get('newCategory')) {
+                        memo += 1;
+                    }
+                    return memo;
                 }, 0);
 
-                // Backbone will also accept this so no need to do something special
+                // Push a new category onto the backbone model
+                // this will not trigger a POST to the server
+                // we can trigger a POST when data is entered
                 categories.push({
-                    _id: maxId + 1,
+                    _id: 'new' + (newCategoryCount + 1),
+                    newItem: true,
                     parent: parentId,
                     name: ''
                 });
                 this.update();
+            },
+            'updateCategory': function(event, id) {
+                
             }
         });
     },

@@ -16,7 +16,7 @@
     <!-- END TODO -->
     <div style="display:inline-block; width: {{100 - width(depth, 10)}}%;">
         <div class="input-group">
-            <input type="text" class="form-control" placeholder="{{name}}">
+            <input type="text" class="form-control" placeholder="{{name}}" on-blur="updateCategory:{{id}}">
             <span class="input-group-btn">
                 <button type="button" class="btn btn-default" aria-label="Left Align" on-click="delCategory:{{id}}">
                     <span class="glyphicon glyphicon-minus" aria-hidden="true" style="display:inline-block;"></span>
@@ -28,13 +28,9 @@
         </div><!-- /input-group -->
     </div><!-- /.row -->
 </div>
-<!-- Name: {{name}}<br>
-Depth: {{depth}}<br> -->
 {{#if children}}
-<!-- Children: {{children}}<br> -->
   {{#each .children}}
     {{>recurse}}
   {{/each}}
 {{/if}}
-
 <!-- {{/recurse}} -->
