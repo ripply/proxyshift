@@ -4,6 +4,7 @@ var mongoose = require('mongoose'),
     bcrypt = require('bcrypt'),
     passport = require('passport'),
     utils = require('./utils'),
+    _ = require('underscore'),
     SALT_WORK_FACTOR = 10;
 
 var shiftSchema = new Schema({
@@ -27,27 +28,49 @@ var userSchema = new Schema({
     name:        {type: String, required: false},
     username:    {type: String, required: true, unique: true},
     email:       {type: String, required: true, unique: true},
-    password:    {type: String, required: true}
+    password:    {type: String, required: true},
+    squestion:   {type: String, required: true},
+    sanswer:     {type: String, required: true}
 });
 
 userSchema.pre('save', function(next) {
     var user = this;
 
-    if(!user.isModified('password')) return next();
+    if(!user.isModified('password') && !user.isModified('sanswer')) return next();
 
-    bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
-        if(err) return next(err);
-
-        bcrypt.hash(user.password, salt, function(err, hash) {
+    var genSalt = function(array) {
+        if (array.length == 0) {next();}
+        var method = array.pop();
+        bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
             if(err) return next(err);
-            user.password = hash;
-            next();
+
+            bcrypt.hash(user[method], salt, function(err, hash) {
+                if(err) return next(err);
+                user[method] = hash;
+                genSalt(array);
+            });
         });
+    };
+
+    var toModifiy = [];
+    _.each(['password', 'sanswer'], function(element, index, list) {
+        if (user.isModified(element)) {
+            toModifiy.push(element);
+        }
     });
+
+    genSalt(toModifiy);
 });
 
 userSchema.methods.comparePassword = function(candidatePassword, cb) {
     bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
+        if(err) return cb(err);
+        cb(null, isMatch);
+    });
+};
+
+userSchema.methods.compareSAnswer = function(candidateSAnswer, cb) {
+    bcrypt.compare(candidateSAnswer, this.sanswer, function(err, isMatch) {
         if(err) return cb(err);
         cb(null, isMatch);
     });

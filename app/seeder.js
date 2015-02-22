@@ -35,15 +35,21 @@ module.exports = {
                 console.log(shifts);
             }
         });
+        models.Users.remove({username: 'asdf'}, function(err) {
+            if (err) {console.log("ERRRRRRRR WUTTT");}
+
+            console.log("DELETED USERSSS YEYEYEE");
+        });
         models.Users.find({}, function(err, users) {
             if (users.length == 0) {
                 console.log('No users found, seeding...');
-                var user = new models.Users({ username: 'asdf', email: 'asdf@example.com', password: 'asdf' });
+                var user = new models.Users({ username: 'asdf', email: 'asdf@example.com', password: 'asdf', squestion: 'whatever?', sanswer: 'test' });
                 user.save(function(err) {
                     if(err) {
                         console.log(err);
                     } else {
                         console.log('user: ' + user.username + " saved.");
+                        console.log(user);
                     }
                 });
             } else {
