@@ -209,6 +209,25 @@ function issueToken(user, done) {
     });
 }
 
+userSchema.post('save', function(next) {
+    var user = this;
+    // on password change, invalidate session tokens AND session
+    if(user.isModified('password')) {
+        // get user id and search for it in tokens
+        var userId = user.id();
+        Token.update({_uid: userId}, {$set: {token: []}}, function(err, affected) {
+            if (err) {
+                console.log('Failed to remove tokens for user ' + userId);
+            } else {
+                console.log('Removed tokens for ', affected);
+            }
+        });
+
+        // we cannot reset sessions from within this context
+        // it needs to be done in the controller
+    }
+});
+
 var categorySchema = new Schema({
     name:        {type: String,
                   unique: true,
