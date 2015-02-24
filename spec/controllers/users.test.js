@@ -2,7 +2,7 @@
 var proxyquire = require('proxyquire'),
     modelsStub = {},
     md5Stub = function(string) { return string; },
-    contacts = proxyquire('../../controllers/contacts', {
+    users = proxyquire('../../controllers/users', {
         '../app/models' : modelsStub,
         'MD5': md5Stub
     });
@@ -10,7 +10,7 @@ var proxyquire = require('proxyquire'),
 var res = {},
     req = {};
 
-describe('Contacts Controller', function() {
+describe('Users Controller', function() {
     beforeEach(function() {
         res = {
             json: sinon.spy()
@@ -20,7 +20,7 @@ describe('Contacts Controller', function() {
                 id : 1
             }
         };
-        modelsStub.Contact = {
+        modelsStub.User = {
             find: function(query, callback) {
                 callback(null, {});
             },
@@ -31,38 +31,38 @@ describe('Contacts Controller', function() {
     });
 
     it('should exist', function() {
-        expect(contacts).to.exist;
+        expect(users).to.exist;
     });
 
     describe('index', function() {
         it('should be defined', function() {
-            expect(contacts.index).to.be.a('function');
+            expect(users.index).to.be.a('function');
         });
 
         it('should send json', function() {
-            contacts.index(req, res);
+            users.index(req, res);
             expect(res.json).calledOnce;
         });
     });
 
     describe('getById', function() {
         it('should be defined', function() {
-            expect(contacts.getById).to.be.a('function');
+            expect(users.getById).to.be.a('function');
         });
 
         it('should send json on successful retrieve', function() {
-            contacts.getById(req, res);
+            users.getById(req, res);
             expect(res.json).calledOnce;
         });
 
         it('should send json error on error', function() {
-            modelsStub.Contact = {
+            modelsStub.User = {
                 find: function(query, callback) {
-                    callback(null, {error: 'Contact not found.'});
+                    callback(null, {error: 'User not found.'});
                 }
             };
-            contacts.getById(req, res);
-            expect(res.json).calledWith({error: 'Contact not found.'});
+            users.getById(req, res);
+            expect(res.json).calledWith({error: 'User not found.'});
         });
     });
 
@@ -70,38 +70,41 @@ describe('Contacts Controller', function() {
         beforeEach(function() {
             req.body = {
                 name: 'testing',
+                username: 'testingusername',
                 email: 'test@testing.com',
-                phone: '123-456-7890'
+                password: 'test',
+                squestion: 'test',
+                sanswer: 'test'
             };
         });
 
         it('should be defined', function() {
-            expect(contacts.add).to.be.a('function');
+            expect(users.add).to.be.a('function');
         });
 
         it('should return json on save', function() {
 
-            modelsStub.Contact = sinon.spy(function() {
-                modelsStub.Contact.prototype.save = function(callback) {
+            modelsStub.User = sinon.spy(function() {
+                modelsStub.User.prototype.save = function(callback) {
                     callback(null, req.body);
                 };
                 return;
             });
 
-            contacts.add(req, res);
+            users.add(req, res);
             expect(res.json).calledWith(req.body);
         });
         it('should return error on failed save', function() {
 
-            modelsStub.Contact = sinon.spy(function() {
-                modelsStub.Contact.prototype.save = function(callback) {
+            modelsStub.User = sinon.spy(function() {
+                modelsStub.User.prototype.save = function(callback) {
                     callback({}, req.body);
                 };
                 return;
             });
 
-            contacts.add(req, res);
-            expect(res.json).calledWith({error: 'Error adding contact.'});
+            users.add(req, res);
+            expect(res.json).calledWith({error: 'Error adding user.'});
         });
     });
 
@@ -116,29 +119,29 @@ describe('Contacts Controller', function() {
         });
 
         it('should be defined', function() {
-            expect(contacts.delete).to.be.a('function');
+            expect(users.delete).to.be.a('function');
         });
 
         it('should return json on save', function() {
-            var contactSpy = {remove: sinon.spy()};
-            modelsStub.Contact = {
+            var userspy = {remove: sinon.spy()};
+            modelsStub.User = {
                 findOne: function(query, callback) {
-                    callback(null, contactSpy);
+                    callback(null, userspy);
                 }
             };
 
-            contacts.delete(req, res);
-            expect(contactSpy.remove).calledOnce;
+            users.delete(req, res);
+            expect(userspy.remove).calledOnce;
         });
         it('should return error on failed save', function() {
-            modelsStub.Contact = {
+            modelsStub.User = {
                 findOne: function(query, callback) {
                     callback({}, {});
                 }
             };
 
-            contacts.delete(req, res);
-            expect(res.json).calledWith({error: 'Contact not found.'});
+            users.delete(req, res);
+            expect(res.json).calledWith({error: 'User not found.'});
         });
     });
 });

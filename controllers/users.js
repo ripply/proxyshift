@@ -9,7 +9,7 @@ module.exports = {
     getById: function(req, res) {
         models.Users.find({ _id: req.params.id }, function(err, shift) {
             if (err) {
-                res.json({error: 'Users not found.'});
+                res.json({error: 'User not found.'});
             } else {
                 res.json(shift);
             }
@@ -19,11 +19,11 @@ module.exports = {
         console.log('Users add:');
         console.log(req.body);
         var newUsers = new models.Users(req.body);
-        newUsers.save(function(err, shift) {
+        newUsers.save(function(err, user) {
             if (err) {
-                res.json({error: 'Error adding shift.'});
+                res.json({error: 'Error adding user.'});
             } else {
-                res.json(shift);
+                res.json(user);
             }
         });
     },
@@ -47,5 +47,12 @@ module.exports = {
                 })
             }
         });
+    },
+    update: function(req, res) {
+        // get the current userid then forward to updateById
+
+    },
+    updateById: function(req, res) {
+
     }
 };

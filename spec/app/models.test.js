@@ -3,11 +3,16 @@ var models = require('../../app/models');
 
 describe('Models', function() {
 
-    describe('Contact', function() {
-        var schema = models.Contact.schema.paths;
+    describe('Users', function() {
+        var schema = models.Users.schema.paths;
 
         it('should exist', function() {
-            expect(models.Contact).to.exist;
+            expect(models.Users).to.exist;
+        });
+
+        it('should have name string field', function() {
+            expect(schema.name).to.exist;
+            expect(schema.name.instance).to.equal('String');
         });
 
         it('should have email string field', function() {
@@ -15,21 +20,20 @@ describe('Models', function() {
             expect(schema.email.instance).to.equal('String');
         });
 
-        it('should have name fields', function() {
-            expect(schema['name.first']).to.exist;
-            expect(schema['name.first'].instance).to.equal('String');
-            expect(schema['name.last']).to.exist;
-            expect(schema['name.last'].instance).to.equal('String');
+        it('should have password field', function() {
+            expect(schema.password).to.exist;
+            expect(schema.password.instance).to.equal('String');
         });
 
-        it('should have phone string field', function() {
-            expect(schema.phone).to.exist;
-            expect(schema.phone.instance).to.equal('String');
+        it('should have squestion field', function() {
+            expect(schema.squestion).to.exist;
+            expect(schema.squestion.instance).to.equal('String');
         });
 
-        it('should have gravatar string field', function() {
-            expect(schema.gravatar).to.exist;
-            expect(schema.gravatar.instance).to.equal('String');
+        it('should have sanswer field', function() {
+            expect(schema.sanswer).to.exist;
+            expect(schema.sanswer.instance).to.equal('String');
         });
+
     });
 });
