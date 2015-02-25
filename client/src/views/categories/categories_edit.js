@@ -144,39 +144,30 @@ module.exports = CategoriesEdit = Ractive.extend({
                 this.update();
             },
             'updateCategory': function(event, id) {
-                
+                var context = event.context;
+
+                var originalName = context.get('originalName');
+                if (originalName === undefined) {
+                    var currentName = context.get('name');
+                    context.set('originalName', currentName);
+                    originalName = currentName;
+                }
+
+                var newName = event.node.value;
+                if (newName === undefined || newName === null || newName === '') {
+                    newName = originalName;
+                }
+
+                context.set('name', newName);
+                this.update();
+            },
+            'save': function(event) {
+                console.log("Save clicked");
             }
         });
     },
 
     data: {
-/*        categories: [
-            {
-                id: 0,
-                name: 'country',
-                inUse: true
-            },
-            {
-                id: 1,
-                name: 'region',
-                parent: 0,
-                inUse: true
-            },
-            {
-                id: 2,
-                name: 'locality',
-                parent: 0
-            },
-            {
-                id: 3,
-                name: 'wut',
-                parent: 2
-            },
-            {
-                id: 4,
-                name: 'parent2'
-            }
-        ],*/
         width: function(depth, absoluteMaximumDepth) {
             if (depth === undefined || absoluteMaximumDepth === undefined) {
                 console.log("When computing width of div, arguments are invalid: depth=" + depth + ", maximumDepth=" + absoluteMaximumDepth);
@@ -232,6 +223,33 @@ module.exports = CategoriesEdit = Ractive.extend({
             }
             self.set('maxDepth', maxDepth);
             return roots;
+        },
+        loading: function() {
+
+        },
+        /**
+         * Checks whether any items have been modified and need to be sent to server
+         * @returns {boolean}
+         */
+        modified: function() {
+            // check categories for newItem === true
+            var categories = this.get('categories');
+            var loopOverVar = this.loopOver(categories);
+            for (var i = 0; i < loopOverVar.length; i++) {
+                var value = loopOverVar[i];
+                // checking for new items
+                if (value.get('newItem')) {
+                    return true;
+                }
+                // checking for modified text
+                var originalName = value.get('originalName');
+                if (originalName !== undefined &&
+                    originalName !== value.get('name')) {
+                    return true;
+                }
+            }
+
+            return false;
         }
     },
 

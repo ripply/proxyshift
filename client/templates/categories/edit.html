@@ -4,9 +4,17 @@
              {{>recurse}}
         {{/each}}
     {{else}}
-        There are no categories defined yet <button type="button" class="btn btn-default" style="display:inline-block;" aria-label="Left Align" on-click="newCategory">
-    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-</button>
+        {{#if loading}}
+            Loading
+        {{else}}
+            There are no categories defined yet <button type="button" class="btn btn-default" style="display:inline-block;" aria-label="Left Align" on-click="newCategory">
+        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+        {{/if}}
+    {{/if}}
+    {{#if modified}}
+    <div class="row text-right">
+        <button type="button" class="btn btn-default" on-click="save">Save</button>
+    </div>
     {{/if}}
 </div>
 <!-- {{>recurse}} -->
@@ -16,7 +24,7 @@
     <!-- END TODO -->
     <div style="display:inline-block; width: {{100 - width(depth, 10)}}%;">
         <div class="input-group">
-            <input type="text" class="form-control" placeholder="{{name}}" on-blur="updateCategory:{{id}}">
+            <input type="text" class="form-control" id="category_{{id}}" placeholder="{{name}}" on-blur="updateCategory:{{id}}">
             <span class="input-group-btn">
                 <button type="button" class="btn btn-default" aria-label="Left Align" on-click="delCategory:{{id}}">
                     <span class="glyphicon glyphicon-minus" aria-hidden="true" style="display:inline-block;"></span>

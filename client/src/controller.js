@@ -105,8 +105,11 @@ module.exports = Controller = Marionette.Controller.extend({
         this.renderView({
             success: function () {
                 console.log("new categoriesedit()");
-                var view = new CategoriesEdit();
-                view.set('categories', App.data.categories);
+                var view = new CategoriesEdit({
+                    data: {
+                        categories: App.data.categories
+                    }
+                });
                 App.data.categories.fetch({
                     success: function() {
                         App.core.vent.trigger('app:log', "Successfully fetched categories from server");
