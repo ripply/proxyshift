@@ -10,11 +10,13 @@ module.exports = UserModel = Backbone.Model.extend({
         id: 0,
         username: '',
         name: '',
-        email: ''
+        email: '',
+        squestion: '',
+        sanswer: ''
     },
 
     url: function(){
-        return app.API + '/user';
+        return App.API + '/users';
     }
 
 });

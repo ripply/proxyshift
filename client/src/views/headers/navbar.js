@@ -68,6 +68,11 @@ module.exports = NavBar = Ractive.extend({
                 route: 'about'
             },
             {
+                name: 'Signup',
+                url: '#signup',
+                route: 'signup'
+            },
+            {
                 login: {
                     name: 'Login',
                     url: '#login'

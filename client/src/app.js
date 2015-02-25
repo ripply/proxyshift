@@ -14,6 +14,7 @@ module.exports = App = function App() {};
 
 App.prototype.start = function(){
     App.core = new Marionette.Application();
+    App.API = 'api';
 
     App.core.addRegions({
         contentRegion : ContentRegion,

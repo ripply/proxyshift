@@ -5,6 +5,7 @@ var Marionette = require('backbone.marionette'),
     ShiftDetailsView = require('./views/shifts/shift_detail'),
     FullCalendarView = require('./views/shifts/full_calendar'),
     LoginView = require('./views/users/login'),
+    SignupView = require('./views/users/signup'),
     AddShiftView = require('./views/shifts/add_shift'),
     NavBar = require('./views/headers/navbar'),
     CategoriesEdit = require('./views/categories/categories_edit'),
@@ -142,6 +143,15 @@ module.exports = Controller = Marionette.Controller.extend({
         App.core.contentRegion.show(view);
         //this.renderView(view);
         window.App.router.navigate('login');
+    },
+
+    signup: function() {
+        App.core.vent.trigger('app:log', 'Controller: "Signup" route hit.');
+        var view = new SignupView();
+        console.log('SignupView!!!');
+        App.core.contentRegion.show(view);
+        //this.renderView(view);
+        window.App.router.navigate('signup');
     },
 
     logout: function() {

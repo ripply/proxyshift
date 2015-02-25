@@ -119,10 +119,10 @@ module.exports.initialize = function(app) {
      **********************************************/
 
     // API post calls must be authenticated and contain CSRF token
-    //app.post('/api/*', ensureCsrf, ensureAuthenticated);
-    //app.delete('/api/*', ensureCsrf, ensureAuthenticated);
+    app.post('/api/*', ensureCsrf, ensureAuthenticated);
+    app.delete('/api/*', ensureCsrf, ensureAuthenticated);
     // API get calls just need authentication
-    //app.get('/api/*', ensureAuthenticated);
+    app.get('/api/*', ensureAuthenticated);
 
     app.get('/api/user/:id', users.getById);
 
@@ -138,4 +138,10 @@ module.exports.initialize = function(app) {
     app.get('/api/categories', categories.index);
     app.post('/api/categories', categories.add);
     app.delete('/api/categories/:id', categories.delete);
+
+    app.get('/api/users', users.index);
+    app.get('/api/users/:id', users.getById);
+    app.get('/api/users', users.index);
+    app.put('/api/users', users.add);
+    app.delete('/api/users/:id', users.delete);
 };
