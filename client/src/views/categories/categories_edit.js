@@ -126,11 +126,25 @@ module.exports = CategoriesEdit = Ractive.extend({
                 }
 
                 var newCategoryCount = _.reduce(self.loopOver(categories), function(memo, num) {
-                    if (num.get('newCategory')) {
+                    if (num.get('newItem')) {
                         memo += 1;
                     }
                     return memo;
                 }, 0);
+
+                // Check if the parent has text
+                // Nodes without text cannot have children
+                _.each(self.loopOver(categories), function(category, index, list){
+                    if (category !== undefined) {
+                        if (category.id === parentId) {
+                            if (category.name === undefined ||
+                                category.name === '') {
+                                // name is empty, do not continue
+                                return;
+                            }
+                        }
+                    }
+                });
 
                 // Push a new category onto the backbone model
                 // this will not trigger a POST to the server
