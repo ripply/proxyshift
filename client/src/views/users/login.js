@@ -28,8 +28,8 @@ module.exports = LoginView = Marionette.ItemView.extend({
                 success: function(mod, res){
                     App.core.vent.trigger('app:login');
                 },
-                error: function(err){
-                    App.core.vent.trigger('app:danger', 'Bummer dude!');
+                error: function(err, textStatus){
+                    App.core.vent.trigger('app:danger', textStatus);
                 }
             });
         } else {

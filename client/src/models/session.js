@@ -138,7 +138,7 @@ module.exports = SessionModel = Backbone.Model.extend({
             dataType: 'json',
             type: 'POST',
             data: JSON.stringify( postData ),
-            success: function(res){
+            success: function(res, textStatus, xhr){
                 if( !res.error ){
                     if(_.indexOf(['login', 'signup'], opts.method) !== -1){
                         self.updateSessionUser( res || {} );
@@ -150,11 +150,11 @@ module.exports = SessionModel = Backbone.Model.extend({
 
                     if(callback && 'success' in callback) callback.success(res);
                 } else {
-                    if(callback && 'error' in callback) callback.error(res);
+                    if(callback && 'error' in callback) callback.error(res, textStatus);
                 }
             },
-            error: function(mod, res){
-                if(callback && 'error' in callback) callback.error(res);
+            error: function(mod, res, errorThrown){
+                if(callback && 'error' in callback) callback.error(res, errorThrown);
             }
         }).complete( function(){
             if(callback && 'complete' in callback) callback.complete(res);

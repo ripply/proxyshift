@@ -37,7 +37,13 @@ module.exports = SignupView = Marionette.ItemView.extend({
                     App.core.vent.trigger('app:signup');
                 },
                 error: function(mod, res, options){
-                    App.core.vent.trigger('app:danger', 'Failed to create new account');
+                    var text = res.responseJSON['error'];
+                    if (text === undefined ||
+                        text === null) {
+                        text = 'Failed to create user';
+                        App.core.vent.trigger('app:log', 'Unknown response from server: ' + res.responseText);
+                    }
+                    App.core.vent.trigger('app:danger', text);
                 }
             });
 
