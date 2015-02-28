@@ -118,8 +118,12 @@ module.exports.initialize = function(app) {
      *              API METHODS
      **********************************************/
 
+    // creating users is ok to do without being logged in
+    app.post('/api/users', users.add);
+
     // API post calls must be authenticated and contain CSRF token
     app.post('/api/*', ensureCsrf, ensureAuthenticated);
+    app.put('/api/*', ensureCsrf, ensureAuthenticated);
     app.delete('/api/*', ensureCsrf, ensureAuthenticated);
     // API get calls just need authentication
     app.get('/api/*', ensureAuthenticated);
@@ -142,6 +146,5 @@ module.exports.initialize = function(app) {
     app.get('/api/users', users.index);
     app.get('/api/users/:id', users.getById);
     app.get('/api/users', users.index);
-    app.put('/api/users', users.add);
     app.delete('/api/users/:id', users.delete);
 };
