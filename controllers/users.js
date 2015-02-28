@@ -9,7 +9,7 @@ module.exports = {
     getById: function(req, res) {
         models.Users.find({ _id: req.params.id }, function(err, shift) {
             if (err) {
-                res.json({error: 'User not found.'});
+                res.json(404, {error: 'User not found.'});
             } else {
                 res.json(shift);
             }
@@ -21,7 +21,7 @@ module.exports = {
         var newUsers = new models.Users(req.body);
         newUsers.save(function(err, user) {
             if (err) {
-                res.json({error: 'Error adding user.'});
+                res.json(403, {error: 'Error adding user.'});
             } else {
                 res.json(user);
             }
@@ -31,7 +31,7 @@ module.exports = {
         console.log(req.body);
         models.Users.update({ _id: req.body.id }, req.body, function(err, updated) {
             if (err) {
-                res.json({error: 'Users not found.'});
+                res.json(404, {error: 'Users not found.'});
             } else {
                 res.json(updated);
             }
@@ -40,7 +40,7 @@ module.exports = {
     delete: function(req, res) {
         models.Users.findOne({ _id: req.params.id }, function(err, shift) {
             if (err) {
-                res.json({error: 'Users not found.'});
+                res.json(404, {error: 'Users not found.'});
             } else {
                 shift.remove(function(err, shift){
                     res.json(200, {status: 'Success'});

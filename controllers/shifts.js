@@ -9,7 +9,7 @@ module.exports = {
     getById: function(req, res) {
         models.Shift.find({ _id: req.params.id }, function(err, shift) {
             if (err) {
-                res.json({error: 'Shift not found.'});
+                res.json(404, {error: 'Shift not found.'});
             } else {
                 res.json(shift);
             }
@@ -21,7 +21,7 @@ module.exports = {
         var newShift = new models.Shift(req.body);
         newShift.save(function(err, shift) {
             if (err) {
-                res.json({error: 'Error adding shift.'});
+                res.json(403, {error: 'Error adding shift.'});
             } else {
                 res.json(shift);
             }
@@ -31,7 +31,7 @@ module.exports = {
         console.log(req.body);
         models.Shift.update({ _id: req.body.id }, req.body, function(err, updated) {
             if (err) {
-                res.json({error: 'Shift not found.'});
+                res.json(404, {error: 'Shift not found.'});
             } else {
                 res.json(updated);
             }
@@ -40,7 +40,7 @@ module.exports = {
     delete: function(req, res) {
         models.Shift.findOne({ _id: req.params.id }, function(err, shift) {
             if (err) {
-                res.json({error: 'Shift not found.'});
+                res.json(404, {error: 'Shift not found.'});
             } else {
                 shift.remove(function(err, shift){
                     res.json(200, {status: 'Success'});
