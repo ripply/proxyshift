@@ -9,11 +9,7 @@ module.exports = NavBar = Ractive.extend({
 
     init: function(options) {
         _.bindAll.apply(_, [this].concat(_.functions(this)));
-        if (this.routeChangeSource) {
-            this.routeChangeSource.bind('app:route:after', _.bind(this.routeChanged, this, this));
-        }
-
-
+        App.core.vent.bind('app:route:after', _.bind(this.routeChanged, this, this));
     },
 
     data: {
