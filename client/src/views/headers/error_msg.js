@@ -33,6 +33,12 @@ module.exports = ErrorMessages = Ractive.extend({
         var now = Date.now();
         var self = this;
 
+        if (message === undefined ||
+            message === null ||
+            message === '') {
+            message = 'No message specified';
+        }
+
         this.push('messages', {
             text: message,
             severity: severity,
