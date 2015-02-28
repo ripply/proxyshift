@@ -29,7 +29,7 @@ module.exports = LoginView = Marionette.ItemView.extend({
                     App.core.vent.trigger('app:login');
                 },
                 error: function(err){
-                    App.core.vent.trigger('app:alert', 'Bummer dude!');
+                    App.core.vent.trigger('app:danger', 'Bummer dude!');
                 }
             });
         } else {

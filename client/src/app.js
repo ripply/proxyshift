@@ -1,4 +1,5 @@
 var Marionette = require('backbone.marionette'),
+    _ = require('underscore'),
     Controller = require('./controller'),
     Router = require('./router'),
     HeaderRegion = require('./regions/header'),
@@ -62,12 +63,17 @@ App.prototype.start = function(){
         App.core.vent.trigger('app:start');
     });
 
-    App.showAlert = function(message, err, type) {
-        console.log('FIXME: App.showAlert NYI, message: ' + message);
-    };
-
-    App.core.vent.bind('app:alert', function(message) {
-        App.showAlert(message);
+    // bind several informational events to console logging
+    _.each([
+        'success',
+        'info',
+        'warning',
+        'danger'
+    ], function(text, index, list) {
+        var theText = text;
+        App.core.vent.bind('app:' + text, function(message) {
+            App.core.vent.trigger('app:log', 'alert:' + theText + ': ' + message);
+        });
     });
 
     App.core.vent.bind('app:start', function(options){
@@ -84,11 +90,11 @@ App.prototype.start = function(){
     });
 
     App.core.vent.bind('error', function(msg) {
-        App.core.vent.trigger('app:log', msg);
+        App.core.vent.trigger('app:danger', msg);
     });
 
     App.core.vent.bind('app:log', function(msg) {
-        console.log(msg);
+        console.log('LOG: ' + msg);
     });
 
     App.core.start();

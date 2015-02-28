@@ -9,6 +9,7 @@ var Marionette = require('backbone.marionette'),
     AddShiftView = require('./views/shifts/add_shift'),
     NavBar = require('./views/headers/navbar'),
     CategoriesEdit = require('./views/categories/categories_edit'),
+    ErrorMessages = require('./views/headers/error_msg'),
     LoadingView = require('./views/loading_view');
 
 module.exports = Controller = Marionette.Controller.extend({
@@ -42,12 +43,11 @@ module.exports = Controller = Marionette.Controller.extend({
             }
         });
         App.views.navBar = new NavBar({
-            // method to listen for route changes
-            routeChangeSource: App.core.vent,
             data: {
                 session: App.session
             }
         });
+        App.views.errorMessages = new ErrorMessages();
     },
 
     loadingPrecondition: function(callback) {

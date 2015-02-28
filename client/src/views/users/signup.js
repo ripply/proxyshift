@@ -27,12 +27,17 @@ module.exports = SignupView = Marionette.ItemView.extend({
                 sanswer: this.$("#signup-sanswer-input").val()
             };
             var user = new UserModel(options);
-            user.save({
-                success: function(mod, res){
+            // null must be passed into save for callback to trigger
+            user.save(null, {
+                success: function(mod, res, options){
+                    // trigger event that says we have signed up
+                    // this should switch views to something like
+                    // congratulations on signing up
+                    // please check your email and then signin
                     App.core.vent.trigger('app:signup');
                 },
-                error: function(err){
-                    App.core.vent.trigger('app:alert', 'Bummer dude!');
+                error: function(mod, res, options){
+                    App.core.vent.trigger('app:danger', 'Failed to create new account');
                 }
             });
 
