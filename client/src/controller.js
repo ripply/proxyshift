@@ -19,7 +19,7 @@ module.exports = Controller = Marionette.Controller.extend({
         var self = this;
         App.core.vent.bind('app:logout', function(options) {
             App.core.vent.trigger('app:log', 'User was logged out');
-            App.showAlert('You have been logged out');
+            App.core.vent.trigger('app:info', 'You have been logged out');
             App.wasLoggedOut = true;
             App.session.loggedOut();
             self.login();
