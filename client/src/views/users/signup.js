@@ -30,6 +30,7 @@ module.exports = SignupView = Marionette.ItemView.extend({
             // null must be passed into save for callback to trigger
             user.save(null, {
                 success: function(mod, res, options){
+                    App.core.vent.trigger('app:info', 'Successfully created account.');
                     // trigger event that says we have signed up
                     // this should switch views to something like
                     // congratulations on signing up
@@ -37,7 +38,7 @@ module.exports = SignupView = Marionette.ItemView.extend({
                     App.core.vent.trigger('app:signup');
                 },
                 error: function(mod, res, options){
-                    var text = res.responseJSON['error'];
+                    var text = res.responseJSON.error;
                     if (text === undefined ||
                         text === null) {
                         text = 'Failed to create user';
