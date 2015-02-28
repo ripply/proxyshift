@@ -27,6 +27,7 @@ module.exports = Controller = Marionette.Controller.extend({
         });
         App.core.vent.bind('app:login', function(options) {
             App.core.vent.trigger('app:log', 'User was logged in');
+            App.core.vent.trigger('app:info', 'Successfully logged in');
             if (App.wasLoggedOut) {
                 Backbone.history.history.back();
                 App.wasLoggedOut = false;

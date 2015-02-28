@@ -15,7 +15,14 @@ module.exports = AddView = Marionette.ItemView.extend({
             end: this.$el.find('#end').val()
         };
 
-        window.App.data.shifts.create(newShift);
+        var newlyCreatedShift = window.App.data.shifts.create(newShift, {
+            success: function() {
+                App.core.vent.trigger('app:info', 'Successfully created shift');
+            },
+            error: function() {
+                App.core.vent.trigger('app:danger', 'Failed to create shift');
+            }
+        });
         window.App.core.vent.trigger('app:log', 'Add View: Saved new shift!');
         window.App.controller.home();
     }

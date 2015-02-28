@@ -154,7 +154,7 @@ module.exports = SessionModel = Backbone.Model.extend({
                 }
             },
             error: function(mod, res, errorThrown){
-                if(callback && 'error' in callback) callback.error(res, errorThrown);
+                if(callback && 'error' in callback) callback.error(res, mod.responseText);
             }
         }).complete( function(){
             if(callback && 'complete' in callback) callback.complete(res);
