@@ -2,5 +2,8 @@ var Backbone = require('backbone');
 
 module.exports = ContactModel = Backbone.Model.extend({
     idAttribute: '_id',
-    urlRoot: 'api/shifts'
+
+    url: function() {
+        return App.API + '/shifts';
+    }
 });
