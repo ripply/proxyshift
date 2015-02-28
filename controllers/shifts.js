@@ -21,7 +21,7 @@ module.exports = {
         var newShift = new models.Shift(req.body);
         newShift.save(function(err, shift) {
             if (err) {
-                res.json(403, {error: 'Error adding shift.'});
+                res.json(403, {error: 'Error creating shift.'});
             } else {
                 res.json(shift);
             }

@@ -21,7 +21,7 @@ module.exports = {
         var newUsers = new models.Users(req.body);
         newUsers.save(function(err, user) {
             if (err) {
-                res.json(403, {error: 'Error adding user.'});
+                res.json(403, {error: 'Error creating user.'});
             } else {
                 res.json(user);
             }

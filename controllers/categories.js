@@ -21,7 +21,7 @@ module.exports = {
         var newCategory = new models.Category(req.body);
         newCategory.save(function(err, Category) {
             if (err) {
-                res.json(403, {error: 'Error adding Category.'});
+                res.json(403, {error: 'Error creating category.'});
             } else {
                 res.json(Category);
             }
