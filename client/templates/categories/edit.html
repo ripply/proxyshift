@@ -18,27 +18,25 @@
     {{/if}}
 </div>
 <!-- {{>recurse}} -->
-<div class="row">
-    <!-- TODO: FIXME THIS IS UGLY AS FK -->
-    <div style='width: {{width(depth, 10)}}%; background-color: red; float: left; height: 100%;'>&nbsp;</div>
-    <!-- END TODO -->
-    <div style="display:inline-block; width: {{100 - width(depth, 10)}}%;">
-        <div class="input-group">
-            <input type="text" class="form-control" id="category_{{id}}" placeholder="{{name}}" on-blur="updateCategory:{{id}}">
-            <span class="input-group-btn">
-                <button type="button" class="btn btn-default" aria-label="Left Align" on-click="delCategory:{{id}}">
-                    <span class="glyphicon glyphicon-minus" aria-hidden="true" style="display:inline-block;"></span>
-                </button>
-                <button type="button" class="btn btn-default" style="display:inline-block;" aria-label="Left Align" on-click="newCategory:{{id}}">
-                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                </button>
-            </span>
-        </div><!-- /input-group -->
-    </div><!-- /.row -->
+<div class="media">
+    <div class="media-left">-</div>
+    <div class="media-body">
+        <div class="input-group" style="width: 100%">
+                <input type="text" class="form-control" id="category_{{id}}" placeholder="{{name}}" on-blur="updateCategory:{{id}}">
+                <span class="input-group-btn" style="overflow: hidden;">
+                    <button type="button" class="btn btn-default" aria-label="Left Align" on-click="delCategory:{{id}}">
+                        <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+                    </button>
+                    <button type="button" class="btn btn-default" aria-label="Left Align" on-click="newCategory:{{id}}">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                    </button>
+                </span>
+        </div>
+        {{#if children}}
+            {{#each .children}}
+                {{>recurse}}
+            {{/each}}
+        {{/if}}
+    </div>
 </div>
-{{#if children}}
-  {{#each .children}}
-    {{>recurse}}
-  {{/each}}
-{{/if}}
 <!-- {{/recurse}} -->
