@@ -66,75 +66,55 @@ module.exports = Controller = Marionette.Controller.extend({
 
     home: function() {
         App.core.vent.trigger('app:log', 'Controller: "Home" route hit.');
-        this.renderView({
-            success: function() {
-                //App.core.headerRegion.show(new TestHeaderView());
-                //var view = window.App.views.shiftsView;
-                //App.core.contentRegion.show(view);
-                //this.renderView(view);
-                window.App.router.navigate('#');
-            }
-        });
+        //App.core.headerRegion.show(new TestHeaderView());
+        //var view = window.App.views.shiftsView;
+        //App.core.contentRegion.show(view);
+        //this.renderView(view);
+        window.App.router.navigate('#');
     },
 
     shiftDetails: function(id) {
         App.core.vent.trigger('app:log', 'Controller: "Shift Details" route hit.');
-        this.renderView({
-            success: function () {
-                var view = new ShiftDetailsView({model: window.App.data.shifts.get(id)});
-                App.core.contentRegion.show(view);
-                //this.renderView(view);
-                window.App.router.navigate('shifts/' + id);
-            }
-        });
+        var view = new ShiftDetailsView({model: window.App.data.shifts.get(id)});
+        App.core.contentRegion.show(view);
+        //this.renderView(view);
+        window.App.router.navigate('shifts/' + id);
     },
 
     calendar: function() {
         App.core.vent.trigger('app:log', 'Controller: "Calendar" route hit.');
-        this.renderView({
-            success: function () {
-                console.log('Model: ' + window.App.data.shifts);
-                var view = new FullCalendarView({collection: window.App.data.shifts, element: $("#full-calendar")});
-                App.core.contentRegion.show(view);
-                //this.renderView(view);
-                window.App.router.navigate('calendar');
-            }
-        });
+        console.log('Model: ' + window.App.data.shifts);
+        var view = new FullCalendarView({collection: window.App.data.shifts, element: $("#full-calendar")});
+        App.core.contentRegion.show(view);
+        //this.renderView(view);
+        window.App.router.navigate('calendar');
     },
 
     categories: function() {
         App.core.vent.trigger('app:log', 'Controller: "Categories" route hit.');
-        this.renderView({
-            success: function () {
-                console.log("new categoriesedit()");
-                var view = new CategoriesEdit({
-                    data: {
-                        categories: App.data.categories
-                    }
-                });
-                App.data.categories.fetch({
-                    success: function() {
-                        App.core.vent.trigger('app:log', "Successfully fetched categories from server");
-                    },
-                    error: function() {
-                        App.core.vent.trigger('app:log', "FAILED to fetch categories from server");
-                    }
-                });
-                window.App.router.navigate('categories');
+        console.log("new categoriesedit()");
+        var view = new CategoriesEdit({
+            data: {
+                categories: App.data.categories
             }
         });
+        App.data.categories.fetch({
+            success: function() {
+                App.core.vent.trigger('app:log', "Successfully fetched categories from server");
+            },
+            error: function() {
+                App.core.vent.trigger('app:log', "FAILED to fetch categories from server");
+            }
+        });
+        window.App.router.navigate('categories');
     },
 
     add: function() {
         App.core.vent.trigger('app:log', 'Controller: "Add Shift" route hit.');
-        this.renderView({
-            success: function () {
-                var view = new AddShiftView();
-                App.core.contentRegion.show(view);
-                //this.renderView(view);
-                window.App.router.navigate('add');
-            }
-        });
+        var view = new AddShiftView();
+        App.core.contentRegion.show(view);
+        //this.renderView(view);
+        window.App.router.navigate('add');
     },
 
     login: function() {
@@ -169,41 +149,4 @@ module.exports = Controller = Marionette.Controller.extend({
         });
 
     },
-
-    renderView: function(next) {
-        if (!('error' in next)) {
-            next.error = this.loginFailedCallback;
-        }
-        this.renderViewWithPrecondition(this.loadingPrecondition, next);
-    },
-
-    renderViewWithPrecondition: function(precondition, next) {
-        precondition({
-            success: function() {
-                next.success();
-            },
-            error: function() {
-                next.error();
-            }
-        });
-        /*
-        this.destroyCurrentView(view);
-        App.core.vent.trigger('app:log', 'Controller: Rendering new view.');
-        var rendered = view.render();
-        console.log('Rendered content:');
-        console.log(rendered);
-        if (!rendered.$el) {
-            console.error('Failed to render view, rendered.el is undefined: nothing will render');
-        }
-        //$('#js-boilerplate-app').html(rendered.$el);//view.render().el);
-        */
-    },
-
-    destroyCurrentView: function(view) {
-        if (!_.isUndefined(window.App.views.currentView)) {
-            App.core.vent.trigger('app:log', 'Controller: Destroying existing view.');
-            window.App.views.currentView.close();
-        }
-        window.App.views.currentView = view;
-    }
 });

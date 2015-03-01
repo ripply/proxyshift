@@ -46,6 +46,10 @@ App.prototype.start = function(){
         App.core.vent.trigger('app:log', "Experiencing connection issues...");
     });
 
+    App.core.loggedIn = function(callback) {
+        App.session.loggedIn(callback);
+    };
+
     App.core.on("initialize:before", function (options) {
         App.core.vent.trigger('app:log', 'App: Initializing');
 

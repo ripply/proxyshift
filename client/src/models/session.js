@@ -90,14 +90,14 @@ module.exports = SessionModel = Backbone.Model.extend({
                             //self.updateSessionUser(res.user);
                             self.setLoggedIn(true);
                             if ('success' in callback) {
-                                updateAuthCache(function (callback) {
+                                return updateAuthCache(function (callback) {
                                     callback.success(mod, res);
                                 })(callback);
                             }
                         } else {
                             self.set({logged_in: false});
                             if ('error' in callback) {
-                                updateAuthCache(function (callback) {
+                                return updateAuthCache(function (callback) {
                                     callback.error(mod, res);
                                 })(callback);
                             }
@@ -105,21 +105,21 @@ module.exports = SessionModel = Backbone.Model.extend({
                     }, error: function (mod, res) {
                         self.setLoggedIn(false);
                         if ('error' in callback) {
-                            updateAuthCache(function (callback) {
+                            return updateAuthCache(function (callback) {
                                 callback.error(mod, res);
                             })(callback);
                         }
                     }
                 }).complete(function () {
                     if ('complete' in callback) {
-                        updateAuthCache(function (callback) {
+                        return updateAuthCache(function (callback) {
                             callback.complete();
                         })(callback);
                     }
                 });
             }
         } else {
-            checkAuthCache.result(callback);
+            return checkAuthCache.result(callback);
         }
     },
 
@@ -162,7 +162,8 @@ module.exports = SessionModel = Backbone.Model.extend({
     },
 
     loggedIn: function(next) {
-        this.checkAuth(next);
+        var wut = this.checkAuth(next);
+        return wut;
     },
 
     loggedOut: function() {
