@@ -79,6 +79,8 @@ userSchema.methods.compareSAnswer = function(candidateSAnswer, cb) {
 userSchema.method('toJSON', function() {
     var user = this.toObject();
     delete user.password;
+    delete user.squestion;
+    delete user.sanswer;
     delete user.__v;
     return user;
 });
