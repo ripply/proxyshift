@@ -22,18 +22,27 @@ module.exports = Controller = Marionette.Controller.extend({
             App.core.vent.trigger('app:info', 'You have been logged out');
             App.wasLoggedOut = true;
             App.session.loggedOut();
-            self.login();
+            App.router.navigate('login', {trigger: true});
             App.core.vent.trigger('app:start:logout');
         });
         App.core.vent.bind('app:login', function(options) {
             App.core.vent.trigger('app:log', 'User was logged in');
             App.core.vent.trigger('app:info', 'Successfully logged in');
-            if (App.wasLoggedOut) {
+            /*if (App.wasLoggedOut) {
+                // TODO: This is very flaky and doesn't work very well
                 Backbone.history.history.back();
                 App.wasLoggedOut = false;
-            }
-            App.core.vent.trigger('app:start:login');
+            }*/
+            App.router.navigate('calendar', {trigger: true});
+            //App.core.vent.trigger('app:start:login');
         });
+        // this was very flaky as well
+        /*App.core.vent.bind('app:start:logout', function(options) {
+            App.router.navigate('login', {trigger: true});
+        });
+        App.core.vent.bind('app:start:login', function(options) {
+            App.router.navigate('calendar', {trigger: true});
+        });*/
         App.views.loadingView = new LoadingView();
         App.session.loggedIn({
             success: function() {
@@ -49,19 +58,6 @@ module.exports = Controller = Marionette.Controller.extend({
             }
         });
         App.views.errorMessages = new ErrorMessages();
-    },
-
-    loadingPrecondition: function(callback) {
-        if (App.session.authCacheInvalid()) {
-            //TODO: Loading screen
-            console.log('TODO: Trigger loading screen here while querying server if logged in');
-        }
-        App.session.loggedIn(callback);
-    },
-
-    loginFailedCallback: function() {
-        console.log('Login failed, triggering login view.');
-        this.login();
     },
 
     home: function() {
