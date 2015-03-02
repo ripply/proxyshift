@@ -234,7 +234,8 @@ var categorySchema = new Schema({
     name:        {type: String,
                   unique: true,
                   lowercase: true,
-                  trim: true},
+                  trim: true,
+                  required: true},
     parent:      {type: mongoose.Schema.Types.ObjectId,
                   ref: 'Category',
                   required: false}
@@ -285,6 +286,20 @@ categorySchema.pre('remove', function(next) {
             if (err) { next(err); }
         });
     });
+});
+
+categorySchema.pre('save', function(next) {
+    var category = this;
+    // on password change, invalidate session tokens AND session
+    if (category.isModified('name')) {
+        var name = category['name'];
+        if (name === undefined ||
+            name === null ||
+            name === '') {
+            next(new Error("Name cannot be empty"));
+        }
+    }
+    next();
 });
 
 module.exports = {
