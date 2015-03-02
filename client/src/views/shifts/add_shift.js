@@ -16,10 +16,10 @@ module.exports = AddView = Marionette.ItemView.extend({
         };
 
         var newlyCreatedShift = window.App.data.shifts.create(newShift, {
-            success: function() {
+            success: function(model, res, options) {
                 App.core.vent.trigger('app:info', 'Successfully created shift');
             },
-            error: function() {
+            error: function(model, res, options) {
                 App.core.vent.trigger('app:danger', 'Failed to create shift');
             }
         });

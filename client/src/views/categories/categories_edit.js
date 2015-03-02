@@ -176,19 +176,139 @@ module.exports = CategoriesEdit = Ractive.extend({
                 this.update();
             },
             'save': function(event) {
-                console.log("Save clicked");
+                if (this.get('saving')) {
+                    // code already running
+                    return;
+                }
+                this.set('saving', true);
+                var categories = this.get('categories');
+                var newCategories = [];
+                var notModified = {};
+                var modified = [];
+                // find what is new and has been modified
+                _.each(this.loopOver(categories), function(category, index, list) {
+                    var originalName = category.get('originalName');
+                    if (category.get('newItem')) {
+                        newCategories.push(category);
+                    } else if (originalName !== undefined && (originalName !== category.get('name'))) {
+                        modified.push(category);
+                    } else {
+                        // this node has not been modified
+                        // no reason to push to server
+
+                        // add object to hash for easy object lookup
+                        notModified[category.id] = category;
+                    }
+                });
+                // try to create new objects first
+                // we need to figure out which order to create them in
+                // so lets first find objects that have existing parents with ids in the database
+                var createOrder = [];
+                var inCreateOrder = {};
+                var capture = function(category, index, list) {
+                    var parent = category.get('parent');
+                    if (parent === undefined ||
+                        parent === null) {
+                        // this category has no parent which makes it a root
+                        // so there is nothing special for odering we have to do for this
+                        // (besides its children need to be added after)
+                        createOrder.push(category);
+                        inCreateOrder[category.id] = category;
+                    } else if (category.id in createOrder) {
+                        // parent already going to be created
+                        // add it to the list
+                        createOrder.push(category);
+                        inCreateOrder[category.id] = category;
+                    } else if (category.get('parent') in notModified) {
+                        // parent exists and it doesn't need to be modified!
+                        createOrder.push(category);
+                        inCreateOrder[category.id] = category;
+                    } else {
+                        // not a root
+                        // parent not yet added
+                        // skip this and hopefully the next iteration will pick it up
+                    }
+                };
+
+                var categoriesToUpdateCount = newCategories.length + inCreateOrder.length;
+                _.each(this.loopOver(newCategories), capture);
+                while (createOrder.length < categoriesToUpdateCount) {
+                    var createOrderLength = createOrder.length;
+                    _.each(this.loopOver(newCategories), capture);
+                    if (createOrder.length == createOrderLength) {
+                        console.log('Disconnected nodes exist, not saving those');
+                        break;
+                    }
+                }
+                // iterate over modified keys and save them
+                // because this code gets run asynchronously
+                // we need to make sure that we are running the updates asynchronously
+                var self = this;
+                // function that gets called after updating succeeds or fails
+                // to re-enable the save button in the template
+                var savingComplete = function(fetch) {
+                    self.set('saving', false);
+                    if (fetch) {
+                        self.set('fetching', true);
+                        self.get('categories').fetch({
+                            success: function() {
+                                self.set('fetching', false);
+                            },
+                            error: function() {
+                                self.set('fetching', false);
+                            }
+                        });
+                    }
+                };
+                var pushUpdate = function(modifiedIndex, createIndex) {
+                    if (modifiedIndex < modified.length) {
+                        // modifications still need to be made
+                        modified[modifiedIndex].save({patch: true, wait: true}, {
+                            success: function(model, res, options) {
+                                App.core.vent.trigger('app:info', 'Successfully modified category ' + model.get('name'));
+                                pushUpdate(modifiedIndex + 1, createIndex);
+                            },
+                            error: function(model, res, options) {
+                                App.core.vent.trigger('app:warning', res.responseJSON);
+                                savingComplete(true);
+                            }
+                        })
+                    } else {
+                        if (createIndex < createOrder.length) {
+                            // modifications have been pushed to server
+                            // so we need to create the new objects
+                            // when we create them on the server
+                            // the server should respond with the new object
+                            var newCategory = createOrder[createIndex];
+                            newCategory.set('_id', undefined);
+                            createOrder[createIndex].save({wait: true}, {
+                                success: function (model, res, options) {
+                                    App.core.vent.trigger('app:info', 'Successfully created category ' + model.get('name'));
+                                    pushUpdate(modifiedIndex, createIndex + 1);
+                                },
+                                error: function (model, res, options) {
+                                    App.core.vent.trigger('app:warning', res.responseJSON);
+                                    savingComplete(true);
+                                }
+                            });
+                        } else {
+                            // Creating objects has completed!
+                            savingComplete();
+                        }
+                    }
+                };
+
+                pushUpdate(0, 0);
+                /*.save(function(err) {
+                    if (err) {
+                        console.log("Failed to save categories");
+                    } else {
+                        console.log("Successfuly saved?");
+                    }
+                });*/
+                this.set('saving', false);
             }
         });
-    },
-
-    data: {
-        width: function(depth, absoluteMaximumDepth) {
-            if (depth === undefined || absoluteMaximumDepth === undefined) {
-                console.log("When computing width of div, arguments are invalid: depth=" + depth + ", maximumDepth=" + absoluteMaximumDepth);
-            }
-            var interval = (1 / absoluteMaximumDepth) * 100;
-            return interval * depth;
-        }
     },
 
     computed: {

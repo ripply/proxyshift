@@ -28,7 +28,7 @@ module.exports = ErrorMessages = Ractive.extend({
         });
     },
 
-    showAlert: function(severity, message) {
+    showAlert: function(severity, message, options) {
         console.log("showAlert() " + message);
         var now = Date.now();
         var self = this;
@@ -37,6 +37,16 @@ module.exports = ErrorMessages = Ractive.extend({
             message === null ||
             message === '') {
             message = 'No message specified';
+        }
+
+        if (message !== null &&
+            message !== undefined &&
+            typeof message === 'object') {
+            // server can respond with {error: ''} optionss
+            // so we can extract those here
+            if ('error' in message) {
+                message = message.error;
+            }
         }
 
         this.push('messages', {
