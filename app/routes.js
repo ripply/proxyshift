@@ -121,30 +121,46 @@ module.exports.initialize = function(app) {
     // creating users is ok to do without being logged in
     app.post('/api/users', users.add);
 
+    /**
+     * AUTHENTICATION
+     */
     // API post calls must be authenticated and contain CSRF token
     app.post('/api/*', ensureCsrf, ensureAuthenticated);
     app.put('/api/*', ensureCsrf, ensureAuthenticated);
+    app.patch('/api/*', ensureCsrf, ensureAuthenticated);
     app.delete('/api/*', ensureCsrf, ensureAuthenticated);
     // API get calls just need authentication
     app.get('/api/*', ensureAuthenticated);
 
-    app.get('/api/user/:id', users.getById);
-
     // API calls go below here
+
+    /**
+     * Shifts
+     */
     app.get('/api/shifts', shifts.index);
     app.get('/api/shifts/:id', shifts.getById);
     app.post('/api/shifts', shifts.add);
-    // app.put('/api/shifts', shifts.update);
+    app.put('/api/shifts', shifts.add);
+    app.patch('/api/shifts', shifts.update);
     app.delete('/api/shifts/:id', shifts.delete);
 
+    /**
+     * Categories
+     */
     app.get('/api/categories', categories.index);
     app.get('/api/categories/:id', categories.getById);
-    app.get('/api/categories', categories.index);
     app.post('/api/categories', categories.add);
+    app.put('/api/categories', categories.add);
+    app.patch('/api/categories', categories.update);
     app.delete('/api/categories/:id', categories.delete);
 
+    /**
+     * Users
+     */
     app.get('/api/users', users.index);
     app.get('/api/users/:id', users.getById);
-    app.get('/api/users', users.index);
+    // post comes before authentication so anyone can make an account
+    app.put('/api/users', users.add);
+    app.patch('/api/users', users.update);
     app.delete('/api/users/:id', users.delete);
 };

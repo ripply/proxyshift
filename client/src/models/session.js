@@ -22,10 +22,12 @@ module.exports = SessionModel = Backbone.Model.extend({
         console.log('Setting up ajaxSetup');
         $.ajaxSetup({
             beforeSend: function(xhr, settings) {
-                if (settings.type == 'POST' || settings.type == 'PUT' || settings.type == 'DELETE') {
+                if (settings.type == 'POST' ||
+                    settings.type == 'PUT' ||
+                    settings.type == 'PATCH' ||
+                    settings.type == 'DELETE') {
                     if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
                         // Only send the token to relative URLs i.e. locally.
-                        console.log('setting header');
                         xhr.setRequestHeader("x-csrf-token", $.cookie('csrftoken'));
                     }
                 }
