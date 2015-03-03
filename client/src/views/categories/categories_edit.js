@@ -106,14 +106,29 @@ module.exports = CategoriesEdit = Ractive.extend({
                     // find the category object in the object with the specified id
                     // delete its children
                     // then delete it
-                    _.each(self.loopOver(categories), function(category, index, list){
+                    var immediatelyRemove = false;
+                    _.each(self.loopOver(categories), function (category, index, list) {
                         if (category !== undefined) {
                             if (category.id === id) {
-                                self.removeChildren(category.id);
-                                delete categories[index];
+                                if (category.get('newItem')) {
+                                    immediatelyRemove = true;
+                                } else {
+                                    category.set('delete', true);
+                                    category.set('disabled', true);
+                                }
                             }
                         }
                     });
+                    if (immediatelyRemove) {
+                        _.each(self.loopOver(categories), function (category, index, list) {
+                            if (category !== undefined) {
+                                if (category.id === id) {
+                                    self.removeChildren(category.id);
+                                    delete categories[index];
+                                }
+                            }
+                        });
+                    }
                 }
                 this.update();
             },
@@ -173,6 +188,12 @@ module.exports = CategoriesEdit = Ractive.extend({
                 }
 
                 context.set('name', newName);
+                this.update();
+            },
+            'undelete': function(event, id) {
+                var context = event.context;
+                context.set('delete', false);
+                context.set('disabled', false);
                 this.update();
             },
             'save': function(event) {
@@ -263,7 +284,7 @@ module.exports = CategoriesEdit = Ractive.extend({
                 var pushUpdate = function(modifiedIndex, createIndex) {
                     if (modifiedIndex < modified.length) {
                         // modifications still need to be made
-                        modified[modifiedIndex].save({patch: true, wait: true}, {
+                        modified[modifiedIndex].save(null, {patch: true, wait: true}, {
                             success: function(model, res, options) {
                                 App.core.vent.trigger('app:info', 'Successfully modified category ' + model.get('name'));
                                 pushUpdate(modifiedIndex + 1, createIndex);
@@ -272,7 +293,7 @@ module.exports = CategoriesEdit = Ractive.extend({
                                 App.core.vent.trigger('app:warning', res.responseJSON);
                                 savingComplete(true);
                             }
-                        })
+                        });
                     } else {
                         if (createIndex < createOrder.length) {
                             // modifications have been pushed to server
@@ -281,7 +302,7 @@ module.exports = CategoriesEdit = Ractive.extend({
                             // the server should respond with the new object
                             var newCategory = createOrder[createIndex];
                             newCategory.set('_id', undefined);
-                            createOrder[createIndex].save({wait: true}, {
+                            createOrder[createIndex].save(null, {wait: true}, {
                                 success: function (model, res, options) {
                                     App.core.vent.trigger('app:info', 'Successfully created category ' + model.get('name'));
                                     pushUpdate(modifiedIndex, createIndex + 1);
@@ -442,6 +463,11 @@ module.exports = CategoriesEdit = Ractive.extend({
                 child = _.clone(value);
 
                 copyAttributesToObject(child);
+
+                if (parent.get('disabled') ||
+                    parent.get('delete')) {
+                    child.set('disabled', true);
+                }
 
                 var depth = parent.depth;
                 if (depth === undefined) {

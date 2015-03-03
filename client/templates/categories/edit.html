@@ -14,9 +14,12 @@
     {{#if modified}}
     <div class="media">
         <div class="media-body text-right">
-            <button type="button" class="btn btn-default" on-click="save">Save</button>
+            <button type="button" class="btn btn-default {{#saving}}disabled{{/if}}" on-click="save">{{#saving}}Saving..{{else}}Save{{/if}}</button>
         </div>
     </div>
+    {{/if}}
+    {{#if fetching}}
+    FETCHING...
     {{/if}}
 </div>
 <!-- {{>recurse}} -->
@@ -26,18 +29,24 @@
     </div>
     <div class="media-body">
         <div class="input-group" style="width: 100%">
-                <input type="text" class="form-control" id="category_{{id}}" placeholder="{{name}}" on-blur="updateCategory:{{id}}">
+                <input type="text" class="form-control" id="category_{{id}}" placeholder="{{name}}" on-blur="updateCategory:{{id}}" {{#if disabled}}disabled{{/if}}>
                 <span class="input-group-btn" style="overflow: hidden;">
+                    {{#if disabled}}
+                    <button type="button" class="btn btn-default" aria-label="Left Align" on-click="undelete:{{id}}">
+                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                    </button>
+                    {{else}}
                     <button type="button" class="btn btn-default" aria-label="Left Align" on-click="delCategory:{{id}}">
                         <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
                     </button>
-                    <button type="button" class="btn btn-default" aria-label="Left Align" on-click="newCategory:{{id}}">
+                    <button type="button" class="btn btn-default" aria-label="Left Align" on-click="newCategory:{{id}}" {{#if disabled}}disabled{{/if}}>
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                     </button>
+                    {{/if}}
                 </span>
         </div>
         {{#if children}}
-            {{#each .children}}
+            {{#each .children:i}}
                 {{>recurse}}
             {{/each}}
         {{/if}}
