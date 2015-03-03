@@ -17,6 +17,11 @@ module.exports = NavBar = Ractive.extend({
         // left side of nav bar
         left: [
             {
+                name: 'Groups',
+                url: '#groups',
+                route: 'groups'
+            },
+            {
                 name: 'New shift',
                 url: '#add',
                 route: 'add'

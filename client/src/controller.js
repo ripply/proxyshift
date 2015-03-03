@@ -6,6 +6,7 @@ var Marionette = require('backbone.marionette'),
     FullCalendarView = require('./views/shifts/full_calendar'),
     LoginView = require('./views/users/login'),
     SignupView = require('./views/users/signup'),
+    GroupsView = require('./views/groups/add_group'),
     AddShiftView = require('./views/shifts/add_shift'),
     NavBar = require('./views/headers/navbar'),
     CategoriesEdit = require('./views/categories/categories_edit'),
@@ -129,6 +130,15 @@ module.exports = Controller = Marionette.Controller.extend({
         App.core.contentRegion.show(view);
         //this.renderView(view);
         window.App.router.navigate('signup');
+    },
+
+    groups: function() {
+        App.core.vent.trigger('app:log', 'Controller: "Groups" route hit.');
+        var view = new GroupsView();
+        console.log('GroupsView!!!');
+        App.core.contentRegion.show(view);
+        //this.renderView(view);
+        window.App.router.navigate('groups');
     },
 
     logout: function() {

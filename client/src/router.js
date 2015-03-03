@@ -8,6 +8,7 @@ module.exports = Router = Marionette.AppRouter.extend({
         'calendar' : 'calendar',
         'login' : 'login',
         'signup' : 'signup',
+        'groups' : 'groups',
         'logout' : 'logout',
         'categories': 'categories'
     },

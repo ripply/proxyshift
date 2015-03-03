@@ -1,6 +1,7 @@
 var home = require('../controllers/home'),
     shifts = require('../controllers/shifts'),
     users = require('../controllers/users'),
+    groups = require('../controllers/groups'),
     categories = require('../controllers/categories'),
     _ = require('underscore'),
     utils = require('./utils'),
@@ -163,4 +164,14 @@ module.exports.initialize = function(app) {
     app.put('/api/users', users.add);
     app.patch('/api/users', users.update);
     app.delete('/api/users/:id', users.delete);
+
+    /**
+     * Groups
+     */
+    app.get('/api/groups', groups.index);
+    app.get('/api/groups/:id', groups.getById);
+    app.post('/api/groups', groups.add);
+    app.put('/api/groups', groups.add);
+    app.patch('/api/groups', groups.update);
+    app.delete('/api/groups/:id', groups.delete);
 };

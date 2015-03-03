@@ -87,6 +87,58 @@ userSchema.method('toJSON', function() {
 
 Users = mongoose.model('Users', userSchema);
 
+var groupSchema = new Schema({
+    groupname:   {type: String, required: true, unique: true},
+    squestion:   {type: String, required: true},
+    sanswer:     {type: String, required: true}
+});
+
+groupSchema.pre('save', function(next) {
+    var group = this;
+
+    if(!group.isModified('sanswer')) return next();
+
+    var genSalt = function(array) {
+        if (array.length == 0) {next();}
+        var method = array.pop();
+        bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
+            if(err) return next(err);
+
+            bcrypt.hash(group[method], salt, function(err, hash) {
+                if(err) return next(err);
+                group[method] = hash;
+                genSalt(array);
+            });
+        });
+    };
+
+    var toModifiy = [];
+    _.each(['sanswer'], function(element, index, list) {
+        if (group.isModified(element)) {
+            toModifiy.push(element);
+        }
+    });
+
+    genSalt(toModifiy);
+});
+
+groupSchema.methods.compareSAnswer = function(candidateSAnswer, cb) {
+    bcrypt.compare(candidateSAnswer, this.sanswer, function(err, isMatch) {
+        if(err) return cb(err);
+        cb(null, isMatch);
+    });
+};
+
+groupSchema.method('toJSON', function() {
+    var group = this.toObject();
+    delete group.squestion;
+    delete group.sanswer;
+    delete group.__v;
+    return group;
+});
+
+Groups = mongoose.model('Groups', groupSchema);
+
 passport.serializeUser(function(user, done) {
     done(null, user.id);
 });
@@ -307,6 +359,7 @@ module.exports = {
     Users: Users,
     Token: Token,
     Category: Category,
+    Groups: Groups,
 
     consumeRememberMeToken: consumeRememberMeToken,
     issueToken: issueToken
