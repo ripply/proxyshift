@@ -107,30 +107,34 @@ module.exports = CategoriesEdit = Ractive.extend({
                     // delete its children
                     // then delete it
                     var immediatelyRemove = false;
-                    _.each(self.loopOver(categories), function (category, index, list) {
-                        if (category !== undefined) {
-                            if (category.id === id) {
-                                if (category.get('newItem')) {
-                                    immediatelyRemove = true;
-                                } else {
-                                    category.set('delete', true);
-                                    category.set('disabled', true);
-                                }
+                    // Find the clicked id and mark it as being scheduled for deletion
+                    // treeize will mark it's children as being disabled
+                    var category = categories.get(id);
+                    if (category.get('newItem')) {
+                        // new items can be removed immediately as they have not yet been pushed
+                        immediatelyRemove = true;
+                    } else {
+                        if (category.get('disabled')) {
+                            // child is disabled
+                            // it is already marked for deletion
+                            // so no need to do anything
+                        } else {
+                            category.set('deleting', true);
+                            category.set('disabled', true);
+                            if ('original' in category) {
+                                category.original.set('deleting', true);
+                                category.original.set('disabled', true);
                             }
                         }
-                    });
-                    if (immediatelyRemove) {
-                        _.each(self.loopOver(categories), function (category, index, list) {
-                            if (category !== undefined) {
-                                if (category.id === id) {
-                                    self.removeChildren(category.id);
-                                    delete categories[index];
-                                }
-                            }
-                        });
                     }
+
+                    if (immediatelyRemove) {
+                        self.removeChildren(category.id);
+                        delete categories[index];
+                    }
+
+                    this.update();
                 }
-                this.update();
             },
             // Create an empty category
             'newCategory': function(event, parentId) {
@@ -192,9 +196,36 @@ module.exports = CategoriesEdit = Ractive.extend({
             },
             'undelete': function(event, id) {
                 var context = event.context;
-                context.set('delete', false);
-                context.set('disabled', false);
-                this.update();
+                var categories = this.get('categories');
+                if (context.get('deleting')) {
+                    // only undelete if it was specifically marked for deletion
+                    // being marked disabled does not constitute this
+                    var recurse = function(node) {
+                        if (node.get('deleting')) {
+                            node.set('deleting', false);
+                            if ('original' in node) {
+                                node.original.set('deleting', false);
+                            }
+                        }
+                        if (node.get('disabled')) {
+                            node.set('disabled', false);
+                            if ('original' in node) {
+                                node.original.set('disabled', false);
+                            }
+                        }
+                        var children = node.children;
+                        // some children might have been marked for deletion
+                        // and then their parent got marked too
+                        // so, recurse into all children and mark them as undeleted
+                        _.each(children, function(value, index, list) {
+                            recurse(value);
+                        });
+                    };
+                    recurse(context);
+                    this.update();
+                } else {
+                    // object is not marked for deletion, there is nothing to do!
+                }
             },
             'save': function(event) {
                 if (this.get('saving')) {
@@ -269,6 +300,7 @@ module.exports = CategoriesEdit = Ractive.extend({
                 // to re-enable the save button in the template
                 var savingComplete = function(fetch) {
                     self.set('saving', false);
+                    self.update();
                     if (fetch) {
                         self.set('fetching', true);
                         self.get('categories').fetch({
@@ -330,6 +362,30 @@ module.exports = CategoriesEdit = Ractive.extend({
                 this.set('saving', false);
             }
         });
+    },
+
+    data: {
+        isDisabled: function(id) {
+            console.log("isDisabled(" + id + ")");
+            var categories = this.get('categories');
+
+            var recurse = function(id) {
+                var locatedModel = categories.get(id);
+                if (locatedModel !== undefined &&
+                    locatedModel !== null) {
+                    if (locatedModel.get('disabled') ||
+                        locatedModel.get('deleting')) {
+                        console.log(id + " is disabled! " + locatedModel.get('name'));
+                        return true;
+                    } else {
+                        return recurse(locatedModel.get('parent'));
+                    }
+                }
+                return false;
+            };
+
+            return recurse(id);
+        }
     },
 
     computed: {
@@ -461,12 +517,19 @@ module.exports = CategoriesEdit = Ractive.extend({
                     parent.children = [];
                 }
                 child = _.clone(value);
+                child.original = value;
 
                 copyAttributesToObject(child);
 
                 if (parent.get('disabled') ||
-                    parent.get('delete')) {
-                    child.set('disabled', true);
+                    parent.get('deleting')) {
+                    //child.set('disabled', true);
+                    //child.original.set('disabled', true);
+                } else {
+                    if (child.get('disabled')) {
+                        //child.set('disabled', false);
+                        //child.original.set('disabled', true);
+                    }
                 }
 
                 var depth = parent.depth;
@@ -494,6 +557,7 @@ module.exports = CategoriesEdit = Ractive.extend({
             }
         } else {
             root = _.clone(value);
+            root.original = value;
             root.set('depth', 0);
 
             copyAttributesToObject(root);

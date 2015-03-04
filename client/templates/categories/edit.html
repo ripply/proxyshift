@@ -29,21 +29,26 @@
     </div>
     <div class="media-body">
         <div class="input-group" style="width: 100%">
-                <input type="text" class="form-control" id="category_{{id}}" placeholder="{{name}}" on-blur="updateCategory:{{id}}" {{#if disabled}}disabled{{/if}}>
+            <input type="text" class="form-control" id="category_{{id}}" placeholder="{{name}}" on-blur="updateCategory:{{id}}" {{#if isDisabled(id)}}disabled{{/if}}>
+            {{#if deleting}}
+            <span class="input-group-btn" style="overflow: hidden;">
+                <button type="button" class="btn btn-default" aria-label="Left Align" on-click="undelete:{{id}}">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                </button>
+            </span>
+            {{else}}
+                {{#if isDisabled(id)}}
+                {{else}}
                 <span class="input-group-btn" style="overflow: hidden;">
-                    {{#if disabled}}
-                    <button type="button" class="btn btn-default" aria-label="Left Align" on-click="undelete:{{id}}">
-                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                    </button>
-                    {{else}}
                     <button type="button" class="btn btn-default" aria-label="Left Align" on-click="delCategory:{{id}}">
                         <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
                     </button>
                     <button type="button" class="btn btn-default" aria-label="Left Align" on-click="newCategory:{{id}}" {{#if disabled}}disabled{{/if}}>
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                     </button>
-                    {{/if}}
                 </span>
+                {{/if}}
+            {{/if}}
         </div>
         {{#if children}}
             {{#each .children:i}}
