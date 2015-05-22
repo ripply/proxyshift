@@ -131,6 +131,47 @@ module.exports = CategoriesEdit = Ractive.extend({
                     if (immediatelyRemove) {
                         self.removeChildren(category.id);
                         delete categories[index];
+                    } else {
+                        var tree = this.get('tree');
+                        var findNode = function(node, id) {
+                            if (node.id == id) {
+                                return node;
+                            }
+                            if ('children' in node) {
+                                for (var i = 0; i < node.children.length; i++) {
+                                    var foundNode = findNode(node.children[i]);
+                                    if (foundNode !== null ||
+                                        foundNode !== undefined) {
+                                        return foundNode;
+                                    }
+                                }
+                            }
+                            return null;
+                        };
+                        var foundNode = findNode(tree, id);
+                        var recurse = function(node) {
+                            if (node.get('deleting')) {
+                                node.set('deleting', false);
+                                if ('original' in node) {
+                                    node.original.set('deleting', false);
+                                }
+                            }
+                            if ('children' in node) {
+                                var children = node.children;
+                                // some children might have been marked for deletion
+                                // and then their parent got marked too
+                                // so, recurse into all children and mark them as undeleted
+                                _.each(children, function (value, index, list) {
+                                    recurse(value);
+                                });
+                            }
+                        };
+                        // remove deleting from children
+                        if ('children' in category) {
+                            _.each(category.children, function (value, index, list) {
+                                recurse(value);
+                            });
+                        }
                     }
 
                     this.update();
@@ -365,6 +406,12 @@ module.exports = CategoriesEdit = Ractive.extend({
     },
 
     data: {
+        isDeleting: function(id) {
+            var categories = this.get('categories');
+            var model = categories.get(id);
+
+            return model.get('deleting');
+        },
         isDisabled: function(id) {
             console.log("isDisabled(" + id + ")");
             var categories = this.get('categories');

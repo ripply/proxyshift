@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
+.controller('AppCtrl', ['$scope', '$ionicModal', '$timeout', '$rootScope', function($scope, $ionicModal, $timeout, $rootScope) {
   // Form data for the login modal
   $scope.loginData = {};
 
@@ -8,17 +8,18 @@ angular.module('starter.controllers', [])
   $ionicModal.fromTemplateUrl('templates/login.html', {
     scope: $scope
   }).then(function(modal) {
-    $scope.modal = modal;
+    $scope.loginModal = modal;
   });
 
   // Triggered in the login modal to close it
   $scope.closeLogin = function() {
-    $scope.modal.hide();
+    $scope.loginModal.hide();
   };
 
   // Open the login modal
   $scope.login = function() {
-    $scope.modal.show();
+    $rootScope.$broadcast('event:auth-loginRequired');
+    //$scope.loginModal.show();
   };
 
   // Perform the login action when the user submits the login form
@@ -31,7 +32,50 @@ angular.module('starter.controllers', [])
       $scope.closeLogin();
     }, 1000);
   };
-})
+}])
+.controller('LoginController', ['$scope', '$http', '$state', 'AuthenticationService', function($scope, $http, $state, AuthenticationService) {
+
+      $scope.user = {
+        username: null,
+        password: null
+      };
+
+      $scope.login = function() {
+        AuthenticationService.login($scope.user);
+      };
+
+      $scope.$on('event:auth-loginRequired', function(e, rejection) {
+        // clear any error messages
+        $scope.message = null;
+        // reset existing midtyped username/password
+        $scope.user.username = null;
+        $scope.user.password = null;
+        $scope.loginModal.show();
+      });
+
+      $scope.$on('event:auth-loginConfirmed', function() {
+        $scope.user.username = null;
+        $scope.user.password = null;
+        $scope.message = null;
+        $scope.loginModal.hide();
+      });
+
+      $scope.$on('event:auth-login-failed-invalid', function(e, message) {
+        $scope.message = message;
+      });
+
+      $scope.$on('event:auth-login-failed', function(e, status) {
+        var error = "Login failed.";
+        if (status == 401) {
+          error = "Invalid Username or Password.";
+        }
+        $scope.message = error;
+      });
+
+      $scope.$on('event:auth-logout-complete', function() {
+        $state.go('app.home', {}, {reload: true, inherit: false});
+      });
+    }])
 
 .controller('PlaylistsCtrl', function($scope) {
   $scope.playlists = [
@@ -42,6 +86,11 @@ angular.module('starter.controllers', [])
     { title: 'Rap', id: 5 },
     { title: 'Cowbell', id: 6 }
   ];
+  $scope.add = function() {
+    $scope.playlists.push({
+      title: 'test!?', id: $scope.playlists.length
+    });
+  };
 })
 
 .controller('PlaylistCtrl', function($scope, $stateParams) {

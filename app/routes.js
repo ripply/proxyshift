@@ -27,6 +27,15 @@ function ensureAuthenticated(req, res, next) {
     res.send(401);
 }
 
+function requireJson(req, res, next) {
+    if (!req.is('application/json')) {
+        console.log('Client sent non json data to a json only resource');
+        res.send(400);
+    } else {
+        next();
+    }
+}
+
 function ensureCsrf(err, req, res, next) {
     console.log(err.code);
     if (err.code !== 'EBADCSRFTOKEN') return next(err);
@@ -40,17 +49,20 @@ function ensureCsrf(err, req, res, next) {
 module.exports.initialize = function(app) {
     app.use(function(req, res, next) {
         console.log('Received request');
-
         next();
     });
     app.get('/', home.index);
 
-    app.post('/session/login', function(req, res, next) {
+    app.get('/csrf', function(req, res, next) {
+        console.log("Issuing new csrf token...");
+        res.cookie('XSRFTOKEN', req.csrfToken());
+        console.log(req.session);
+        res.send(200);
+        console.log("Sent 200 response");
+    });
+
+    app.post('/session/login', requireJson, function(req, res, next) {
         //console.log(req.crsfToken());
-        if (!req.is('application/json')) {
-            console.log('Client sent non json data to /login');
-            return res.send(400);
-        }
         console.log(req.protocol);
         console.log("/login");
         console.log(req.body);
@@ -63,9 +75,10 @@ module.exports.initialize = function(app) {
                 if (err) { return next(err); }
 
                 if (err) { return next(err); }
+                var authToken = {'authorizationToken': '1234'};
                 // https://github.com/jaredhanson/passport-remember-me#setting-the-remember-me-cookie
                 // issue a remember me cookie if the option was checked
-                console.log("Checking for rembmer me");
+                console.log("Checking for remember me");
                 console.log(req.body);
                 if (req.body.remember_me) {
                     console.log("Remember me found!!");
@@ -73,13 +86,13 @@ module.exports.initialize = function(app) {
                     models.issueToken(req.user, function(err, token) {
                         if (err) { return next(err); }
                         res.cookie('remember_me', token, { path: '/', httpOnly: true, maxAge: 604800000 });
-                        res.send(user);
+                        res.send(authToken);
                     });
                 } else {
                     console.log('remember me not found');
                     // send user information since user is found
                     // *SHOULD NEVER CONTAIN SENSITIVE DATA*
-                    res.send(user);
+                    res.send(authToken);
                 }
             });
         })(req, res, next);

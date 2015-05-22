@@ -30,7 +30,7 @@
     <div class="media-body">
         <div class="input-group" style="width: 100%">
             <input type="text" class="form-control" id="category_{{id}}" placeholder="{{name}}" on-blur="updateCategory:{{id}}" {{#if isDisabled(id)}}disabled{{/if}}>
-            {{#if deleting}}
+            {{#if isDeleting(id)}}
             <span class="input-group-btn" style="overflow: hidden;">
                 <button type="button" class="btn btn-default" aria-label="Left Align" on-click="undelete:{{id}}">
                     <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>

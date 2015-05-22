@@ -21,7 +21,7 @@ var hbs = exphbs.create();
 
 app.engine('handlebars', exphbs({
     defaultLayout: 'main',
-    layoutsDir: app.get('views') + '/layouts',
+    layoutsDir: app.get('views') + '/layouts'
 }));
 app.set('view engine', 'handlebars');
 
@@ -48,7 +48,29 @@ app.use(express.session({ cookie: { maxAge: 60000 }}));
 
 app.use(compression());
 
-app.use(csrf({ cookie: true }));
+var csrfProtection = csrf({
+    cookie: true,
+    value: function(req) {
+        console.log(req.session);
+        console.log("Given secret: " + req.cookies['_csrf']);
+        return req.cookies['XSRF-TOKEN'];
+    }
+});
+
+/**app.use(function(req, res, next) {
+    // https://github.com/expressjs/csurf/issues/21
+    // TODO: FIX, because csrf comes before routes, every POST request is checked for CSRF tokens, this means that cordova cannot send a POST request to a special route to get a CSRF token
+
+    console.log("RECEIVED URL: " + req.url);
+    if (req.url === '/csrf') {
+        res.set('xcsrftoken', req.csrfToken());
+        return next(req, res);
+    } else {
+        return csrfProtection(req, res, next);
+    }
+});
+ */
+//app.use(csrfProtection);
 
 // error handler
 /*
