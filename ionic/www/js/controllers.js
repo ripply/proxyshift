@@ -37,7 +37,8 @@ angular.module('starter.controllers', [])
 
       $scope.user = {
         username: null,
-        password: null
+        password: null,
+        remember_me: false
       };
 
       $scope.login = function() {
@@ -50,6 +51,8 @@ angular.module('starter.controllers', [])
         // reset existing midtyped username/password
         $scope.user.username = null;
         $scope.user.password = null;
+        $scope.user.remember_me = false;
+        
         $scope.loginModal.show();
       });
 
