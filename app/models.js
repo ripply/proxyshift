@@ -14,7 +14,7 @@ var db = new sqlite3.Database('data/demodb01');
 fs.exists('data/demodb01', function (exists) {
     if (exists) {
         console.info('Creating database. This may take a while...');
-        fs.readFile('data/wut.sql', 'utf8', function (err, data) {
+        fs.readFile('config/create_tables.sql', 'utf8', function (err, data) {
             if (err) throw err;
             db.exec(data, function (err) {
                 if (err) throw err;
