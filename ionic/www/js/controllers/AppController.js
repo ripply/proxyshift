@@ -16,9 +16,20 @@ angular.module('scheduling-app.controllers')
                 $scope.loginModal = modal;
             });
 
+            // Create the signup modal that we will use later
+            $ionicModal.fromTemplateUrl('templates/signup.html', {
+                scope: $scope
+            }).then(function(modal) {
+                $scope.signupModal = modal;
+            });
+
             // Triggered in the login modal to close it
             $scope.closeLogin = function() {
                 $scope.loginModal.hide();
+            };
+
+            $scope.closeSignup = function() {
+                $scope.signupModal.hide();
             };
 
             // Open the login modal
@@ -36,6 +47,10 @@ angular.module('scheduling-app.controllers')
                 $timeout(function() {
                     $scope.closeLogin();
                 }, 1000);
+            };
+
+            $scope.doSignup = function() {
+                // TODO
             };
     }])
 ;
