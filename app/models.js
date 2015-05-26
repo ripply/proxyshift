@@ -5,22 +5,39 @@ var mongoose = require('mongoose'),
     passport = require('passport'),
     utils = require('./utils'),
     _ = require('underscore'),
+    sqlite3 = require('sqlite3').verbose(),
+    fs = require('fs'),
     SALT_WORK_FACTOR = 10;
 
-var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('data/demodb01');
 
-db.serialize(function() {
-    db.run("CREATE TABLE IF NOT EXISTS demo (runtime REAL)");
-
-    db.run("INSERT INTO demo (runtime) VALUES (?)", new Date().getTime());
-
-    db.each("SELECT runtime FROM demo", function(err, row) {
-        console.log("This app was run at " + row.runtime);
-    });
+fs.exists('data/demodb01', function (exists) {
+    if (exists) {
+        console.info('Creating database. This may take a while...');
+        fs.readFile('data/wut.sql', 'utf8', function (err, data) {
+            if (err) throw err;
+            db.exec(data, function (err) {
+                if (err) throw err;
+                console.info('Done.');
+            });
+        });
+    }
 });
 
-db.close();
+/*
+ db.serialize(function() {
+ db.run("CREATE TABLE IF NOT EXISTS demo (runtime REAL)");
+
+ db.run("INSERT INTO demo (runtime) VALUES (?)", new Date().getTime());
+
+ db.each("SELECT runtime FROM demo", function(err, row) {
+ console.log("This app was run at " + row.runtime);
+ });
+
+ });
+
+ db.close();
+ */
 
 var shiftSchema = new Schema({
     title:       {type: String},
@@ -167,9 +184,9 @@ passport.deserializeUser(function(id, done) {
 
 var tokenSchema = new Schema({
     _uid: {type: mongoose.Schema.Types.ObjectId,
-           ref: 'Users',
-           unique: true,
-           required: true},
+        ref: 'Users',
+        unique: true,
+        required: true},
     token: [{
         expires: {type: Date},
         key:     {type: String, unique: true}
@@ -299,13 +316,13 @@ userSchema.post('save', function(next) {
 
 var categorySchema = new Schema({
     name:        {type: String,
-                  unique: true,
-                  lowercase: true,
-                  trim: true,
-                  required: true},
+        unique: true,
+        lowercase: true,
+        trim: true,
+        required: true},
     parent:      {type: mongoose.Schema.Types.ObjectId,
-                  ref: 'Category',
-                  required: false}
+        ref: 'Category',
+        required: false}
 });
 
 var Category = mongoose.model('Category', categorySchema);
