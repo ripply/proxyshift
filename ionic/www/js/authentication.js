@@ -81,7 +81,7 @@ angular.module('scheduling-app.authentication', ['http-auth-interceptor'])
               $rootScope.$broadcast('event:auth-login-failed-invalid', 'Empty password');
               return false;
           }
-          $http.post('http://localhost:8100/session/login', user, { ignoreAuthModule: true })
+          $http.post('http://192.168.1.15:8100/session/login', user, { ignoreAuthModule: true })
               .success(function (data, status, headers, config) {
                   //$http.defaults.headers.common.Authorization = data.authorizationToken;  // Step 1
 

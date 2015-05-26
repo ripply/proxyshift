@@ -39,7 +39,8 @@
     "debug": "~2.2.0",
     "bluebird": "~2.9.26",
     "raw-body": "~2.0.2",
-    "uid2": "0.0.3"
+    "uid2": "0.0.3",
+    "sqlite3": "~3.0.8"
   },
   "devDependencies": {
     "bower": "~1.2.8",
