@@ -25,6 +25,7 @@ angular.module('scheduling-app', [
     })
 
     .config(function($stateProvider, $urlRouterProvider) {
+        //RestangularConfig.configure();
         $stateProvider
 
             .state('app', {
