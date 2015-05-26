@@ -7,11 +7,23 @@ var mongoose = require('mongoose'),
     _ = require('underscore'),
     sqlite3 = require('sqlite3').verbose(),
     fs = require('fs'),
+    mkdirp = require('mkdirp'),
+    path = require('path'),
     SALT_WORK_FACTOR = 10;
 
-var db = new sqlite3.Database('data/demodb01');
+var db_file = 'data/database.db';
 
-fs.exists('data/demodb01', function (exists) {
+mkdirp(path.dirname(db_file), function(err) {
+    if (err) {
+        console.info('Error creating data folder.');
+    } else {
+        console.info('Created data folder.');
+    }
+});
+
+var db = new sqlite3.Database(db_file);
+
+fs.exists(db_file, function (exists) {
     if (exists) {
         console.info('Creating database. This may take a while...');
         fs.readFile('config/create_tables.sql', 'utf8', function (err, data) {
