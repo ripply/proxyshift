@@ -9,7 +9,6 @@ var mongoose = require('mongoose'),
     fs = require('fs'),
     mkdirp = require('mkdirp'),
     path = require('path'),
-    bookshelf = require('bookshelf'),
     SALT_WORK_FACTOR = 10;
 
 var db_file = 'data/database.db';
@@ -29,7 +28,9 @@ var knex = require('knex')( {
     }
 });
 
-//Create a table
+var Bookshelf = require('bookshelf')(knex);
+
+//Create tables
 knex.schema.hasTable('users').then(function(exists) {
     if (exists) {
         console.log('Users table already exists.');
@@ -120,20 +121,35 @@ knex.schema.hasTable('usergroups').then(function(exists) {
 
 //Models
 
-var User = bookshelf.Model.extend({
+var User = Bookshelf.Model.extend({
     tableName: 'users'
 });
 
-var Shift = bookshelf.Model.extend({
+var Shift = Bookshelf.Model.extend({
     tableName: 'shifts'
 });
 
-var Group = bookshelf.Model.extend({
+var Group = Bookshelf.Model.extend({
     tableName: 'groups'
 });
 
-var Usergroup = bookshelf.Model.extend({
+var Usergroup = Bookshelf.Model.extend({
     tableName: 'usergroups'
+});
+
+//Collections
+
+var Users = Bookshelf.Collection.extend({
+    model: User
+});
+var Shifts = Bookshelf.Collection.extend({
+    model: Shift
+});
+var Groups = Bookshelf.Collection.extend({
+    model: Group
+});
+var Usergroups = Bookshelf.Collection.extend({
+    model: Usergroup
 });
 
 
