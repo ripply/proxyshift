@@ -21,20 +21,102 @@ mkdirp(path.dirname(db_file), function(err) {
     }
 });
 
-var db = new sqlite3.Database(db_file);
+var knex = require('knex')( {
+    dialect: 'sqlite3',
+    connection: {
+        filename: db_file
+    }
+});
 
-fs.exists(db_file, function (exists) {
+//Create a table
+knex.schema.hasTable('users').then(function(exists) {
     if (exists) {
-        console.info('Creating database. This may take a while...');
-        fs.readFile('config/create_tables.sql', 'utf8', function (err, data) {
-            if (err) throw err;
-            db.exec(data, function (err) {
-                if (err) throw err;
-                console.info('Done.');
-            });
+        console.log('Users table already exists.');
+    } else {
+        return knex.schema.createTable('users', function(table) {
+            table.increments('id');
+            table.string('name', 20)
+                .notNullable();
+            table.string('username', 20)
+                .unique()
+                .notNullable();
+            table.string('email', 50)
+                .unique()
+                .notNullable();
+            table.string('password', 100)
+                .notNullable();
+            table.string('squestion', 100)
+                .notNullable();
+            table.string('sanswer', 100)
+                .notNullable();
+        }).then(function() {
+            console.log('Successfully created users table.');
         });
     }
 });
+
+knex.schema.hasTable('shifts').then(function(exists) {
+    if (exists) {
+        console.log('Shifts table already exists.');
+    } else {
+        return knex.schema.createTable('shifts', function(table) {
+            table.increments('id');
+            table.string('title', 30)
+                .notNullable();
+            table.string('description', 30);
+            table.boolean('allDay')
+                .defaultTo(false);
+            table.boolean('recurring')
+                .defaultTo(false);
+            table.date('start')
+                .notNullable();
+            table.date('end')
+                .notNullable();
+        }).then(function() {
+            console.log('Successfully created shifts table.');
+        });
+    }
+});
+
+knex.schema.hasTable('groups').then(function(exists) {
+    if (exists) {
+        console.log('Groups table already exists.');
+    } else {
+        return knex.schema.createTable('groups', function(table) {
+            table.increments('id');
+            table.string('groupname', 20)
+                .unique()
+                .notNullable();
+            table.integer('ownerid')
+                .references('id')
+                .inTable('users')
+                .onDelete('CASCADE');
+        }).then(function() {
+            console.log('Successfully created groups table.');
+        });
+    }
+});
+
+knex.schema.hasTable('usergroups').then(function(exists) {
+    if (exists) {
+        console.log('Usergroups table already exists.');
+    } else {
+        return knex.schema.createTable('usergroups', function(table) {
+            table.increments('id');
+            table.integer('userid')
+                .references('id')
+                .inTable('users')
+                .onDelete('CASCADE');
+            table.integer('groupid')
+                .references('id')
+                .inTable('groups')
+                .onDelete('CASCADE');
+        }).then(function() {
+            console.log('Successfully created usergroups table.');
+        });
+    }
+});
+
 
 /*
  db.serialize(function() {
