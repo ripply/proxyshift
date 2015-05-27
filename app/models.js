@@ -9,6 +9,7 @@ var mongoose = require('mongoose'),
     fs = require('fs'),
     mkdirp = require('mkdirp'),
     path = require('path'),
+    bookshelf = require('bookshelf'),
     SALT_WORK_FACTOR = 10;
 
 var db_file = 'data/database.db';
@@ -115,6 +116,24 @@ knex.schema.hasTable('usergroups').then(function(exists) {
             console.log('Successfully created usergroups table.');
         });
     }
+});
+
+//Models
+
+var User = bookshelf.Model.extend({
+    tableName: 'users'
+});
+
+var Shift = bookshelf.Model.extend({
+    tableName: 'shifts'
+});
+
+var Group = bookshelf.Model.extend({
+    tableName: 'groups'
+});
+
+var Usergroup = bookshelf.Model.extend({
+    tableName: 'usergroups'
 });
 
 
@@ -266,7 +285,7 @@ groupSchema.method('toJSON', function() {
 Groups = mongoose.model('Groups', groupSchema);
 
 passport.serializeUser(function(user, done) {
-    done(null, user.id);
+    done(null, user.id);z
 });
 
 passport.deserializeUser(function(id, done) {
