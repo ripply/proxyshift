@@ -16,7 +16,7 @@ angular.module('scheduling-app.controllers')
                 sanswer: null
             };
 
-            $scope.signup = function() {
+            $scope.doSignup = function() {
                 // TODO
             };
 

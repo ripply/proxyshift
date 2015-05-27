@@ -1,5 +1,7 @@
 /**
-angular.module('scheduling-app.models', [])
+ * UserModel
+ */
+angular.module('scheduling-app.models')
     .service('User', ['Restangular', function(Restangular) {
         var User = Restangular.service('User');
 
@@ -17,4 +19,4 @@ angular.module('scheduling-app.models', [])
         });
 
         return User;
-    }]);**/
+    }]);

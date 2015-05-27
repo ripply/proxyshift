@@ -33,10 +33,14 @@ angular.module('scheduling-app.controllers')
             };
 
             // Open the login modal
-            console.log($scope.login = function () {
+            $scope.login = function() {
                 $rootScope.$broadcast('event:auth-loginRequired');
                 //$scopeinModal.show();
-            });
+            };
+
+            $scope.signup = function() {
+                $rootScope.$broadcast('event:signup-required');
+            };
 
             // Perform the login action when the user submits the login form
             $scope.doLogin = function() {
