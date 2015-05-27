@@ -1,1 +1,1 @@
-angular.module('scheduling-app.models', []);
+angular.module('scheduling-app.models', ['restangular']);

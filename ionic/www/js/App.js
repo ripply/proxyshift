@@ -7,7 +7,8 @@
 angular.module('scheduling-app', [
     'ionic',
     'scheduling-app.controllers',
-    'scheduling-app.authentication'
+    'scheduling-app.authentication',
+    'scheduling-app.models'
 ])
 
     .run(function($ionicPlatform) {
