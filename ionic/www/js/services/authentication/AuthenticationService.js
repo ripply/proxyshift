@@ -21,7 +21,7 @@ angular.module('scheduling-app.authentication', [
                         $rootScope.$broadcast('event:auth-login-failed-invalid', 'Empty password');
                         return false;
                     }
-                    var login_url = GENERAL_CONFIG.API_BASE_URL + GENERAL_CONFIG.API_URL_LOGIN;
+                    var login_url = GENERAL_CONFIG.APP_URL + GENERAL_CONFIG.APP_URL_LOGIN;
                     $http.post(login_url, user, { ignoreAuthModule: true })
                         .success(function (data, status, headers, config) {
                             //$http.defaults.headers.common.Authorization = data.authorizationToken;  // Step 1
