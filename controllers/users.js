@@ -2,51 +2,84 @@ var models = require('../app/models');
 
 module.exports = {
     index: function(req, res) {
-        models.Users.find({}, function(err, data) {
-            res.json(data);
-        });
+        models.Users.forge()
+            .fetch()
+            .then(function (collection) {
+                res.json(collection.toJSON());
+            })
+            .catch(function (err) {
+                res.status(500).json({error: true, data: {message: err.message}});
+            });
     },
     getById: function(req, res) {
-        models.Users.find({ _id: req.params.id }, function(err, shift) {
-            if (err) {
-                res.json(404, {error: 'User not found.'});
-            } else {
-                res.json(shift);
-            }
-        });
+        models.User.forge({id: req.params.id})
+            .fetch()
+            .then(function (user) {
+                if (!user) {
+                    res.status(404).json({error: true, data: {}});
+                }
+                else {
+                    res.json(user.toJSON());
+                }
+            })
+            .catch(function (err) {
+                res.status(500).json({error: true, data: {message: err.message}});
+            });
     },
     add: function(req, res) {
         console.log('Users add:');
         console.log(req.body);
-        var newUsers = new models.Users(req.body);
-        newUsers.save(function(err, user) {
-            if (err) {
-                res.json(403, {error: 'Error creating user.'});
-            } else {
-                res.json(user);
-            }
-        });
+        models.User.forge({
+            name: req.body.name,
+            username: req.body.username,
+            email: req.body.email,
+            password: req.body.password,
+            squestion: req.body.squestion,
+            sanswer: req.body.sanswer
+        })
+            .save()
+            .then(function (user) {
+                res.json({id: user.get('id')});
+            })
+            .catch(function (err) {
+                res.status(500).json({error: true, data: {message: err.message}});
+            });
     },
     update: function(req, res) {
         console.log(req.body);
-        models.Users.update({ _id: req.body.id }, req.body, function(err, updated) {
-            if (err) {
-                res.json(404, {error: 'Users not found.'});
-            } else {
-                res.json(updated);
-            }
-        })
+        models.User.forge({id: req.params.id})
+            .fetch({require: true})
+            .then(function (user) {
+                user.save({
+                    name: req.body.name || user.get('name'),
+                    email: req.body.email || user.get('email')
+                })
+                    .then(function () {
+                        res.json({error: false, data: {message: 'User details updated'}});
+                    })
+                    .catch(function (err) {
+                        res.status(500).json({error: true, data: {message: err.message}});
+                    });
+            })
+            .catch(function (err) {
+                res.status(500).json({error: true, data: {message: err.message}});
+            });
     },
     delete: function(req, res) {
-        models.Users.findOne({ _id: req.params.id }, function(err, shift) {
-            if (err) {
-                res.json(404, {error: 'Users not found.'});
-            } else {
-                shift.remove(function(err, shift){
-                    res.json(200, {status: 'Success'});
-                })
-            }
-        });
+        models.User.forge({id: req.params.id})
+            .fetch({require: true})
+            .then(function (user) {
+                user.destroy()
+                    .then(function () {
+                        res.json({error: true, data: {message: 'User successfully deleted'}});
+                    })
+                    .catch(function (err) {
+                        res.status(500).json({error: true, data: {message: err.message}});
+                    });
+            })
+            .catch(function (err) {
+                res.status(500).json({error: true, data: {message: err.message}});
+            });
     },
     update: function(req, res) {
         // get the current userid then forward to updateById

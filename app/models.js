@@ -166,7 +166,6 @@ var Usergroups = Bookshelf.Collection.extend({
  });
 
  db.close();
- */
 
 var shiftSchema = new Schema({
     title:       {type: String},
@@ -515,14 +514,21 @@ categorySchema.pre('save', function(next) {
     next();
 });
 
-module.exports = {
-    Shift: mongoose.model('Shift', shiftSchema),
-    Users: Users,
-    Token: Token,
-    Category: Category,
-    Groups: Groups,
+*/
 
-    consumeRememberMeToken: consumeRememberMeToken,
-    issueToken: issueToken
+module.exports = {
+    Shift: Shift,
+    Shifts: Shifts,
+    Users: Users,
+    User: User,
+    Groups: Groups,
+    Group: Group,
+    Usergroups: Usergroups,
+    Usergroup: Usergroup,
+
+    //Token: Token,
+    //Category: Category,
+    //consumeRememberMeToken: consumeRememberMeToken,
+    //issueToken: issueToken
 };
 

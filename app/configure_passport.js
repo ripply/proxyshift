@@ -16,9 +16,15 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function(id, done) {
-    models.Users.findById(id, function (err, user) {
-        done(err, user);
-    });
+    new models.User({id: id})
+        .fetch({require: true})
+        .then(function (user) {
+            console.log(user);
+            return done(null, user);
+        })
+        .catch(function (err) {
+            return done(null, false, {error: true, data: {message: err.message}});
+        });
 });
 
 
@@ -30,8 +36,20 @@ passport.deserializeUser(function(id, done) {
 passport.use(new LocalStrategy(function(username, password, done) {
     console.log("Username: " + username);
     console.log("Password: " + password);
-    models.Users.findOne({ username: username }, function(err, user) {
-        if (err) { return done(err); }
+    new models.User({username: username})
+        .fetch({require: true})
+        .then(function (user) {
+            console.log(user);
+            if (user.get('password') == password) {
+                return done(null, user);
+            } else {
+                return done(null, false, { message: 'Invalid Password' });
+            }
+        })
+        .catch(function (err) {
+            return done(null, false, {error: true, data: {message: err.message}});
+        });
+        /*if (err) { return done(err); }
         if (!user) { return done(null, false, { message: 'Unknown user ' + username }); }
         user.comparePassword(password, function(err, isMatch) {
             if (err) return done(err);
@@ -40,15 +58,17 @@ passport.use(new LocalStrategy(function(username, password, done) {
             } else {
                 return done(null, false, { message: 'Invalid password' });
             }
-        });
-    });
-}));
+        });*/
+    })
+);
 
 // https://github.com/jaredhanson/passport-remember-me/blob/master/examples/login/server.js
 // Remember Me cookie strategy
 //   This strategy consumes a remember me token, supplying the user the
 //   token was originally issued to.  The token is single-use, so a new
 //   token is then issued to replace it.
+
+/*
 passport.use(new RememberMeStrategy(
     function(token, done) {
         models.consumeRememberMeToken(token, function(err, uid) {
@@ -64,3 +84,5 @@ passport.use(new RememberMeStrategy(
     },
     models.issueToken
 ));
+
+*/

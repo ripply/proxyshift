@@ -16,6 +16,7 @@ require('./configure_passport');
 //   the request will proceed.  Otherwise, the user will be redirected to the
 //   login page.
 function ensureAuthenticated(req, res, next) {
+    return next();
     if (req.isAuthenticated()) {
         console.log("Authorized user");
         return next();
@@ -174,6 +175,7 @@ module.exports.initialize = function(app) {
     app.get('/api/users', users.index);
     app.get('/api/users/:id', users.getById);
     // post comes before authentication so anyone can make an account
+    app.post('/api/users', users.add);
     app.put('/api/users', users.add);
     app.patch('/api/users', users.update);
     app.delete('/api/users/:id', users.delete);

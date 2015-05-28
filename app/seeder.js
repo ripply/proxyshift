@@ -3,6 +3,7 @@ var mongoose = require('mongoose'),
     md5 = require('MD5');
 
 module.exports = {
+    /*
     check: function() {
         models.Shift.find({}, function(err, shifts) {
             if (shifts.length === 0) {
@@ -94,4 +95,5 @@ module.exports = {
             }
         });
     }
+    */
 };
