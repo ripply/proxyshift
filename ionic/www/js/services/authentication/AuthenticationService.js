@@ -1,12 +1,16 @@
 /**
  * AuthenticationService
  */
-angular.module('scheduling-app.authentication', ['http-auth-interceptor'])
+angular.module('scheduling-app.authentication', [
+    'http-auth-interceptor',
+    'scheduling-app.config'
+])
     .factory('AuthenticationService', [
         '$rootScope',
         '$http',
         'authService',
-        function($rootScope, $http, authService) {
+        'GENERAL_CONFIG',
+        function($rootScope, $http, authService, GENERAL_CONFIG) {
             return {
                 login: function(user) {
                     if (user.username === null || user.username == '') {
@@ -17,7 +21,8 @@ angular.module('scheduling-app.authentication', ['http-auth-interceptor'])
                         $rootScope.$broadcast('event:auth-login-failed-invalid', 'Empty password');
                         return false;
                     }
-                    $http.post('http://localhost:8100/session/login', user, { ignoreAuthModule: true })
+                    var login_url = GENERAL_CONFIG.API_BASE_URL + GENERAL_CONFIG.API_URL_LOGIN;
+                    $http.post(login_url, user, { ignoreAuthModule: true })
                         .success(function (data, status, headers, config) {
                             //$http.defaults.headers.common.Authorization = data.authorizationToken;  // Step 1
 
