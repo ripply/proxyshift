@@ -1,14 +1,18 @@
 var models = require('../app/models');
 
 function encryptKey(password) {
-    // Load the bcrypt module
-    var bcrypt = require('bcrypt');
-    // Generate a salt
-    var salt = bcrypt.genSaltSync(10);
-    // Hash the password with the salt
-    var hash = bcrypt.hashSync(password, salt);
+    if (password === null || password.length === 0) {
+        return null;
+    } else {
+        // Load the bcrypt module
+        var bcrypt = require('bcrypt');
+        // Generate a salt
+        var salt = bcrypt.genSaltSync(10);
+        // Hash the password with the salt
+        var hash = bcrypt.hashSync(password, salt);
 
-    return  hash;
+        return  hash;
+    }
 };
 
 module.exports = {
