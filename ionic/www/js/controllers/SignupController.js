@@ -18,6 +18,7 @@ angular.module('scheduling-app.controllers')
 
             $scope.doSignup = function() {
                 // TODO
+                //console.log(User.all());
             };
 
             $scope.$on('event:signup-required', function(e, rejection) {

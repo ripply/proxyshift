@@ -9,7 +9,9 @@ var config_data = {
     }
 };
 
-config_module = angular.module('scheduling-app.config', ['restangular']);
+config_module = angular.module('scheduling-app.config', [
+    'restangular'
+]);
 angular.forEach(config_data,function(key,value) {
     config_module.constant(value,key);
 });

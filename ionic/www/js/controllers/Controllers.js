@@ -1,4 +1,6 @@
-angular.module('scheduling-app.controllers', [])
+angular.module('scheduling-app.controllers', [
+    'scheduling-app.models'
+])
 
 .controller('PlaylistsCtrl', function($scope) {
   $scope.playlists = [
