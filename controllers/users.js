@@ -1,5 +1,16 @@
 var models = require('../app/models');
 
+function encryptPassword(password) {
+    // Load the bcrypt module
+    var bcrypt = require('bcrypt');
+    // Generate a salt
+    var salt = bcrypt.genSaltSync(10);
+    // Hash the password with the salt
+    var hash = bcrypt.hashSync(password, salt);
+
+    return  hash;
+};
+
 module.exports = {
     index: function(req, res) {
         models.Users.forge()
@@ -27,19 +38,19 @@ module.exports = {
             });
     },
     add: function(req, res) {
-        console.log('Users add:');
-        console.log(req.body);
         models.User.forge({
             name: req.body.name,
             username: req.body.username,
             email: req.body.email,
-            password: req.body.password,
+            password: encryptPassword(req.body.password),
             squestion: req.body.squestion,
-            sanswer: req.body.sanswer
+            sanswer: encryptPassword(req.body.sanswer)
         })
             .save()
             .then(function (user) {
                 res.json({id: user.get('id')});
+                console.log('User added:');
+                console.log(user);
             })
             .catch(function (err) {
                 res.status(500).json({error: true, data: {message: err.message}});

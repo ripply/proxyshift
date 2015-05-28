@@ -2,6 +2,7 @@ var passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy,
     RememberMeStrategy = require('passport-remember-me').Strategy,
     Utils = require('./utils'),
+    bcrypt = require('bcrypt');
     models = require('./models');
 
 // from https://github.com/jaredhanson/passport-local/blob/master/examples/express3-mongoose/app.js
@@ -40,7 +41,7 @@ passport.use(new LocalStrategy(function(username, password, done) {
         .fetch({require: true})
         .then(function (user) {
             console.log(user);
-            if (user.get('password') == password) {
+            if(bcrypt.compareSync(password, user.get('password'))) {
                 return done(null, user);
             } else {
                 return done(null, false, { message: 'Invalid Password' });
