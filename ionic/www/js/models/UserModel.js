@@ -2,7 +2,7 @@
  * UserModel
  */
 angular.module('scheduling-app.models')
-    .service('User', ['Restangular', function(Restangular) {
+    .service('User', ['restangular', function(Restangular) {
         var User = Restangular.service('User');
 
         Restangular.extendModel('User', function(model) {
