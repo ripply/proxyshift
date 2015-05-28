@@ -1,6 +1,6 @@
 var models = require('../app/models');
 
-function encryptPassword(password) {
+function encryptKey(password) {
     // Load the bcrypt module
     var bcrypt = require('bcrypt');
     // Generate a salt
@@ -42,9 +42,9 @@ module.exports = {
             name: req.body.name,
             username: req.body.username,
             email: req.body.email,
-            password: encryptPassword(req.body.password),
+            password: encryptKey(req.body.password),
             squestion: req.body.squestion,
-            sanswer: encryptPassword(req.body.sanswer)
+            sanswer: encryptKey(req.body.sanswer)
         })
             .save()
             .then(function (user) {
