@@ -1,11 +1,14 @@
 /**
  * UserModel
  */
-angular.module('scheduling-app.models')
-    .service('UsersModel', ['Restangular', function(Restangular) {
-        var User = Restangular.service('Users');
+module = angular.module('scheduling-app.models');
+_.each(['Users', 'Shifts', 'Groups', 'UserGroups'], function(key, index) {
 
-        Restangular.extendModel('Users', function(model) {
+module
+    .service(key + 'Model', ['Restangular', function(Restangular) {
+        var User = Restangular.service(key);
+
+        Restangular.extendModel(key, function(model) {
             model.getResult = function() {
                 if (this.status == 'complete') {
                     if (this.passed === null) return "Finished";
@@ -20,3 +23,4 @@ angular.module('scheduling-app.models')
 
         return User;
     }]);
+});
