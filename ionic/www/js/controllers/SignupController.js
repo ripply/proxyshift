@@ -6,7 +6,8 @@ angular.module('scheduling-app.controllers')
         '$scope',
         '$http',
         '$state',
-        function($scope, $http, $state) {
+        'UsersModel',
+        function($scope, $http, $state, UsersModel) {
 
             $scope.user = {
                 name: null,
@@ -17,8 +18,12 @@ angular.module('scheduling-app.controllers')
             };
 
             $scope.doSignup = function() {
-                // TODO
-                //console.log(User.all());
+                UsersModel.post($scope.user)
+                    .then(function() {
+                        console.log("Successfully created user?");
+                    }, function(response) {
+                        console.log("Failed to create user with response: " + response.status);
+                    });
             };
 
             $scope.$on('event:signup-required', function(e, rejection) {

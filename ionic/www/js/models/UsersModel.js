@@ -2,10 +2,10 @@
  * UserModel
  */
 angular.module('scheduling-app.models')
-    .service('User', ['Restangular', function(Restangular) {
-        var User = Restangular.service('User');
+    .service('UsersModel', ['Restangular', function(Restangular) {
+        var User = Restangular.service('Users');
 
-        Restangular.extendModel('User', function(model) {
+        Restangular.extendModel('Users', function(model) {
             model.getResult = function() {
                 if (this.status == 'complete') {
                     if (this.passed === null) return "Finished";
