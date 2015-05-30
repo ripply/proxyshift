@@ -5,7 +5,12 @@ var config_data = {
         'APP_URL': 'http://localhost:8100',
         'APP_URL_API': '/api',
         'APP_URL_LOGIN': '/session/login',
-        'APP_URL_LOGOUT': '/session/logout'
+        'APP_URL_LOGOUT': '/session/logout',
+        'APP_REMEMBER_ME_TOKEN': 'remember_me',
+        'SESSION_RETRY_ACCESSED_RESOURCE_IN': {
+            value: 30,
+            interval: 'mins'
+        }
     }
 };
 
