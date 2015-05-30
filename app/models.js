@@ -250,10 +250,8 @@ function saveRememberMeToken(token, uid, next) {
                 date: expires
             });
 
-            return newToken.save();
-            })
-            .catch(function(err) {
-                return next(err);
+            newToken.save();
+            return next();
             })
         .catch(function(err) {
             return next(err);
