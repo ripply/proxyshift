@@ -107,6 +107,7 @@ if ('development' == app.get('env')) {
 }
 
 //connect to the db server:
+/*
 mongoose.connect('mongodb://localhost/MyApp');
 mongoose.connection.on('open', function() {
     console.log("Connected to Mongoose...");
@@ -114,6 +115,7 @@ mongoose.connection.on('open', function() {
     // check if the db is empty, if so seed it with some contacts:
     //seeder.check();
 });
+*/
 
 //routes list:
 routes.initialize(app);
