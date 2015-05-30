@@ -9,6 +9,7 @@ var mongoose = require('mongoose'),
     fs = require('fs'),
     mkdirp = require('mkdirp'),
     path = require('path'),
+    bcrypt = require('bcrypt'),
     SALT_WORK_FACTOR = 10;
 
 var db_file = 'data/database.db';
@@ -119,6 +120,28 @@ knex.schema.hasTable('usergroups').then(function(exists) {
     }
 });
 
+knex.schema.hasTable('tokens').then(function(exists) {
+    if (exists) {
+        console.log('Tokens table already exists.');
+    } else {
+        return knex.schema.createTable('tokens', function(table) {
+            table.increments('id');
+            table.integer('userid')
+                .references('id')
+                .inTable('users')
+                .onDelete('CASCADE')
+                .notNullable();
+            table.string('token')
+                .notNullable()
+                .unique();
+            table.date('date')
+                .notNullable();
+        }).then(function() {
+            console.log('Successfully created usergroups table.');
+        });
+    }
+});
+
 //Models
 
 var User = Bookshelf.Model.extend({
@@ -128,13 +151,14 @@ var User = Bookshelf.Model.extend({
 var Shift = Bookshelf.Model.extend({
     tableName: 'shifts'
 });
-
 var Group = Bookshelf.Model.extend({
     tableName: 'groups'
 });
-
 var Usergroup = Bookshelf.Model.extend({
     tableName: 'usergroups'
+});
+var Token = Bookshelf.Model.extend( {
+    tableName: 'tokens'
 });
 
 //Collections
@@ -151,7 +175,98 @@ var Groups = Bookshelf.Collection.extend({
 var Usergroups = Bookshelf.Collection.extend({
     model: Usergroup
 });
+var Tokens = Bookshelf.Collection.extend({
+    model: Token
+});
 
+
+function consumeRememberMeToken(token, next) {
+    console.log("trying to consume token..");
+    var query = {'token.key': token};
+    Tokens.forge(query)
+        .fetchAll()
+        .then(function(foundTokens) {
+            if (foundTokens.length > 0) {
+                var foundToken = foundTokens[0];
+
+                var uid = foundToken.get('id');
+                var tokens = foundToken.get('token');
+                if (tokens.length > 0) {
+                    var now = Date.now();
+                    for (var i = 0; i < tokens.length; i++) {
+                        if (tokens[i].key == token) {
+                            if (now < tokens[i].expires) {
+                                // token is good, remove it
+                                tokens.splice(i, 1);
+                                foundToken.save();
+                                return next(null, uid);
+                            } else {
+                                return next(null, uid);
+                            }
+                        }
+                    }
+                    // else didn't find any tokens, fallthrough below
+                } else {
+                    console.log("No tokens issued");
+                    return next('No tokens issued for user', null);
+                }
+            }
+        })
+        .catch(function(err) {
+            console.log("Failed to find token: " + token);
+            Token.find({}, function(err, tokens) {
+                console.log("Found tokens: ");
+                console.log(tokens);
+            });
+            return next(null, null);
+        });
+}
+
+var max_tokens = 2;
+var tokens_expire_in_x_days = 14;
+
+function saveRememberMeToken(token, uid, next) {
+    User.forge({id: uid})
+        .fetch()
+        .then(function(foundUser) {
+            var expires = new Date();
+            expires.setDate(expires.getDate() + tokens_expire_in_x_days);
+
+            Bookshelf.knex('tokens')
+                .where('date', '<', Date.now())
+                .del()
+                .then(function(numRows) {
+                    if (numRows > 0) {
+                        console.log('Purged ' + numRows + ' expired tokens.');
+                    }
+                })
+                .catch(function(err) {
+                    console.log('Failed to purge tokens.' + err);
+                });
+
+            var newToken = new Token({
+                userid: foundUser.get('id'),
+                token: token,
+                date: expires
+            });
+
+            return newToken.save();
+            })
+            .catch(function(err) {
+                return next(err);
+            })
+        .catch(function(err) {
+            return next(err);
+        })
+}
+
+function issueToken(user, done) {
+    var token = utils.randomString(64);
+    return saveRememberMeToken(token, user.id, function(err) {
+        if (err) { return done(err); }
+        return done(null, token);
+    });
+}
 
 /*
  db.serialize(function() {
@@ -525,10 +640,10 @@ module.exports = {
     Group: Group,
     Usergroups: Usergroups,
     Usergroup: Usergroup,
+    Token: Token,
+    consumeRememberMeToken: consumeRememberMeToken,
+    issueToken: issueToken,
+    //Category: Category
 
-    //Token: Token,
-    //Category: Category,
-    //consumeRememberMeToken: consumeRememberMeToken,
-    //issueToken: issueToken
 };
 

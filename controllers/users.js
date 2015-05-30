@@ -1,6 +1,7 @@
 var models = require('../app/models');
 
 function encryptKey(password) {
+    return password;
     if (password === null || password.length === 0) {
         return null;
     } else {
