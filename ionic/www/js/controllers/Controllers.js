@@ -1,5 +1,6 @@
 angular.module('scheduling-app.controllers', [
-  'scheduling-app.models'
+  'scheduling-app.models',
+  'scheduling-app.config'
 ])
 
     .controller('PlaylistsCtrl', [

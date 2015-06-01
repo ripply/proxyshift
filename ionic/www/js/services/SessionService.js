@@ -28,7 +28,7 @@ angular.module('scheduling-app.session', [
                 return (accessedRestrictedResource && moment() < accessedRestrictedResourceExpires);
             }
 
-            this.checkAuthenticated = function() {
+            this.checkAuthentication = function() {
                 var rememberme_token;
                 // check if the remember me token exists
                 if (angular.version.major === 1 &&
@@ -46,21 +46,24 @@ angular.module('scheduling-app.session', [
                     rememberme_token === undefined) {
                     // remember me token was not found
                         // query the server to see if the session is still open
-                    var api_url = GENERAL_CONFIG.APP_URL + GENERAL_CONFIG.APP_URL_API;
+                    var api_url = GENERAL_CONFIG.APP_URL;
 
                     if (isAuthenticated()) {
+                        console.debug("Already logged in.");
                         authenticated = true;
                     } else {
                         authenticated = $http.get(api_url + "/session", {ignoreAuthModule: true})
                             .success(function (data, status, headers, config) {
                                 // successfully accessed a restriced resource
                                 // we are already logged in
+                                console.debug("Able to access protected resource, logged in.");
                                 setAuthenticated(true);
                                 return true;
                             })
                             .error(function (data, status, headers, config) {
                                 // failed to access a protected resource
                                 // TODO: Handle connection timeouts here
+                                console.debug("Faild to acccess protectd resource, not logged in");
                                 return false;
                             });
                     }

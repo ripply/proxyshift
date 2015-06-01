@@ -11,6 +11,9 @@ var config_data = {
             value: 30,
             interval: 'mins'
         }
+    },
+    'GENERAL_EVENTS': {
+        'CHECK_AUTHENTICATION': 'events:auth-check-authentication'
     }
 };
 

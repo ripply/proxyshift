@@ -7,7 +7,9 @@ angular.module('scheduling-app.controllers')
         '$http',
         '$state',
         'AuthenticationService',
-        function($scope, $http, $state, AuthenticationService) {
+        'SessionService',
+        'GENERAL_EVENTS',
+        function($scope, $http, $state, AuthenticationService, SessionService, GENERAL_EVENTS) {
 
             $scope.user = {
                 username: null,
@@ -18,6 +20,10 @@ angular.module('scheduling-app.controllers')
             $scope.login = function() {
                 AuthenticationService.login($scope.user);
             };
+
+            $scope.$on(GENERAL_EVENTS.CHECK_AUTHENTICATION, function() {
+                return SessionService.checkAuthentication();
+            });
 
             $scope.$on('event:auth-loginRequired', function(e, rejection) {
                 // clear any error messages
