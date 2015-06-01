@@ -10,7 +10,8 @@ var config_data = {
         'SESSION_RETRY_ACCESSED_RESOURCE_IN': {
             value: 30,
             interval: 'mins'
-        }
+        },
+        'LOGIN_TIMEOUT': 15 * 1000
     },
     'GENERAL_EVENTS': {
         'CHECK_AUTHENTICATION': 'events:auth-check-authentication'

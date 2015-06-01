@@ -24,7 +24,10 @@ angular.module('scheduling-app.authentication', [
                     return false;
                 }
                 var login_url = GENERAL_CONFIG.APP_URL + GENERAL_CONFIG.APP_URL_LOGIN;
-                return $http.post(login_url, user, { ignoreAuthModule: true })
+                return $http.post(login_url, user, {
+                    ignoreAuthModule: true,
+                    timeout: GENERAL_CONFIG.LOGIN_TIMEOUT
+                })
                     .success(function (data, status, headers, config) {
                         //$http.defaults.headers.common.Authorization = data.authorizationToken;  // Step 1
 

@@ -52,7 +52,10 @@ angular.module('scheduling-app.session', [
                         console.debug("Already logged in.");
                         authenticated = true;
                     } else {
-                        authenticated = $http.get(api_url + "/session", {ignoreAuthModule: true})
+                        authenticated = $http.get(api_url + "/session", {
+                            ignoreAuthModule: true,
+                            timeout: GENERAL_CONFIG.LOGIN_TIMEOUT
+                        })
                             .success(function (data, status, headers, config) {
                                 // successfully accessed a restriced resource
                                 // we are already logged in
