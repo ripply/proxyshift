@@ -16,7 +16,6 @@ require('./configure_passport');
 //   the request will proceed.  Otherwise, the user will be redirected to the
 //   login page.
 function ensureAuthenticated(req, res, next) {
-    return next();
     if (req.isAuthenticated()) {
         console.log("Authorized user");
         return next();
