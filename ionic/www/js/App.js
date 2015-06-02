@@ -88,6 +88,16 @@ angular.module('scheduling-app', [
                     }
                 })
 
+                .state('app.groups', {
+                    url: "/groups",
+                    views: {
+                        'menuContent': {
+                            templateUrl: "templates/groups.html",
+                            controller: 'GroupsController'
+                        }
+                    }
+                })
+
                 .state('app.creategroup', {
                     url: "/creategroup",
                     views: {

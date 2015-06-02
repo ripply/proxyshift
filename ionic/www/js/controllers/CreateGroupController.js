@@ -1,5 +1,5 @@
 /**
- * SignupController
+ * CreateGroupsController
  */
 angular.module('scheduling-app.controllers')
     .controller('CreateGroupController', [
