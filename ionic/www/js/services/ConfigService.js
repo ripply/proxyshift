@@ -11,11 +11,12 @@ var config_data = {
             value: 30,
             interval: 'mins'
         },
-        'LOGIN_TIMEOUT': 15 * 1000
+        'LOGIN_TIMEOUT': 15 * 1000 // milliseconds
     },
     'GENERAL_EVENTS': {
         'AUTHENTICATION': {
             'CHECK': 'events:auth-check-authentication',
+            // This is broadcast by angular-http-auth on 401 code
             'REQUIRED': 'event:auth-loginRequired',
             'CONFIRMED': 'event:auth-loginConfirmed',
             'INVALID': 'event:auth-login-failed-invalid',
