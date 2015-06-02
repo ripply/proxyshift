@@ -21,11 +21,11 @@ angular.module('scheduling-app.controllers')
                 AuthenticationService.login($scope.user);
             };
 
-            $scope.$on(GENERAL_EVENTS.CHECK_AUTHENTICATION, function() {
+            $scope.$on(GENERAL_EVENTS.AUTHENTICATION.CHECK, function() {
                 return SessionService.checkAuthentication();
             });
 
-            $scope.$on('event:auth-loginRequired', function(e, rejection) {
+            $scope.$on(GENERAL_EVENTS.AUTHENTICATION.REQUIRED, function(e, rejection) {
                 // clear any error messages
                 $scope.message = null;
                 // reset existing midtyped username/password
@@ -36,18 +36,18 @@ angular.module('scheduling-app.controllers')
                 $scope.loginModal.show();
             });
 
-            $scope.$on('event:auth-loginConfirmed', function() {
+            $scope.$on(GENERAL_EVENTS.AUTHENTICATION.CONFIRMED, function() {
                 $scope.user.username = null;
                 $scope.user.password = null;
                 $scope.message = null;
                 $scope.loginModal.hide();
             });
 
-            $scope.$on('event:auth-login-failed-invalid', function(e, message) {
+            $scope.$on(GENERAL_EVENTS.AUTHENTICATION.INVALID, function(e, message) {
                 $scope.message = message;
             });
 
-            $scope.$on('event:auth-login-failed', function(e, status) {
+            $scope.$on(GENERAL_EVENTS.AUTHENTICATION.FAILED, function(e, status) {
                 var error = "Login failed.";
                 if (status == 401) {
                     error = "Invalid Username or Password.";
@@ -55,7 +55,7 @@ angular.module('scheduling-app.controllers')
                 $scope.message = error;
             });
 
-            $scope.$on('event:auth-logout-complete', function() {
+            $scope.$on(GENERAL_EVENTS.LOGOUT.COMPLETE, function() {
                 $state.go('app.home', {}, {reload: true, inherit: false});
             });
         }]);

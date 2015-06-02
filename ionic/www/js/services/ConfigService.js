@@ -14,7 +14,16 @@ var config_data = {
         'LOGIN_TIMEOUT': 15 * 1000
     },
     'GENERAL_EVENTS': {
-        'CHECK_AUTHENTICATION': 'events:auth-check-authentication',
+        'AUTHENTICATION': {
+            'CHECK': 'events:auth-check-authentication',
+            'REQUIRED': 'event:auth-loginRequired',
+            'CONFIRMED': 'event:auth-loginConfirmed',
+            'INVALID': 'event:auth-login-failed-invalid',
+            'FAILED': 'event:auth-login-failed'
+        },
+        'LOGOUT': {
+            'COMPLETE': 'event:auth-logout-complete'
+        },
         'SLOW_REQUEST': 'events:slow-request'
     }
 };

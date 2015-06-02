@@ -12,15 +12,21 @@ angular.module('scheduling-app.authentication', [
         'authService',
         'SessionService',
         'GENERAL_CONFIG',
-        function($rootScope, $http, authService, SessionService, GENERAL_CONFIG) {
+        'GENERAL_EVENTS',
+        function($rootScope,
+                 $http,
+                 authService,
+                 SessionService,
+                 GENERAL_CONFIG,
+                 GENERAL_EVENTS) {
             this.login = function(user) {
                 //SessionService.authenticate();
                 if (user.username === null || user.username == '') {
-                    $rootScope.$broadcast('event:auth-login-failed-invalid', 'Empty username');
+                    $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.INVALID, 'Empty username');
                     return false;
                 }
                 else if (user.password === null || user.password == '') {
-                    $rootScope.$broadcast('event:auth-login-failed-invalid', 'Empty password');
+                    $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.INVALID, 'Empty password');
                     return false;
                 }
                 var login_url = GENERAL_CONFIG.APP_URL + GENERAL_CONFIG.APP_URL_LOGIN;
@@ -42,7 +48,7 @@ angular.module('scheduling-app.authentication', [
                         });
                     })
                     .error(function (data, status, headers, config) {
-                        $rootScope.$broadcast('event:auth-login-failed', status);
+                        $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.FAILED, status);
                     });
             };
         }])

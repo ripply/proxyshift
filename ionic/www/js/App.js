@@ -11,6 +11,7 @@ angular.module('scheduling-app', [
     'scheduling-app.authentication',
     'scheduling-app.models',
     'scheduling-app.session',
+    'scheduling-app.directives',
     'scheduling-app.config'
 ])
 
@@ -21,7 +22,7 @@ angular.module('scheduling-app', [
         function($rootScope, $ionicPlatform, GENERAL_EVENTS) {
             function triggerAuthenticationCheck() {
                 console.log("Triggering auth check");
-                $rootScope.$broadcast(GENERAL_EVENTS.CHECK_AUTHENTICATION);
+                $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.CHECK);
             }
             $ionicPlatform.ready(function() {
                 // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard

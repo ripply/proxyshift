@@ -13,8 +13,14 @@ angular.module('scheduling-app.session', [
     .service('SessionService', [
         '$http',
         '$cookies',
+        '$rootScope',
         'GENERAL_CONFIG',
-        function($http, $cookies, GENERAL_CONFIG) {
+        'GENERAL_EVENTS',
+        function($http,
+                 $cookies,
+                 $rootScope,
+                 GENERAL_CONFIG,
+                 GENERAL_EVENTS) {
             var accessedRestrictedResource = false;
             var accessedRestrictedResourceExpires = null;
             var retryResourceIn = GENERAL_CONFIG.SESSION_RETRY_ACCESSED_RESOURCE_IN;
@@ -26,6 +32,10 @@ angular.module('scheduling-app.session', [
 
             function isAuthenticated() {
                 return (accessedRestrictedResource && moment() < accessedRestrictedResourceExpires);
+            }
+
+            function fireAuthenticaionRequiredEvent() {
+                $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.REQUIRED);
             }
 
             this.checkAuthentication = function() {
@@ -67,6 +77,7 @@ angular.module('scheduling-app.session', [
                                 // failed to access a protected resource
                                 // TODO: Handle connection timeouts here
                                 console.debug("Faild to acccess protectd resource, not logged in");
+                                fireAuthenticaionRequiredEvent();
                                 return false;
                             });
                     }
@@ -82,6 +93,6 @@ angular.module('scheduling-app.session', [
                     authenticated = true;
                 }
                 return authenticated;
-            }
+            };
         }
 ]);
