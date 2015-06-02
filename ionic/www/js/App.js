@@ -86,6 +86,16 @@ angular.module('scheduling-app', [
                             controller: 'PlaylistCtrl'
                         }
                     }
+                })
+
+                .state('app.creategroup', {
+                    url: "/creategroup",
+                    views: {
+                        'menuContent': {
+                            templateUrl: "templates/creategroup.html",
+                            controller: 'CreateGroupController'
+                        }
+                    }
                 });
             // if none of the above states are matched, use this as the fallback
             $urlRouterProvider.otherwise('/app/playlists');
