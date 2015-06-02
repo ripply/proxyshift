@@ -14,7 +14,8 @@ var config_data = {
         'LOGIN_TIMEOUT': 15 * 1000
     },
     'GENERAL_EVENTS': {
-        'CHECK_AUTHENTICATION': 'events:auth-check-authentication'
+        'CHECK_AUTHENTICATION': 'events:auth-check-authentication',
+        'SLOW_REQUEST': 'events:slow-request'
     }
 };
 
