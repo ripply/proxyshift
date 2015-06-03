@@ -38,7 +38,7 @@ angular.module('scheduling-app', [
                     // org.apache.cordova.statusbar required
                     StatusBar.styleDefault();
                 }
-                //triggerAuthenticationCheck();
+                triggerAuthenticationCheck();
             });
         }])
 

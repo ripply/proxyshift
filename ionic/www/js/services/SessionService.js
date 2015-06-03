@@ -27,6 +27,7 @@ angular.module('scheduling-app.session', [
 
             function setAuthenticated(authenticated) {
                 accessedRestrictedResource = authenticated;
+                $rootScope.authenticated = authenticated;
                 if (authenticated !== true) {
                     // only update expiration if authenticated
                     accessedRestrictedResourceExpires = moment().add(retryResourceIn.value, retryResourceIn.interval);
@@ -38,6 +39,7 @@ angular.module('scheduling-app.session', [
             }
 
             function fireAuthenticaionRequiredEvent() {
+                setAuthenticated(false);
                 $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.REQUIRED);
             }
 
