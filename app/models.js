@@ -194,20 +194,16 @@ function consumeRememberMeToken(token, next) {
         .then(function(foundToken) {
             var userid = foundToken.get('userid');
             // Found a token, delete it
-            console.log("Found token, deleting...");
             return foundToken.destroy()
                 .then(function() {
-                    console.log("Deleted found token");
                     return next(null, userid);
                 })
                 .catch(function(err) {
-                    console.log("FAILED to delete found token");
                     console.log(err);
                     return next(null, null);
                 });
         })
         .catch(function(err) {
-            console.log("Failed to find token: " + token);
             console.log(err);
             return next(null, null);
         });
@@ -218,8 +214,13 @@ var max_tokens = 2;
 var tokens_expire_in_x_days = 14;
 
 function saveRememberMeToken(token, uid, next) {
+    if (uid === undefined ||
+        uid === null ||
+        uid == '') {
+        return next("Cannot save token without a userid");
+    }
     User.forge({id: uid})
-        .fetch()
+        .fetch({require: true})
         .then(function(foundUser) {
             var expires = new Date();
             expires.setDate(expires.getDate() + tokens_expire_in_x_days);
@@ -251,7 +252,6 @@ function saveRememberMeToken(token, uid, next) {
 }
 
 function issueToken(user, done) {
-    console.log("ISsuing REMEMBERME TOKEN!!");
     var token = utils.randomString(64);
     return saveRememberMeToken(token, user.id, function(err) {
         if (err) { return done(err); }

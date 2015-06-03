@@ -35,8 +35,6 @@ passport.deserializeUser(function(id, done) {
 //   with a user object.  In the real world, this would query a database;
 //   however, in this example we are using a baked-in set of users.
 passport.use(new LocalStrategy(function(username, password, done) {
-    console.log("Username: " + username);
-    console.log("Password: " + password);
     return new models.User({username: username})
         .fetch({require: true})
         .then(function (user) {
@@ -50,16 +48,6 @@ passport.use(new LocalStrategy(function(username, password, done) {
         .catch(function (err) {
             return done(null, false, {error: true, data: {message: err.message}});
         });
-        /*if (err) { return done(err); }
-        if (!user) { return done(null, false, { message: 'Unknown user ' + username }); }
-        user.comparePassword(password, function(err, isMatch) {
-            if (err) return done(err);
-            if(isMatch) {
-                return done(null, user);
-            } else {
-                return done(null, false, { message: 'Invalid password' });
-            }
-        });*/
     })
 );
 
@@ -76,11 +64,14 @@ passport.use(new RememberMeStrategy(
             if (err) { return done(err); }
             if (!uid) { return done(null, false); }
 
-            models.Users.findById(uid, function(err, user) {
-                if (err) { return done(err); }
-                if (!user) { return done(null, false); }
-                return done(null, user);
-            });
+            return models.User.forge({id: uid})
+                .fetch({require: true})
+                .then(function(user) {
+                    return done(null, user);
+                })
+                .catch(function(err) {
+                    return done(err);
+                });
         });
     },
     models.issueToken
