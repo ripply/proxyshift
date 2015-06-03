@@ -37,7 +37,7 @@ passport.deserializeUser(function(id, done) {
 passport.use(new LocalStrategy(function(username, password, done) {
     console.log("Username: " + username);
     console.log("Password: " + password);
-    new models.User({username: username})
+    return new models.User({username: username})
         .fetch({require: true})
         .then(function (user) {
             console.log(user);

@@ -95,7 +95,7 @@ app.use(function (err, req, res, next) {
 
 app.use(passport.initialize());
 app.use(passport.session());
-//app.use(passport.authenticate('remember-me'));
+app.use(passport.authenticate('remember-me'));
 
 app.use(app.router);
 // serves clients our files in public

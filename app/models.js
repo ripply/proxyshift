@@ -182,44 +182,37 @@ var Tokens = Bookshelf.Collection.extend({
 
 function consumeRememberMeToken(token, next) {
     console.log("trying to consume token..");
-    Token.forge({token: token})
+    return Token.query(function(q) {
+        q.select('tokens.*')
+            .innerJoin('users', function () {
+                this.on('tokens.userid', '=', 'users.id')
+                    .andOn('tokens.date', '>', new Date().getTime())
+                    .andOn('tokens.token' , token)
+            })
+    })
         .fetch({require: true})
         .then(function(foundToken) {
-            //if (foundTokens.length > 0) {
-                //var foundToken = foundTokens[0];
-
-                var uid = foundToken.get('id');
-                var tokens = foundToken.get('token');
-                //if (tokens.length > 0) {
-                    var now = Date.now();
-                    for (var i = 0; i < tokens.length; i++) {
-                        if (tokens[i].key == token) {
-                            if (now < tokens[i].expires) {
-                                // token is good, remove it
-                                tokens.splice(i, 1);
-                                foundToken.save();
-                                return next(null, uid);
-                            } else {
-                                return next(null, uid);
-                            }
-                        }
-                    }
-                    // else didn't find any tokens, fallthrough below
-                //} else {
-//                    console.log("No tokens issued");
-//                    return next('No tokens issued for user', null);
-//                }
-            //}
+            var userid = foundToken.get('userid');
+            // Found a token, delete it
+            console.log("Found token, deleting...");
+            return foundToken.destroy()
+                .then(function() {
+                    console.log("Deleted found token");
+                    return next(null, userid);
+                })
+                .catch(function(err) {
+                    console.log("FAILED to delete found token");
+                    console.log(err);
+                    return next(null, null);
+                });
         })
         .catch(function(err) {
             console.log("Failed to find token: " + token);
-            Token.find({}, function(err, tokens) {
-                console.log("Found tokens: ");
-                console.log(tokens);
-            });
+            console.log(err);
             return next(null, null);
         });
 }
+
 
 var max_tokens = 2;
 var tokens_expire_in_x_days = 14;
@@ -643,5 +636,5 @@ module.exports = {
     issueToken: issueToken,
     //Category: Category
 
-};
+}
 
