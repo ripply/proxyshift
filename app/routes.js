@@ -182,7 +182,7 @@ module.exports.initialize = function(app) {
     /**
      * Groups
      */
-    app.get('/api/groups', groups.index);
+    app.get('/api/groups', groups.getOwnGroups);
     app.get('/api/groups/:id', groups.getById);
     app.post('/api/groups', groups.add);
     app.put('/api/groups', groups.add);

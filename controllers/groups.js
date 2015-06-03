@@ -26,6 +26,21 @@ module.exports = {
                 res.status(500).json({error: true, data: {message: err.message}});
             });
     },
+    getOwnGroups: function(req, res) {
+        models.Group.query(function(q) {
+            q.select('groups.*').innerJoin('usergroups', function() {
+                this.on('groups.id', '=', 'usergroups.groupid')
+                    .andOn('usergroups.userid', '=', req.user.id);
+            });
+        })
+            .fetchAll()
+            .then(function (groups) {
+                res.json(groups.toJSON());
+            })
+            .catch(function (err) {
+                res.status(500).json({error: true, data: {message: err.message}});
+            });
+    },
     add: function(req, res) {
         models.Group.forge({
             groupname: req.body.groupname,
