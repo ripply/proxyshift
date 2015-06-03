@@ -282,7 +282,8 @@ module.exports = function(grunt) {
 
     grunt.registerTask('heroku', ['init:dev', 'build:dev']);
 
-    grunt.registerTask('server', ['build:dev', 'concurrent:dev']);
+    //grunt.registerTask('server', ['build:dev', 'concurrent:dev']);
+    grunt.registerTask('server', ['concurrent:dev']);
     grunt.registerTask('test:server', ['simplemocha:server']);
 
     grunt.registerTask('test:client', ['karma:test']);
