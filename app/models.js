@@ -182,16 +182,15 @@ var Tokens = Bookshelf.Collection.extend({
 
 function consumeRememberMeToken(token, next) {
     console.log("trying to consume token..");
-    var query = {'token.key': token};
-    Tokens.forge(query)
-        .fetchAll()
-        .then(function(foundTokens) {
-            if (foundTokens.length > 0) {
-                var foundToken = foundTokens[0];
+    Token.forge({token: token})
+        .fetch({require: true})
+        .then(function(foundToken) {
+            //if (foundTokens.length > 0) {
+                //var foundToken = foundTokens[0];
 
                 var uid = foundToken.get('id');
                 var tokens = foundToken.get('token');
-                if (tokens.length > 0) {
+                //if (tokens.length > 0) {
                     var now = Date.now();
                     for (var i = 0; i < tokens.length; i++) {
                         if (tokens[i].key == token) {
@@ -206,11 +205,11 @@ function consumeRememberMeToken(token, next) {
                         }
                     }
                     // else didn't find any tokens, fallthrough below
-                } else {
-                    console.log("No tokens issued");
-                    return next('No tokens issued for user', null);
-                }
-            }
+                //} else {
+//                    console.log("No tokens issued");
+//                    return next('No tokens issued for user', null);
+//                }
+            //}
         })
         .catch(function(err) {
             console.log("Failed to find token: " + token);
@@ -259,6 +258,7 @@ function saveRememberMeToken(token, uid, next) {
 }
 
 function issueToken(user, done) {
+    console.log("ISsuing REMEMBERME TOKEN!!");
     var token = utils.randomString(64);
     return saveRememberMeToken(token, user.id, function(err) {
         if (err) { return done(err); }

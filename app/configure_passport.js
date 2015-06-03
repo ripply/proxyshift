@@ -69,9 +69,9 @@ passport.use(new LocalStrategy(function(username, password, done) {
 //   token was originally issued to.  The token is single-use, so a new
 //   token is then issued to replace it.
 
-/*
 passport.use(new RememberMeStrategy(
     function(token, done) {
+        console.log("Remember me consume!????");
         models.consumeRememberMeToken(token, function(err, uid) {
             if (err) { return done(err); }
             if (!uid) { return done(null, false); }
@@ -85,5 +85,3 @@ passport.use(new RememberMeStrategy(
     },
     models.issueToken
 ));
-
-*/
