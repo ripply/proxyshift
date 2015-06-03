@@ -13,7 +13,7 @@ angular.module('scheduling-app.controllers')
             $ionicModal.fromTemplateUrl('templates/login.html', {
                 scope: $scope
             }).then(function(modal) {
-                $scope.loginModal = modal;
+                $rootScope.loginModal = modal;
             });
 
             // Create the signup modal that we will use later

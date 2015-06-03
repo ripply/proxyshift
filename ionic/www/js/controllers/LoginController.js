@@ -2,60 +2,90 @@
  * LoginController
  */
 angular.module('scheduling-app.controllers')
-    .controller('LoginController', [
-        '$scope',
-        '$http',
-        '$state',
-        'AuthenticationService',
+    .service('LoginControllerService',[
+        '$rootScope',
         'SessionService',
         'GENERAL_EVENTS',
-        function($scope, $http, $state, AuthenticationService, SessionService, GENERAL_EVENTS) {
+        function($rootScope,
+                 SessionService,
+                 GENERAL_EVENTS) {
 
-            $scope.user = {
+            $rootScope.user = {
                 username: null,
                 password: null,
                 remember_me: false
             };
 
-            $scope.login = function() {
-                AuthenticationService.login($scope.user);
+            var showLoginModal = function() {
+                $rootScope.loginModal.show();
             };
 
-            $scope.$on(GENERAL_EVENTS.AUTHENTICATION.CHECK, function() {
-                return SessionService.checkAuthentication();
+            this.showLoginModal = showLoginModal;
+
+            var hideLoginModal = function() {
+                $rootScope.loginModal.hide();
+            };
+
+            this.hideLoginModal = hideLoginModal;
+
+            $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.CHECK, function() {
+                SessionService.checkAuthentication();
             });
 
-            $scope.$on(GENERAL_EVENTS.AUTHENTICATION.REQUIRED, function(e, rejection) {
+            $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.REQUIRED, function(e, rejection) {
                 // clear any error messages
-                $scope.message = null;
-                // reset existing midtyped username/password
-                $scope.user.username = null;
-                $scope.user.password = null;
-                $scope.user.remember_me = false;
+                $rootScope.message = null;
+                // reset existing mistyped username/password
+                $rootScope.user.username = null;
+                $rootScope.user.password = null;
+                $rootScope.user.remember_me = false;
 
-                $scope.loginModal.show();
+                showLoginModal();
             });
 
-            $scope.$on(GENERAL_EVENTS.AUTHENTICATION.CONFIRMED, function() {
-                $scope.user.username = null;
-                $scope.user.password = null;
-                $scope.message = null;
-                $scope.loginModal.hide();
+            $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.CONFIRMED, function() {
+                $rootScope.user.username = null;
+                $rootScope.user.password = null;
+                $rootScope.message = null;
+                hideLoginModal();
             });
 
-            $scope.$on(GENERAL_EVENTS.AUTHENTICATION.INVALID, function(e, message) {
-                $scope.message = message;
+            $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.INVALID, function(e, message) {
+                $rootScope.message = message;
             });
 
-            $scope.$on(GENERAL_EVENTS.AUTHENTICATION.FAILED, function(e, status) {
+            $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.FAILED, function(e, status) {
                 var error = "Login failed.";
                 if (status == 401) {
                     error = "Invalid Username or Password.";
                 }
-                $scope.message = error;
+                $rootScope.message = error;
             });
 
-            $scope.$on(GENERAL_EVENTS.LOGOUT.COMPLETE, function() {
+            $rootScope.$on(GENERAL_EVENTS.LOGOUT.COMPLETE, function() {
                 $state.go('app.home', {}, {reload: true, inherit: false});
             });
+        }
+    ])
+    .controller('LoginController', [
+        '$rootScope',
+        '$scope',
+        '$http',
+        '$state',
+        'AuthenticationService',
+        'SessionService',
+        'LoginControllerService',
+        function($rootScope,
+                 $scope,
+                 $http,
+                 $state,
+                 AuthenticationService,
+                 SessionService,
+                 LoginControllerService,
+                 GENERAL_EVENTS) {
+
+            $scope.login = function() {
+                AuthenticationService.login($rootScope.user);
+            };
+
         }]);

@@ -19,7 +19,11 @@ angular.module('scheduling-app', [
         '$rootScope',
         '$ionicPlatform',
         'GENERAL_EVENTS',
-        function($rootScope, $ionicPlatform, GENERAL_EVENTS) {
+        'LoginControllerService',
+        function($rootScope,
+                 $ionicPlatform,
+                 GENERAL_EVENTS,
+                 LoginControllerService) {
             function triggerAuthenticationCheck() {
                 console.log("Triggering auth check");
                 $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.CHECK);
