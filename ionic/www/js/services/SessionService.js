@@ -27,7 +27,6 @@ angular.module('scheduling-app.session', [
 
             function setAuthenticated(authenticated) {
                 accessedRestrictedResource = authenticated;
-                $rootScope.authenticated = authenticated;
                 if (authenticated !== true) {
                     // only update expiration if authenticated
                     accessedRestrictedResourceExpires = moment().add(retryResourceIn.value, retryResourceIn.interval);
@@ -41,6 +40,11 @@ angular.module('scheduling-app.session', [
             function fireAuthenticaionRequiredEvent() {
                 setAuthenticated(false);
                 $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.REQUIRED);
+            }
+
+            function fireAuthenticationConfirmedEvent() {
+                setAuthenticated(true);
+                $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.CONFIRMED);
             }
 
             this.checkAuthentication = function() {
@@ -75,7 +79,7 @@ angular.module('scheduling-app.session', [
                                 // successfully accessed a restriced resource
                                 // we are already logged in
                                 console.debug("Able to access protected resource, logged in.");
-                                setAuthenticated(true);
+                                fireAuthenticationConfirmedEvent();
                                 return true;
                             })
                             .error(function (data, status, headers, config) {
@@ -96,6 +100,7 @@ angular.module('scheduling-app.session', [
                     // LoginController listens to that event
                     // and will trigger a login modal popup asking the user to login
                     authenticated = true;
+                    fireAuthenticationConfirmedEvent();
                 }
                 return authenticated;
             };
