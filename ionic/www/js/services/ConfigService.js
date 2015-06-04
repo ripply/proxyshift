@@ -14,6 +14,7 @@ var config_data = {
         'LOGIN_TIMEOUT': 15 * 1000 // milliseconds
     },
     'GENERAL_EVENTS': {
+        // TODO: NONE OF THESE EVENT NAMES FOLLOW A CONSISTENT PATTERN
         'AUTHENTICATION': {
             'CHECK': 'events:auth-check-authentication',
             // This is broadcast by angular-http-auth on 401 code
@@ -23,9 +24,14 @@ var config_data = {
             'FAILED': 'event:auth-login-failed'
         },
         'LOGOUT': {
-            'COMPLETE': 'event:auth-logout-complete'
+            'COMPLETE': 'event:auth-logout-complete',
+            'FAILED': 'event:auth-logout-failed'
         },
         'SLOW_REQUEST': 'events:slow-request'
+    },
+    'TOKENS': {
+        'SESSION': 'connect.sid',
+        'REMEMBERME': 'remember_me'
     }
 };
 

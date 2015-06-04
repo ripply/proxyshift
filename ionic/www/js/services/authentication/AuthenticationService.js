@@ -9,13 +9,20 @@ angular.module('scheduling-app.authentication', [
     .service('AuthenticationService', [
         '$rootScope',
         '$http',
+        '$q',
+        '$cookies',
+        '$rootSope',
         'authService',
+        'CookiesService',
         'SessionService',
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
         function($rootScope,
                  $http,
+                 $q,
+                 $rootScope,
                  authService,
+                 CookiesService,
                  SessionService,
                  GENERAL_CONFIG,
                  GENERAL_EVENTS) {
@@ -50,6 +57,58 @@ angular.module('scheduling-app.authentication', [
                     .error(function (data, status, headers, config) {
                         $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.FAILED, status);
                     });
+            };
+
+            function fireLogoutFailedEvent(error) {
+                $rootScope.$broadcast(GENERAL_EVENTS.LOGOUT.FAILED, error);
+            }
+
+            var loggingOut = false;
+            var loggingOutDeferred = null;
+
+            this.logout = function() {
+                var deferred = $q.defer();
+
+                setTimeout(function() {
+                    if (loggingOut) {
+                        return loggingOutDeferred.then(function() {
+                            // success
+                            deferred.resolve(true);
+                        }, function() {
+                            // error
+                            deferred.resolve(false);
+                        }, function(value) {
+                            // update
+                            deferred.notify(value);
+                        })
+                    }
+                    if (SessionService.checkAuthentication()) {
+                        var logout_url = GENERAL_CONFIG.APP_URL + GENERAL_CONFIG.APP_URL_LOGOUT;
+                        return $http.post(logout_url, null, {
+                            ignoreAuthModule: true,
+                            timeout: GENERAL_CONFIG.LOGIN_TIMEOUT
+                        }).
+                            success(function(data, status, headers, config) {
+                                // ensure that rememberme token is gone
+                                var token = CookiesService.getCookie(GENERAL_CONFIG.APP_REMEMBER_ME_TOKEN);
+                                if (token === undefined ||
+                                    token === null ||
+                                    token == '') {
+                                    deferred.resolve(true);
+                                } else {
+                                    fireLogoutFailedEvent("Failed to delete token");
+                                    deferred.resolve(false);
+                                }
+                            })
+                            .error(function(data, status, headers, config) {
+                                fireLogoutFailedEvent(data);
+                            });
+                    } else {
+                        deferred.resolve(true);
+                    }
+                });
+
+                return deferred.promise();
             };
         }])
 ;
