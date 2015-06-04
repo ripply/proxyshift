@@ -4,9 +4,11 @@
 angular.module('scheduling-app.controllers')
     .service('LoginControllerService',[
         '$rootScope',
+        '$state',
         'SessionService',
         'GENERAL_EVENTS',
         function($rootScope,
+                 $state,
                  SessionService,
                  GENERAL_EVENTS) {
 

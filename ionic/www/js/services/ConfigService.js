@@ -25,7 +25,8 @@ var config_data = {
         },
         'LOGOUT': {
             'COMPLETE': 'event:auth-logout-complete',
-            'FAILED': 'event:auth-logout-failed'
+            'FAILED': 'event:auth-logout-failed',
+            'REQUESTED': 'event:auth-logout-requested'
         },
         'SLOW_REQUEST': 'events:slow-request'
     },

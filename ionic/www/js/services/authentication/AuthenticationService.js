@@ -60,6 +60,10 @@ angular.module('scheduling-app.authentication', [
                 $rootScope.$broadcast(GENERAL_EVENTS.LOGOUT.FAILED, error);
             }
 
+            function fireLogoutSuccessEvent() {
+                $rootScope.$broadcast(GENERAL_EVENTS.LOGOUT.COMPLETE);
+            }
+
             var loggingOut = false;
             var loggingOutDeferred = null;
 
@@ -91,6 +95,7 @@ angular.module('scheduling-app.authentication', [
                                 if (token === undefined ||
                                     token === null ||
                                     token == '') {
+                                    fireLogoutSuccessEvent();
                                     deferred.resolve(true);
                                 } else {
                                     fireLogoutFailedEvent("Failed to delete token");
@@ -105,7 +110,7 @@ angular.module('scheduling-app.authentication', [
                     }
                 });
 
-                return deferred.promise();
+                return deferred.promise;
             };
         }])
 ;

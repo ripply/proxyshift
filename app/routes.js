@@ -74,7 +74,6 @@ module.exports.initialize = function(app) {
             req.login(user, function (err) {
                 if (err) { return next(err); }
 
-                if (err) { return next(err); }
                 var authToken = {'authorizationToken': '1234'};
                 // https://github.com/jaredhanson/passport-remember-me#setting-the-remember-me-cookie
                 // issue a remember me cookie if the option was checked
@@ -111,6 +110,8 @@ module.exports.initialize = function(app) {
         }
         req.logout();
         res.clearCookie('remember_me');
+        res.clearCookie('connect.sid');
+        req.session.destroy();
         // client session.postAuth method expects JSON, it will error if sent a blank response
         res.send({});
     });
