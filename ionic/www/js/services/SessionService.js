@@ -8,17 +8,18 @@
  */
 angular.module('scheduling-app.session', [
     'scheduling-app.config',
+    'scheduling-app.cookies',
     'ngCookies'
 ])
     .service('SessionService', [
         '$http',
-        '$cookies',
         '$rootScope',
+        'CookiesService',
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
         function($http,
-                 $cookies,
                  $rootScope,
+                 CookiesService,
                  GENERAL_CONFIG,
                  GENERAL_EVENTS) {
             var accessedRestrictedResource = false;
@@ -48,17 +49,8 @@ angular.module('scheduling-app.session', [
             }
 
             this.checkAuthentication = function() {
-                var rememberme_token;
-                // check if the remember me token exists
-                if (angular.version.major === 1 &&
-                        angular.version.minor <= 3) {
-                    // Angular below 1.4 uses a different api
-                    // Ionic 1.0 uses the old interface
-                    rememberme_token = $cookies[GENERAL_CONFIG.APP_REMEMBER_ME_TOKEN];
-                    } else {
-                    // Angular 1.4 broke 1.3 $cookies interface
-                    rememberme_token = $cookies.get(GENERAL_CONFIG.APP_REMEMBER_ME_TOKEN);
-                }
+                var rememberme_token = CookiesService.getCookie(GENERAL_CONFIG.APP_REMEMBER_ME_TOKEN);
+
                 var authenticated = false;
 
                 if (rememberme_token === null ||

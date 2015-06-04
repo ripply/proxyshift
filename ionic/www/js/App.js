@@ -12,6 +12,7 @@ angular.module('scheduling-app', [
     'scheduling-app.models',
     'scheduling-app.session',
     'scheduling-app.directives',
+    'scheduling-app.cookies',
     'scheduling-app.config'
 ])
 
