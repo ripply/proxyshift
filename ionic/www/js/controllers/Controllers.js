@@ -6,7 +6,7 @@ angular.module('scheduling-app.controllers', [
     .controller('PlaylistsCtrl', [
       '$scope',
       'UsersModel',
-        'GENERAL_CONFIG',
+      'GENERAL_CONFIG',
       function($scope, UsersModel, GENERAL_CONFIG) {
           $scope.ip = GENERAL_CONFIG.APP_URL;
           if ($scope.ip == null || $scope.ip == undefined || $scope.ip == ""){

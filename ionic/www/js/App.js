@@ -47,13 +47,13 @@ angular.module('scheduling-app', [
     .config([
         '$stateProvider',
         '$urlRouterProvider',
-        'StateHistoryService',
+        //'StateHistoryService',
         function($stateProvider,
-                 $urlRouterProvider,
+                 $urlRouterProvider
                  // specifying this as a dependency should set up
                  // listeners on the $rootScope which will keep track
                  // of the previous and current state
-                 StateHistoryService
+                 //StateHistoryService
         ) {
             //RestangularConfig.configure();
             $stateProvider

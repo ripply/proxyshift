@@ -7,7 +7,13 @@ angular.module('scheduling-app.controllers')
         '$http',
         '$state',
         'UsersModel',
-        function($scope, $http, $state, UsersModel) {
+        'GENERAL_EVENTS',
+        'STATES',
+        function($scope,
+                 $http,
+                 $state,
+                 UsersModel,
+                 STATES) {
 
             $scope.user = {
                 name: null,
@@ -27,7 +33,7 @@ angular.module('scheduling-app.controllers')
                     });
             };
 
-            $scope.$on('event:signup-required', function(e, rejection) {
+            $scope.$on(GENERAL_EVENTS.SIGNUP.REQUIRED, function(e, rejection) {
                 // clear any error messages
                 $scope.message = null;
                 // reset existing midtyped username/password
@@ -40,7 +46,7 @@ angular.module('scheduling-app.controllers')
                 $scope.signupModal.show();
             });
 
-            $scope.$on('event:signup-successful', function() {
+            $scope.$on(GENERAL_EVENTS.SIGNUP.SUCCESS, function() {
                 $scope.message = null;
                 $scope.user.name = null;
                 $scope.user.username = null;
@@ -51,12 +57,12 @@ angular.module('scheduling-app.controllers')
                 $scope.signupModal.hide();
             });
 
-            $scope.$on('event:signup-failed', function(e, message) {
+            $scope.$on(GENERAL_EVENTS.SIGNUP.FAILED, function(e, message) {
                 $scope.message = message;
             });
 
-            $scope.$on('event:signup-complete', function() {
-                $state.go('app.home', {}, {reload: true, inherit: false});
+            $scope.$on(GENERAL_EVENTS.SIGNUP.COMPLETE, function() {
+                $state.go(STATES.HOME, {}, {reload: true, inherit: false});
             });
 
         }]
