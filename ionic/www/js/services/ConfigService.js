@@ -23,6 +23,12 @@ var config_data = {
             'INVALID': 'event:auth-login-failed-invalid',
             'FAILED': 'event:auth-login-failed'
         },
+        'SIGNUP': {
+            'REQUIRED': 'event:signup-requierd',
+            'SUCCESS': 'event:signup-successful',
+            'FAILED': 'event:signup-failed',
+            'COMPLETE': 'event:signup-complete'
+        },
         'LOGOUT': {
             'COMPLETE': 'event:auth-logout-complete',
             'FAILED': 'event:auth-logout-failed',
@@ -33,6 +39,9 @@ var config_data = {
     'TOKENS': {
         'SESSION': 'connect.sid',
         'REMEMBERME': 'remember_me'
+    },
+    'STATES': {
+        'HOME': 'app.playlists'
     }
 };
 

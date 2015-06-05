@@ -13,7 +13,8 @@ angular.module('scheduling-app', [
     'scheduling-app.session',
     'scheduling-app.directives',
     'scheduling-app.cookies',
-    'scheduling-app.config'
+    'scheduling-app.config',
+    'scheduling-app.services.routing.statehistory'
 ])
 
     .run([
@@ -46,7 +47,14 @@ angular.module('scheduling-app', [
     .config([
         '$stateProvider',
         '$urlRouterProvider',
-        function($stateProvider, $urlRouterProvider) {
+        'StateHistoryService',
+        function($stateProvider,
+                 $urlRouterProvider,
+                 // specifying this as a dependency should set up
+                 // listeners on the $rootScope which will keep track
+                 // of the previous and current state
+                 StateHistoryService
+        ) {
             //RestangularConfig.configure();
             $stateProvider
 
