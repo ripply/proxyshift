@@ -13,6 +13,7 @@ angular.module('scheduling-app.controllers')
                  $http,
                  $state,
                  UsersModel,
+                 GENERAL_EVENTS,
                  STATES) {
 
             $scope.user = {
