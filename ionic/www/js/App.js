@@ -61,14 +61,48 @@ angular.module('scheduling-app', [
                 .state('login', {
                     url: '/login',
                     templateUrl: "partials/login.html",
-                    controller: 'LoginController'
+                    controller: 'LoginController',
+                    resolve: {
+                        notAuthenticated: [
+                            '$q',
+                            'SessionService',
+                            function($q, SessionService) {
+                                var deferred = $q.defer();
+
+                                if (SessionService.checkAuthentication()) {
+                                    deferred.reject('Already logged in');
+                                } else {
+                                    deferred.resolve();
+                                }
+
+                                return deferred.promise
+                            }
+                        ]
+                    }
                 })
 
                 .state('app', {
                     url: "/app",
                     abstract: true,
                     templateUrl: "templates/menu.html",
-                    controller: 'AppCtrl'
+                    controller: 'AppCtrl',
+                    resolve: {
+                        authenticated: [
+                            '$q',
+                            'SessionService',
+                            function($q, SessionService) {
+                                var deferred = $q.defer();
+
+                                if (SessionService.checkAuthentication()) {
+                                    deferred.resolve();
+                                } else {
+                                    deferred.reject("Not logged in");
+                                }
+
+                                return deferred.promise
+                            }
+                        ]
+                    }
                 })
 
                 .state('app.search', {

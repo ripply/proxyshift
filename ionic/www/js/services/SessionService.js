@@ -25,6 +25,7 @@ angular.module('scheduling-app.session', [
             var accessedRestrictedResource = false;
             var accessedRestrictedResourceExpires = null;
             var retryResourceIn = GENERAL_CONFIG.SESSION_RETRY_ACCESSED_RESOURCE_IN;
+            var failedLogin = false;
 
             function setAuthenticated(authenticated) {
                 accessedRestrictedResource = authenticated;
@@ -48,6 +49,10 @@ angular.module('scheduling-app.session', [
                 $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.CONFIRMED);
             }
 
+            $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.CONFIRMED, function() {
+                failedLogin = false;
+            });
+
             this.checkAuthentication = function() {
                 var rememberme_token = CookiesService.getCookie(GENERAL_CONFIG.APP_REMEMBER_ME_TOKEN);
 
@@ -62,6 +67,8 @@ angular.module('scheduling-app.session', [
                     if (isAuthenticated()) {
                         console.debug("Already logged in.");
                         authenticated = true;
+                    } else if (failedLogin) {
+                        return false;
                     } else {
                         authenticated = $http.get(api_url + "/session", {
                             ignoreAuthModule: true,
@@ -77,7 +84,10 @@ angular.module('scheduling-app.session', [
                             .error(function (data, status, headers, config) {
                                 // failed to access a protected resource
                                 // TODO: Handle connection timeouts here
-                                console.debug("Faild to acccess protectd resource, not logged in");
+                                console.debug("Failed to access protected resource, not logged in");
+                                // set flag that forces this method to return false
+                                // until the user is logged in
+                                failedLogin = true;
                                 fireAuthenticaionRequiredEvent();
                                 return false;
                             });
