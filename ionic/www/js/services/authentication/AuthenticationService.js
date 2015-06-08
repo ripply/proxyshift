@@ -112,5 +112,17 @@ angular.module('scheduling-app.authentication', [
 
                 return deferred.promise;
             };
+
+            $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.CONFIRMED, function() {
+                $rootScope.authenticated = true;
+            });
+
+            function notAuthenticated() {
+                $rootScope.authenticated = false;
+            }
+
+            $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.REQUIRED, notAuthenticated);
+            $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.FAILED, notAuthenticated);
+            $rootScope.$on(GENERAL_EVENTS.LOGOUT.COMPLETE, notAuthenticated);
         }])
 ;

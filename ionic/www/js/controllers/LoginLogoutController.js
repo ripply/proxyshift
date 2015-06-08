@@ -9,18 +9,6 @@ angular.module('scheduling-app.controllers')
                  AuthenticationService,
                  GENERAL_EVENTS
         ) {
-            $scope.$on(GENERAL_EVENTS.AUTHENTICATION.CONFIRMED, function() {
-                $scope.authenticated = true;
-            });
-
-            function notAuthenticated() {
-                $scope.authenticated = false;
-            }
-
-            $scope.$on(GENERAL_EVENTS.AUTHENTICATION.REQUIRED, notAuthenticated);
-            $scope.$on(GENERAL_EVENTS.AUTHENTICATION.FAILED, notAuthenticated);
-            $scope.$on(GENERAL_EVENTS.LOGOUT.COMPLETE, notAuthenticated);
-
             $scope.login = function() {
                 $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.REQUIRED);
             };

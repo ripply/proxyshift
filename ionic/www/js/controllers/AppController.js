@@ -5,7 +5,16 @@ angular.module('scheduling-app.controllers')
         '$ionicModal',
         '$timeout',
         '$rootScope',
-        function($scope, $ionicModal, $timeout, $rootScope) {
+        '$state',
+        'STATES',
+        'GENERAL_EVENTS',
+        function($scope,
+                 $ionicModal,
+                 $timeout,
+                 $rootScope,
+                 $state,
+                 STATES,
+                 GENERAL_EVENTS) {
             // Form data for the login modal
             $scope.loginData = {};
 
@@ -56,5 +65,15 @@ angular.module('scheduling-app.controllers')
             $scope.doSignup = function() {
                 // TODO
             };
+
+            function goLogin() {
+                $state.go(STATES.LOGIN, {}, {reload: false, inherit: true})
+            }
+
+            $scope.$on(GENERAL_EVENTS.AUTHENTICATION.REQUIRED, goLogin);
+            $scope.$on(GENERAL_EVENTS.AUTHENTICATION.INVALID, goLogin);
+            $scope.$on(GENERAL_EVENTS.AUTHENTICATION.FAILED, goLogin);
+            $scope.$on(GENERAL_EVENTS.LOGOUT.COMPLETE, goLogin)
+
     }])
 ;

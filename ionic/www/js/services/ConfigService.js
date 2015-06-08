@@ -41,7 +41,8 @@ var config_data = {
         'REMEMBERME': 'remember_me'
     },
     'STATES': {
-        'HOME': 'app.playlists'
+        'HOME': 'app.playlists',
+        'LOGIN': 'login'
     }
 };
 

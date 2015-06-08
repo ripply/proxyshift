@@ -7,10 +7,12 @@ angular.module('scheduling-app.controllers')
         '$state',
         'SessionService',
         'GENERAL_EVENTS',
+        'STATES',
         function($rootScope,
                  $state,
                  SessionService,
-                 GENERAL_EVENTS) {
+                 GENERAL_EVENTS,
+                 STATES) {
 
             $rootScope.user = {
                 username: null,
@@ -19,13 +21,16 @@ angular.module('scheduling-app.controllers')
             };
 
             var showLoginModal = function() {
-                $rootScope.loginModal.show();
+                $state.go(STATES.LOGIN, {}, {reload: false, inherit: true});
+                //$rootScope.loginModal.show();
             };
 
             this.showLoginModal = showLoginModal;
 
             var hideLoginModal = function() {
-                $rootScope.loginModal.hide();
+                console.log("Hide login modal...");
+                $state.go($rootScope.previousState || STATES.HOME, {}, {reload: false, inherit: true});
+                //$rootScope.loginModal.hide();
             };
 
             this.hideLoginModal = hideLoginModal;
@@ -65,7 +70,7 @@ angular.module('scheduling-app.controllers')
             });
 
             $rootScope.$on(GENERAL_EVENTS.LOGOUT.COMPLETE, function() {
-                $state.go('app.home', {}, {reload: true, inherit: false});
+                $state.go(STATES.HOME, {}, {reload: true, inherit: false});
             });
         }
     ])

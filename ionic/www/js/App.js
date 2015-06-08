@@ -58,6 +58,12 @@ angular.module('scheduling-app', [
             //RestangularConfig.configure();
             $stateProvider
 
+                .state('login', {
+                    url: '/login',
+                    templateUrl: "partials/login.html",
+                    controller: 'LoginController'
+                })
+
                 .state('app', {
                     url: "/app",
                     abstract: true,
@@ -82,6 +88,7 @@ angular.module('scheduling-app', [
                         }
                     }
                 })
+
                 .state('app.playlists', {
                     url: "/playlists",
                     views: {
