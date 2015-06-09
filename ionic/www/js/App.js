@@ -63,21 +63,16 @@ angular.module('scheduling-app', [
                     templateUrl: "partials/login.html",
                     controller: 'LoginController',
                     resolve: {
-                        notAuthenticated: [
-                            '$q',
-                            'SessionService',
-                            function($q, SessionService) {
-                                var deferred = $q.defer();
+                        notAuthenticated: 'RequireNoSession'
+                    }
+                })
 
-                                if (SessionService.checkAuthentication()) {
-                                    deferred.reject('Already logged in');
-                                } else {
-                                    deferred.resolve();
-                                }
-
-                                return deferred.promise
-                            }
-                        ]
+                .state('signup', {
+                    url: '/signup',
+                    templateUrl: "partials/login.html",
+                    controller: 'LoginController',
+                    resolve: {
+                        notAuthenticated: 'RequireNoSession'
                     }
                 })
 
@@ -87,21 +82,7 @@ angular.module('scheduling-app', [
                     templateUrl: "templates/menu.html",
                     controller: 'AppCtrl',
                     resolve: {
-                        authenticated: [
-                            '$q',
-                            'SessionService',
-                            function($q, SessionService) {
-                                var deferred = $q.defer();
-
-                                if (SessionService.checkAuthentication()) {
-                                    deferred.resolve();
-                                } else {
-                                    deferred.reject("Not logged in");
-                                }
-
-                                return deferred.promise
-                            }
-                        ]
+                        authenticated: 'RequireSession'
                     }
                 })
 

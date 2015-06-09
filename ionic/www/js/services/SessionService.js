@@ -107,4 +107,36 @@ angular.module('scheduling-app.session', [
                 return authenticated;
             };
         }
-]);
+    ])
+    .factory("RequireSession", [
+        '$q',
+        'SessionService',
+        function($q,
+                 SessionService) {
+            var deferred = $q.defer();
+
+            if (SessionService.checkAuthentication()) {
+                deferred.resolve();
+            } else {
+                deferred.reject();
+            }
+
+            return deferred.promise;
+        }
+    ])
+    .factory("RequireNoSession", [
+        '$q',
+        'SessionService',
+        function($q,
+                 SessionService) {
+            var deferred = $q.defer();
+
+            if (!SessionService.checkAuthentication()) {
+                deferred.resolve();
+            } else {
+                deferred.reject();
+            }
+
+            return deferred.promise;
+        }
+    ]);
