@@ -102,7 +102,7 @@ knex.schema.hasTable('groups').then(function(exists) {
 
 knex.schema.hasTable('usergroups').then(function(exists) {
     if (exists) {
-        console.log('Usergroups table already exists.');
+        console.log('UserGroups table already exists.');
     } else {
         return knex.schema.createTable('usergroups', function(table) {
             table.increments('id');
@@ -115,7 +115,7 @@ knex.schema.hasTable('usergroups').then(function(exists) {
                 .inTable('groups')
                 .onDelete('CASCADE');
         }).then(function() {
-            console.log('Successfully created usergroups table.');
+            console.log('Successfully created UserGroups table.');
         });
     }
 });
@@ -142,6 +142,164 @@ knex.schema.hasTable('tokens').then(function(exists) {
     }
 });
 
+knex.schema.hasTable('groupuserclasses').then(function(exists) {
+    if (exists) {
+        console.log('GroupUserClasses table already exists.');
+    } else {
+        return knex.schema.createTable('groupuserclasses', function(table) {
+            table.increments('id');
+            table.string('title', 50)
+                .unique()
+                .notNullable();
+            table.string('description', 50);
+        }).then(function() {
+            console.log('Successfully created GroupUserClasses table.');
+        });
+    }
+});
+
+knex.schema.hasTable('userpermissions').then(function(exists) {
+    if (exists) {
+        console.log('UserPermissions table already exists.');
+    } else {
+        return knex.schema.createTable('userpermissions', function(table) {
+            table.increments('id');
+            table.integer('locationsid')
+                .notNullable();
+            table.string('usersid')
+                .notNullable();
+        }).then(function() {
+            console.log('Successfully created UserPermissions table.');
+        });
+    }
+});
+
+knex.schema.hasTable('locations').then(function(exists) {
+    if (exists) {
+        console.log('Locations table already exists.');
+    } else {
+        return knex.schema.createTable('locations', function(table) {
+            table.increments('id');
+            table.integer('groupsid')
+                .notNullable();
+            table.string('state')
+                .notNullable();
+            table.string('city')
+                .notNullable();
+            table.string('adress')
+                .notNullable();
+            table.integer('zipcode')
+                .notNullable();
+            table.integer('phonenumber')
+                .notNullable();
+        }).then(function() {
+            console.log('Successfully created Locations table.');
+        });
+    }
+});
+
+knex.schema.hasTable('arealocations').then(function(exists) {
+    if (exists) {
+        console.log('AreaLocations table already exists.');
+    } else {
+        return knex.schema.createTable('arealocations', function(table) {
+            table.increments('id');
+            table.integer('locationsid')
+                .notNullable();
+            table.integer('areaid')
+                .notNullable();
+        }).then(function() {
+            console.log('Successfully created AreaLocations table.');
+        });
+    }
+});
+
+knex.schema.hasTable('areas').then(function(exists) {
+    if (exists) {
+        console.log('Areas table already exists.');
+    } else {
+        return knex.schema.createTable('areas', function(table) {
+            table.increments('id');
+            table.string('title')
+                .notNullable()
+                .unique();
+        }).then(function() {
+            console.log('Successfully created Areas table.');
+        });
+    }
+});
+
+knex.schema.hasTable('groupsettings').then(function(exists) {
+    if (exists) {
+        console.log('GroupSettings table already exists.');
+    } else {
+        return knex.schema.createTable('groupsettings', function(table) {
+            table.increments('id');
+            table.integer('groupsid');
+            table.string('state');
+            table.string('city');
+            table.string('adress');
+            table.integer('zipcode');
+            table.string('weburl');
+            table.string('contactEmail')
+                .notNullable();
+            table.integer('contactPhone');
+            table.boolean('allowAllToCreateShifts');
+            table.boolean('requireShiftConfirmation');
+        }).then(function() {
+            console.log('Successfully created GroupSettings table.');
+        });
+    }
+});
+
+knex.schema.hasTable('groupadditionalinformation').then(function(exists) {
+    if (exists) {
+        console.log('GroupAdditionalInformation table already exists.');
+    } else {
+        return knex.schema.createTable('groupadditionalinformation', function(table) {
+            table.increments('id');
+            table.integer('groupsid');
+            table.string('title')
+                .notNullable();
+        }).then(function() {
+            console.log('Successfully created GroupAdditionalInformation table.');
+        });
+    }
+});
+
+knex.schema.hasTable('groupuserinformation').then(function(exists) {
+    if (exists) {
+        console.log('GroupUserInformation table already exists.');
+    } else {
+        return knex.schema.createTable('groupuserinformation', function(table) {
+            table.increments('id');
+            table.integer('usersid');
+            table.integer('groupadditionalinformationid');
+            table.string('data')
+                .notNullable();
+        }).then(function() {
+            console.log('Successfully created GroupUserInformation table.');
+        });
+    }
+});
+
+knex.schema.hasTable('grouppermissions').then(function(exists) {
+    if (exists) {
+        console.log('GroupPermissions table already exists.');
+    } else {
+        return knex.schema.createTable('grouppermissions', function(table) {
+            table.increments('id');
+            table.integer('groupsettingsid');
+            table.string('description')
+                .notNullable();
+            table.integer('permissionlevel')
+                .notNullable();
+        }).then(function() {
+            console.log('Successfully created GroupPermissions table.');
+        });
+    }
+});
+
 //Models
 
 var User = Bookshelf.Model.extend({
@@ -154,11 +312,32 @@ var Shift = Bookshelf.Model.extend({
 var Group = Bookshelf.Model.extend({
     tableName: 'groups'
 });
-var Usergroup = Bookshelf.Model.extend({
+var UserGroup = Bookshelf.Model.extend({
     tableName: 'usergroups'
 });
 var Token = Bookshelf.Model.extend( {
     tableName: 'tokens'
+});
+var GroupUserClass = Bookshelf.Model.extend({
+    tableName: 'groupuserclasses'
+});
+var UserPermission = Bookshelf.Model.extend({
+    tableName: 'userpermissions'
+});
+var Location = Bookshelf.Model.extend({
+    tableName: 'locations'
+});
+var AreaLocation = Bookshelf.Model.extend({
+    tableName: 'arealocations'
+});
+var Area = Bookshelf.Model.extend({
+    tableName: 'areas'
+});
+var GroupAdditionalInformation = Bookshelf.Model.extend({
+    tableName: 'groupadditionalinformation'
+});
+var GroupUserInformation = Bookshelf.Model.extend({
+    tableName: 'groupUserInformation'
 });
 
 //Collections
@@ -172,11 +351,32 @@ var Shifts = Bookshelf.Collection.extend({
 var Groups = Bookshelf.Collection.extend({
     model: Group
 });
-var Usergroups = Bookshelf.Collection.extend({
-    model: Usergroup
+var UserGroups = Bookshelf.Collection.extend({
+    model: UserGroup
 });
 var Tokens = Bookshelf.Collection.extend({
     model: Token
+});
+var GroupUserClasses = Bookshelf.Collection.extend({
+    model: GroupUserClass
+});
+var UserPermissions = Bookshelf.Collection.extend({
+    model: UserPermission
+});
+var Locations = Bookshelf.Collection.extend({
+    model: Location
+});
+var AreaLocations = Bookshelf.Collection.extend({
+    model: AreaLocation
+});
+var Areas = Bookshelf.Collection.extend({
+    model: Area
+});
+var GroupAdditionalInformations = Bookshelf.Collection.extend({
+    model: GroupAdditionalInformation
+});
+var GroupUserInformations = Bookshelf.Collection.extend({
+    model: GroupUserInformation
 });
 
 
@@ -629,8 +829,8 @@ module.exports = {
     User: User,
     Groups: Groups,
     Group: Group,
-    Usergroups: Usergroups,
-    Usergroup: Usergroup,
+    Usergroups: UserGroups,
+    Usergroup: UserGroup,
     Token: Token,
     consumeRememberMeToken: consumeRememberMeToken,
     issueToken: issueToken,
