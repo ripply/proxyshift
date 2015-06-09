@@ -1,7 +1,7 @@
 /**
  * AuthenticationService
  */
-angular.module('scheduling-app.servics.longrequesteventnotifier', [
+angular.module('scheduling-app.services.longrequesteventnotifier', [
     'scheduling-app.config'
 ])
     .factory('LongRequestEventNotifierService', [
