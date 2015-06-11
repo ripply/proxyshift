@@ -13,7 +13,7 @@ angular.module('scheduling-app.controllers')
                  SessionService,
                  GENERAL_EVENTS,
                  STATES) {
-
+            console.log("LoginControllerService INIT");
             $rootScope.user = {
                 username: null,
                 password: null,
@@ -28,7 +28,7 @@ angular.module('scheduling-app.controllers')
             this.showLoginModal = showLoginModal;
 
             var hideLoginModal = function() {
-                console.log("Hide login modal...");
+                console.log("Hide login modal... going " + ($rootScope.previousState || STATES.HOME));
                 $state.go($rootScope.previousState || STATES.HOME, {}, {reload: false, inherit: true});
                 //$rootScope.loginModal.hide();
             };
@@ -36,7 +36,14 @@ angular.module('scheduling-app.controllers')
             this.hideLoginModal = hideLoginModal;
 
             $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.CHECK, function() {
-                SessionService.checkAuthentication();
+                SessionService.checkAuthentication()
+                    .then(function() {
+                        // do nothing
+                    }, function() {
+                        // do nothing
+                    }, function() {
+                        // do nothing
+                    });
             });
 
             $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.REQUIRED, function(e, rejection) {
@@ -54,6 +61,7 @@ angular.module('scheduling-app.controllers')
                 $rootScope.user.username = null;
                 $rootScope.user.password = null;
                 $rootScope.message = null;
+                console.log("Got auth confirmed event");
                 hideLoginModal();
             });
 
@@ -92,7 +100,14 @@ angular.module('scheduling-app.controllers')
                  GENERAL_EVENTS) {
 
             $scope.login = function() {
-                AuthenticationService.login($rootScope.user);
+                AuthenticationService.login($rootScope.user)
+                    .then(function() {
+                        console.log("Logged in!");
+                    }, function() {
+                        console.log("Failed to login :(");
+                    }, function() {
+                        // notify, do nothing
+                    })
             };
 
         }]);

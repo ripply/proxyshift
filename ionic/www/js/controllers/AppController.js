@@ -19,7 +19,7 @@ angular.module('scheduling-app.controllers')
             $scope.loginData = {};
 
             // Create the login modal that we will use later
-            $ionicModal.fromTemplateUrl('templates/login.html', {
+            $ionicModal.fromTemplateUrl('templates/_login.html', {
                 scope: $scope
             }).then(function(modal) {
                 $rootScope.loginModal = modal;

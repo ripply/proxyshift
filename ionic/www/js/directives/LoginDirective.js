@@ -7,7 +7,7 @@ angular.module('scheduling-app.directives')
             controller: 'LoginController',
             link: link,
             restrict: 'A',
-            templateUrl: 'partials/login.html'
+            templateUrl: 'templates/_login.html'
         });
 
         function link(scope, element, attributes) {

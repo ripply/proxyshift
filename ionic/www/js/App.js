@@ -14,18 +14,22 @@ angular.module('scheduling-app', [
     'scheduling-app.directives',
     'scheduling-app.cookies',
     'scheduling-app.config',
-    'scheduling-app.services.routing.statehistory'
+    'scheduling-app.services.routing.statehistory',
+    'scheduling-app.services.initialize'
 ])
 
     .run([
         '$rootScope',
         '$ionicPlatform',
         'GENERAL_EVENTS',
-        'LoginControllerService',
+        'StateHistoryService',
+        'InitializeServices',
         function($rootScope,
                  $ionicPlatform,
                  GENERAL_EVENTS,
-                 LoginControllerService) {
+                 StateHistoryService,
+                 InitializeServices) {
+            StateHistoryService.setDefaultState('app.playlists');
             function triggerAuthenticationCheck() {
                 console.log("Triggering auth check");
                 $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.CHECK);
@@ -47,9 +51,11 @@ angular.module('scheduling-app', [
     .config([
         '$stateProvider',
         '$urlRouterProvider',
+        'STATES',
         //'StateHistoryService',
         function($stateProvider,
-                 $urlRouterProvider
+                 $urlRouterProvider,
+                 STATES
                  // specifying this as a dependency should set up
                  // listeners on the $rootScope which will keep track
                  // of the previous and current state
@@ -58,21 +64,21 @@ angular.module('scheduling-app', [
             //RestangularConfig.configure();
             $stateProvider
 
-                .state('login', {
+                .state(STATES.LOGIN, {
                     url: '/login',
-                    templateUrl: "partials/login.html",
+                    templateUrl: "templates/login.html",
                     controller: 'LoginController',
                     resolve: {
-                        notAuthenticated: 'RequireNoSession'
+                        notAuthenticated: 'RequireNoSessionOrBack'
                     }
                 })
 
                 .state('signup', {
                     url: '/signup',
-                    templateUrl: "partials/login.html",
+                    templateUrl: "templates/signup.html",
                     controller: 'LoginController',
                     resolve: {
-                        notAuthenticated: 'RequireNoSession'
+                        notAuthenticated: 'RequireNoSessionOrBack'
                     }
                 })
 
@@ -82,7 +88,7 @@ angular.module('scheduling-app', [
                     templateUrl: "templates/menu.html",
                     controller: 'AppCtrl',
                     resolve: {
-                        authenticated: 'RequireSession'
+                        authenticated: 'RequireSessionOrGoLogin'
                     }
                 })
 
@@ -104,7 +110,7 @@ angular.module('scheduling-app', [
                     }
                 })
 
-                .state('app.playlists', {
+                .state(STATES.HOME, {
                     url: "/playlists",
                     views: {
                         'menuContent': {
@@ -143,6 +149,8 @@ angular.module('scheduling-app', [
                         }
                     }
                 });
+
+            //StateHistoryService.setDefaultState('app.playlists');
             // if none of the above states are matched, use this as the fallback
             $urlRouterProvider.otherwise('/app/playlists');
         }]);

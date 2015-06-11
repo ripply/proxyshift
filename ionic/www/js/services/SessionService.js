@@ -9,15 +9,18 @@
 angular.module('scheduling-app.session', [
     'scheduling-app.config',
     'scheduling-app.cookies',
-    'ngCookies'
+    'ngCookies',
+    'scheduling-app.services.routing.statehistory'
 ])
     .service('SessionService', [
+        '$q',
         '$http',
         '$rootScope',
         'CookiesService',
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
-        function($http,
+        function($q,
+                 $http,
                  $rootScope,
                  CookiesService,
                  GENERAL_CONFIG,
@@ -53,24 +56,45 @@ angular.module('scheduling-app.session', [
                 failedLogin = false;
             });
 
-            this.checkAuthentication = function() {
-                var rememberme_token = CookiesService.getCookie(GENERAL_CONFIG.APP_REMEMBER_ME_TOKEN);
+            var checkingAuthenticationPromise = false;
 
-                var authenticated = false;
+            function resolve(deferred, value) {
+                checkingAuthenticationPromise = false;
+                console.log("checkAuthentication returning TRUE");
+                deferred.resolve(value);
+            }
+
+            function reject(deferred, value) {
+                checkingAuthenticationPromise = false;
+                console.log("checkAuthentication returning FALSE");
+                deferred.reject(value);
+            }
+
+            this.checkAuthentication = function() {
+                var deferred;
+                if (checkingAuthenticationPromise !== false) {
+                    // blocking wait for auth to finish
+                    return checkingAuthenticationPromise;
+                } else {
+                    deferred = $q.defer();
+                    checkingAuthenticationPromise = deferred.promise;
+                }
+
+                var rememberme_token = CookiesService.getCookie(GENERAL_CONFIG.APP_REMEMBER_ME_TOKEN);
 
                 if (rememberme_token === null ||
                     rememberme_token === undefined) {
                     // remember me token was not found
-                        // query the server to see if the session is still open
+                    // query the server to see if the session is still open
                     var api_url = GENERAL_CONFIG.APP_URL;
 
                     if (isAuthenticated()) {
                         console.debug("Already logged in.");
-                        authenticated = true;
+                        resolve(deferred);
                     } else if (failedLogin) {
-                        return false;
+                        reject(deferred);
                     } else {
-                        authenticated = $http.get(api_url + "/session", {
+                        $http.get(api_url + "/session", {
                             ignoreAuthModule: true,
                             timeout: GENERAL_CONFIG.LOGIN_TIMEOUT
                         })
@@ -79,7 +103,7 @@ angular.module('scheduling-app.session', [
                                 // we are already logged in
                                 console.debug("Able to access protected resource, logged in.");
                                 fireAuthenticationConfirmedEvent();
-                                return true;
+                                resolve(deferred);
                             })
                             .error(function (data, status, headers, config) {
                                 // failed to access a protected resource
@@ -89,7 +113,7 @@ angular.module('scheduling-app.session', [
                                 // until the user is logged in
                                 failedLogin = true;
                                 fireAuthenticaionRequiredEvent();
-                                return false;
+                                reject(deferred);
                             });
                     }
                 } else {
@@ -98,28 +122,61 @@ angular.module('scheduling-app.session', [
                     // if for some reason this token is invalid,
                     // then when a request is made for a protected resource
                     // angular-http-auth will intercept the 401 response
-                        // and trigger an 'event:auth-loginRequired' event.
+                    // and trigger an 'event:auth-loginRequired' event.
                     // LoginController listens to that event
                     // and will trigger a login modal popup asking the user to login
-                    authenticated = true;
                     fireAuthenticationConfirmedEvent();
+                    resolve(deferred);
                 }
-                return authenticated;
+                return deferred.promise;
             };
         }
     ])
     .factory("RequireSession", [
-        '$q',
         'SessionService',
+        function(SessionService) {
+            // returns a promise
+            return SessionService.checkAuthentication();
+        }
+    ])
+    .factory("RequireSessionOrBack", [
+        '$q',
+        'RequireSession',
+        'StateHistoryService',
         function($q,
-                 SessionService) {
+                 RequireSession,
+                 StateHistoryService) {
             var deferred = $q.defer();
 
-            if (SessionService.checkAuthentication()) {
+            RequireSession.then(function() {
                 deferred.resolve();
-            } else {
+            }, function() {
                 deferred.reject();
-            }
+                StateHistoryService.goBack();
+            }, function() {
+                // notice, do nothing
+            });
+
+            return deferred.promise;
+        }
+    ])
+    .factory("RequireSessionOrGoLogin", [
+        '$q',
+        '$state',
+        'RequireSession',
+        'STATES',
+        function($q,
+                 $state,
+                 RequireSession,
+                 STATES) {
+            var deferred = $q.defer();
+
+            RequireSession.then(function() {
+                deferred.resolve();
+            }, function() {
+                deferred.reject();
+                $state.go(STATES.LOGIN)
+            });
 
             return deferred.promise;
         }
@@ -131,11 +188,35 @@ angular.module('scheduling-app.session', [
                  SessionService) {
             var deferred = $q.defer();
 
-            if (!SessionService.checkAuthentication()) {
+            SessionService.checkAuthentication()
+                .then(function() {
+                    deferred.reject();
+                }, function() {
+                    deferred.resolve();
+                }, function() {
+                    // notify, do nothing
+                });
+
+            return deferred.promise;
+        }
+    ])
+    .factory("RequireNoSessionOrBack", [
+        '$q',
+        'RequireNoSession',
+        'StateHistoryService',
+        function($q,
+                 RequireSession,
+                 StateHistoryService) {
+            var deferred = $q.defer();
+
+            RequireSession.then(function() {
                 deferred.resolve();
-            } else {
+            }, function() {
                 deferred.reject();
-            }
+                StateHistoryService.goBack();
+            }, function() {
+                // notice, do nothing
+            });
 
             return deferred.promise;
         }
