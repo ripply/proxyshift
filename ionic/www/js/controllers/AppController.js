@@ -49,6 +49,7 @@ angular.module('scheduling-app.controllers')
 
             $scope.signup = function() {
                 $rootScope.$broadcast('event:signup-required');
+                $scope.signupModal.show();
             };
 
             // Perform the login action when the user submits the login form

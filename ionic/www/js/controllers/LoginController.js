@@ -87,6 +87,7 @@ angular.module('scheduling-app.controllers')
         '$scope',
         '$http',
         '$state',
+        '$ionicModal',
         'AuthenticationService',
         'SessionService',
         'LoginControllerService',
@@ -94,10 +95,28 @@ angular.module('scheduling-app.controllers')
                  $scope,
                  $http,
                  $state,
+                 $ionicModal,
                  AuthenticationService,
                  SessionService,
                  LoginControllerService,
                  GENERAL_EVENTS) {
+
+            // TEMP FIX TO GET SIGNUP WORKING AGAIN
+            // Create the signup modal that we will use later
+            $ionicModal.fromTemplateUrl('templates/signup.html', {
+                scope: $scope
+            }).then(function(modal) {
+                $scope.signupModal = modal;
+            });
+
+            $scope.signup = function() {
+                $rootScope.$broadcast('event:signup-required');
+                $scope.signupModal.show();
+            };
+
+            $scope.closeSignup = function() {
+                $scope.signupModal.hide();
+            };
 
             $scope.login = function() {
                 AuthenticationService.login($rootScope.user)
@@ -109,5 +128,7 @@ angular.module('scheduling-app.controllers')
                         // notify, do nothing
                     })
             };
+
+
 
         }]);

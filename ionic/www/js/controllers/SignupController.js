@@ -26,7 +26,6 @@ angular.module('scheduling-app.controllers')
 
             $scope.doSignup = function() {
                 UsersModel.post($scope.user)
-
                     .then(function() {
                         console.log("Successfully created user?");
                     }, function(response) {
