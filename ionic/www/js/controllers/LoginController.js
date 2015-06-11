@@ -22,7 +22,7 @@ angular.module('scheduling-app.controllers')
 
             var showLoginModal = function() {
                 $state.go(STATES.LOGIN, {}, {reload: false, inherit: true});
-                //$rootScope.loginModal.show();
+                $rootScope.loginModal.show();
             };
 
             this.showLoginModal = showLoginModal;
@@ -30,7 +30,7 @@ angular.module('scheduling-app.controllers')
             var hideLoginModal = function() {
                 console.log("Hide login modal... going " + ($rootScope.previousState || STATES.HOME));
                 $state.go($rootScope.previousState || STATES.HOME, {}, {reload: false, inherit: true});
-                //$rootScope.loginModal.hide();
+                $rootScope.loginModal.hide();
             };
 
             this.hideLoginModal = hideLoginModal;

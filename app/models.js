@@ -38,10 +38,12 @@ knex.schema.hasTable('users').then(function(exists) {
     } else {
         return knex.schema.createTable('users', function(table) {
             table.increments('id');
-            table.string('name', 20)
-                .notNullable();
             table.string('username', 20)
                 .unique()
+                .notNullable();
+            table.string('firstname')
+                .notNullable();
+            table.string('lastname')
                 .notNullable();
             table.string('email', 50)
                 .unique()
@@ -52,6 +54,10 @@ knex.schema.hasTable('users').then(function(exists) {
                 .notNullable();
             table.string('sanswer', 100)
                 .notNullable();
+            table.string('phonehome');
+            table.string('phonemobile')
+                .unique();
+            table.string('pagernumber');
         }).then(function() {
             console.log('Successfully created users table.');
         });

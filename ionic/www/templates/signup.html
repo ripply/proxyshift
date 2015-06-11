@@ -10,20 +10,24 @@
             <form ng-submit="doSignup()">
                 <div class="list">
                     <label class="item item-input">
-                        <span class="input-label">Name</span>
-                        <input type="text" ng-model="user.name">
-                    </label>
-                    <label class="item item-input">
                         <span class="input-label">Username</span>
                         <input type="text" ng-model="user.username">
                     </label>
                     <label class="item item-input">
-                        <span class="input-label">Password</span>
-                        <input type="password" ng-model="user.password">
+                        <span class="input-label">First Name</span>
+                        <input type="text" ng-model="user.firstname">
+                    </label>
+                    <label class="item item-input">
+                        <span class="input-label">Last Name</span>
+                        <input type="text" ng-model="user.lastname">
                     </label>
                     <label class="item item-input">
                         <span class="input-label">Email</span>
                         <input type="text" ng-model="user.email">
+                    </label>
+                    <label class="item item-input">
+                        <span class="input-label">Password</span>
+                        <input type="password" ng-model="user.password">
                     </label>
                     <label class="item item-input">
                         <span class="input-label">Secret Question</span>
@@ -32,6 +36,18 @@
                     <label class="item item-input">
                         <span class="input-label">Secret Answer</span>
                         <input type="text" ng-model="user.sanswer">
+                    </label>
+                    <label class="item item-input">
+                        <span class="input-label">Phone (Home)</span>
+                        <input type="text" ng-model="user.phonehome">
+                    </label>
+                    <label class="item item-input">
+                        <span class="input-label">Phone (Mobile)</span>
+                        <input type="text" ng-model="user.phonemobile">
+                    </label>
+                    <label class="item item-input">
+                        <span class="input-label">Pager Number</span>
+                        <input type="text" ng-model="user.pagernumber">
                     </label>
                     <label class="item" ng-show="message != null">
                         <span>{{message}}</span>

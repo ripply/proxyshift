@@ -17,11 +17,16 @@ angular.module('scheduling-app.controllers')
                  STATES) {
 
             $scope.user = {
-                name: null,
                 username: null,
+                firstname: null,
+                lastname: null,
+                email: null,
                 password: null,
                 squestion: null,
-                sanswer: null
+                sanswer: null,
+                phonehome: null,
+                phonemobile: null,
+                pagernumber: null
             };
 
             $scope.doSignup = function() {
@@ -37,22 +42,32 @@ angular.module('scheduling-app.controllers')
                 // clear any error messages
                 $scope.message = null;
                 // reset existing midtyped username/password
-                $scope.user.name = null;
                 $scope.user.username = null;
+                $scope.user.firstname = null;
+                $scope.user.lastname = null;
+                $scope.user.email = null;
                 $scope.user.password = null;
                 $scope.user.squestion = null;
                 $scope.user.sanswer = null;
+                $scope.user.phonehome = null;
+                $scope.user.phonemobile = null;
+                $scope.user.pagernumber = null;
 
                 $scope.signupModal.show();
             });
 
             $scope.$on(GENERAL_EVENTS.SIGNUP.SUCCESS, function() {
                 $scope.message = null;
-                $scope.user.name = null;
                 $scope.user.username = null;
+                $scope.user.firstname = null;
+                $scope.user.lastname = null;
+                $scope.user.email = null;
                 $scope.user.password = null;
                 $scope.user.squestion = null;
                 $scope.user.sanswer = null;
+                $scope.user.phonehome = null;
+                $scope.user.phonemobile = null;
+                $scope.user.pagernumber = null;
 
                 $scope.signupModal.hide();
             });

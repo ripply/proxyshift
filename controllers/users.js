@@ -43,12 +43,16 @@ module.exports = {
     },
     add: function(req, res) {
         models.User.forge({
-            name: req.body.name,
             username: req.body.username,
+            firstname: req.body.firstname,
+            lastname: req.body.lastname,
             email: req.body.email,
             password: encryptKey(req.body.password),
             squestion: req.body.squestion,
-            sanswer: encryptKey(req.body.sanswer)
+            sanswer: encryptKey(req.body.sanswer),
+            phonehome: req.body.phonehome,
+            phonemobile: req.body.phonemobile,
+            pagernumber: req.body.pagernumber
         })
             .save()
             .then(function (user) {
