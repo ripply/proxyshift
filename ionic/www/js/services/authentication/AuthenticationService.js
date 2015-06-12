@@ -112,7 +112,7 @@ angular.module('scheduling-app.authentication', [
                     loggingOut = deferred;
                 }
 
-                SessionService.checkAuthentication()
+                SessionService.checkAuthentication(true)
                     .then(function() {
                         var logout_url = GENERAL_CONFIG.APP_URL + GENERAL_CONFIG.APP_URL_LOGOUT;
                         return $http.post(logout_url, null, {

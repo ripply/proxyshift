@@ -42,14 +42,18 @@ angular.module('scheduling-app.session', [
                 return (accessedRestrictedResource && moment() < accessedRestrictedResourceExpires);
             }
 
-            function fireAuthenticaionRequiredEvent() {
+            function fireAuthenticaionRequiredEvent(loggingOut) {
                 setAuthenticated(false);
-                $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.REQUIRED);
+                if (!loggingOut) {
+                    $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.REQUIRED);
+                }
             }
 
-            function fireAuthenticationConfirmedEvent() {
+            function fireAuthenticationConfirmedEvent(loggingOut) {
                 setAuthenticated(true);
-                $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.CONFIRMED);
+                if (!loggingOut) {
+                    $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.CONFIRMED);
+                }
             }
 
             $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.CONFIRMED, function() {
@@ -70,7 +74,7 @@ angular.module('scheduling-app.session', [
                 deferred.reject(value);
             }
 
-            this.checkAuthentication = function() {
+            this.checkAuthentication = function(loggingOut) {
                 var deferred;
                 if (checkingAuthenticationPromise !== false) {
                     // blocking wait for auth to finish
@@ -102,7 +106,7 @@ angular.module('scheduling-app.session', [
                                 // successfully accessed a restriced resource
                                 // we are already logged in
                                 console.debug("Able to access protected resource, logged in.");
-                                fireAuthenticationConfirmedEvent();
+                                fireAuthenticationConfirmedEvent(loggingOut);
                                 resolve(deferred);
                             })
                             .error(function (data, status, headers, config) {
@@ -112,7 +116,7 @@ angular.module('scheduling-app.session', [
                                 // set flag that forces this method to return false
                                 // until the user is logged in
                                 failedLogin = true;
-                                fireAuthenticaionRequiredEvent();
+                                fireAuthenticaionRequiredEvent(loggingOut);
                                 reject(deferred);
                             });
                     }
@@ -169,11 +173,14 @@ angular.module('scheduling-app.session', [
                  $state,
                  RequireSession,
                  STATES) {
+            console.debug("RequireSessionOrGoLogin");
             var deferred = $q.defer();
 
             RequireSession.then(function() {
+                console.debug("RequireSessionOrGoLogin TRUE");
                 deferred.resolve();
             }, function() {
+                console.debug("RequireSessionOrGoLogin FALSE");
                 deferred.reject();
                 $state.go(STATES.LOGIN)
             });
@@ -207,11 +214,14 @@ angular.module('scheduling-app.session', [
         function($q,
                  RequireSession,
                  StateHistoryService) {
+            console.debug("RequireNoSessionOrBack");
             var deferred = $q.defer();
 
             RequireSession.then(function() {
+                console.debug("RequireNoSessionOrBack TRUE");
                 deferred.resolve();
             }, function() {
+                console.debug("RequireNoSessionOrBack FALSE");
                 deferred.reject();
                 StateHistoryService.goBack();
             }, function() {
