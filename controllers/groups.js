@@ -43,8 +43,15 @@ module.exports = {
     },
     add: function(req, res) {
         models.Group.forge({
-            groupname: req.body.groupname,
-            ownerid: req.user.id
+            ownerid: req.user.id,
+            name: req.body.name,
+            state: req.body.state,
+            city: req.body.city,
+            address: req.body.address,
+            zipcode: req.body.zipcode,
+            weburl: req.body.weburl,
+            contactemail: req.body.contactemail,
+            contactphone: req.body.contactphone
         })
             .save()
             .then(function (group) {

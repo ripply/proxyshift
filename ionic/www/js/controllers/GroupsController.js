@@ -10,7 +10,8 @@ angular.module('scheduling-app.controllers')
             $scope.groups = [];
             $scope.add = function() {
                 $scope.groups.push({
-                    groupname: 'test!?', id: $scope.groupname.length
+                    name: 'test!?',
+                    id: $scope.name.length
                 });
             };
             $scope.fetch = function() {
@@ -19,7 +20,7 @@ angular.module('scheduling-app.controllers')
                     $scope.groups = groups;
                 }, function(err) {
                     $scope.groups = [
-                        {groupname: 'Failed to fetch groups'}
+                        {name: 'Failed to fetch groups'}
                     ];
                 });
             };

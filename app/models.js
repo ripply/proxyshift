@@ -93,13 +93,20 @@ knex.schema.hasTable('groups').then(function(exists) {
     } else {
         return knex.schema.createTable('groups', function(table) {
             table.increments('id');
-            table.string('groupname', 20)
-                .unique()
-                .notNullable();
             table.integer('ownerid')
                 .references('id')
                 .inTable('users')
                 .onDelete('CASCADE');
+            table.string('name')
+                .notNullable();
+            table.string('state');
+            table.string('city');
+            table.string('address');
+            table.integer('zipcode');
+            table.string('weburl');
+            table.string('contactemail')
+                .notNullable();
+            table.integer('contactphone');
         }).then(function() {
             console.log('Successfully created groups table.');
         });
@@ -241,17 +248,11 @@ knex.schema.hasTable('groupsettings').then(function(exists) {
     } else {
         return knex.schema.createTable('groupsettings', function(table) {
             table.increments('id');
-            table.integer('groupsid');
-            table.string('state');
-            table.string('city');
-            table.string('adress');
-            table.integer('zipcode');
-            table.string('weburl');
-            table.string('contactEmail')
-                .notNullable();
-            table.integer('contactPhone');
-            table.boolean('allowAllToCreateShifts');
-            table.boolean('requireShiftConfirmation');
+            table.integer('groupsid')
+                .notNullable()
+                .unique();
+            table.boolean('allowalltocreateshifts');
+            table.boolean('requireshiftconfirmation');
         }).then(function() {
             console.log('Successfully created GroupSettings table.');
         });
