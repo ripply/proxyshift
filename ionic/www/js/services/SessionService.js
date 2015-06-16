@@ -16,17 +16,21 @@ angular.module('scheduling-app.session', [
         '$q',
         '$http',
         '$rootScope',
+        '$state',
         'StateHistoryService',
         'CookiesService',
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
+        'STATES',
         function($q,
                  $http,
                  $rootScope,
+                 $state,
                  StateHistoryService,
                  CookiesService,
                  GENERAL_CONFIG,
-                 GENERAL_EVENTS) {
+                 GENERAL_EVENTS,
+                 STATES) {
             var accessedRestrictedResource = false;
             var accessedRestrictedResourceExpires = null;
             var retryResourceIn = GENERAL_CONFIG.SESSION_RETRY_ACCESSED_RESOURCE_IN;
