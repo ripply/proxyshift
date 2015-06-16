@@ -121,6 +121,15 @@ angular.module('scheduling-app', [
                     }
                 })
 
+                .state('logout', {
+                    url: '/logout',
+                    templateUrl: 'templates/logout.html',
+                    controller: 'LogoutController',
+                    resolve: {
+                        //authenticated: requireSessionOrBack
+                    }
+                })
+
                 .state('app', {
                     url: "/app",
                     abstract: true,

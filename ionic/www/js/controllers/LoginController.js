@@ -29,7 +29,7 @@ angular.module('scheduling-app.controllers')
 
             var hideLoginModal = function() {
                 console.log("Hide login modal... going " + ($rootScope.previousState || STATES.HOME));
-                $state.go($rootScope.previousState || STATES.HOME, {}, {reload: false, inherit: true});
+                $state.go(STATES.HOME, {}, {reload: false, inherit: true});
                 //$rootScope.loginModal.hide();
             };
 
