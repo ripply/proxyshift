@@ -1,13 +1,40 @@
 var models = require('../app/models');
+var moment = require('moment');
 
 module.exports = {
     index: function(req, res) {
+        // fetch the last month of shifts
+        // the current month
+        // and the next 2 months
+        // if the user needs more in the calendar
+        // the calendar will request specific ranges
+        // TODO: Cache these dates until month ticks?
+        var after = req.params.after;
+        var before = req.params.before;
+        var now = new Date();
+        if (after === undefined) {
+            after = moment(now)
+                .subtract('1', 'months')
+                .endOf('month')
+                .unix();
+        }
+        if (before === undefined) {
+            before = moment(now)
+                .add('3', 'months')
+                .startOf('month')
+                .unix();
+        }
+        if (before > after) {
+            return res.status(400).json({error: true, data: {message: 'Invalid date range'}});
+        }
         models.Shifts.forge()
+            .where('date', '>=', after)
+            .where('date', '<=', before)
             .fetch()
-            .then(function (collection) {
+            .then(function(collection) {
                 res.json(collection.toJSON());
             })
-            .catch(function (err) {
+            .catch(function(err) {
                 res.status(500).json({error: true, data: {message: err.message}});
             });
     },
