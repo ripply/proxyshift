@@ -16,12 +16,14 @@ angular.module('scheduling-app.session', [
         '$q',
         '$http',
         '$rootScope',
+        'StateHistoryService',
         'CookiesService',
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
         function($q,
                  $http,
                  $rootScope,
+                 StateHistoryService,
                  CookiesService,
                  GENERAL_CONFIG,
                  GENERAL_EVENTS) {
@@ -74,7 +76,7 @@ angular.module('scheduling-app.session', [
                 deferred.reject(value);
             }
 
-            this.checkAuthentication = function(loggingOut) {
+            function checkAuthentication(loggingOut) {
                 var deferred;
                 if (checkingAuthenticationPromise !== false) {
                     // blocking wait for auth to finish
@@ -133,101 +135,66 @@ angular.module('scheduling-app.session', [
                     resolve(deferred);
                 }
                 return deferred.promise;
-            };
-        }
-    ])
-    .factory("RequireSession", [
-        'SessionService',
-        function(SessionService) {
-            // returns a promise
-            return SessionService.checkAuthentication();
-        }
-    ])
-    .factory("RequireSessionOrBack", [
-        '$q',
-        'RequireSession',
-        'StateHistoryService',
-        function($q,
-                 RequireSession,
-                 StateHistoryService) {
-            var deferred = $q.defer();
+            }
+            this.checkAuthentication = checkAuthentication;
+            this.checkAuthentication = checkAuthentication;
+            function requireSession() {
+                return checkAuthentication();
+            }
+            this.requireSession = requireSession;
+            this.requireSessionOrBack = function() {
+                var deferred = $q.defer();
 
-            RequireSession.then(function() {
-                deferred.resolve();
-            }, function() {
-                deferred.reject();
-                StateHistoryService.goBack();
-            }, function() {
-                // notice, do nothing
-            });
-
-            return deferred.promise;
-        }
-    ])
-    .factory("RequireSessionOrGoLogin", [
-        '$q',
-        '$state',
-        'RequireSession',
-        'STATES',
-        function($q,
-                 $state,
-                 RequireSession,
-                 STATES) {
-            console.debug("RequireSessionOrGoLogin");
-            var deferred = $q.defer();
-
-            RequireSession.then(function() {
-                console.debug("RequireSessionOrGoLogin TRUE");
-                deferred.resolve();
-            }, function() {
-                console.debug("RequireSessionOrGoLogin FALSE");
-                deferred.reject();
-                $state.go(STATES.LOGIN)
-            });
-
-            return deferred.promise;
-        }
-    ])
-    .factory("RequireNoSession", [
-        '$q',
-        'SessionService',
-        function($q,
-                 SessionService) {
-            var deferred = $q.defer();
-
-            SessionService.checkAuthentication()
-                .then(function() {
+                requireSession().then(function() {
+                    deferred.resolve();
+                }, function() {
                     deferred.reject();
+                    StateHistoryService.goBack();
+                }, function() {
+                    // notice, do nothing
+                });
+
+                return deferred.promise;
+            };
+            this.requireSessionOrGoLogin = function() {
+                var deferred = $q.defer();
+
+                requireSession().then(function() {
+                    deferred.resolve();
+                }, function() {
+                    deferred.reject();
+                    $state.go(STATES.LOGIN)
+                });
+
+                return deferred.promise;
+            };
+            this.requireNoSession = function() {
+                var deferred = $q.defer();
+
+                checkAuthentication()
+                    .then(function() {
+                        deferred.reject();
+                    }, function() {
+                        deferred.resolve();
+                    }, function() {
+                        // notify, do nothing
+                    });
+
+                return deferred.promise;
+            };
+            this.requireNoSessionOrBack = function() {
+                var deferred = $q.defer();
+
+                requireSession().then(function() {
+                    deferred.reject();
+                    StateHistoryService.goBack();
                 }, function() {
                     deferred.resolve();
                 }, function() {
-                    // notify, do nothing
+                    // notice, do nothing
                 });
 
-            return deferred.promise;
-        }
-    ])
-    .factory("RequireNoSessionOrBack", [
-        '$q',
-        'RequireNoSession',
-        'StateHistoryService',
-        function($q,
-                 RequireSession,
-                 StateHistoryService) {
-            console.debug("RequireNoSessionOrBack");
-            var deferred = $q.defer();
-
-            RequireSession.then(function() {
-                console.debug("RequireNoSessionOrBack TRUE");
-                deferred.resolve();
-            }, function() {
-                console.debug("RequireNoSessionOrBack FALSE");
-                deferred.reject();
-                StateHistoryService.goBack();
-            }, function() {
-                // notice, do nothing
-            });
-
-            return deferred.promise;
+                return deferred.promise;
+            }
         }
     ]);

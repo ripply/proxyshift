@@ -51,10 +51,12 @@ angular.module('scheduling-app', [
     .config([
         '$stateProvider',
         '$urlRouterProvider',
+        '$injector',
         'STATES',
         //'StateHistoryService',
         function($stateProvider,
                  $urlRouterProvider,
+                 $injector,
                  STATES
                  // specifying this as a dependency should set up
                  // listeners on the $rootScope which will keep track
@@ -62,6 +64,43 @@ angular.module('scheduling-app', [
                  //StateHistoryService
         ) {
             //RestangularConfig.configure();
+
+            // Services cannot be asked for during config
+            // instead, ask for injector provider and
+            // use it to grab the service during runtime
+            var SessionService = null;
+            function getSessionService() {
+                try {
+                    if (SessionService === null ||
+                        SessionService === undefined) {
+                        SessionService = $injector.get('SessionServiceProvider').$get();
+                    }
+                } catch (err) {
+                    console.debug(err);
+                }
+                return SessionService;
+            }
+
+            function requireSession() {
+                return getSessionService().requireSession();
+            }
+
+            function requireSessionOrBack() {
+                return getSessionService().requireSessionOrBack();
+            }
+
+            function requireSessionOrGoLogin() {
+                return getSessionService().requireSessionOrGoLogin();
+            }
+
+            function requireNoSession() {
+                return getSessionService().requireNoSession();
+            }
+
+            function requireNoSessionOrBack() {
+                return getSessionService().requireNoSessionOrBack();
+            }
+
             $stateProvider
 
                 .state(STATES.LOGIN, {
@@ -69,7 +108,7 @@ angular.module('scheduling-app', [
                     templateUrl: "templates/login.html",
                     controller: 'LoginController',
                     resolve: {
-                        notAuthenticated: 'RequireNoSessionOrBack'
+                        notAuthenticated: requireNoSessionOrBack
                     }
                 })
 
@@ -78,7 +117,7 @@ angular.module('scheduling-app', [
                     templateUrl: "templates/signup.html",
                     controller: 'LoginController',
                     resolve: {
-                        notAuthenticated: 'RequireNoSessionOrBack'
+                        notAuthenticated: requireNoSessionOrBack
                     }
                 })
 
@@ -88,7 +127,7 @@ angular.module('scheduling-app', [
                     templateUrl: "templates/menu.html",
                     controller: 'AppCtrl',
                     resolve: {
-                        authenticated: 'RequireSessionOrGoLogin'
+                        authenticated: requireSessionOrGoLogin
                     }
                 })
 
