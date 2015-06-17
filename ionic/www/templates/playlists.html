@@ -1,6 +1,12 @@
 <ion-view view-title="Playlists">
   <ion-content>
+    <div user-partial>
+
+    </div>
     <ion-list>
+      <ion-item>
+        Start of old way
+      </ion-item>
       <ion-item ng-repeat="playlist in playlists" href="#/app/playlists/{{playlist.id}}">
           {{playlist.username}}
         <ion-option-button class="button-positive" ng-click="add()">+</ion-option-button>
