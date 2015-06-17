@@ -5,11 +5,13 @@ angular.module('scheduling-app.controllers')
         function($scope,
                  $injector) {
             $scope.init = function(model, baseObject, addFunction) {
+                console.debug("init(" + model + ")");
                 $scope._modelName = model;
-                $scope._baseObject = baseObject
-                // this will throw if the service doesnt exist
+                $scope._baseObject = baseObject;
+                // this will throw if the service doesn't exist
                 $scope._model = $injector.get(model);
                 $scope._addFunction = addFunction;
+                $scope.fetch();
             };
 
             $scope.revertToDefaultObject = function() {
