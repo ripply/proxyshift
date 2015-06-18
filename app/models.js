@@ -70,6 +70,14 @@ knex.schema.hasTable('shifts').then(function(exists) {
     } else {
         return knex.schema.createTable('shifts', function(table) {
             table.increments('id');
+            table.integer('groupid')
+                .references('id')
+                .inTable('groups')
+                .onDelete('CASCADE');
+            table.integer('userid')
+                .references('id')
+                .inTable('users')
+                .onDelete('CASCADE');
             table.string('title', 30)
                 .notNullable();
             table.string('description', 30);
