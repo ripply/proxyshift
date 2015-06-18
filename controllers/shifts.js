@@ -9,8 +9,9 @@ module.exports = {
         // if the user needs more in the calendar
         // the calendar will request specific ranges
         // TODO: Cache these dates until month ticks?
-        var after = req.params.after;
-        var before = req.params.before;
+        var after = req.param("after");
+        var before = req.param("before");
+        console.log("before: " + before + ", after: " + after);
         var now = new Date();
         if (after === undefined) {
             after = moment(now)
@@ -28,8 +29,10 @@ module.exports = {
             return res.status(400).json({error: true, data: {message: 'Invalid date range'}});
         }
         models.Shifts.forge()
-            .where('date', '>=', after)
-            .where('date', '<=', before)
+            .query(function(q) {
+                q.where('start', '<=', before)
+                    .orWhere('end', '>=', after)
+            })
             .fetch()
             .then(function(collection) {
                 res.json(collection.toJSON());
@@ -54,6 +57,9 @@ module.exports = {
             });
     },
     add: function(req, res) {
+        if (req.body.start > req.body.end) {
+            res.status(400).json({error: true, data: {message: 'Invalid date range'}})
+        }
         models.Shift.forge({
             title: req.body.title,
             description: req.body.description,
