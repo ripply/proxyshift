@@ -27,11 +27,17 @@ module.exports = {
             });
     },
     getOwnGroups: function(req, res) {
+        console.log("Userid: " + req.user.id);
         models.Group.query(function(q) {
             q.select('groups.*').innerJoin('usergroups', function() {
                 this.on('groups.id', '=', 'usergroups.groupid')
                     .andOn('usergroups.userid', '=', req.user.id);
-            });
+            })
+                .union(function() {
+                    this.select('*')
+                        .from('groups')
+                        .where('ownerid', '=', req.user.id);
+                });
         })
             .fetchAll()
             .then(function (groups) {
