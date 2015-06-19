@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema,
+    //Schema = mongoose.Schema,
+    Schema = require('./schema').Schema,
     ObjectId = Schema.ObjectId,
     bcrypt = require('bcrypt'),
     passport = require('passport'),
@@ -32,287 +33,50 @@ var knex = require('knex')( {
 var Bookshelf = require('bookshelf')(knex);
 
 //Create tables
-knex.schema.hasTable('users').then(function(exists) {
-    if (exists) {
-        console.log('Users table already exists.');
-    } else {
-        return knex.schema.createTable('users', function(table) {
-            table.increments('id');
-            table.string('username', 20)
-                .unique()
-                .notNullable();
-            table.string('firstname')
-                .notNullable();
-            table.string('lastname')
-                .notNullable();
-            table.string('email', 50)
-                .unique()
-                .notNullable();
-            table.string('password', 100)
-                .notNullable();
-            table.string('squestion', 100)
-                .notNullable();
-            table.string('sanswer', 100)
-                .notNullable();
-            table.string('phonehome');
-            table.string('phonemobile')
-                .unique();
-            table.string('pagernumber');
-        }).then(function() {
-            console.log('Successfully created users table.');
-        });
-    }
-});
 
-knex.schema.hasTable('shifts').then(function(exists) {
-    if (exists) {
-        console.log('Shifts table already exists.');
-    } else {
-        return knex.schema.createTable('shifts', function(table) {
-            table.increments('id');
-            table.integer('groupsid')
-                .references('id')
-                .inTable('groups')
-                .onDelete('CASCADE');
-            table.integer('usersid')
-                .references('id')
-                .inTable('users')
-                .onDelete('CASCADE');
-            table.string('title', 30)
-                .notNullable();
-            table.string('description', 30);
-            table.boolean('allDay')
-                .defaultTo(false);
-            table.boolean('recurring')
-                .defaultTo(false);
-            table.date('start')
-                .notNullable();
-            table.date('end')
-                .notNullable();
-        }).then(function() {
-            console.log('Successfully created shifts table.');
-        });
-    }
-});
-
-knex.schema.hasTable('groups').then(function(exists) {
-    if (exists) {
-        console.log('Groups table already exists.');
-    } else {
-        return knex.schema.createTable('groups', function(table) {
-            table.increments('id');
-            table.integer('ownerid')
-                .references('id')
-                .inTable('users')
-                .onDelete('CASCADE');
-            table.string('name')
-                .notNullable();
-            table.string('state');
-            table.string('city');
-            table.string('address');
-            table.integer('zipcode');
-            table.string('weburl');
-            table.string('contactemail')
-                .notNullable();
-            table.integer('contactphone');
-        }).then(function() {
-            console.log('Successfully created groups table.');
-        });
-    }
-});
-
-knex.schema.hasTable('usergroups').then(function(exists) {
-    if (exists) {
-        console.log('UserGroups table already exists.');
-    } else {
-        return knex.schema.createTable('usergroups', function(table) {
-            table.increments('id');
-            table.integer('userid')
-                .references('id')
-                .inTable('users')
-                .onDelete('CASCADE');
-            table.integer('groupid')
-                .references('id')
-                .inTable('groups')
-                .onDelete('CASCADE');
-        }).then(function() {
-            console.log('Successfully created UserGroups table.');
-        });
-    }
-});
-
-knex.schema.hasTable('tokens').then(function(exists) {
-    if (exists) {
-        console.log('Tokens table already exists.');
-    } else {
-        return knex.schema.createTable('tokens', function(table) {
-            table.increments('id');
-            table.integer('userid')
-                .references('id')
-                .inTable('users')
-                .onDelete('CASCADE')
-                .notNullable();
-            table.string('token')
-                .notNullable()
-                .unique();
-            table.date('date')
-                .notNullable();
-        }).then(function() {
-            console.log('Successfully created usergroups table.');
-        });
-    }
-});
-
-knex.schema.hasTable('groupuserclasses').then(function(exists) {
-    if (exists) {
-        console.log('GroupUserClasses table already exists.');
-    } else {
-        return knex.schema.createTable('groupuserclasses', function(table) {
-            table.increments('id');
-            table.string('title', 50)
-                .unique()
-                .notNullable();
-            table.string('description', 50);
-        }).then(function() {
-            console.log('Successfully created GroupUserClasses table.');
-        });
-    }
-});
-
-knex.schema.hasTable('userpermissions').then(function(exists) {
-    if (exists) {
-        console.log('UserPermissions table already exists.');
-    } else {
-        return knex.schema.createTable('userpermissions', function(table) {
-            table.increments('id');
-            table.integer('locationsid')
-                .notNullable();
-            table.string('usersid')
-                .notNullable();
-        }).then(function() {
-            console.log('Successfully created UserPermissions table.');
-        });
-    }
-});
-
-knex.schema.hasTable('locations').then(function(exists) {
-    if (exists) {
-        console.log('Locations table already exists.');
-    } else {
-        return knex.schema.createTable('locations', function(table) {
-            table.increments('id');
-            table.integer('groupsid')
-                .notNullable();
-            table.string('state')
-                .notNullable();
-            table.string('city')
-                .notNullable();
-            table.string('adress')
-                .notNullable();
-            table.integer('zipcode')
-                .notNullable();
-            table.integer('phonenumber')
-                .notNullable();
-        }).then(function() {
-            console.log('Successfully created Locations table.');
-        });
-    }
-});
-
-knex.schema.hasTable('arealocations').then(function(exists) {
-    if (exists) {
-        console.log('AreaLocations table already exists.');
-    } else {
-        return knex.schema.createTable('arealocations', function(table) {
-            table.increments('id');
-            table.integer('locationsid')
-                .notNullable();
-            table.integer('areaid')
-                .notNullable();
-        }).then(function() {
-            console.log('Successfully created AreaLocations table.');
-        });
-    }
-});
-
-knex.schema.hasTable('areas').then(function(exists) {
-    if (exists) {
-        console.log('Areas table already exists.');
-    } else {
-        return knex.schema.createTable('areas', function(table) {
-            table.increments('id');
-            table.string('title')
-                .notNullable()
-                .unique();
-        }).then(function() {
-            console.log('Successfully created Areas table.');
-        });
-    }
-});
-
-knex.schema.hasTable('groupsettings').then(function(exists) {
-    if (exists) {
-        console.log('GroupSettings table already exists.');
-    } else {
-        return knex.schema.createTable('groupsettings', function(table) {
-            table.increments('id');
-            table.integer('groupsid')
-                .notNullable()
-                .unique();
-            table.boolean('allowalltocreateshifts');
-            table.boolean('requireshiftconfirmation');
-        }).then(function() {
-            console.log('Successfully created GroupSettings table.');
-        });
-    }
-});
-
-knex.schema.hasTable('groupadditionalinformation').then(function(exists) {
-    if (exists) {
-        console.log('GroupAdditionalInformation table already exists.');
-    } else {
-        return knex.schema.createTable('groupadditionalinformation', function(table) {
-            table.increments('id');
-            table.integer('groupsid');
-            table.string('title')
-                .notNullable();
-        }).then(function() {
-            console.log('Successfully created GroupAdditionalInformation table.');
-        });
-    }
-});
-
-knex.schema.hasTable('groupuserinformation').then(function(exists) {
-    if (exists) {
-        console.log('GroupUserInformation table already exists.');
-    } else {
-        return knex.schema.createTable('groupuserinformation', function(table) {
-            table.increments('id');
-            table.integer('usersid');
-            table.integer('groupadditionalinformationid');
-            table.string('data')
-                .notNullable();
-        }).then(function() {
-            console.log('Successfully created GroupUserInformation table.');
-        });
-    }
-});
-
-knex.schema.hasTable('grouppermissions').then(function(exists) {
-    if (exists) {
-        console.log('GroupPermissions table already exists.');
-    } else {
-        return knex.schema.createTable('grouppermissions', function(table) {
-            table.increments('id');
-            table.integer('groupsettingsid');
-            table.string('description')
-                .notNullable();
-            table.integer('permissionlevel')
-                .notNullable();
-        }).then(function() {
-            console.log('Successfully created GroupPermissions table.');
-        });
-    }
+_.each(Schema, function(tableSchema, tableName) {
+    knex.schema.hasTable(tableName).then(function(exists) {
+        if (exists) {
+            console.log(tableName + " table already exists");
+        } else {
+            return knex.schema.createTable(tableName, function(table) {
+                _.each(tableSchema, function(columnSchema, columnName) {
+                    var column;
+                    if (columnSchema.hasOwnProperty('type')) {
+                        if (columnSchema.type == "string" && columnSchema.hasOwnProperty("maxlen")) {
+                            column = table.string(columnName, columnSchema.maxlen);
+                        } else {
+                            column = table[columnSchema.type](columnName);
+                        }
+                    } else {
+                        throw "Table " + tableName + "'s column " + columnName + " needs a type attribute";
+                    }
+                    if (columnSchema.hasOwnProperty('nullable')) {
+                        var nullable = columnSchema.nullable;
+                        if (!nullable) {
+                            column = column.notNullable();
+                        }
+                    }
+                    if (columnSchema.hasOwnProperty('unique')) {
+                        var unique = columnSchema.unique;
+                        if (unique) {
+                            column = column.unique();
+                        }
+                    }
+                    if (columnSchema.hasOwnProperty('references')) {
+                        column = column.references(columnSchema['references']);
+                    }
+                    if (columnSchema.hasOwnProperty('inTable')) {
+                        column = column.inTable(columnSchema['inTable']);
+                    }
+                    if (columnSchema.hasOwnProperty('onDelete')) {
+                        column = column.onDelete(columnSchema['onDelete']);
+                    }
+                });
+                console.log("Successfully created " + tableName + " table");
+            });
+        }
+    });
 });
 
 //Models
@@ -849,8 +613,8 @@ module.exports = {
     Usergroup: UserGroup,
     Token: Token,
     consumeRememberMeToken: consumeRememberMeToken,
-    issueToken: issueToken,
+    issueToken: issueToken
     //Category: Category
 
-}
+};
 

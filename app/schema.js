@@ -12,8 +12,7 @@ var Schema = {
     'users': {
         id: {
             type: increments,
-            nullable: false,
-            primary: true
+            nullable: false
         },
         username: {
             type: string,
@@ -23,11 +22,11 @@ var Schema = {
         },
         firstname: {
             type: string,
-            nullable: false,
+            nullable: false
         },
         lastname: {
             type: string,
-            nullable: false,
+            nullable: false
         },
         email: {
             type: string,
@@ -151,7 +150,7 @@ var Schema = {
         groupid: {
             type: integer,
             references: 'id',
-            inTable: groups,
+            inTable: 'groups',
             onDelete: cascade
         }
     },
@@ -250,7 +249,7 @@ var Schema = {
             inTable: 'areas',
             onDelete: cascade
         }
-    }
+    },
     userpermissions: {
         id: {
             type: increments
@@ -269,7 +268,7 @@ var Schema = {
             onDelete: cascade,
             nullable: false
         }
-    }
+    },
     groupsettings: {
         id: {
             type: increments
