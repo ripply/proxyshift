@@ -1,4 +1,5 @@
-var models = require('../app/models');
+var models = require('../app/models'),
+    Bookshelf = models.Bookshelf;
 
 module.exports = {
     index: function(req, res) {
@@ -47,18 +48,27 @@ module.exports = {
             });
     },
     add: function(req, res) {
-        models.Group.forge({
-            ownerid: req.user.id,
-            name: req.body.name,
-            state: req.body.state,
-            city: req.body.city,
-            address: req.body.address,
-            zipcode: req.body.zipcode,
-            weburl: req.body.weburl,
-            contactemail: req.body.contactemail,
-            contactphone: req.body.contactphone
+        Bookshelf.transaction(function (t) {
+            return models.Group.forge({
+                ownerid: req.user.id,
+                name: req.body.name,
+                state: req.body.state,
+                city: req.body.city,
+                address: req.body.address,
+                zipcode: req.body.zipcode,
+                weburl: req.body.weburl,
+                contactemail: req.body.contactemail,
+                contactphone: req.body.contactphone
+            })
+                .save(null, {transacting: t})
+                .tap(function(group) {
+                    return models.Usergroup.forge({
+                        userid: req.user.id,
+                        groupid: group.id
+                    })
+                        .save(null, {transacting: t});
+                })
         })
-            .save()
             .then(function (group) {
                 res.json({id: group.get('id')});
                 console.log('Group added:');

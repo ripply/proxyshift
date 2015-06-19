@@ -70,11 +70,11 @@ knex.schema.hasTable('shifts').then(function(exists) {
     } else {
         return knex.schema.createTable('shifts', function(table) {
             table.increments('id');
-            table.integer('groupid')
+            table.integer('groupsid')
                 .references('id')
                 .inTable('groups')
                 .onDelete('CASCADE');
-            table.integer('userid')
+            table.integer('usersid')
                 .references('id')
                 .inTable('users')
                 .onDelete('CASCADE');
@@ -838,6 +838,7 @@ categorySchema.pre('save', function(next) {
 */
 
 module.exports = {
+    Bookshelf: Bookshelf,
     Shift: Shift,
     Shifts: Shifts,
     Users: Users,
