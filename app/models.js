@@ -43,11 +43,11 @@ function pluaralizeString(string) {
     var downcased = string.toLowerCase();
     // if a word ends in ‑s, ‑sh, ‑ch, ‑x, or ‑z, you add ‑es
     // else: add s
-    var lastCharacterOfString = downcased.substr(name.length - 1);
+    var lastCharacterOfString = downcased.substr(downcased.length - 1);
     var plural;
 
     if (downcased.length >= 2) {
-        var lastTwoCharactersOfString = downcased.substr(name.length - 2);
+        var lastTwoCharactersOfString = downcased.substr(downcased.length - 2);
         switch (lastTwoCharactersOfString) {
             case 'sh':
             case 'ch':
