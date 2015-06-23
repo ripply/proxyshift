@@ -219,7 +219,7 @@ _.each(modelNames, function(tableName, modelName) {
         tableName: tableName
     };
 
-    console.log("Processing " + tableName + " relations");
+    //console.log("Processing " + tableName + " relations");
 
     // add relation methods
     if (relations[tableName] !== undefined) {
@@ -248,24 +248,35 @@ _.each(modelNames, function(tableName, modelName) {
                 // the real foreign model will have to be referenced through models[foreignModelName]
                 // because that object should be empty at the moment
                 var foreignModelName = tableNameToModelName[foreignTableName];
+                var singularLowerCaseForeignModelName = foreignModelName.toLowerCase();
                 // ending result that will become the method name
                 var methodName;
 
                 // see http://bookshelfjs.org/#Associations if confused
-                if (isManyRelationship) {
-                    // many relationships should be named with plural and be lowercase
-                    // it will return an array
-                    methodName = pluralLowerCaseTableName;
+                if (relationMethodName == 'belongsTo') {
+                    methodName = singularLowerCaseForeignModelName;
+                } else if (relationMethodName == 'belongsToMany') {
+                    throw "'belongsToMany' relationship NOT YET SUPPORTED";
                 } else {
-                    // singular relationship should be singular based
-                    // it will return one object
-                    methodName = singularLowerCaseModelName;
+                    if (isManyRelationship) {
+                        // many relationships should be named with plural and be lowercase
+                        // it will return an array
+                        methodName = pluralLowerCaseTableName;
+                    } else {
+                        // singular relationship should be singular based
+                        // it will return one object
+                        methodName = singularLowerCaseModelName;
+                    }
                 }
 
                 // check if this method will not be overwritten below
                 if (thisCustomTablesFunctions[methodName] === undefined) {
                     // it wont be overwritten!
-                    console.log(tableName + "." + relationMethodName + "(" + foreignModelName + ")");
+                    if (foreignModelName === undefined) {
+                        throw "Cannot map foreign table to model: '" + foreignTableName + "'"
+                    }
+
+                    console.log(modelName + "." + methodName + "() = " + modelName + "." + relationMethodName + "(" + foreignModelName + ")");
                     modelOptions[methodName] = function() {
                         var model = models[foreignModelName];
                         // this will be either
