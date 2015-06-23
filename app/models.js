@@ -32,24 +32,77 @@ var knex = require('knex')( {
 
 var Bookshelf = require('bookshelf')(knex);
 
+function lowercaseAndPluralizeModelName(name) {
+    // lower case
+    name = name.toLowerCase();
+    // and pluralize it
+    return pluaralizeString(name);
+}
+
+function pluaralizeString(string) {
+    var downcased = string.toLowerCase();
+    // if a word ends in ‑s, ‑sh, ‑ch, ‑x, or ‑z, you add ‑es
+    // else: add s
+    var lastCharacterOfString = downcased.substr(name.length - 1);
+    var plural;
+
+    if (downcased.length >= 2) {
+        var lastTwoCharactersOfString = downcased.substr(name.length - 2);
+        switch (lastTwoCharactersOfString) {
+            case 'sh':
+            case 'ch':
+                plural = 'es';
+        }
+    }
+
+    if (plural === undefined) {
+        switch(lastCharacterOfString) {
+            case 's':
+            case 'x':
+            case 'z':
+                plural = 'es';
+                break;
+            default:
+                plural = 's';
+        }
+    }
+
+    return string + plural;
+}
+
+
+var models = {};
+var modelNames = {};
+var tableNameToModelName = {};
+var relations = {};
+
 //Create tables
 
-_.each(Schema, function(tableSchema, tableName) {
-    knex.schema.hasTable(tableName).then(function(exists) {
+_.each(Schema, function(tableSchema, modelName) {
+    // normalize name so that it can go into the database
+    var normalizedTableName = lowercaseAndPluralizeModelName(modelName);
+    // save normalized name for creating models after this loop
+    modelNames[modelName] = normalizedTableName;
+    tableNameToModelName[normalizedTableName] = modelName;
+
+    knex.schema.hasTable(normalizedTableName).then(function(exists) {
         if (exists) {
-            console.log(tableName + " table already exists");
+            console.log(normalizedTableName + " table already exists");
         } else {
-            return knex.schema.createTable(tableName, function(table) {
+            return knex.schema.createTable(normalizedTableName, function(table) {
                 _.each(tableSchema, function(columnSchema, columnName) {
                     var column;
+                    // check each type of method that requires special behavior
+                    // then do that special behavior
                     if (columnSchema.hasOwnProperty('type')) {
+                        // string requires maxlen arg
                         if (columnSchema.type == "string" && columnSchema.hasOwnProperty("maxlen")) {
                             column = table.string(columnName, columnSchema.maxlen);
                         } else {
                             column = table[columnSchema.type](columnName);
                         }
                     } else {
-                        throw "Table " + tableName + "'s column " + columnName + " needs a type attribute";
+                        throw "Table " + normalizedTableName + "'s column " + columnName + " needs a type attribute";
                     }
                     if (columnSchema.hasOwnProperty('nullable')) {
                         var nullable = columnSchema.nullable;
@@ -57,29 +110,151 @@ _.each(Schema, function(tableSchema, tableName) {
                             column = column.notNullable();
                         }
                     }
+                    var unique = false;
                     if (columnSchema.hasOwnProperty('unique')) {
-                        var unique = columnSchema.unique;
+                        unique = columnSchema.unique;
                         if (unique) {
                             column = column.unique();
+                            unique = true;
                         }
                     }
                     if (columnSchema.hasOwnProperty('references')) {
                         column = column.references(columnSchema['references']);
                     }
                     if (columnSchema.hasOwnProperty('inTable')) {
-                        column = column.inTable(columnSchema['inTable']);
+                        var foreignTable = columnSchema['inTable'];
+                        column = column.inTable(foreignTable);
+                        // create relation
+                        // table name must be normalized because that is how inTable values should be
+                        if (relations[normalizedTableName] === undefined) {
+                            relations[normalizedTableName] = {}
+                        }
+
+                        var relationType = 'hasOne';
+                        if (!unique) {
+                            relationType = 'hasMany';
+                        }
+
+                        if (relations[normalizedTableName][relationType] === undefined) {
+                            relations[normalizedTableName][relationType] = [];
+                        }
+
+                        if (relations[foreignTable] === undefined) {
+                            relations[foreignTable] = {}
+                        }
+
+                        if (relations[foreignTable][relationType] === undefined) {
+                            relations[foreignTable][relationType] = {};
+                        }
+
+                        // later this will be used to determine if the relationship is one or many
+                        relations[foreignTable][relationType].push(normalizedTableName);
+
+                        var belongsTo = 'belongsTo';
+                        // TODO: belongsToMany uses a separate table specifically named so must be detected differently, see: http://bookshelfjs.org/#Model-belongsToMany
+                        if (relations[normalizedTableName][belongsTo] === undefined) {
+                            relations[normalizedTableName][belongsTo] = [];
+                        }
+                        relations[normalizedTableName][belongsTo].push(foreignTable);
+
                     }
                     if (columnSchema.hasOwnProperty('onDelete')) {
                         column = column.onDelete(columnSchema['onDelete']);
                     }
                 });
-                console.log("Successfully created " + tableName + " table");
+                console.log("Successfully created " + normalizedTableName + " table");
             });
         }
     });
 });
 
+// Custom functions that will be added to Models
+// models will below have all relations added
+// to them dynamically based upon schema
+var customModelFunctions = {
+    /*
+    SomeModel: {
+        wut: function() {
+            // ...
+        }
+    }
+    */
+};
+
 //Models
+_.each(modelNames, function(tableName, modelName) {
+    // common options for every model
+    var modelOptions = {
+        tableName: tableName
+    };
+
+    // add relation methods
+    if (relations[tableName] !== undefined) {
+        // grab the object holds custom functions for this Model
+        var customTableFunctions = customModelFunctions[tableName];
+        // pre-compute the lowercase version of the current Model name for use inside the loop
+        var singularLowerCaseModelName = modelName.toLowerCase();
+        _.each(relations[tableName], function(listOfTables, relationMethodName) {
+            // relationMethodName contains either belongsTo, hasOne or hasMany
+            // listOfTables is the list of tables that need to use that method
+            // what we need to do is generate methods on the Models with the table names
+            // the table names need to either be plural for many relationships
+            // or singular for singular relationships
+
+            // determine if relationship is many or singular
+            var isManyRelationship = relationMethodName.toLowerCase().indexOf('many') >= 0;
+
+            // make plural method name explicit so I can read this code later
+            var pluralLowerCaseTableName = foreignTableName;
+            // iterate over all the foreign tables that need to use this relationMethodName
+            _.each(listOfTables, function(foreignTableName) {
+                // grab the foreign model name for the foreign table
+                // the real foreign model will have to be referenced through models[foreignModelName]
+                // because that object should be empty at the moment
+                var foreignModelName = tableNameToModelName[foreignTableName];
+                // ending result that will become the method name
+                var methodName;
+
+                // see http://bookshelfjs.org/#Associations if confused
+                if (isManyRelationship) {
+                    // many relationships should be named with plural and be lowercase
+                    // it will return an array
+                    methodName = pluralLowerCaseTableName;
+                } else {
+                    // singular relationship should be singular based
+                    // it will return one object
+                    methodName = singularLowerCaseModelName;
+                }
+
+                // check if this method will not be overwritten below
+                if (customTableFunctions[methodName] === undefined) {
+                    // it wont be overwritten!
+                    modelOptions[methodName] = function() {
+                        var model = models[foreignModelName];
+                        // this will be either
+                        // this.hasOne(model)
+                        // this.hasMany(model)
+                        // this.belongsTo(model)
+                        return this[relationMethodName](model);
+                    };
+                }
+            });
+        });
+    }
+
+    // add custom specific methods, relations may be overridden
+    if (customModelFunctions[modelName] !== undefined) {
+        // copy all custom functions into the new model
+        _.extend(modelOptions, customModelFunctions[modelName]);
+    }
+    // create the new model
+    models[modelName] = Bookshelf.Model.extend(modelOptions);
+    // create the collection
+    var pluralModelName = pluaralizeString(modelName);
+    models[pluralModelName] = Bookshelf.Collection.extend({
+        model: models[modelName]
+    });
+});
 
 var User = Bookshelf.Model.extend({
     tableName: 'users'
