@@ -76,7 +76,63 @@ var modelNames = {};
 var tableNameToModelName = {};
 var relations = {};
 
-//Create tables
+// Process schema and create relation information
+// This must be done here instead of inside the actual creation of tables because
+// the tables are created inside a promise which means, asynchronously
+_.each(Schema, function(tableSchema, modelName) {
+    // normalize name so that it can go into the database
+    var normalizedTableName = lowercaseAndPluralizeModelName(modelName);
+    // save normalized name for creating models after this loop
+    modelNames[modelName] = normalizedTableName;
+    tableNameToModelName[normalizedTableName] = modelName;
+    _.each(tableSchema, function(columnSchema, columnName) {
+        var unique = false;
+        if (columnSchema.hasOwnProperty('unique')) {
+            unique = columnSchema.unique;
+            if (unique) {
+                unique = true;
+            }
+        }
+        if (columnSchema.hasOwnProperty('inTable')) {
+            var foreignTable = columnSchema['inTable'];
+            // create relation
+            // table name must be normalized because that is how inTable values should be
+            if (relations[normalizedTableName] === undefined) {
+                relations[normalizedTableName] = {}
+            }
+
+            var relationType = 'hasOne';
+            if (!unique) {
+                relationType = 'hasMany';
+            }
+
+            if (relations[normalizedTableName][relationType] === undefined) {
+                relations[normalizedTableName][relationType] = [];
+            }
+
+            if (relations[foreignTable] === undefined) {
+                relations[foreignTable] = {}
+            }
+
+            if (relations[foreignTable][relationType] === undefined) {
+                relations[foreignTable][relationType] = [];
+            }
+
+            // later this will be used to determine if the relationship is one or many
+            relations[foreignTable][relationType].push(normalizedTableName);
+
+            var belongsTo = 'belongsTo';
+            // TODO: belongsToMany uses a separate table specifically named so must be detected differently, see: http://bookshelfjs.org/#Model-belongsToMany
+            if (relations[normalizedTableName][belongsTo] === undefined) {
+                relations[normalizedTableName][belongsTo] = [];
+            }
+            relations[normalizedTableName][belongsTo].push(foreignTable);
+
+        }
+    });
+});
+
+// Create tables
 
 _.each(Schema, function(tableSchema, modelName) {
     // normalize name so that it can go into the database
@@ -110,12 +166,9 @@ _.each(Schema, function(tableSchema, modelName) {
                             column = column.notNullable();
                         }
                     }
-                    var unique = false;
                     if (columnSchema.hasOwnProperty('unique')) {
-                        unique = columnSchema.unique;
-                        if (unique) {
+                        if (columnSchema.unique) {
                             column = column.unique();
-                            unique = true;
                         }
                     }
                     if (columnSchema.hasOwnProperty('references')) {
@@ -124,39 +177,6 @@ _.each(Schema, function(tableSchema, modelName) {
                     if (columnSchema.hasOwnProperty('inTable')) {
                         var foreignTable = columnSchema['inTable'];
                         column = column.inTable(foreignTable);
-                        // create relation
-                        // table name must be normalized because that is how inTable values should be
-                        if (relations[normalizedTableName] === undefined) {
-                            relations[normalizedTableName] = {}
-                        }
-
-                        var relationType = 'hasOne';
-                        if (!unique) {
-                            relationType = 'hasMany';
-                        }
-
-                        if (relations[normalizedTableName][relationType] === undefined) {
-                            relations[normalizedTableName][relationType] = [];
-                        }
-
-                        if (relations[foreignTable] === undefined) {
-                            relations[foreignTable] = {}
-                        }
-
-                        if (relations[foreignTable][relationType] === undefined) {
-                            relations[foreignTable][relationType] = {};
-                        }
-
-                        // later this will be used to determine if the relationship is one or many
-                        relations[foreignTable][relationType].push(normalizedTableName);
-
-                        var belongsTo = 'belongsTo';
-                        // TODO: belongsToMany uses a separate table specifically named so must be detected differently, see: http://bookshelfjs.org/#Model-belongsToMany
-                        if (relations[normalizedTableName][belongsTo] === undefined) {
-                            relations[normalizedTableName][belongsTo] = [];
-                        }
-                        relations[normalizedTableName][belongsTo].push(foreignTable);
-
                     }
                     if (columnSchema.hasOwnProperty('onDelete')) {
                         column = column.onDelete(columnSchema['onDelete']);
@@ -166,6 +186,17 @@ _.each(Schema, function(tableSchema, modelName) {
             });
         }
     });
+});
+
+var throughRelations = {};
+
+_.each(relations, function(relationType, normalizedTableName) {
+    if (throughRelations[normalizedTableName] === undefined) {
+        throughRelations[normalizedTableName] = {};
+    }
+
+    var hasRelations = [];
+
 });
 
 // Custom functions that will be added to Models
@@ -188,10 +219,15 @@ _.each(modelNames, function(tableName, modelName) {
         tableName: tableName
     };
 
+    console.log("Processing " + tableName + " relations");
+
     // add relation methods
     if (relations[tableName] !== undefined) {
         // grab the object holds custom functions for this Model
-        var customTableFunctions = customModelFunctions[tableName];
+        if (customModelFunctions[tableName] === undefined) {
+            customModelFunctions[tableName] = {};
+        }
+        var thisCustomTablesFunctions = customModelFunctions[tableName];
         // pre-compute the lowercase version of the current Model name for use inside the loop
         var singularLowerCaseModelName = modelName.toLowerCase();
         _.each(relations[tableName], function(listOfTables, relationMethodName) {
@@ -204,10 +240,10 @@ _.each(modelNames, function(tableName, modelName) {
             // determine if relationship is many or singular
             var isManyRelationship = relationMethodName.toLowerCase().indexOf('many') >= 0;
 
-            // make plural method name explicit so I can read this code later
-            var pluralLowerCaseTableName = foreignTableName;
             // iterate over all the foreign tables that need to use this relationMethodName
             _.each(listOfTables, function(foreignTableName) {
+                // make plural method name explicit so I can read this code later
+                var pluralLowerCaseTableName = foreignTableName;
                 // grab the foreign model name for the foreign table
                 // the real foreign model will have to be referenced through models[foreignModelName]
                 // because that object should be empty at the moment
@@ -227,8 +263,9 @@ _.each(modelNames, function(tableName, modelName) {
                 }
 
                 // check if this method will not be overwritten below
-                if (customTableFunctions[methodName] === undefined) {
+                if (thisCustomTablesFunctions[methodName] === undefined) {
                     // it wont be overwritten!
+                    console.log(tableName + "." + relationMethodName + "(" + foreignModelName + ")");
                     modelOptions[methodName] = function() {
                         var model = models[foreignModelName];
                         // this will be either
