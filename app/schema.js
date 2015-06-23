@@ -323,7 +323,7 @@ var Schema = {
         groupadditionalinformation_id: {
             type: integer,
             references: 'id',
-            inTable: 'groupadditionalinformation',
+            inTable: 'groupadditionalinformations',
             onDelete: cascade,
             nullable: false
         },
