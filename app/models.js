@@ -824,20 +824,13 @@ categorySchema.pre('save', function(next) {
 
 */
 
-module.exports = {
+var exports = {
     Bookshelf: Bookshelf,
-    Shift: Shift,
-    Shifts: Shifts,
-    Users: Users,
-    User: User,
-    Groups: Groups,
-    Group: Group,
-    Usergroups: UserGroups,
-    Usergroup: UserGroup,
-    Token: Token,
     consumeRememberMeToken: consumeRememberMeToken,
     issueToken: issueToken
-    //Category: Category
-
 };
+
+exports = _.extend(exports, models);
+
+module.exports = exports;
 
