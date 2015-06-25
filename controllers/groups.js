@@ -49,24 +49,29 @@ module.exports = {
     },
     add: function(req, res) {
         Bookshelf.transaction(function (t) {
-            return models.Group.forge({
-                ownerid: req.user.id,
-                name: req.body.name,
-                state: req.body.state,
-                city: req.body.city,
-                address: req.body.address,
-                zipcode: req.body.zipcode,
-                weburl: req.body.weburl,
-                contactemail: req.body.contactemail,
-                contactphone: req.body.contactphone
-            })
+            return models.GroupSetting.forge({})
                 .save(null, {transacting: t})
-                .tap(function(group) {
-                    return models.Usergroup.forge({
-                        userid: req.user.id,
-                        groupid: group.id
+                .tap(function(groupsetting) {
+                    return models.Group.forge({
+                        groupsetting_id: groupsetting.id,
+                        user_id: req.user.id,
+                        name: req.body.name,
+                        state: req.body.state,
+                        city: req.body.city,
+                        address: req.body.address,
+                        zipcode: req.body.zipcode,
+                        weburl: req.body.weburl,
+                        contactemail: req.body.contactemail,
+                        contactphone: req.body.contactphone
                     })
-                        .save(null, {transacting: t});
+                        .save(null, {transacting: t})
+                        .tap(function(group) {
+                            return models.UserGroup.forge({
+                                user_id: req.user.id,
+                                group_id: group.id
+                            })
+                                .save(null, {transacting: t});
+                        })
                 })
         })
             .then(function (group) {
