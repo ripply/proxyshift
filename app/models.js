@@ -189,16 +189,111 @@ _.each(Schema, function(tableSchema, modelName) {
 });
 
 var throughRelations = {};
+/*
+function recursivelyFindThroughRelations(maxDepth, depth, listOfListOfTablePaths, visitedTables, allRelations, listOfRelatedTable, relationMethod) {
+    if (maxDepth > depth) {
+        return false;
+    } else {
+        var result = false;
 
-_.each(relations, function(relationType, normalizedTableName) {
+        _.each(listOfRelatedTable, function (individualRelatedTable) {
+            // check if the related table has a relation that we want to follow
+            // if it does then we need to add it to a temporary list and recurse with it
+            // if it returns true then we push it to the list we got
+            // and then we return true
+            if (!individualRelatedTable in visitedTables) {
+                // this table has not been visited yet
+                // see if it has anything worthwhile
+                // worthwhile meaning:
+
+                visitedTables.push(individualRelatedTable);
+
+                var recurseResult = recursivelyFindThroughRelations(maxDepth, depth + 1, listOfListOfTablePaths, visitedTables, allRelations, listOfRelatedTable );
+
+                visitedTables.pop();
+            }
+        });
+
+        return result;
+    }
+}
+*/
+/**
+ * relations is of the format:
+    {
+        tableName: {
+            relationMethod: [
+                foreignTableName
+            ]
+        }
+    }
+ */
+/*
+function addThroughRelation(table, listOfMethods) {
+    if (throughRelations[table] === undefined) {
+        throughRelations[table] = {};
+    }
+
+    throughRelations[table]
+}
+// this is taking too much time to code, left here for possible future use
+_.each(relations, function(relationTypeHash, normalizedTableName) {
+    // normalizedTableName is the current tableName that we want to process from
+    // relationTypeHash should be a hash of relationMethod => array of foreign table names
     if (throughRelations[normalizedTableName] === undefined) {
         throughRelations[normalizedTableName] = {};
     }
 
     var hasRelations = [];
 
-});
+    _.each(relationTypeHash, function(relatedTableList, relationMethod) {
+        // relationMethod = 'belongsTo' || 'hasOne' || 'hasMany' || 'belongsToMany'
+        // relatedTableList = [foreignTable1, foreignTable2]
 
+        // hasOne
+        // hasMany
+        // belongsTo
+        if (throughRelations[normalizedTableName][relationMethod] === undefined) {
+            // the idea is to make a list of lists
+            // we will push a list of how to get to the table onto that list
+            // the expected format will be
+            // ['hasMany', Model, 'through', IntermediaryModel]
+            throughRelations[normalizedTableName][relationMethod] = [];
+        }
+        var currentlyProcessingThroughRelationTarget = throughRelations[normalizedTableName][relationMethod];
+        // push how to get to the through relation on to a list then push the list on to the relationType list
+        var possibleRelation = [relationMethod];
+
+        var hasMany = relationMethod == 'hasMany';
+
+        // iterate through the relatedTableList and check if those tables have a 'hasMany' || 'hasOne' relation
+        // consider that our relation for now until more complex methods are setup
+        if (relatedTableList !== undefined) {
+            _.each(relatedTableList, function(individualRelatedTable) {
+                // grab this tables relations
+                var relatedTablesRelations = relations[individualRelatedTable];
+                // relatedTablesRelations is a relationTypeHash: relationMethod => relatedTableList
+                if (relatedTablesRelations !== undefined) {
+                    var filteredRelatedTableRelations = _.reject(relatedTablesRelations, function(relatedTablesRelatedTables, relatedTablesRelation) {
+                        return (relatedTablesRelation != 'belongsTo' && relatedTablesRelation != 'belongsToMany');
+                    });
+
+                    _.each(filteredRelatedTableRelations, function(relatedTablesRelatedTables, relatedTablesRelation) {
+                        // each relation in this list will become a through relation
+                        var localHasMany = hasMany ? relatedTablesRelation == 'hasMany':false;
+                        var modifiedRelation = localHasMany ? 'hasMany':'hasOne';
+                        currentlyProcessingThroughRelationTarget.push([modifiedRelation, individualRelatedTable, relatedTablesRelation, ])
+                    });
+                }
+            });
+        }
+
+        // for now just go one table deep to see if idea works
+        recursivelyFindThroughRelations(1, 0, possibleRelation, relations, relatedTableList, relationMethod);
+    });
+
+});
+*/
 // Custom functions that will be added to Models
 // models will below have all relations added
 // to them dynamically based upon schema
