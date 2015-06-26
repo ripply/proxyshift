@@ -305,6 +305,11 @@ var customModelFunctions = {
         }
     }
     */
+    User: {
+        memberOfGroups: function() {
+            return this.hasMany(models['Group']).through(models['UserGroup']);
+        }
+    }
 };
 
 //Models
