@@ -56,7 +56,7 @@ var Schema = {
         },
         phonemobile: {
             type: string,
-            unique: true
+            unique: false
         },
         pagernumber: {
             type: string
