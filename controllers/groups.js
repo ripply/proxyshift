@@ -28,22 +28,16 @@ module.exports = {
             });
     },
     getOwnGroups: function(req, res) {
-        models.Group.query(function(q) {
-            q.select('groups.*').innerJoin('usergroups', function() {
-                this.on('groups.id', '=', 'usergroups.groupid')
-                    .andOn('usergroups.userid', '=', req.user.id);
-            })
-                .union(function() {
-                    this.select('*')
-                        .from('groups')
-                        .where('ownerid', '=', req.user.id);
-                });
+        new models.User({id: req.user.id}).fetch({
+            withRelated: ['groups', 'memberOfGroups']
         })
-            .fetchAll()
-            .then(function (groups) {
-                res.json(groups.toJSON());
+            .then(function(collection) {
+                res.json(models.combineRelationResults('id',
+                    collection.related('groups').toJSON(),
+                    collection.related('memberOfGroups').toJSON()));
             })
-            .catch(function (err) {
+            .catch(function(err) {
+                console.log(err.message);
                 res.status(500).json({error: true, data: {message: err.message}});
             });
     },
