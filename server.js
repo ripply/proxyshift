@@ -11,6 +11,11 @@ var express = require('express'),
     csrf = require('csurf'),
     log4js = require('log4js'),
     morgan = require('morgan'),
+    bodyParser = require('body-parser'),
+    methodOverride = require('method-override'),
+    cookieParser = require('cookie-parser'),
+    session = require('express-session'),
+    errorHandler = require('errorhandler'),
     app = express();
 
 app.set('port', process.env.PORT || 3300);
@@ -37,14 +42,16 @@ if (false) {
     });
     app.use(httpLog);
 } else {
-    app.use(express.logger('dev'));
+    app.use(morgan('dev')); // log every request to the console
 }
-app.use(express.json());
-app.use(express.urlencoded());
-app.use(express.methodOverride());
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+app.use(bodyParser.json());
+//app.use(methodOverride);
 // TODO: Autogenerate this secret and save it in the database
-app.use(express.cookieParser('some-secret-value-here'));
-app.use(express.session({ cookie: { maxAge: 60000 }}));
+app.use(cookieParser('some-secret-value-here'));
+app.use(session({ cookie: { maxAge: 60000 }}));
 
 app.use(compression());
 
@@ -97,13 +104,13 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(passport.authenticate('remember-me'));
 
-app.use(app.router);
+//app.use(app.router);
 // serves clients our files in public
 app.use('/', express.static(path.join(__dirname, 'public')));
 
 // development only
 if ('development' == app.get('env')) {
-    app.use(express.errorHandler());
+    app.use(errorHandler());
 }
 
 //connect to the db server:
