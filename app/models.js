@@ -496,8 +496,6 @@ function combineArraysAndOmitDuplicates() {
     // it will be this attribute that we use a hash map to identify duplicates
     var idToObject = {};
 
-    result = [];
-
     for (var i = 1; i < arguments.length; i++) {
         if (arguments[i] !== undefined &&
             arguments[i] !== null &&
