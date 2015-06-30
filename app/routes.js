@@ -5,8 +5,7 @@ var home = require('../controllers/home'),
     categories = require('../controllers/categories'),
     _ = require('underscore'),
     utils = require('./utils'),
-    models = require('./models'),
-    passport = require('passport');
+    models = require('./models');
 
 require('./configure_passport');
 
@@ -47,6 +46,8 @@ function ensureCsrf(err, req, res, next) {
 }
 
 module.exports.initialize = function(app) {
+    return require('../routes')(app, {});
+    /*
     app.use(function(req, res, next) {
         console.log('Received request');
         next();
@@ -128,17 +129,18 @@ module.exports.initialize = function(app) {
         res.statusCode = 200;
         res.send(_.pick(req.user, _.keys(defaults)));
     });
-
+*/
     /**********************************************
      *              API METHODS
      **********************************************/
 
     // creating users is ok to do without being logged in
-    app.post('/api/users', users.add);
+    //app.post('/api/users', users.add);
 
     /**
      * AUTHENTICATION
      */
+    /*
     // API post calls must be authenticated and contain CSRF token
     app.post('/api/*', ensureCsrf, ensureAuthenticated);
     app.put('/api/*', ensureCsrf, ensureAuthenticated);
@@ -146,32 +148,35 @@ module.exports.initialize = function(app) {
     app.delete('/api/*', ensureCsrf, ensureAuthenticated);
     // API get calls just need authentication
     app.get('/api/*', ensureAuthenticated);
-
+*/
     // API calls go below here
 
     /**
      * Shifts
      */
+    /*
     app.get('/api/shifts', shifts.index);
     app.get('/api/shifts/:id', shifts.getById);
     app.post('/api/shifts', shifts.add);
     app.put('/api/shifts', shifts.add);
     app.patch('/api/shifts', shifts.update);
     app.delete('/api/shifts/:id', shifts.delete);
-
+*/
     /**
      * Categories
      */
+    /*
     app.get('/api/categories', categories.index);
     app.get('/api/categories/:id', categories.getById);
     app.post('/api/categories', categories.add);
     app.put('/api/categories', categories.add);
     app.patch('/api/categories', categories.update);
     app.delete('/api/categories/:id', categories.delete);
-
+*/
     /**
      * Users
      */
+    /*
     app.get('/api/users', users.index);
     app.get('/api/users/:id', users.getById);
     // post comes before authentication so anyone can make an account
@@ -179,14 +184,17 @@ module.exports.initialize = function(app) {
     app.post('/api/users', users.add);
     app.patch('/api/users', users.update);
     app.delete('/api/users/:id', users.delete);
+    */
 
     /**
      * Groups
      */
+    /*
     app.get('/api/groups', groups.getOwnGroups);
     app.get('/api/groups/:id', groups.getById);
     app.post('/api/groups', groups.add);
     app.put('/api/groups', groups.add);
     app.patch('/api/groups', groups.update);
     app.delete('/api/groups/:id', groups.delete);
+    */
 };
