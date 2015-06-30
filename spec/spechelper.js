@@ -1,8 +1,7 @@
 var request = require('supertest'),
     chai = require('chai'),
-    sinonChai = require("sinon-chai");
-
-var express = require('express'),
+    sinonChai = require("sinon-chai"),
+    express = require('express'),
     ROOT_DIR = __dirname + '/..',
     path = require('path'),
     //config = require(ROOT_DIR + '/config'),
@@ -13,8 +12,11 @@ var express = require('express'),
     passport = require('passport'),
     app = express();
 
+global.app = app;
+global.request = request;
 global.expect = chai.expect;
 global.sinon = require('sinon');
+global.ROOT_DIR = ROOT_DIR;
 chai.use(sinonChai);
 
 // all environments
@@ -22,7 +24,7 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(bodyParser.json());
-app.use(methodOverride());``
+app.use(methodOverride());
 app.use(cookieParser());
 app.use(session({
     //secret: config.SESSION_SECRET ,

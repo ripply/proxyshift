@@ -1,39 +1,69 @@
 /* jshint -W030 */
 var models = require('../../app/models');
+var ROOT_DIR = global.ROOT_DIR;
+var app = global.app;
+var request = global.request;
+var settings = {};
 
-describe('Models', function() {
+describe('#/api/users', function(){
 
-    describe('Users', function() {
-        var schema = models.Users.schema.paths;
+    var log = console.log;
 
-        it('should exist', function() {
-            expect(models.Users).to.exist;
-        });
+    before(function(done){
+        require(ROOT_DIR + '/routes/preauth')(app, settings);
+        require(ROOT_DIR + '/routes/users')(app, settings);
+        done();
+    });
 
-        it('should have name string field', function() {
-            expect(schema.name).to.exist;
-            expect(schema.name.instance).to.equal('String');
-        });
+    beforeEach(function(){
 
-        it('should have email string field', function() {
-            expect(schema.email).to.exist;
-            expect(schema.email.instance).to.equal('String');
-        });
+        // Done to prevent any server side console logs from the routes
+        // to appear on the console when running tests
+        //console.log=function(){};
 
-        it('should have password field', function() {
-            expect(schema.password).to.exist;
-            expect(schema.password.instance).to.equal('String');
-        });
+    });
 
-        it('should have squestion field', function() {
-            expect(schema.squestion).to.exist;
-            expect(schema.squestion.instance).to.equal('String');
-        });
+    it('- should GET users', function(done){
+        request(app)
+            .get('/api/users')
+            .end(function(err, res){
+                // Enable the console log to print the assertion output
+                console.log = log;
+                var data = JSON.parse(res.text);
+                expect(err).to.be.null;
+                expect(data.length).to.equal(3);
+                done();
+            });
+    });
 
-        it('should have sanswer field', function() {
-            expect(schema.sanswer).to.exist;
-            expect(schema.sanswer.instance).to.equal('String');
-        });
+    it('- should GET a user at index (1)', function(done){
+        request(app)
+            .get('/api/users/1')
+            .end(function(err, res){
+                // Enable the console log
+                console.log = log;
+                var data = JSON.parse(res.text);
+                expect(err).to.be.null;
+                expect(data.name).to.equal('Jony Ive');
+                done();
+            });
+    });
 
+    it('- should POST a user and get back a response', function(done){
+        var user = {
+            name: 'Steve Wozniak'
+        };
+
+        request(app)
+            .post('/api/users')
+            .send(user)
+            .end(function(err, res){
+                // Enable the console log
+                console.log = log;
+                var data = JSON.parse(res.text);
+                expect(err).to.be.null;
+                expect(data.name).to.equal(user.name);
+                done();
+            });
     });
 });
