@@ -10,6 +10,7 @@ var request = require('supertest'),
     cookieParser = require('cookie-parser'),
     session = require('express-session'),
     passport = require('passport'),
+    models = require('../app/models'),
     app = express();
 
 global.app = app;

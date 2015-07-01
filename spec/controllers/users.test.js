@@ -1,5 +1,5 @@
 /* jshint -W030 */
-var proxyquire = require('proxyquire'),
+/*var proxyquire = require('proxyquire'),
     modelsStub = {},
     md5Stub = function(string) { return string; },
     users = proxyquire('../../controllers/users', {
@@ -9,7 +9,7 @@ var proxyquire = require('proxyquire'),
 console.log("OMGGG!??!");
 var res = {},
     req = {};
-
+*/
 /*
 describe('Users Controller', function() {
     beforeEach(function() {

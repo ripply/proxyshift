@@ -11,6 +11,7 @@ describe('#/api/users', function(){
 
     before(function(done){
         require(ROOT_DIR + '/routes/preauth')(app, settings);
+        require(ROOT_DIR + '/routes/misc/auth')(app, settings);
         require(ROOT_DIR + '/routes/users')(app, settings);
         done();
     });
