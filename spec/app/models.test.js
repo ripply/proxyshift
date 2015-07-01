@@ -4,6 +4,7 @@ var ROOT_DIR = global.ROOT_DIR;
 var app = global.app;
 var request = global.request;
 var settings = {};
+var Promise = require('bluebird');
 
 describe('#/api/users', function(){
 
@@ -21,7 +22,11 @@ describe('#/api/users', function(){
         // Done to prevent any server side console logs from the routes
         // to appear on the console when running tests
         //console.log=function(){};
-
+        console.log("Reinitializaing database")
+        Promise.resolve(models.initDb(true).then(function() {
+            console.log("Finished resetting database for tests!");
+        }));
+        console.log("initDb() call done with, but did it finishe?");
     });
 
     it('- should GET users', function(done){

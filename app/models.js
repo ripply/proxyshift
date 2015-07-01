@@ -135,6 +135,8 @@ _.each(Schema, function(tableSchema, modelName) {
 // Create tables
 var tablesBeingCreated = 1;
 var tablesCreated = 0;
+var tablesPromises = [];
+var initDbPromise = null;
 
 function tableCreated() {
     tablesCreated += 1;
@@ -143,65 +145,121 @@ function tableCreated() {
     }
 }
 
-_.each(Schema, function(tableSchema, modelName) {
-    // normalize name so that it can go into the database
-    var normalizedTableName = lowercaseAndPluralizeModelName(modelName);
-    // save normalized name for creating models after this loop
-    modelNames[modelName] = normalizedTableName;
-    tableNameToModelName[normalizedTableName] = modelName;
+var firstInitialization = true;
 
-    tablesBeingCreated += 1;
-    knex.schema.hasTable(normalizedTableName).then(function(exists) {
-        if (exists) {
-            tableCreated();
-            console.log(normalizedTableName + " table already exists");
-        } else {
-            return knex.schema.createTable(normalizedTableName, function(table) {
-                _.each(tableSchema, function(columnSchema, columnName) {
-                    var column;
-                    // check each type of method that requires special behavior
-                    // then do that special behavior
-                    if (columnSchema.hasOwnProperty('type')) {
-                        // string requires maxlen arg
-                        if (columnSchema.type == "string" && columnSchema.hasOwnProperty("maxlen")) {
-                            column = table.string(columnName, columnSchema.maxlen);
-                        } else {
-                            column = table[columnSchema.type](columnName);
-                        }
-                    } else {
-                        throw "Table " + normalizedTableName + "'s column " + columnName + " needs a type attribute";
-                    }
-                    if (columnSchema.hasOwnProperty('nullable')) {
-                        var nullable = columnSchema.nullable;
-                        if (!nullable) {
-                            column = column.notNullable();
-                        }
-                    }
-                    if (columnSchema.hasOwnProperty('unique')) {
-                        if (columnSchema.unique) {
-                            column = column.unique();
-                        }
-                    }
-                    if (columnSchema.hasOwnProperty('references')) {
-                        column = column.references(columnSchema['references']);
-                    }
-                    if (columnSchema.hasOwnProperty('inTable')) {
-                        var foreignTable = columnSchema['inTable'];
-                        column = column.inTable(foreignTable);
-                    }
-                    if (columnSchema.hasOwnProperty('onDelete')) {
-                        column = column.onDelete(columnSchema['onDelete']);
-                    }
-                });
-                tableCreated();
-                console.log("Successfully created " + normalizedTableName + " table");
+function initDb(dropAllTables) {
+
+    if (!firstInitialization) {
+        // check if there is a currently running instance of this method
+        if (initDbPromise !== null) {
+            // existing promise exists
+            // it could be resolved already
+            // or it might not be resolved
+            return initDbPromise.then(function() {
+                // other initDb either just finished or was already finished
+                // delete the old promise and recurse to finish stuff\
+                initDbPromise = null;
+                return initDb(dropAllTables);
             });
         }
-    });
-});
+    }
+
+    firstInitialization = false;
+
+    // reinitialize promise
+    tablesBeingCreated = 1;
+    tablesCreated = 0;
+    tablesPromises = [];
+
+    tablesPromises.push(
+        new Promise(function(resolve) {
+            _.each(Schema, function (tableSchema, modelName) {
+                // normalize name so that it can go into the database
+                var normalizedTableName = lowercaseAndPluralizeModelName(modelName);
+                // save normalized name for creating models after this loop
+                modelNames[modelName] = normalizedTableName;
+                tableNameToModelName[normalizedTableName] = modelName;
+
+                tablesBeingCreated += 1;
+                tablesPromises.push(
+                    new Promise(function (innerResolve) {
+                        // the innerResolve is strong with this one!
+                        var createTable = function () {
+                            knex.schema.hasTable(normalizedTableName).then(function (exists) {
+                                if (exists) {
+                                    innerResolve();
+                                    console.log(normalizedTableName + " table already exists");
+                                } else {
+                                    return knex.schema.createTable(normalizedTableName, function (table) {
+                                        _.each(tableSchema, function (columnSchema, columnName) {
+                                            var column;
+                                            // check each type of method that requires special behavior
+                                            // then do that special behavior
+                                            if (columnSchema.hasOwnProperty('type')) {
+                                                // string requires maxlen arg
+                                                if (columnSchema.type == "string" && columnSchema.hasOwnProperty("maxlen")) {
+                                                    column = table.string(columnName, columnSchema.maxlen);
+                                                } else {
+                                                    column = table[columnSchema.type](columnName);
+                                                }
+                                            } else {
+                                                throw "Table " + normalizedTableName + "'s column " + columnName + " needs a type attribute";
+                                            }
+                                            if (columnSchema.hasOwnProperty('nullable')) {
+                                                var nullable = columnSchema.nullable;
+                                                if (!nullable) {
+                                                    column = column.notNullable();
+                                                }
+                                            }
+                                            if (columnSchema.hasOwnProperty('unique')) {
+                                                if (columnSchema.unique) {
+                                                    column = column.unique();
+                                                }
+                                            }
+                                            if (columnSchema.hasOwnProperty('references')) {
+                                                column = column.references(columnSchema['references']);
+                                            }
+                                            if (columnSchema.hasOwnProperty('inTable')) {
+                                                var foreignTable = columnSchema['inTable'];
+                                                column = column.inTable(foreignTable);
+                                            }
+                                            if (columnSchema.hasOwnProperty('onDelete')) {
+                                                column = column.onDelete(columnSchema['onDelete']);
+                                            }
+                                        });
+                                        innerResolve();
+                                        console.log("Successfully created " + normalizedTableName + " table");
+                                    });
+                                }
+                            });
+                        };
+
+                        if (dropAllTables) {
+                            console.log("Dropping table " + normalizedTableName);
+                            knex.schema.dropTable(normalizedTableName);
+                            createTable();
+                        } else {
+                            createTable();
+                        }
+                    })
+                );
+            });
+
+            resolve();
+        })
+    );
+
+    return Promise.all(tablesPromises);
+}
+
+if (firstInitialization) {
+    initDb(false).then(function() {
+        console.log("Completed initial initialization of the database.");
+    })
+}
+
 // tablesBeingCreated started at 1
 // this is so that we can guarantee that the loop gets finished before the promise gets resolved
-tableCreated();
 
 var throughRelations = {};
 /*
@@ -546,7 +604,8 @@ var exports = {
     consumeRememberMeToken: consumeRememberMeToken,
     issueToken: issueToken,
     combineRelationResults: combineArraysAndOmitDuplicates,
-    knex: knex
+    knex: knex,
+    initDb: initDb
 };
 
 exports = _.extend(exports, models);
