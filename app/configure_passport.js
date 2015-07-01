@@ -2,7 +2,7 @@ var passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy,
     RememberMeStrategy = require('passport-remember-me').Strategy,
     Utils = require('./utils'),
-    bcrypt = require('bcrypt');
+    bcrypt = require('bcrypt-nodejs');
     models = require('./models');
 
 // from https://github.com/jaredhanson/passport-local/blob/master/examples/express3-mongoose/app.js

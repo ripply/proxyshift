@@ -2,7 +2,7 @@ var mongoose = require('mongoose'),
     //Schema = mongoose.Schema,
     Schema = require('./schema').Schema,
     ObjectId = Schema.ObjectId,
-    bcrypt = require('bcrypt'),
+    bcrypt = require('bcrypt-nodejs'),
     passport = require('passport'),
     utils = require('./utils'),
     _ = require('underscore'),
@@ -10,7 +10,7 @@ var mongoose = require('mongoose'),
     fs = require('fs'),
     mkdirp = require('mkdirp'),
     path = require('path'),
-    bcrypt = require('bcrypt'),
+    Promise = require('bluebird'),
     SALT_WORK_FACTOR = 10;
 
 var db_file = 'data/database.db';
@@ -24,9 +24,9 @@ mkdirp(path.dirname(db_file), function(err) {
 });
 
 var knex = require('knex')( {
-    dialect: 'sqlite3',
+    dialect: global.db_dialect || 'sqlite3',
     connection: {
-        filename: db_file
+        filename: global.db_file || db_file
     }
 });
 
@@ -133,6 +133,15 @@ _.each(Schema, function(tableSchema, modelName) {
 });
 
 // Create tables
+var tablesBeingCreated = 1;
+var tablesCreated = 0;
+
+function tableCreated() {
+    tablesCreated += 1;
+    if (tablesCreated >= tablesBeingCreated) {
+        // resolve promise
+    }
+}
 
 _.each(Schema, function(tableSchema, modelName) {
     // normalize name so that it can go into the database
@@ -141,8 +150,10 @@ _.each(Schema, function(tableSchema, modelName) {
     modelNames[modelName] = normalizedTableName;
     tableNameToModelName[normalizedTableName] = modelName;
 
+    tablesBeingCreated += 1;
     knex.schema.hasTable(normalizedTableName).then(function(exists) {
         if (exists) {
+            tableCreated();
             console.log(normalizedTableName + " table already exists");
         } else {
             return knex.schema.createTable(normalizedTableName, function(table) {
@@ -182,11 +193,15 @@ _.each(Schema, function(tableSchema, modelName) {
                         column = column.onDelete(columnSchema['onDelete']);
                     }
                 });
+                tableCreated();
                 console.log("Successfully created " + normalizedTableName + " table");
             });
         }
     });
 });
+// tablesBeingCreated started at 1
+// this is so that we can guarantee that the loop gets finished before the promise gets resolved
+tableCreated();
 
 var throughRelations = {};
 /*
@@ -530,7 +545,8 @@ var exports = {
     Bookshelf: Bookshelf,
     consumeRememberMeToken: consumeRememberMeToken,
     issueToken: issueToken,
-    combineRelationResults: combineArraysAndOmitDuplicates
+    combineRelationResults: combineArraysAndOmitDuplicates,
+    knex: knex
 };
 
 exports = _.extend(exports, models);
