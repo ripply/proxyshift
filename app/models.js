@@ -147,6 +147,8 @@ function tableCreated() {
 
 var firstInitialization = true;
 
+var tablesResolved = 0;
+
 function initDb(dropAllTables) {
 
     if (!firstInitialization) {
@@ -155,10 +157,9 @@ function initDb(dropAllTables) {
             // existing promise exists
             // it could be resolved already
             // or it might not be resolved
-            return initDbPromise.then(function() {
+            return onDatabaseReady(function() {
                 // other initDb either just finished or was already finished
                 // delete the old promise and recurse to finish stuff\
-                initDbPromise = null;
                 return initDb(dropAllTables);
             });
         }
@@ -171,8 +172,8 @@ function initDb(dropAllTables) {
     tablesCreated = 0;
     tablesPromises = [];
 
-    tablesPromises.push(
-        new Promise(function(resolve) {
+    var transactionCompletedPromise = new Promise(function(resolve) {
+        knex.transaction(function(trx) {
             _.each(Schema, function (tableSchema, modelName) {
                 // normalize name so that it can go into the database
                 var normalizedTableName = lowercaseAndPluralizeModelName(modelName);
@@ -180,17 +181,22 @@ function initDb(dropAllTables) {
                 modelNames[modelName] = normalizedTableName;
                 tableNameToModelName[normalizedTableName] = modelName;
 
-                tablesBeingCreated += 1;
                 tablesPromises.push(
                     new Promise(function (innerResolve) {
                         // the innerResolve is strong with this one!
                         var createTable = function () {
-                            knex.schema.hasTable(normalizedTableName).then(function (exists) {
+                            console.log("Checking if table existst...");
+                            trx.schema.hasTable(normalizedTableName).then(function (exists) {
+                                console.log("Table existant returned " + exists);
                                 if (exists) {
+                                    tablesResolved += 1;
+                                    console.log(tablesResolved + " out of " + tablesPromises.length + " promises resolved");
                                     innerResolve();
                                     console.log(normalizedTableName + " table already exists");
                                 } else {
-                                    return knex.schema.createTable(normalizedTableName, function (table) {
+                                    console.log("Creating table..");
+                                    return trx.schema.createTable(normalizedTableName, function (table) {
+                                        console.log("Create table returned");
                                         _.each(tableSchema, function (columnSchema, columnName) {
                                             var column;
                                             // check each type of method that requires special behavior
@@ -227,6 +233,7 @@ function initDb(dropAllTables) {
                                                 column = column.onDelete(columnSchema['onDelete']);
                                             }
                                         });
+                                        tablesResolved += 1;
                                         innerResolve();
                                         console.log("Successfully created " + normalizedTableName + " table");
                                     });
@@ -236,8 +243,11 @@ function initDb(dropAllTables) {
 
                         if (dropAllTables) {
                             console.log("Dropping table " + normalizedTableName);
-                            knex.schema.dropTable(normalizedTableName);
-                            createTable();
+                            trx.schema.dropTable(normalizedTableName)
+                                .then(function() {
+                                    console.log("Table drop finished");
+                                    createTable();
+                                });
                         } else {
                             createTable();
                         }
@@ -245,17 +255,49 @@ function initDb(dropAllTables) {
                 );
             });
 
-            resolve();
-        })
-    );
 
-    return Promise.all(tablesPromises);
+            var innerTransactionCompletedPromise = new Promise(function(innerResolve) {
+                console.log("WUTTTTTTTTTTTTTTTTTTTTTTTT " + tablesPromises.length);
+                var waitForAllToFinish = Promise.all(tablesPromises);
+
+                waitForAllToFinish.then(function() {
+                    innerResolve();
+                    resolve();
+                })
+            });
+
+            innerTransactionCompletedPromise.then(function() {
+                console.log("Transaction complete!");
+            });
+
+            return innerTransactionCompletedPromise;
+
+        });
+    });
+
+    initDbPromise = transactionCompletedPromise;
+
+    return transactionCompletedPromise;
 }
 
 if (firstInitialization) {
     initDb(false).then(function() {
         console.log("Completed initial initialization of the database.");
     })
+}
+
+function onDatabaseReady(fn) {
+    if (initDbPromise === null) {
+        return fn();
+    } else if (!initDbPromise.isPending()) {
+        initDbPromise = null;
+        return fn();
+    } else {
+        return initDbPromise.then(function() {
+            console.log("Pending stuff finished!!");
+            return fn();
+        })
+    }
 }
 
 // tablesBeingCreated started at 1
@@ -605,7 +647,8 @@ var exports = {
     issueToken: issueToken,
     combineRelationResults: combineArraysAndOmitDuplicates,
     knex: knex,
-    initDb: initDb
+    initDb: initDb,
+    onDatabaseReady: onDatabaseReady
 };
 
 exports = _.extend(exports, models);
