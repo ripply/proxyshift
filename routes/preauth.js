@@ -1,10 +1,12 @@
 var middleware = require('./misc/middleware'),
     _ = require('underscore'),
+    models = require('../app/models'),
     passport = require('passport');
 
 var ensureCsrf = middleware.ensureCsrf;
 var requireJson = middleware.requireJson;
 var ensureAuthenticated = middleware.ensureAuthenticated;
+var ensureDatabaseReady = models.databaseReadyMiddleware;
 
 module.exports = function(app, settings){
 
@@ -20,6 +22,9 @@ module.exports = function(app, settings){
     });
 
     app.get('/', home.index);
+
+    // middleware to ensure that database is in an OK state for each request
+    app.use(ensureDatabaseReady);
 
     app.get('/csrf', function(req, res, next) {
         console.log("Issuing new csrf token...");

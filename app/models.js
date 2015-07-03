@@ -138,9 +138,6 @@ _.each(Schema, function(tableSchema, modelName) {
 });
 
 // Create tables
-var tablesBeingCreated = 1;
-var tablesCreated = 0;
-var tablesPromises = [];
 var initDbPromise = null;
 
 function tableCreated() {
@@ -151,8 +148,6 @@ function tableCreated() {
 }
 
 var firstInitialization = true;
-
-var tablesResolved = 0;
 
 function getListOfNonExistingTables(trx, next) {
     var nonExistingTables = {};
@@ -311,6 +306,17 @@ if (firstInitialization) {
     })
 }
 
+function databaseReadyMiddleware(req, res, next) {
+    return onDatabaseReady(function(err) {
+        if (err) {
+            req.status(500)
+                .json({error: true, data: {message: err}});
+        } else {
+            return next();
+        }
+    });
+}
+
 function onDatabaseReady(fn) {
     if (initDbPromise === null) {
         return fn();
@@ -318,7 +324,11 @@ function onDatabaseReady(fn) {
         // might happen in extremely rare cases
         // because we set the promise to null when it resolves
         // something *could* *maybe* be run before the tap method runs
-        initDbPromise = null;
+
+        // note that checkign if it is pending or not is not atomic
+        // so the following else statement would normally not be safe
+        // but since javascript is single threaded this is OK to do
+        // as nothing will be interrupting us
         return fn();
     } else {
         return initDbPromise
@@ -327,6 +337,7 @@ function onDatabaseReady(fn) {
             })
             .catch(function(err) {
                 console.log(err);
+                return fn(err);
             });
     }
 }
@@ -679,7 +690,8 @@ var exports = {
     combineRelationResults: combineArraysAndOmitDuplicates,
     knex: knex,
     initDb: initDb,
-    onDatabaseReady: onDatabaseReady
+    onDatabaseReady: onDatabaseReady,
+    databaseReadyMiddleware: databaseReadyMiddleware
 };
 
 exports = _.extend(exports, models);
