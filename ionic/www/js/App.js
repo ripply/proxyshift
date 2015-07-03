@@ -196,6 +196,16 @@ angular.module('scheduling-app', [
                             controller: 'CreateGroupController'
                         }
                     }
+                })
+
+                .state('app.groupsettings', {
+                    url: "/groups/:id/settings",
+                    views: {
+                        'menuContent': {
+                            templateUrl: "templates/editgroup.html",
+                            controller: 'EditGroupController'
+                        }
+                    }
                 });
 
             //StateHistoryService.setDefaultState('app.playlists');

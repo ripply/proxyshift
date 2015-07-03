@@ -1,0 +1,36 @@
+<ion-modal-view>
+    <ion-header-bar>
+        <h1 class="title">Edit Company Settings</h1>
+    </ion-header-bar>
+    <ion-content>
+        <div ng-controller="EditGroupController">
+            <form ng-submit="doSave()">
+                <div class="list">
+                    <li class="item item-toggle">
+                        Allow Everyone To Create Shifts
+                        <label class="toggle toggle-positive">
+                            <input type="checkbox" ng-model="groupsettings.allowalltocreateshifts">
+                            <div class="track">
+                                <div class="handle"></div>
+                            </div>
+                        </label>
+                    </li>
+                    <li class="item item-toggle">
+                        Require Confirmation For Created Shifts
+                        <label class="toggle toggle-positive">
+                            <input type="checkbox" ng-model="groupsettings.requireshiftconfirmation">
+                            <div class="track">
+                                <div class="handle"></div>
+                            </div>
+                        </label>
+                    </li>
+                    <label class="item" ng-show="message != null">
+                        <span>{{message}}</span>
+                    </label>
+                    <button class="button button-block button-positive" type="submit">Save</button>
+                    </label>
+                </div>
+            </form>
+        </div>
+    </ion-content>
+</ion-modal-view>
