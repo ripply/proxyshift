@@ -2,7 +2,7 @@
  * UserModel
  */
 module = angular.module('scheduling-app.models');
-_.each(['Users', 'Shifts', 'Groups', 'UserGroups'], function(key, index) {
+_.each(['Users', 'Shifts', 'Groups', 'UserGroups', 'GroupSettings'], function(key, index) {
 
 module
     .service(key + 'Model', ['Restangular', function(Restangular) {
