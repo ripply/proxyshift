@@ -1,7 +1,9 @@
 var models = require('../app/models');
 
 function encryptKey(password) {
-    if (password === null || password.length === 0) {
+    if (password === null ||
+        password === undefined ||
+        password.length === 0) {
         return null;
     } else {
         // Load the bcrypt module

@@ -31,8 +31,8 @@ var knex = require('knex')( {
     dialect: global.db_dialect || 'sqlite3',
     connection: {
         filename: global.db_file || db_file
-    }//,
-    //debug: true
+    }
+    //, debug: true
 });
 
 var Bookshelf = require('bookshelf')(knex);
@@ -302,7 +302,7 @@ function initDb(dropAllTables) {
 
 if (firstInitialization) {
     initDb(false).then(function() {
-        console.log("Completed initial initialization of the database.");
+        //console.log("Completed initial initialization of the database.");
     })
 }
 
@@ -513,7 +513,7 @@ _.each(modelNames, function(tableName, modelName) {
                 if (relationMethodName == 'belongsTo') {
                     methodName = singularLowerCaseForeignModelName;
                 } else if (relationMethodName == 'belongsToMany') {
-                    throw "'belongsToMany' relationship NOT YET SUPPORTED";
+                    throw new Error("'belongsToMany' relationship NOT YET SUPPORTED");
                 } else {
                     if (isManyRelationship) {
                         // many relationships should be named with plural and be lowercase
@@ -530,10 +530,12 @@ _.each(modelNames, function(tableName, modelName) {
                 if (thisCustomTablesFunctions[methodName] === undefined) {
                     // it wont be overwritten!
                     if (foreignModelName === undefined) {
-                        throw "Cannot map foreign table to model: '" + foreignTableName + "'"
+                        throw new Error("Cannot map foreign table to model: '" + foreignTableName + "'");
                     }
 
-                    console.log(modelName + "." + methodName + "() = " + modelName + "." + relationMethodName + "(" + foreignModelName + ")");
+                    if (global.silent !== true) {
+                        console.log(modelName + "." + methodName + "() = " + modelName + "." + relationMethodName + "(" + foreignModelName + ")");
+                    }
                     modelOptions[methodName] = function() {
                         var model = models[foreignModelName];
                         // this will be either

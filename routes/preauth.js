@@ -16,10 +16,12 @@ module.exports = function(app, settings){
         home = require('../controllers/home'),
         users = require('../controllers/users');
 
+    /*
     app.use(function(req, res, next) {
         console.log('Received request');
         next();
     });
+    */
 
     app.get('/', home.index);
 

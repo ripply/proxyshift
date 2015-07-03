@@ -19,65 +19,56 @@ describe('#/api/users', function(){
     });
 
     beforeEach(function(){
-
         // Done to prevent any server side console logs from the routes
         // to appear on the console when running tests
         //console.log=function(){};
-        console.log("Re-initializing database");
-        models.initDb(true).then(function() {
-            console.log("Finished resetting database for tests!");
-        });
+        global.setFixtures()
+            .then(function() {
+                //console.log('Fixtures are complete');
+            })
     });
 
     it('- should GET users', function(done){
-        ready(function() {
-            request(app)
-                .get('/api/users')
-                .end(function(err, res){
-                    // Enable the console log to print the assertion output
-                    console.log = log;
-                    //var data = JSON.parse(res.text);
-                    //expect(err).to.be.null;
-                    //expect(data.length).to.equal(3);
-                    done();
-                });
-        })
+        request(app)
+            .get('/api/users')
+            .end(function(err, res){
+                // Enable the console log to print the assertion output
+                console.log = log;
+                //var data = JSON.parse(res.text);
+                //expect(err).to.be.null;
+                //expect(data.length).to.equal(3);
+                done();
+            });
     });
 
     it('- should GET a user at index (1)', function(done){
-        ready(function() {
-            console.log("PERFORMING REQUEST");
-            request(app)
-                .get('/api/users/1')
-                .end(function(err, res){
-                    // Enable the console log
-                    console.log = log;
-                    //var data = JSON.parse(res.text);
-                    //expect(err).to.be.null;
-                    //expect(data.name).to.equal('Jony Ive');
-                    done();
-                });
-        })
+        request(app)
+            .get('/api/users/1')
+            .end(function(err, res){
+                // Enable the console log
+                console.log = log;
+                //var data = JSON.parse(res.text);
+                //expect(err).to.be.null;
+                //expect(data.name).to.equal('Jony Ive');
+                done();
+            });
     });
-/*
+
     it('- should POST a user and get back a response', function(done){
         var user = {
             name: 'Steve Wozniak'
         };
 
-        ready(function() {
-            request(app)
-                .post('/api/users')
-                .send(user)
-                .end(function(err, res){
-                    // Enable the console log
-                    console.log = log;
-                    //var data = JSON.parse(res.text);
-                    //expect(err).to.be.null;
-                    //expect(data.name).to.equal(user.name);
-                    done();
-                });
-        })
+        request(app)
+            .post('/api/users')
+            .send(user)
+            .end(function(err, res){
+                // Enable the console log
+                //console.log = log;
+                //var data = JSON.parse(res.text);
+                //expect(err).to.be.null;
+                //expect(data.name).to.equal(user.name);
+                done();
+            });
     });
-    */
 });
