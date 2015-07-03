@@ -14,12 +14,16 @@ var mongoose = require('mongoose'),
     SALT_WORK_FACTOR = 10;
 
 var db_file = 'data/database.db';
+var neverDropAllTables = false; // safety setting later for production
+function okToDropAllTables() {
+    return !neverDropAllTables;
+}
 
 mkdirp(path.dirname(db_file), function(err) {
     if (err) {
         console.info('Error creating data folder.');
     } else {
-        console.info('Created data folder.');
+        //console.info('Data folder exists');
     }
 });
 
@@ -27,7 +31,8 @@ var knex = require('knex')( {
     dialect: global.db_dialect || 'sqlite3',
     connection: {
         filename: global.db_file || db_file
-    }
+    }//,
+    //debug: true
 });
 
 var Bookshelf = require('bookshelf')(knex);
@@ -149,7 +154,47 @@ var firstInitialization = true;
 
 var tablesResolved = 0;
 
+function getListOfNonExistingTables(trx, next) {
+    var nonExistingTables = {};
+
+    var current = trx;
+    if ('schema' in current) {
+        current = current.schema;
+    }
+
+    var tablesToCheck = [];
+    _.each(Schema, function(tableSchema, modelName) {
+        tablesToCheck.push(modelName);
+    });
+
+    function recurse() {
+        if (tablesToCheck.length == 0) {
+            return next(nonExistingTables);
+        } else {
+            var modelName = tablesToCheck.shift();
+            var tableName = lowercaseAndPluralizeModelName(modelName);
+            return trx.schema.hasTable(tableName).then(function (exists) {
+                if (!exists) {
+                    nonExistingTables[modelName] = Schema[modelName];
+                }
+
+                return recurse();
+            });
+        }
+    }
+
+    return recurse();
+}
+
 function initDb(dropAllTables) {
+
+    if (dropAllTables) {
+        if (!okToDropAllTables()) {
+            var msg = "WARNING: ALL TABLES WERE SET TO BE DROPPED BUT CONFIGURATION PREVENTED THIS";
+            console.log(msg);
+            return Promise.reject(msg);
+        }
+    }
 
     if (!firstInitialization) {
         // check if there is a currently running instance of this method
@@ -167,115 +212,95 @@ function initDb(dropAllTables) {
 
     firstInitialization = false;
 
-    // reinitialize promise
-    tablesBeingCreated = 1;
-    tablesCreated = 0;
-    tablesPromises = [];
-
     var transactionCompletedPromise = new Promise(function(resolve) {
-        knex.transaction(function(trx) {
-            _.each(Schema, function (tableSchema, modelName) {
-                // normalize name so that it can go into the database
-                var normalizedTableName = lowercaseAndPluralizeModelName(modelName);
-                // save normalized name for creating models after this loop
-                modelNames[modelName] = normalizedTableName;
-                tableNameToModelName[normalizedTableName] = modelName;
+        if (!dropAllTables) {
+            // apparently we cannot do hasTable() calls within a transaction
+            // so.. since this method should only have one copy of it running
+            // we can query which tables dont exist BEFORE the transaction
+            return getListOfNonExistingTables(knex, function(nonExistingTables) {
+                return createTablesInATransaction(nonExistingTables);
+            });
+        } else {
+            // create all the tables because we will be dropping them all
+            return createTablesInATransaction(Schema);
+        }
+        function createTablesInATransaction(Schema) {
+            knex.transaction(function (trx) {
+                var current = trx.schema;
+                if (dropAllTables) {
+                    // drpo all tables and keep chaining the commands
+                    _.each(Schema, function (tableSchema, modelName) {
+                        var tableName = lowercaseAndPluralizeModelName(modelName);
+                        current = current.dropTable(tableName);
+                    });
+                    return current.then(function () {
+                        // now create all the tables that they have been dropped successfully
+                        // we are using the same transaction but have executed the sql
+                        current = trx.schema;
+                        return createTables(Schema);
+                    })
+                } else {
+                    // no tables to drop, just create them
+                    return createTables(Schema);
+                }
 
-                tablesPromises.push(
-                    new Promise(function (innerResolve) {
-                        // the innerResolve is strong with this one!
-                        var createTable = function () {
-                            console.log("Checking if table existst...");
-                            trx.schema.hasTable(normalizedTableName).then(function (exists) {
-                                console.log("Table existant returned " + exists);
-                                if (exists) {
-                                    tablesResolved += 1;
-                                    console.log(tablesResolved + " out of " + tablesPromises.length + " promises resolved");
-                                    innerResolve();
-                                    console.log(normalizedTableName + " table already exists");
+                function createTables(tables) {
+                    _.each(tables, function (tableSchema, modelName) {
+                        // normalize name so that it can go into the database
+                        var normalizedTableName = lowercaseAndPluralizeModelName(modelName);
+                        // save normalized name for creating models after this loop
+                        modelNames[modelName] = normalizedTableName;
+                        tableNameToModelName[normalizedTableName] = modelName;
+                        current = current.createTable(normalizedTableName, function (table) {
+                            _.each(tableSchema, function (columnSchema, columnName) {
+                                var column;
+                                // check each type of method that requires special behavior
+                                // then do that special behavior
+                                if (columnSchema.hasOwnProperty('type')) {
+                                    // string requires maxlen arg
+                                    if (columnSchema.type == "string" && columnSchema.hasOwnProperty("maxlen")) {
+                                        column = table.string(columnName, columnSchema.maxlen);
+                                    } else {
+                                        column = table[columnSchema.type](columnName);
+                                    }
                                 } else {
-                                    console.log("Creating table..");
-                                    return trx.schema.createTable(normalizedTableName, function (table) {
-                                        console.log("Create table returned");
-                                        _.each(tableSchema, function (columnSchema, columnName) {
-                                            var column;
-                                            // check each type of method that requires special behavior
-                                            // then do that special behavior
-                                            if (columnSchema.hasOwnProperty('type')) {
-                                                // string requires maxlen arg
-                                                if (columnSchema.type == "string" && columnSchema.hasOwnProperty("maxlen")) {
-                                                    column = table.string(columnName, columnSchema.maxlen);
-                                                } else {
-                                                    column = table[columnSchema.type](columnName);
-                                                }
-                                            } else {
-                                                throw "Table " + normalizedTableName + "'s column " + columnName + " needs a type attribute";
-                                            }
-                                            if (columnSchema.hasOwnProperty('nullable')) {
-                                                var nullable = columnSchema.nullable;
-                                                if (!nullable) {
-                                                    column = column.notNullable();
-                                                }
-                                            }
-                                            if (columnSchema.hasOwnProperty('unique')) {
-                                                if (columnSchema.unique) {
-                                                    column = column.unique();
-                                                }
-                                            }
-                                            if (columnSchema.hasOwnProperty('references')) {
-                                                column = column.references(columnSchema['references']);
-                                            }
-                                            if (columnSchema.hasOwnProperty('inTable')) {
-                                                var foreignTable = columnSchema['inTable'];
-                                                column = column.inTable(foreignTable);
-                                            }
-                                            if (columnSchema.hasOwnProperty('onDelete')) {
-                                                column = column.onDelete(columnSchema['onDelete']);
-                                            }
-                                        });
-                                        tablesResolved += 1;
-                                        innerResolve();
-                                        console.log("Successfully created " + normalizedTableName + " table");
-                                    });
+                                    throw "Table " + normalizedTableName + "'s column " + columnName + " needs a type attribute";
+                                }
+                                if (columnSchema.hasOwnProperty('nullable')) {
+                                    var nullable = columnSchema.nullable;
+                                    if (!nullable) {
+                                        column = column.notNullable();
+                                    }
+                                }
+                                if (columnSchema.hasOwnProperty('unique')) {
+                                    if (columnSchema.unique) {
+                                        column = column.unique();
+                                    }
+                                }
+                                if (columnSchema.hasOwnProperty('references')) {
+                                    column = column.references(columnSchema['references']);
+                                }
+                                if (columnSchema.hasOwnProperty('inTable')) {
+                                    var foreignTable = columnSchema['inTable'];
+                                    column = column.inTable(foreignTable);
+                                }
+                                if (columnSchema.hasOwnProperty('onDelete')) {
+                                    column = column.onDelete(columnSchema['onDelete']);
                                 }
                             });
-                        };
-
-                        if (dropAllTables) {
-                            console.log("Dropping table " + normalizedTableName);
-                            trx.schema.dropTable(normalizedTableName)
-                                .then(function() {
-                                    console.log("Table drop finished");
-                                    createTable();
-                                });
-                        } else {
-                            createTable();
-                        }
-                    })
-                );
-            });
-
-
-            var innerTransactionCompletedPromise = new Promise(function(innerResolve) {
-                console.log("WUTTTTTTTTTTTTTTTTTTTTTTTT " + tablesPromises.length);
-                var waitForAllToFinish = Promise.all(tablesPromises);
-
-                waitForAllToFinish.then(function() {
-                    innerResolve();
+                        });
+                    });
                     resolve();
-                })
+                    return current;
+                }
             });
-
-            innerTransactionCompletedPromise.then(function() {
-                console.log("Transaction complete!");
-            });
-
-            return innerTransactionCompletedPromise;
-
-        });
+        }
     });
 
     initDbPromise = transactionCompletedPromise;
+    initDbPromise.tap(function() {
+        initDbPromise = null;
+    });
 
     return transactionCompletedPromise;
 }
@@ -290,13 +315,19 @@ function onDatabaseReady(fn) {
     if (initDbPromise === null) {
         return fn();
     } else if (!initDbPromise.isPending()) {
+        // might happen in extremely rare cases
+        // because we set the promise to null when it resolves
+        // something *could* *maybe* be run before the tap method runs
         initDbPromise = null;
         return fn();
     } else {
-        return initDbPromise.then(function() {
-            console.log("Pending stuff finished!!");
-            return fn();
-        })
+        return initDbPromise
+            .then(function() {
+                return fn();
+            })
+            .catch(function(err) {
+                console.log(err);
+            });
     }
 }
 
