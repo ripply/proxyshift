@@ -7,6 +7,51 @@ var settings = {};
 var Promise = require('bluebird');
 var ready = models.onDatabaseReady;
 
+describe("#/session", function() {
+
+    before(function(done){
+        require(ROOT_DIR + '/routes/preauth')(app, settings);
+        require(ROOT_DIR + '/routes/misc/auth')(app, settings);
+        require(ROOT_DIR + '/routes/users')(app, settings);
+        done();
+    });
+
+    beforeEach(function(){
+        // Done to prevent any server side console logs from the routes
+        // to appear on the console when running tests
+        //console.log=function(){};
+        global.setFixtures(global.fixtures.base)
+            .then(function() {
+                //console.log('Fixtures are complete');
+            })
+    });
+
+    describe('/login', function() {
+
+        it('- should return non 401 for an empty password', function(done) {
+            request(app)
+                .post('/session/login')
+                .set('Accept', 'application/json')
+                .send({
+                    username: 'test_nopassword',
+                    password: '' // correct password due to fixture
+                })
+                .expect(401, done);
+        });
+
+    });
+
+    describe('/logout', function() {
+
+        it('- should return 401 when logging out and not logged in', function(done) {
+            request(app)
+                .post('/session/logout')
+                .expect(401, done);
+        });
+
+    });
+});
+
 describe('#/api/users', function(){
 
     var log = console.log;

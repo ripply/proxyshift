@@ -3,6 +3,8 @@ var middleware = require('./misc/middleware'),
     models = require('../app/models'),
     passport = require('passport');
 
+require('./../app/configure_passport');
+
 var ensureCsrf = middleware.ensureCsrf;
 var requireJson = middleware.requireJson;
 var ensureAuthenticated = middleware.ensureAuthenticated;
@@ -37,15 +39,10 @@ module.exports = function(app, settings){
     });
 
     app.post('/session/login', requireJson, function(req, res, next) {
-        //console.log(req.crsfToken());
-        console.log(req.protocol);
-        console.log("/login");
-        console.log(req.body);
-        console.log('authenticating...');
         passport.authenticate('local', {session: true}, function (err, user, info) {
             if (err) { return next(err); }
             // authentication failed, send 401 unauthorized
-            if (!user) { return res.send(401); }
+            if (!user) { return res.sendStatus(401); }
             req.login(user, function (err) {
                 if (err) { return next(err); }
 

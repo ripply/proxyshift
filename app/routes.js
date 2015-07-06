@@ -7,7 +7,7 @@ var home = require('../controllers/home'),
     utils = require('./utils'),
     models = require('./models');
 
-require('./configure_passport');
+//require('./configure_passport');
 
 // Simple route middleware to ensure user is authenticated.
 //   Use this route middleware on any resource that needs to be protected.  If

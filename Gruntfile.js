@@ -217,7 +217,11 @@ module.exports = function(grunt) {
         // server tests
         simplemocha: {
             options: {
-                globals: ['expect', 'sinon'],
+                globals: [
+                    'expect',
+                    'sinon',
+                    'models'
+                ],
                 timeout: 3000,
                 ignoreLeaks: false,
                 ui: 'bdd',
