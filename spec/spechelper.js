@@ -99,7 +99,7 @@ function databaseReady(next) {
 
 global.databaseReady = databaseReady;
 
-function afterFixturesAreComplete(req, res, next) {
+function waitForFixturesToComplete(req, res, next) {
     return databaseReady(next);
 }
 
@@ -134,7 +134,5 @@ requireFromRoot = (function(root) {
 
 
 // ensure that fixtures have been initialized before test requests are handled
-app.use(function(req, res, next) {
-    return databaseReady(next);
-});
+app.use(waitForFixturesToComplete);
 

@@ -50,7 +50,6 @@ module.exports = function(app, settings){
                 // https://github.com/jaredhanson/passport-remember-me#setting-the-remember-me-cookie
                 // issue a remember me cookie if the option was checked
                 console.log("Checking for remember me");
-                console.log(req.body);
                 if (req.body.remember_me) {
                     console.log("Remember me found!!");
 

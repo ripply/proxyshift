@@ -6,6 +6,7 @@ var request = global.request;
 var settings = {};
 var Promise = require('bluebird');
 var ready = models.onDatabaseReady;
+var expect = global.expect;
 
 describe("#/session", function() {
 
@@ -37,6 +38,22 @@ describe("#/session", function() {
                     password: '' // correct password due to fixture
                 })
                 .expect(401, done);
+        });
+
+        it('- should be able to login, return status 200 and return ', function(done) {
+            request(app)
+                .post('/session/login')
+                .set('Accept', 'application/json')
+                .send({
+                    username: 'test_password',
+                    password: 'test_password'
+                })
+                .expect(200)
+                .end(function(err, res) {
+                    var data = JSON.parse(res.text);
+                    expect(data.authenticationToken).to.not.be.null;
+                    done();
+                });
         });
 
     });

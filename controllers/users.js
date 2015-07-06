@@ -1,21 +1,5 @@
 var models = require('../app/models');
-
-function encryptKey(password) {
-    if (password === null ||
-        password === undefined ||
-        password.length === 0) {
-        return null;
-    } else {
-        // Load the bcrypt module
-        var bcrypt = require('bcrypt-nodejs');
-        // Generate a salt
-        var salt = bcrypt.genSaltSync(10);
-        // Hash the password with the salt
-        var hash = bcrypt.hashSync(password, salt);
-
-        return  hash;
-    }
-}
+var encryptKey = require('./encryption/encryption').encryptKey;
 
 module.exports = {
     index: function(req, res) {
