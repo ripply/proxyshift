@@ -16,7 +16,7 @@ var mongoose = require('mongoose'),
 var db_file = 'data/database.db';
 var neverDropAllTables = false; // safety setting later for production
 function okToDropAllTables() {
-    return !neverDropAllTables;
+    return global.okToDropTables || false;
 }
 
 mkdirp(path.dirname(db_file), function(err) {
@@ -27,10 +27,17 @@ mkdirp(path.dirname(db_file), function(err) {
     }
 });
 
+var database = global.db_file || db_file;
+
+console.log("Using database: " + database);
+if (global.okToDropTables) {
+    console.log("WARNING: Dropping of tables ENABLED");
+}
+
 var knex = require('knex')( {
     dialect: global.db_dialect || 'sqlite3',
     connection: {
-        filename: global.db_file || db_file
+        filename: database
     }
     //, debug: true
 });

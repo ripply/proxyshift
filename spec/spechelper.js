@@ -1,4 +1,7 @@
 global.silent = true;
+global.db_dialect = 'sqlite3';
+global.db_file = './data/test.db';
+global.okToDropTables = true;
 
 var request = require('supertest'),
     chai = require('chai'),
@@ -15,9 +18,11 @@ var request = require('supertest'),
     sqlFixtures = require('sql-fixtures'),
     Promise = require('bluebird'),
     _ = require('underscore'),
+    fixtures = require('./fixtures/fixtures'),
     models = require('../app/models'),
     app = express();
 
+global.fixtures = fixtures;
 global.app = app;
 global.request = request;
 global.expect = chai.expect;
@@ -37,14 +42,23 @@ function setFixtures() {
     };
     */
 
-    var fixturesList = arguments;
+    var fixturesList = [];
+    var i = 0;
+    while (arguments.hasOwnProperty(i)) {
+        fixturesList.push(arguments[i++]);
+    }
     var promise = new Promise(function(resolve, reject) {
         return models.initDb(true)
             .then(function() {
                 // database has been reset
                 // add fixtures inside a transaction
                 // then resolve promise
-                var client;
+                var client = {
+                    client: global.db_dialect,
+                    connection: {
+                        filename: global.db_file
+                    }
+                };
 
                 function recurse(fixturesLeft) {
                     if (fixturesLeft.length == 0) {
