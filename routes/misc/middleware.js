@@ -12,13 +12,13 @@ function ensureAuthenticated(req, res, next) {
     }
     // 401 is Unauthorized response
     console.log(req.baseUrl);
-    res.send(401);
+    res.sendStatus(401);
 }
 
 function requireJson(req, res, next) {
     if (!req.is('application/json')) {
         console.log('Client sent non json data to a json only resource');
-        res.send(400);
+        res.sendStatus(400);
     } else {
         next();
     }
