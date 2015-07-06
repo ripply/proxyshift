@@ -88,6 +88,7 @@
     "sinon": "^1.15.4",
     "sinon-chai": "^2.8.0",
     "supertest": "^1.0.1",
+    "supertest-session": "^1.0.0",
     "time-grunt": "~0.2.3"
   }
 }

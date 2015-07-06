@@ -24,6 +24,12 @@ var request = require('supertest'),
 
 global.fixtures = fixtures;
 global.app = app;
+
+global.Session = require('supertest-session')({
+    app: global.app
+    //, envs: { KEY: value }
+});
+
 global.request = request;
 global.expect = chai.expect;
 global.sinon = require('sinon');
