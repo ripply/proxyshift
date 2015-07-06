@@ -18,14 +18,38 @@ describe("#/session", function() {
     });
 
     beforeEach(function(){
+        this.sess = new global.Session();
+
         // Done to prevent any server side console logs from the routes
         // to appear on the console when running tests
         //console.log=function(){};
         global.setFixtures(global.fixtures.base)
             .then(function() {
-                //console.log('Fixtures are complete');
+                console.log('Fixtures are complete');
             })
     });
+
+    afterEach(function() {
+        this.sess.destroy();
+    });
+
+    function login(username, password, next) {
+        request(app)
+            .post('/session/login')
+            .set('Accept', 'application/json')
+            .send({
+                username: username,
+                password: password
+            })
+            .expect(200)
+            .expect('Content-Type', /json/)
+            .end(function(err, res) {
+                console.log(res.text);
+                var data = JSON.parse(res.text);
+                expect(data.authenticationToken).to.not.be.null;
+                next();
+            });
+    }
 
     describe('/login', function() {
 
@@ -41,19 +65,11 @@ describe("#/session", function() {
         });
 
         it('- should be able to login, return status 200 and return ', function(done) {
-            request(app)
-                .post('/session/login')
-                .set('Accept', 'application/json')
-                .send({
-                    username: 'test_password',
-                    password: 'test_password'
-                })
-                .expect(200)
-                .end(function(err, res) {
-                    var data = JSON.parse(res.text);
-                    expect(data.authenticationToken).to.not.be.null;
-                    done();
-                });
+            login(
+                'test_password',
+                'test_password',
+                done
+            );
         });
 
     });
@@ -64,6 +80,29 @@ describe("#/session", function() {
             request(app)
                 .post('/session/logout')
                 .expect(401, done);
+        });
+
+    });
+
+    describe('/login -> /logout', function(done) {
+
+        it('- should be able to login then logout', function(done) {
+            login(
+                'test_password',
+                'test_password',
+                function() {
+                    console.log(res.text);
+                    var data = JSON.parse(res.text);
+                    expect(data.authenticationToken).to.not.be.null;
+                    request(app)
+                        .post('/logout')
+                        .expect(200)
+                        .end(function(err, res) {
+                            // TODO VERIFY SESSION CLOSED
+                            done();
+                        });
+                });
+
         });
 
     });
