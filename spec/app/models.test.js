@@ -8,6 +8,21 @@ var Promise = require('bluebird');
 var ready = models.onDatabaseReady;
 var expect = global.expect;
 
+var password = 'secret';
+
+function login(username, password, next) {
+    request(app)
+        .post('/session/login')
+        .set('Accept', 'application/json')
+        .send({
+            username: username,
+            password: password
+        })
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .end(next);
+}
+
 describe("#/session", function() {
 
     before(function(done){
@@ -33,24 +48,6 @@ describe("#/session", function() {
         this.sess.destroy();
     });
 
-    function login(username, password, next) {
-        request(app)
-            .post('/session/login')
-            .set('Accept', 'application/json')
-            .send({
-                username: username,
-                password: password
-            })
-            .expect(200)
-            .expect('Content-Type', /json/)
-            .end(function(err, res) {
-                console.log(res.text);
-                var data = JSON.parse(res.text);
-                expect(data.authenticationToken).to.not.be.null;
-                next();
-            });
-    }
-
     describe('/login', function() {
 
         it('- should return non 401 for an empty password', function(done) {
@@ -67,8 +64,12 @@ describe("#/session", function() {
         it('- should be able to login, return status 200 and return ', function(done) {
             login(
                 'test_password',
-                'test_password',
-                done
+                password,
+                function(err, res) {
+                    var data = JSON.parse(res.text);
+                    expect(data.authenticationToken).to.not.be.null;
+                    done()
+                }
             );
         });
 
@@ -89,11 +90,11 @@ describe("#/session", function() {
         it('- should be able to login then logout', function(done) {
             login(
                 'test_password',
-                'test_password',
-                function() {
-                    console.log(res.text);
+                password,
+                function(err, res) {
                     var data = JSON.parse(res.text);
                     expect(data.authenticationToken).to.not.be.null;
+
                     request(app)
                         .post('/logout')
                         .expect(200)
@@ -120,13 +121,49 @@ describe('#/api/users', function(){
     });
 
     beforeEach(function(){
+        this.sess = new global.Session();
+
         // Done to prevent any server side console logs from the routes
         // to appear on the console when running tests
         //console.log=function(){};
         global.setFixtures(global.fixtures.base)
             .then(function() {
-                //console.log('Fixtures are complete');
+                console.log('Fixtures are complete');
             })
+    });
+
+    afterEach(function() {
+        this.sess.destroy();
+    });
+
+    it('- should be able to create a user then login', function(done) {
+        var username = 'createduser';
+        request(app)
+            .post('/api/users')
+            .send({
+                username: username,
+                password: password,
+                firstname: 'firstname',
+                lastname: 'lastname',
+                email: 'email@example.com',
+                squestion: 'squestion',
+                sanswer: 'sanswer',
+                phonehome: '12435',
+                phonemobile: '12345',
+                pagernumer: '12435'
+            })
+            .expect(200)
+            .end(function(err, res) {
+                login(
+                    username,
+                    password,
+                    function(err2, res2) {
+                        var data = JSON.parse(res2.text);
+                        expect(data.authenticationToken).to.not.be.null;
+                        done();
+                    }
+                );
+            });
     });
 
     it('- should GET users', function(done){
