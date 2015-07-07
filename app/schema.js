@@ -163,6 +163,12 @@ var Schema = {
             references: 'id',
             inTable: 'groups',
             onDelete: cascade
+        },
+        grouppermission_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'grouppermissions',
+            onDelete: cascade
         }
     },
     Token: {
@@ -343,7 +349,7 @@ var Schema = {
             onDelete: cascade,
             nullable: false
         },
-        decription: {
+        description: {
             type: string,
             nullable: false
         },
