@@ -284,6 +284,13 @@ var Schema = {
             inTable: 'users',
             onDelete: cascade,
             nullable: false
+        },
+        grouppermission_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'grouppermissions',
+            onDelete: cascade,
+            nullable: false
         }
     },
     GroupSetting: {
