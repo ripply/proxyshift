@@ -473,6 +473,11 @@ var customModelFunctions = {
         memberOfGroups: function() {
             return this.belongsToMany(models['Group']).through(models['UserGroup']);
         }
+    },
+    Group: {
+        groupPermissions: function() {
+            return this.belongsToMany(models['GroupPermission']).through(models['GroupSetting']);
+        }
     }
 };
 
