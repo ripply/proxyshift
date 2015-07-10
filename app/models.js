@@ -461,7 +461,7 @@ _.each(relations, function(relationTypeHash, normalizedTableName) {
 // Custom functions that will be added to Models
 // models will below have all relations added
 // to them dynamically based upon schema
-var customModelFunctions = {
+var customModelRelations = {
     /*
     SomeModel: {
         wut: function() {
@@ -487,6 +487,34 @@ var customModelFunctions = {
     }
 };
 
+var customModelFunctions = {
+    User: {
+        getLocationPermissions: function(trx, user_id, location_id, next, err) {
+            // select grouppermissions.permissionlevel from userpermissions inner join grouppermissions on userpermissions.grouppermission_id = grouppermissions.id where userpermissions.user_id = 1 and userpermissions.location_id = 1;
+            return models['GroupPermission'].query(function(q) {
+                q.select('grouppermissions.permissionlevel').innerJoin('userpermissions', function() {
+                    this.on('userpermissions.grouppermission_id', '=', 'grouppermissions.id')
+                })
+                    .where('userpermissions.user_id', '=', user_id)
+                    .andWhere('userpermissions.location_id', '=', location_id);
+            })
+                .fetch()
+                .then(function(result) {
+                    if (result !== null) {
+                        result = result.get('permissionlevel');
+                        //console.log(result);
+                    }
+                    return next(result);
+                })
+                .catch(function(err_) {
+                    err(err_);
+                });
+        }
+    }
+};
+
+global.getLocationPermissions = customModelFunctions.User.getLocationPermissions;
+
 //Models
 _.each(modelNames, function(tableName, modelName) {
     // common options for every model
@@ -499,10 +527,10 @@ _.each(modelNames, function(tableName, modelName) {
     // add relation methods
     if (relations[tableName] !== undefined) {
         // grab the object holds custom functions for this Model
-        if (customModelFunctions[tableName] === undefined) {
-            customModelFunctions[tableName] = {};
+        if (customModelRelations[tableName] === undefined) {
+            customModelRelations[tableName] = {};
         }
-        var thisCustomTablesFunctions = customModelFunctions[tableName];
+        var thisCustomTablesFunctions = customModelRelations[tableName];
         // pre-compute the lowercase version of the current Model name for use inside the loop
         var singularLowerCaseModelName = modelName.toLowerCase();
         _.each(relations[tableName], function(listOfTables, relationMethodName) {
@@ -568,9 +596,9 @@ _.each(modelNames, function(tableName, modelName) {
     }
 
     // add custom specific methods, relations may be overridden
-    if (customModelFunctions[modelName] !== undefined) {
+    if (customModelRelations[modelName] !== undefined) {
         // copy all custom functions into the new model
-        _.extend(modelOptions, customModelFunctions[modelName]);
+        _.extend(modelOptions, customModelRelations[modelName]);
     }
     // create the new model
     models[modelName] = Bookshelf.Model.extend(modelOptions);
