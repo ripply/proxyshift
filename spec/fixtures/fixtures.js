@@ -6,6 +6,16 @@ module.exports = {
     base: {
         users: [
             {
+                // user with a password used for testing login
+                username: 'test_password',
+                password: encrypt(password),
+                firstname: 'password',
+                lastname: 'password',
+                email: 'test_password@example.com',
+                squestion: 'test password',
+                sanswer: encrypt(password)
+            },
+            {
                 // simple user account with an empty password
                 // it should never be allowed to login
                 username: 'test_nopassword',
@@ -15,16 +25,6 @@ module.exports = {
                 email: 'test_nopassword@example.com',
                 squestion: 'test no password',
                 sanswer: ''
-            },
-            {
-                // user with a password used for testing login
-                username: 'test_password',
-                password: encrypt(password),
-                firstname: 'password',
-                lastname: 'password',
-                email: 'test_password@example.com',
-                squestion: 'test password',
-                sanswer: encrypt(password)
             },
             {
                 username: 'test_member_of_group',
@@ -44,7 +44,7 @@ module.exports = {
         ],
         groups: [
             {
-                user_id: 'users:1',
+                user_id: 'users:0',
                 name: 'test_password_group',
                 state: 'test_password_state',
                 city: 'test_password_city',
@@ -56,16 +56,42 @@ module.exports = {
                 groupsetting_id: 'groupsettings:0'
             }
         ],
+        grouppermissions: [
+            {
+                groupsetting_id: 'groupsettings:0',
+                description: 'test permission',
+                permissionlevel: 1
+            }
+        ],
         usergroups: [
             {
                 // user 1 is a member of its own group 0
-                user_id: 'users:1',
-                group_id: 'groups:0'
+                user_id: 'users:0',
+                group_id: 'groups:0',
+                grouppermission_id: 'grouppermissions:0'
             },
             {
                 // user 2 is a member of group 0
                 user_id: 'users:2',
-                group_id: 'groups:0'
+                group_id: 'groups:0',
+                grouppermission_id: 'grouppermissions:0'
+            }
+        ],
+        locations: [
+            {
+                group_id: 'groups:0',
+                state: 'test_state',
+                city: 'test_city',
+                address: 'test_address',
+                zipcode: 12345,
+                phonenumber: 12435
+            }
+        ],
+        userpermissions: [
+            {
+                location_id: 'locations:0',
+                user_id: 'users:0',
+                grouppermission_id: 'grouppermissions:0'
             }
         ]
     }
