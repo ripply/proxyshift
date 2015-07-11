@@ -220,12 +220,13 @@ module.exports = function(grunt) {
                 globals: [
                     'expect',
                     'sinon',
-                    'models'
+                    'models',
+                    'sess'
                 ],
                 timeout: 3000,
                 ignoreLeaks: false,
                 ui: 'bdd',
-                reporter: 'list'
+                reporter: 'tap'
             },
 
             server: {

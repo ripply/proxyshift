@@ -3,7 +3,7 @@ var models = require('../../app/models');
 var ROOT_DIR = global.ROOT_DIR;
 var app = global.app;
 var request = global.request;
-var settings = {};
+var settings = {auth: true};
 var Promise = require('bluebird');
 var ready = models.onDatabaseReady;
 var expect = global.expect;
@@ -21,7 +21,7 @@ describe("#/session", function() {
     });
 
     beforeEach(function(){
-        this.sess = new global.Session();
+        global.sess = new global.Session();
 
         // Done to prevent any server side console logs from the routes
         // to appear on the console when running tests
@@ -33,7 +33,7 @@ describe("#/session", function() {
     });
 
     afterEach(function() {
-        this.sess.destroy();
+        global.sess.destroy();
     });
 
     describe('/login', function() {

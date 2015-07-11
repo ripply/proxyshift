@@ -1,12 +1,16 @@
 var models = require('../../app/models');
 var ROOT_DIR = global.ROOT_DIR;
 var app = global.app;
-var request = global.request;
-var settings = {};
+//var request = global.request;
+var request = function(app) {
+    return global.sess;
+};
+var settings = {auth: true};
 var Promise = require('bluebird');
 var ready = models.onDatabaseReady;
 var expect = global.expect;
 var login = require('../common').login;
+var _ = require('underscore');
 
 describe('#/api/groups', function() {
 
@@ -18,33 +22,37 @@ describe('#/api/groups', function() {
     });
 
     beforeEach(function(){
-        this.sess = new global.Session();
+        global.sess = new global.Session();
 
         // Done to prevent any server side console logs from the routes
         // to appear on the console when running tests
         //console.log=function(){};
-        global.setFixtures(global.fixtures.base)
-            .then(function() {
-                //console.log('Fixtures are complete');
-            })
+        return global.setFixtures(global.fixtures.base);
     });
 
     afterEach(function() {
-        this.sess.destroy();
+        expect(global.sess).to.not.be.undefined;
+        global.sess.destroy();
+    });
+
+    it('should set session details correctly', function(done) {
+        return login('test_password',
+            'secret',
+            function(err, res) {
+                expect(global.sess).to.not.be.undefined;
+                var sessionCookie = _.find(global.sess.cookies, function(cookie) {
+                    return _.has(cookie, 'connect.sid');
+                });
+                expect(sessionCookie).to.not.be.undefined;
+                done();
+            });
     });
 
     it('- any user should be able to create a group', function(done) {
-
-        request(app)
-            .post('/session/login')
-            .set('Accept', 'application/json')
-            .send({
-                username: 'test_password',
-                password: 'secret'
-            })
-            .expect(200)
-            .expect('Content-Type', /json/)
-            .end(function(err, res) {
+        expect(global.sess).to.not.be.undefined;
+        return login('test_password',
+            'secret',
+            function(err, res) {
                 // logged in, now create a group
                 request(app)
                     .post('/api/groups')
@@ -98,6 +106,44 @@ describe('#/api/groups', function() {
                 request(app)
                     .get('/api/groups/2')
                     .expect(200, done);
+            });
+
+    });
+
+    it('- group members should be able to list all groups they are in', function(done) {
+
+        login('groupmember',
+            'secret',
+            function(err, res) {
+                request(app)
+                    .get('/api/groups/')
+                    .expect(200)
+                    .end(function(err, res) {
+                        var data = JSON.parse(res.text);
+                        expect(data).to.be.a('array');
+                        expect(data.length).to.equal(1);
+                        expect(data[0].id).to.equal(2);
+                        done();
+                    });
+            });
+
+    });
+
+    it('- group owners should be able to list all groups they are in', function(done) {
+
+        login('groupowner',
+            'secret',
+            function(err, res) {
+                request(app)
+                    .get('/api/groups/')
+                    .expect(200)
+                    .end(function(err, res) {
+                        var data = JSON.parse(res.text);
+                        expect(data).to.be.a('array');
+                        expect(data.length).to.equal(1);
+                        expect(data[0].id).to.equal(2);
+                        done();
+                    });
             });
 
     });

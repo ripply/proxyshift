@@ -18,17 +18,19 @@ module.exports = {
         // check if the user has access to this group
         // the user will be a part of the group
         // or own the group
-        // select groups.* from groups inner join usergroups on groups.id = usergroups.group_id and usergroups.user_id = 3 union select * from groups where user_id = 3;
+        // select groups.* from groups inner join usergroups
+        //   on groups.id = usergroups.group_id and usergroups.user_id = 3
+        //   union select * from groups where user_id = 3;
         var group_id = req.params.id;
         var user_id = req.user.id;
         return models.Group.query(function(q) {
             q.select('groups.*').innerJoin('usergroups', function() {
-                this.on('groups.id', '=', 'usergroups.group_id')
-                    .andOn('usergroups.user_id', '=', user_id)
-                    .andOn('groups.id', '=', group_id)
+                    this.on('groups.id', '=', 'usergroups.group_id')
+                        .andOn('usergroups.user_id', '=', user_id);
             })
+                .where('groups.id', '=', group_id)
                 .union(function() {
-                    this.select('*')
+                    this.select('groups.*')
                         .from('groups')
                         .where('user_id', '=', user_id)
                         .andWhere('id', '=', group_id);
@@ -58,16 +60,23 @@ module.exports = {
             });
     },
     getOwnGroups: function(req, res) {
-        new models.User({id: req.user.id}).fetch({
-            withRelated: ['groups', 'memberOfGroups']
-        })
-            .then(function(collection) {
-                res.json(models.combineRelationResults('id',
-                    collection.related('groups').toJSON(),
-                    collection.related('memberOfGroups').toJSON()));
+        var user_id = req.user.id;
+        models.Group.query(function(q) {
+            q.select('groups.*').innerJoin('usergroups', function() {
+                this.on('groups.id', '=', 'usergroups.group_id')
+                    .andOn('usergroups.user_id', '=', user_id);
             })
-            .catch(function(err) {
-                console.log(err.message);
+                .union(function() {
+                    this.select('*')
+                        .from('groups')
+                        .where('user_id', '=', user_id);
+                });
+        })
+            .fetchAll()
+            .then(function (groups) {
+                res.json(groups.toJSON());
+            })
+            .catch(function (err) {
                 res.status(500).json({error: true, data: {message: err.message}});
             });
     },

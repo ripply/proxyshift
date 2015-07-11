@@ -1,6 +1,5 @@
 function login(username, password, next) {
-    request(app)
-        .post('/session/login')
+    global.sess.post('/session/login')
         .set('Accept', 'application/json')
         .send({
             username: username,

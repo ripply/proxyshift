@@ -30,7 +30,13 @@ global.Session = require('supertest-session')({
     //, envs: { KEY: value }
 });
 
-global.request = request;
+global.request = function(app) {
+    if (global.hasOwnProperty('sess')) {
+        return global.sess
+    } else {
+        return request(app);
+    }
+};
 global.expect = chai.expect;
 global.sinon = require('sinon');
 global.ROOT_DIR = ROOT_DIR;
@@ -117,7 +123,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 app.use(methodOverride());
-app.use(cookieParser());
+app.use(cookieParser('secret'));
 app.use(session({
     //secret: config.SESSION_SECRET ,
     secret: 'secret',

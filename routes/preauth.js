@@ -49,9 +49,7 @@ module.exports = function(app, settings){
                 var authToken = {'authorizationToken': '1234'};
                 // https://github.com/jaredhanson/passport-remember-me#setting-the-remember-me-cookie
                 // issue a remember me cookie if the option was checked
-                console.log("Checking for remember me");
                 if (req.body.remember_me) {
-                    console.log("Remember me found!!");
 
                     models.issueToken(req.user, function(err, token) {
                         if (err) { return next(err); }
@@ -59,7 +57,6 @@ module.exports = function(app, settings){
                         res.send(authToken);
                     });
                 } else {
-                    console.log('remember me not found');
                     // send user information since user is found
                     // *SHOULD NEVER CONTAIN SENSITIVE DATA*
                     res.send(authToken);
@@ -73,7 +70,6 @@ module.exports = function(app, settings){
 
     app.post('/session/logout', ensureCsrf, ensureAuthenticated, function(req, res, next) {
 
-        console.log("Received rememberme cookie of: ");
         if ('remember_me' in req.cookies) {
             models.consumeRememberMeToken(req.cookies.remember_me, function(err, next) {
                 console.log("User logged out: Purged token");

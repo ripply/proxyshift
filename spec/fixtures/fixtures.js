@@ -113,7 +113,7 @@ module.exports = {
             {
                 // user 3 is a member of group 0
                 user_id: 'users:3',
-                group_id: 'groups:0',
+                group_id: 'groups:1',
                 grouppermission_id: 'grouppermissions:0'
             }
         ],

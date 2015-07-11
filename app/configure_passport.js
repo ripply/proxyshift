@@ -20,7 +20,6 @@ passport.deserializeUser(function(id, done) {
     new models.User({id: id})
         .fetch({require: true})
         .then(function (user) {
-            console.log(user);
             return done(null, user);
         })
         .catch(function (err) {
@@ -38,7 +37,6 @@ passport.use(new LocalStrategy(function(username, password, done) {
     return new models.User({username: username})
         .fetch({require: true})
         .then(function (user) {
-            console.log(user);
             if(bcrypt.compareSync(password, user.get('password'))) {
                 return done(null, user);
             } else {
