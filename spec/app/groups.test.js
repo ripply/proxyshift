@@ -109,6 +109,18 @@ describe('#/api/groups', function() {
 
         describe('- /', function() {
 
+            describe('- anonymous users', function() {
+
+                it('- return 401', function(done) {
+
+                    request(app)
+                        .get('/api/groups/')
+                        .expect(401, done);
+
+                });
+
+            });
+
             describe('- group members', function() {
 
                 it('- list all groups they are in', function(done) {
