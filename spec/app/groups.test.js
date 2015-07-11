@@ -35,116 +35,147 @@ describe('#/api/groups', function() {
         global.sess.destroy();
     });
 
-    it('should set session details correctly', function(done) {
-        return login('test_password',
-            'secret',
-            function(err, res) {
-                expect(global.sess).to.not.be.undefined;
-                var sessionCookie = _.find(global.sess.cookies, function(cookie) {
-                    return _.has(cookie, 'connect.sid');
+    describe('- POST', function() {
+
+        describe('- /', function() {
+
+            describe('- any user', function() {
+
+                it('- can create a group', function(done) {
+                    expect(global.sess).to.not.be.undefined;
+                    return login('test_password',
+                        'secret',
+                        function(err, res) {
+                            // logged in, now create a group
+                            request(app)
+                                .post('/api/groups')
+                                .send({
+                                    name: 'test_group',
+                                    state: 'state',
+                                    city: 'city',
+                                    address: 'address',
+                                    zipcode: 'zipcode',
+                                    weburl: 'weburl',
+                                    contactemail: 'contactemail@example.com',
+                                    contactphone: '12435'
+                                })
+                                .expect(200)
+                                .end(function(err, res) {
+                                    var data = JSON.parse(res.text);
+                                    expect(data.id).to.not.be.null;
+                                    done();
+                                });
+                        });
+
                 });
-                expect(sessionCookie).to.not.be.undefined;
-                done();
-            });
-    });
 
-    it('- any user should be able to create a group', function(done) {
-        expect(global.sess).to.not.be.undefined;
-        return login('test_password',
-            'secret',
-            function(err, res) {
-                // logged in, now create a group
-                request(app)
-                    .post('/api/groups')
-                    .send({
-                        name: 'test_group',
-                        state: 'state',
-                        city: 'city',
-                        address: 'address',
-                        zipcode: 'zipcode',
-                        weburl: 'weburl',
-                        contactemail: 'contactemail@example.com',
-                        contactphone: '12435'
-                    })
-                    .expect(200)
-                    .end(function(err, res) {
-                        var data = JSON.parse(res.text);
-                        expect(data.id).to.not.be.null;
-                        done();
-                    });
             });
+
+        });
 
     });
 
-    it('- anonymous users should not be able to access a group by id', function(done) {
+    describe('- GET', function() {
 
-        request(app)
-            .get('/api/groups/2')
-            .expect(401, done);
+        describe('- /', function() {
 
-    });
+            describe('- group members', function() {
 
-    it('- group members should be able to view their group', function(done) {
+                it('- list all groups they are in', function(done) {
 
-        login('groupmember',
-            'secret',
-            function(err, res) {
-                // logged in, now query group
-                request(app)
-                    .get('/api/groups/2')
-                    .expect(200, done);
+                    login('groupmember',
+                        'secret',
+                        function(err, res) {
+                            request(app)
+                                .get('/api/groups/')
+                                .expect(200)
+                                .end(function(err, res) {
+                                    var data = JSON.parse(res.text);
+                                    expect(data).to.be.a('array');
+                                    expect(data.length).to.equal(1);
+                                    expect(data[0].id).to.equal(2);
+                                    done();
+                                });
+                        });
+
+                });
+
             });
 
-    });
+            describe('- group owners', function() {
 
-    it('- group owners should be able to view their group', function(done) {
+                it('- list all groups they own', function(done) {
 
-        login('groupowner',
-            'secret',
-            function(err, res) {
-                // logged in, now query group
-                request(app)
-                    .get('/api/groups/2')
-                    .expect(200, done);
+                    login('groupowner',
+                        'secret',
+                        function(err, res) {
+                            request(app)
+                                .get('/api/groups/')
+                                .expect(200)
+                                .end(function(err, res) {
+                                    var data = JSON.parse(res.text);
+                                    expect(data).to.be.a('array');
+                                    expect(data.length).to.equal(1);
+                                    expect(data[0].id).to.equal(2);
+                                    done();
+                                });
+                        });
+
+                });
+
             });
 
-    });
+        });
 
-    it('- group members should be able to list all groups they are in', function(done) {
+        describe('- /:id', function() {
 
-        login('groupmember',
-            'secret',
-            function(err, res) {
-                request(app)
-                    .get('/api/groups/')
-                    .expect(200)
-                    .end(function(err, res) {
-                        var data = JSON.parse(res.text);
-                        expect(data).to.be.a('array');
-                        expect(data.length).to.equal(1);
-                        expect(data[0].id).to.equal(2);
-                        done();
-                    });
+            describe('- anonymous users', function() {
+
+                it('- fail to access group', function(done) {
+
+                    request(app)
+                        .get('/api/groups/2')
+                        .expect(401, done);
+
+                });
+
             });
 
-    });
+            describe('- group members', function() {
 
-    it('- group owners should be able to list all groups they are in', function(done) {
+                it('- successfully access group', function(done) {
 
-        login('groupowner',
-            'secret',
-            function(err, res) {
-                request(app)
-                    .get('/api/groups/')
-                    .expect(200)
-                    .end(function(err, res) {
-                        var data = JSON.parse(res.text);
-                        expect(data).to.be.a('array');
-                        expect(data.length).to.equal(1);
-                        expect(data[0].id).to.equal(2);
-                        done();
-                    });
+                    login('groupmember',
+                        'secret',
+                        function(err, res) {
+                            // logged in, now query group
+                            request(app)
+                                .get('/api/groups/2')
+                                .expect(200, done);
+                        });
+
+                });
+
             });
+
+            describe('- group owners', function() {
+
+                it('- successfully access group', function(done) {
+
+                    login('groupowner',
+                        'secret',
+                        function(err, res) {
+                            // logged in, now query group
+                            request(app)
+                                .get('/api/groups/2')
+                                .expect(200, done);
+                        });
+
+                });
+
+            });
+
+        });
 
     });
 
