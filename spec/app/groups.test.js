@@ -6,6 +6,7 @@ var settings = {};
 var Promise = require('bluebird');
 var ready = models.onDatabaseReady;
 var expect = global.expect;
+var login = require('../common').login;
 
 describe('#/api/groups', function() {
 
@@ -24,7 +25,7 @@ describe('#/api/groups', function() {
         //console.log=function(){};
         global.setFixtures(global.fixtures.base)
             .then(function() {
-                console.log('Fixtures are complete');
+                //console.log('Fixtures are complete');
             })
     });
 
@@ -66,5 +67,60 @@ describe('#/api/groups', function() {
             });
 
     });
+
+    it('- anonymous users should not be able to access a group by id', function(done) {
+
+        request(app)
+            .get('/api/groups/2')
+            .expect(401, done);
+
+    });
+
+    it('- group members should be able to view their group', function(done) {
+
+        login('groupmember',
+            'secret',
+            function(err, res) {
+                // logged in, now query group
+                request(app)
+                    .get('/api/groups/2')
+                    .expect(200, done);
+            });
+
+    });
+
+    it('- group owners should be able to view their group', function(done) {
+
+        login('groupowner',
+            'secret',
+            function(err, res) {
+                // logged in, now query group
+                request(app)
+                    .get('/api/groups/2')
+                    .expect(200, done);
+            });
+
+    });
+
+    /*
+    // auth.js disables authentication for tests, no need to test
+    it('- must be logged in to create a group', function(done) {
+
+        request(app)
+            .post('/api/groups')
+            .send({
+                name: 'test_group',
+                state: 'state',
+                city: 'city',
+                address: 'address',
+                zipcode: 'zipcode',
+                weburl: 'weburl',
+                contactemail: 'contactemail@example.com',
+                contactphone: '12435'
+            })
+            .expect(401, done);
+
+    });
+    */
 
 });

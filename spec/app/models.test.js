@@ -9,19 +9,7 @@ var ready = models.onDatabaseReady;
 var expect = global.expect;
 
 var password = 'secret';
-
-function login(username, password, next) {
-    request(app)
-        .post('/session/login')
-        .set('Accept', 'application/json')
-        .send({
-            username: username,
-            password: password
-        })
-        .expect(200)
-        .expect('Content-Type', /json/)
-        .end(next);
-}
+var login = require('../common').login;
 
 describe("#/session", function() {
 
@@ -40,7 +28,7 @@ describe("#/session", function() {
         //console.log=function(){};
         global.setFixtures(global.fixtures.base)
             .then(function() {
-                console.log('Fixtures are complete');
+                //console.log('Fixtures are complete');
             })
     });
 
@@ -128,7 +116,7 @@ describe('#/api/users', function(){
         //console.log=function(){};
         global.setFixtures(global.fixtures.base)
             .then(function() {
-                console.log('Fixtures are complete');
+                //console.log('Fixtures are complete');
             })
     });
 

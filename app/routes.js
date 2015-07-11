@@ -8,5 +8,7 @@ var home = require('../controllers/home'),
     models = require('./models');
 
 module.exports.initialize = function(app) {
-    return require('../routes')(app, {});
+    return require('../routes')(app, {
+        auth: true
+    });
 };

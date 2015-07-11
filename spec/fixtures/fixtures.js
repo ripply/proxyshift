@@ -34,9 +34,31 @@ module.exports = {
                 email: 'test_password_2@example.com',
                 squestion: 'test password',
                 sanswer: encrypt(password)
+            },
+            {
+                username: 'groupmember',
+                password: encrypt(password),
+                firstname: 'groupmember',
+                lastname: 'groupmember',
+                email: 'groupmember@example.com',
+                squestion: 'groupmember',
+                sanswer: encrypt(password)
+            },
+            {
+                username: 'groupowner',
+                password: encrypt(password),
+                firstname: 'groupowner',
+                lastname: 'groupowner',
+                email: 'groupowner@example.com',
+                squestion: 'groupowner',
+                sanswer: encrypt(password)
             }
         ],
         groupsettings: [
+            {
+                allowalltocreateshifts: true,
+                requireshiftconfirmation: true
+            },
             {
                 allowalltocreateshifts: true,
                 requireshiftconfirmation: true
@@ -54,6 +76,18 @@ module.exports = {
                 contactemail: 'test_password_2@example.com',
                 contactphone: 12435,
                 groupsetting_id: 'groupsettings:0'
+            },
+            {
+                user_id: 'users:4',
+                name: 'membershiptest',
+                state: 'test_password_state',
+                city: 'test_password_city',
+                address: 'test_password_address',
+                zipcode: 12435,
+                weburl: 'membershiptest',
+                contactemail: 'membershiptest@example.com',
+                contactphone: 12435,
+                groupsetting_id: 'groupsettings:1'
             }
         ],
         grouppermissions: [
@@ -73,6 +107,12 @@ module.exports = {
             {
                 // user 2 is a member of group 0
                 user_id: 'users:2',
+                group_id: 'groups:0',
+                grouppermission_id: 'grouppermissions:0'
+            },
+            {
+                // user 3 is a member of group 0
+                user_id: 'users:3',
                 group_id: 'groups:0',
                 grouppermission_id: 'grouppermissions:0'
             }

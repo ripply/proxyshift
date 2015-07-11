@@ -1,5 +1,8 @@
 var middleware = require('./middleware');
 
+var ConnectRoles = require('connect-roles'),
+    roles = new ConnectRoles(require('./rolesOptions'));
+
 var ensureCsrf = middleware.ensureCsrf;
 var requireJson = middleware.requireJson;
 var ensureAuthenticated = middleware.ensureAuthenticated;
@@ -20,6 +23,8 @@ module.exports = function(app, settings){
         authRouter.get('/*', ensureAuthenticated);
 
         app.use('/api', authRouter);
+
+        require('./roles')(app, roles);
     }
 
 };
