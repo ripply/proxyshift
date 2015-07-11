@@ -2,6 +2,7 @@ var models = require('../app/models');
 var encryptKey = require('./encryption/encryption').encryptKey;
 
 module.exports = {
+    route: '/api/users',
     index: function(req, res) {
         models.Users.forge()
             .fetch()

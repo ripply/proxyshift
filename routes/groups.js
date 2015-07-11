@@ -12,6 +12,6 @@ module.exports = function(app, settings){
     groupsRouter.patch('/', groups.update);
     groupsRouter.delete('/:id', groups.delete);
 
-    app.use('/api/groups', groupsRouter);
+    app.use(groups.route, groupsRouter);
 
 };

@@ -13,6 +13,6 @@ module.exports = function(app, settings){
     usersRouter.patch('/', users.update);
     usersRouter.delete('/:id', users.delete);
 
-    app.use('/api/users', usersRouter);
+    app.use(users.route, usersRouter);
 
 };

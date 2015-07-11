@@ -12,6 +12,6 @@ module.exports = function(app, settings){
     categoriesRouter.patch('/', categories.update);
     categoriesRouter.delete('/:id', categories.delete);
 
-    app.use('/api/categories', categoriesRouter);
+    app.use(categories.route, categoriesRouter);
 
 };

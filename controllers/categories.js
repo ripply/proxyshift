@@ -1,6 +1,7 @@
 var models = require('../app/models');
 
 module.exports = {
+    route: '/api/categories',
     index: function(req, res) {
         models.Category.find({}, function(err, data) {
             res.json(data);

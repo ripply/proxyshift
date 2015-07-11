@@ -2,6 +2,7 @@ var models = require('../app/models');
 var moment = require('moment');
 
 module.exports = {
+    route: '/api/shifts',
     index: function(req, res) {
         // fetch the last month of shifts
         // the current month

@@ -2,6 +2,8 @@ var models = require('../app/models'),
     Bookshelf = models.Bookshelf;
 
 module.exports = {
+    route: '/api/groups',
+
     index: function(req, res) {
         models.Groups.forge()
             .fetch()
@@ -11,6 +13,34 @@ module.exports = {
             .catch(function (err) {
                 res.status(500).json({error: true, data: {message: err.message}});
             });
+    },
+    authGetById: function(req, act) {
+        // check if the user has access to this group
+        // the user will be a part of the group
+        // or own the group
+        // select groups.* from groups inner join usergroups on groups.id = usergroups.group_id and usergroups.user_id = 3 union select * from groups where user_id = 3;
+        var group_id = req.params.id;
+        var user_id = req.user.id;
+        return models.Group.query(function(q) {
+            q.select('groups.*').innerJoin('usergroups', function() {
+                this.on('groups.id', '=', 'usergroups.group_id')
+                    .andOn('usergroups.user_id', '=', user_id)
+                    .andOn('groups.id', '=', group_id)
+            })
+                .union(function() {
+                    this.select('*')
+                        .from('groups')
+                        .where('user_id', '=', user_id)
+                        .andWhere('id', '=', group_id);
+                });
+        })
+            .fetch({require: true})
+            .then(function(group) {
+                return true;
+            })
+            .catch(function(err) {
+                return false;
+            })
     },
     getById: function(req, res) {
         models.Group.forge({id: req.params.id})

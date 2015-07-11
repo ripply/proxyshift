@@ -12,6 +12,6 @@ module.exports = function(app, settings){
     shiftsRouter.patch('/', shifts.update);
     shiftsRouter.delete('/:id', shifts.delete);
 
-    app.use('/api/shifts', shiftsRouter);
+    app.use(shifts.route, shiftsRouter);
 
 };
