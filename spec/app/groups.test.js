@@ -156,6 +156,19 @@ describe('#/api/groups', function() {
 
                 });
 
+                it('- fail to access groups they are not a member of', function(done) {
+
+                    login('groupmember',
+                        'secret',
+                        function(err, res) {
+                            // logged in, now query group
+                            request(app)
+                                .get('/api/groups/1')
+                                .expect(401, done);
+                        });
+
+                });
+
             });
 
             describe('- group owners', function() {
@@ -169,6 +182,19 @@ describe('#/api/groups', function() {
                             request(app)
                                 .get('/api/groups/2')
                                 .expect(200, done);
+                        });
+
+                });
+
+                it('- fail to access groups they are not a member of', function(done) {
+
+                    login('groupmember',
+                        'secret',
+                        function(err, res) {
+                            // logged in, now query group
+                            request(app)
+                                .get('/api/groups/1')
+                                .expect(401, done);
                         });
 
                 });
