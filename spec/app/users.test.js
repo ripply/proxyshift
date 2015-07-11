@@ -22,16 +22,14 @@ describe('#/api/users', function(){
         done();
     });
 
-    beforeEach(function(){
+    beforeEach(function(done){
         this.sess = new global.Session();
 
         // Done to prevent any server side console logs from the routes
         // to appear on the console when running tests
         //console.log=function(){};
         global.setFixtures(global.fixtures.base)
-            .then(function() {
-                //console.log('Fixtures are complete');
-            })
+            .then(done);
     });
 
     afterEach(function() {

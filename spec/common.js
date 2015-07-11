@@ -1,4 +1,5 @@
 function login(username, password, next) {
+    expect(global.sess).to.not.be.undefined;
     global.sess.post('/session/login')
         .set('Accept', 'application/json')
         .send({

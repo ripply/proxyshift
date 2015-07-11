@@ -52,6 +52,15 @@ module.exports = {
                 email: 'groupowner@example.com',
                 squestion: 'groupowner',
                 sanswer: encrypt(password)
+            },
+            {
+                username: 'nongroupmember',
+                password: encrypt(password),
+                firstname: 'nongroupmember',
+                lastname: 'nongroupmember',
+                email: 'nongroupmember@example.com',
+                squestion: 'nongroupmember',
+                sanswer: encrypt(password)
             }
         ],
         groupsettings: [

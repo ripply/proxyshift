@@ -1,10 +1,7 @@
 var models = require('../../app/models');
 var ROOT_DIR = global.ROOT_DIR;
 var app = global.app;
-//var request = global.request;
-var request = function(app) {
-    return global.sess;
-};
+var request = global.request;
 var settings = {auth: true};
 var Promise = require('bluebird');
 var ready = models.onDatabaseReady;
@@ -21,13 +18,15 @@ describe('#/api/groups', function() {
         done();
     });
 
-    beforeEach(function(){
+    beforeEach(function(done){
         global.sess = new global.Session();
+        console.log("Setup session");
 
         // Done to prevent any server side console logs from the routes
         // to appear on the console when running tests
         //console.log=function(){};
-        return global.setFixtures(global.fixtures.base);
+        return global.setFixtures(global.fixtures.base)
+            .then(done);
     });
 
     afterEach(function() {
@@ -39,10 +38,9 @@ describe('#/api/groups', function() {
 
         describe('- /', function() {
 
-            describe('- any user', function() {
+            describe('- anonymous user', function() {
 
-                it('- can create a group', function(done) {
-                    expect(global.sess).to.not.be.undefined;
+                it('- create a group', function(done) {
                     return login('test_password',
                         'secret',
                         function(err, res) {
@@ -67,6 +65,38 @@ describe('#/api/groups', function() {
                                 });
                         });
 
+                });
+
+            });
+
+            describe('- logged in user', function() {
+
+                beforeEach(function(done){
+                    login('nongroupmember',
+                        'secret',
+                        done);
+                });
+
+                it('- create a group', function(done) {
+
+                    request(app)
+                        .post('/api/groups')
+                        .send({
+                            name: 'test_group',
+                            state: 'state',
+                            city: 'city',
+                            address: 'address',
+                            zipcode: 'zipcode',
+                            weburl: 'weburl',
+                            contactemail: 'contactemail@example.com',
+                            contactphone: '12435'
+                        })
+                        .expect(200)
+                        .end(function(err, res) {
+                            var data = JSON.parse(res.text);
+                            expect(data.id).to.not.be.null;
+                            done();
+                        });
                 });
 
             });
