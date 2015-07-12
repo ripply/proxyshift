@@ -62,8 +62,12 @@ describe('#/api/users', function(){
                             username,
                             password,
                             function(err2, res2) {
-                                var data = JSON.parse(res2.text);
-                                expect(data.authenticationToken).to.not.be.null;
+                                try {
+                                    var data = JSON.parse(res2.text);
+                                    expect(data.authenticationToken).to.not.be.null;
+                                } catch (e) {
+                                    done(e);
+                                }
                                 done();
                             }
                         );

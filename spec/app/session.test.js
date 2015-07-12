@@ -43,11 +43,15 @@ describe("#/session", function() {
             return login('test_password',
                 'secret',
                 function(err, res) {
-                    expect(global.sess).to.not.be.undefined;
-                    var sessionCookie = _.find(global.sess.cookies, function(cookie) {
-                        return _.has(cookie, 'connect.sid');
-                    });
-                    expect(sessionCookie).to.not.be.undefined;
+                    try {
+                        expect(global.sess).to.not.be.undefined;
+                        var sessionCookie = _.find(global.sess.cookies, function (cookie) {
+                            return _.has(cookie, 'connect.sid');
+                        });
+                        expect(sessionCookie).to.not.be.undefined;
+                    } catch (e) {
+                        done(e);
+                    }
                     done();
                 });
         });
@@ -80,8 +84,12 @@ describe("#/session", function() {
                         'test_password',
                         password,
                         function(err, res) {
-                            var data = JSON.parse(res.text);
-                            expect(data.authenticationToken).to.not.be.null;
+                            try {
+                                var data = JSON.parse(res.text);
+                                expect(data.authenticationToken).to.not.be.null;
+                            } catch (e) {
+                                done(e);
+                            }
                             done()
                         }
                     );
@@ -112,16 +120,20 @@ describe("#/session", function() {
                     'test_password',
                     password,
                     function(err, res) {
-                        var data = JSON.parse(res.text);
-                        expect(data.authenticationToken).to.not.be.null;
+                        try {
+                            var data = JSON.parse(res.text);
+                            expect(data.authenticationToken).to.not.be.null;
 
-                        request(app)
-                            .post('/logout')
-                            .expect(200)
-                            .end(function(err, res) {
-                                // TODO VERIFY SESSION CLOSED
-                                done();
-                            });
+                            request(app)
+                                .post('/logout')
+                                .expect(200)
+                                .end(function (err, res) {
+                                    // TODO VERIFY SESSION CLOSED
+                                    done();
+                                });
+                        } catch (e) {
+                            done(e);
+                        }
                     });
 
             });

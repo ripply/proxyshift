@@ -41,6 +41,7 @@ global.request = function(app) {
 global.expect = chai.expect;
 global.sinon = require('sinon');
 global.ROOT_DIR = ROOT_DIR;
+chai.should();
 
 var resetDatabasePromise = null;
 

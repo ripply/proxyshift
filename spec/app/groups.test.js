@@ -18,9 +18,8 @@ describe('#/api/groups', function() {
         done();
     });
 
-    beforeEach(function(done){
+    beforeEach(function(done) {
         global.sess = new global.Session();
-        console.log("Setup session");
 
         // Done to prevent any server side console logs from the routes
         // to appear on the console when running tests
@@ -132,10 +131,14 @@ describe('#/api/groups', function() {
                                 .get('/api/groups/')
                                 .expect(200)
                                 .end(function(err, res) {
-                                    var data = JSON.parse(res.text);
-                                    expect(data).to.be.a('array');
-                                    expect(data.length).to.equal(1);
-                                    expect(data[0].id).to.equal(2);
+                                    try {
+                                        var data = JSON.parse(res.text);
+                                        data.should.be.a('array');
+                                        data.length.should.equal(1);
+                                        data[0].id.should.equal(2);
+                                    } catch (e) {
+                                        done(e);
+                                    }
                                     done();
                                 });
                         });
@@ -155,10 +158,14 @@ describe('#/api/groups', function() {
                                 .get('/api/groups/')
                                 .expect(200)
                                 .end(function(err, res) {
-                                    var data = JSON.parse(res.text);
-                                    expect(data).to.be.a('array');
-                                    expect(data.length).to.equal(1);
-                                    expect(data[0].id).to.equal(2);
+                                    try {
+                                        var data = JSON.parse(res.text);
+                                        data.should.be.a('array');
+                                        data.length.should.equal(1);
+                                        data[0].id.should.equal(2);
+                                    } catch (e) {
+                                        done(e);
+                                    }
                                     done();
                                 });
                         });
@@ -247,25 +254,109 @@ describe('#/api/groups', function() {
 
     });
 
-    /*
-    // auth.js disables authentication for tests, no need to test
-    it('- must be logged in to create a group', function(done) {
+    var updatedInformation = {
+        name: 'updated_name',
+        state: 'updated state',
+        city: 'updated city',
+        address: 'updated addresss',
+        zipcode: 54321,
+        weburl: 'updated url',
+        contactemail: 'updated_email@example.com',
+        contactphone: 54321
+    };
 
-        request(app)
-            .post('/api/groups')
-            .send({
-                name: 'test_group',
-                state: 'state',
-                city: 'city',
-                address: 'address',
-                zipcode: 'zipcode',
-                weburl: 'weburl',
-                contactemail: 'contactemail@example.com',
-                contactphone: '12435'
-            })
-            .expect(401, done);
+    describe('- PATCH', function() {
+
+        describe('- anonymous user', function() {
+
+            it('- return 401', function(done) {
+
+                return request(app)
+                    .patch('/api/groups/2')
+                    .send(updatedInformation)
+                    .expect(401, done);
+
+            });
+
+        });
+
+        describe('- group owner', function() {
+
+            beforeEach(function(done) {
+                login('groupowner',
+                    'secret',
+                    done);
+            });
+
+            it('- update all group information', function(done) {
+
+                return request(app)
+                    .patch('/api/groups/2')
+                    .send(updatedInformation)
+                    .expect(200)
+                    .end(function(err, res) {
+                        return request(app)
+                            .get('/api/groups/2')
+                            .expect(200)
+                            .end(function(err2, res2) {
+                                var data = JSON.parse(res2.text);
+                                try {
+                                    _.each(updatedInformation, function (value, key) {
+                                        res2.body.should.have.property(data[key]);
+                                        res2.body.should.equal(data[key], value);
+                                    });
+                                } catch (e) {
+                                    done(e);
+                                }
+                                done();
+                            });
+                    });
+
+            });
+
+            it('- update some group information', function(done) {
+
+                var updatedInformationCopy = _.clone(updatedInformation);
+                delete updatedInformationCopy['name'];
+
+                request(app)
+                    .patch('/api/groups/2')
+                    .send(updatedInformation.name)
+                    .expect(200)
+                    .end(function(err, res) {
+                        return request(app)
+                            .get('/api/groups/2')
+                            .expect(200)
+                            .end(function(err2, res2) {
+                                try {
+                                    var data = JSON.parse(res2.text);
+                                    data.name.should.equal(updatedInformation.name);
+
+                                    _.each(updatedInformationCopy, function (value, key) {
+                                        data[key].should.not.equal(value);
+                                    });
+                                } catch (e) {
+                                    done(e);
+                                }
+                                done();
+                            });
+                    });
+
+            });
+
+        });
+
+        describe('- nonprivledged group member', function() {
+
+            it('- return 401', function(done) {
+                return request(app)
+                    .patch('/api/groups/2')
+                    .send(updatedInformation)
+                    .expect(401, done);
+            });
+
+        });
 
     });
-    */
 
 });
