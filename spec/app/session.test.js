@@ -99,6 +99,18 @@ describe("#/session", function() {
 
             });
 
+            it('- /logout', function(done) {
+
+                request(app)
+                    .post('/logout')
+                    .expect(200)
+                    .end(function (err, res) {
+                        // TODO VERIFY SESSION CLOSED
+                        done();
+                    });
+
+            });
+
         });
 
         describe('- /logout', function() {
@@ -110,33 +122,6 @@ describe("#/session", function() {
                         .post('/session/logout')
                         .expect(401, done);
                 });
-
-            });
-
-        });
-
-        describe('- /login -> /logout', function(done) {
-
-            it('- successfully login then logout', function(done) {
-                login(
-                    'test_password',
-                    password,
-                    function(err, res) {
-                        try {
-                            var data = JSON.parse(res.text);
-                            expect(data.authenticationToken).to.not.be.null;
-
-                            request(app)
-                                .post('/logout')
-                                .expect(200)
-                                .end(function (err, res) {
-                                    // TODO VERIFY SESSION CLOSED
-                                    done();
-                                });
-                        } catch (e) {
-                            done(e);
-                        }
-                    });
 
             });
 
