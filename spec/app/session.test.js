@@ -1,10 +1,7 @@
 var models = require('../../app/models');
 var ROOT_DIR = global.ROOT_DIR;
 var app = global.app;
-//var request = global.request;
-var request = function(app) {
-    return global.sess;
-};
+var request = global.request;
 var settings = {auth: true};
 var Promise = require('bluebird');
 var ready = models.onDatabaseReady;
