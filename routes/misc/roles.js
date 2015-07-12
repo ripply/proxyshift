@@ -1,7 +1,6 @@
 var _ = require('underscore');
 
 var controllers = [
-    require('../../controllers/categories'),
     require('../../controllers/groups'),
     require('../../controllers/shifts'),
     require('../../controllers/users')
