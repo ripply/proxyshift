@@ -5,10 +5,10 @@
 //   login page.
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
-        console.log("Authorized user");
+        //console.log("Authorized user");
         return next();
     } else {
-        console.log("Authentication failed");
+        //console.log("Authentication failed");
     }
     // 401 is Unauthorized response
     console.log(req.baseUrl);

@@ -44,8 +44,6 @@ module.exports = {
             .save()
             .then(function (user) {
                 res.json({id: user.get('id')});
-                console.log('User added:');
-                console.log(user);
             })
             .catch(function (err) {
                 res.status(500).json({error: true, data: {message: err.message}});
