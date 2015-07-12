@@ -65,10 +65,11 @@ describe('#/api/users', function(){
                                 try {
                                     var data = JSON.parse(res2.text);
                                     expect(data.authenticationToken).to.not.be.null;
+
+                                    done();
                                 } catch (e) {
                                     done(e);
                                 }
-                                done();
                             }
                         );
                     });

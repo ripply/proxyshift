@@ -58,9 +58,13 @@ describe('#/api/groups', function() {
                                 })
                                 .expect(200)
                                 .end(function(err, res) {
-                                    var data = JSON.parse(res.text);
-                                    expect(data.id).to.not.be.null;
-                                    done();
+                                    try {
+                                        var data = JSON.parse(res.text);
+                                        expect(data.id).to.not.be.null;
+                                        done();
+                                    } catch (e) {
+                                        done(e);
+                                    }
                                 });
                         });
 
@@ -92,9 +96,13 @@ describe('#/api/groups', function() {
                         })
                         .expect(200)
                         .end(function(err, res) {
-                            var data = JSON.parse(res.text);
-                            expect(data.id).to.not.be.null;
-                            done();
+                            try {
+                                var data = JSON.parse(res.text);
+                                expect(data.id).to.not.be.null;
+                                done();
+                            } catch (e) {
+                                done(e);
+                            }
                         });
                 });
 
@@ -136,10 +144,11 @@ describe('#/api/groups', function() {
                                         data.should.be.a('array');
                                         data.length.should.equal(1);
                                         data[0].id.should.equal(2);
+
+                                        done();
                                     } catch (e) {
                                         done(e);
                                     }
-                                    done();
                                 });
                         });
 
@@ -163,10 +172,11 @@ describe('#/api/groups', function() {
                                         data.should.be.a('array');
                                         data.length.should.equal(1);
                                         data[0].id.should.equal(2);
+
+                                        done();
                                     } catch (e) {
                                         done(e);
                                     }
-                                    done();
                                 });
                         });
 
@@ -305,10 +315,11 @@ describe('#/api/groups', function() {
                                         res2.body.should.have.property(data[key]);
                                         res2.body.should.equal(data[key], value);
                                     });
+
+                                    done();
                                 } catch (e) {
                                     done(e);
                                 }
-                                done();
                             });
                     });
 
@@ -335,10 +346,11 @@ describe('#/api/groups', function() {
                                     _.each(updatedInformationCopy, function (value, key) {
                                         data[key].should.not.equal(value);
                                     });
+
+                                    done();
                                 } catch (e) {
                                     done(e);
                                 }
-                                done();
                             });
                     });
 
@@ -388,10 +400,11 @@ describe('#/api/groups', function() {
                                         res2.body.should.have.property(data[key]);
                                         res2.body.should.equal(data[key], value);
                                     });
+
+                                    done();
                                 } catch (e) {
                                     done(e);
                                 }
-                                done();
                             });
                     });
 
@@ -418,10 +431,11 @@ describe('#/api/groups', function() {
                                     _.each(updatedInformationCopy, function (value, key) {
                                         data[key].should.not.equal(value);
                                     });
+
+                                    done();
                                 } catch (e) {
                                     done(e);
                                 }
-                                done();
                             });
                     });
 

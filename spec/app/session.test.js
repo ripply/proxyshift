@@ -49,10 +49,11 @@ describe("#/session", function() {
                             return _.has(cookie, 'connect.sid');
                         });
                         expect(sessionCookie).to.not.be.undefined;
+
+                        done();
                     } catch (e) {
                         done(e);
                     }
-                    done();
                 });
         });
 
@@ -87,10 +88,11 @@ describe("#/session", function() {
                             try {
                                 var data = JSON.parse(res.text);
                                 expect(data.authenticationToken).to.not.be.null;
+
+                                done()
                             } catch (e) {
                                 done(e);
                             }
-                            done()
                         }
                     );
                 });
