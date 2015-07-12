@@ -58,8 +58,6 @@ module.exports = function(app, roles) {
                                             // the action will never execute since the action is different
                                             // this means that you can have it setup for very specific routes though
 
-                    console.log('Setting up ' + fullRoute + " - " + controllerMethod);
-
                     // setup action for role
                     roles.use(fullRoleActionText, fullRoute, controller[controllerMethod]);
                     // setup middleware for the route to use the new action
