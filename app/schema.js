@@ -66,12 +66,6 @@ var Schema = {
         id: {
             type: increments
         },
-        group_id: {
-            type: integer,
-            references: 'id',
-            inTable: 'groups',
-            onDelete: cascade
-        },
         user_id: {
             type: integer,
             references: 'id',
@@ -102,6 +96,14 @@ var Schema = {
         end: {
             type: date,
             nullable: false
+        },
+        arealocation_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'arealocations',
+            unique: false,
+            nullable: false,
+            onDelete: cascade
         }
     },
     Group: {
