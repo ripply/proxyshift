@@ -20,6 +20,7 @@ var request = require('supertest'),
     _ = require('underscore'),
     fixtures = require('./fixtures/fixtures'),
     models = require('../app/models'),
+    knex = models.knex,
     app = express();
 
 global.fixtures = fixtures;
@@ -60,6 +61,13 @@ function setFixtures() {
         fixturesList.push(arguments[i++]);
     }
     var promise = new Promise(function(resolve, reject) {
+        // makes sqlite3 use async
+        // sqlFixtures does a series of insert/select/insert/select/...
+        // this makes sqlite3 run very slowly
+        // this is because sqlite3 by default will persist data to disk
+        // before performing a select query
+        // setting this to false means that it does not do that
+        knex.schema.raw("PRAGMA synchronous=OFF");
         return models.initDb(true)
             .then(function() {
                 // database has been reset
@@ -79,7 +87,7 @@ function setFixtures() {
                         resolve();
                     } else {
                         var fixture = fixturesLeft.shift();
-                        return sqlFixtures.create(client, fixture, function (err, result) {
+                        return sqlFixtures.create(knex, fixture, function (err, result) {
                             if (err) {
                                 reject(err);
                             }
