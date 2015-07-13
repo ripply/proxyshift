@@ -77,7 +77,7 @@ describe("#/session", function() {
 
             describe('- return 200', function() {
 
-                it('- successfully login', function(done) {
+                beforeEach(function(done) {
                     login(
                         'test_password',
                         password,
@@ -94,17 +94,26 @@ describe("#/session", function() {
                     );
                 });
 
-            });
+                it('- /session', function(done) {
 
-            it('- /logout', function(done) {
+                    request(app)
+                        .get('/session')
+                        .expect(200, done);
 
-                request(app)
-                    .post('/logout')
-                    .expect(200)
-                    .end(function (err, res) {
-                        // TODO VERIFY SESSION CLOSED
-                        done();
-                    });
+                });
+
+                it('- /logout', function(done) {
+
+                    request(app)
+                        .post('/logout')
+                        .expect(200)
+                        .end(function (err, res) {
+                            request(app)
+                                .get('/session')
+                                .expect(401, done);
+                        });
+
+                });
 
             });
 
