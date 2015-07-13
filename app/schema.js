@@ -272,6 +272,12 @@ var Schema = {
             nullable: false,
             // TODO: If we have one database for the entire site it doesn't make sense to have this be unique, each company can have identically named places
             unique: false
+        },
+        group_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'groups',
+            onDelete: cascade
         }
     },
     AreaLocation: {
