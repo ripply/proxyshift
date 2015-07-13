@@ -241,6 +241,28 @@ var Schema = {
             nullable: false
         }
     },
+    SubLocation: {
+        id: {
+            type: increments
+        },
+        title: {
+            type: string,
+            nullable: false,
+            unique: false
+        },
+        description: {
+            type: string,
+            nullable: false,
+            unique: false
+        },
+        location_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'locations',
+            onDeleet: cascade,
+            nullable: false
+        }
+    },
     Area: {
         id: {
             type: increments
