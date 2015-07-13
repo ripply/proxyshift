@@ -11,11 +11,13 @@ module.exports = function(app, settings){
     // GET /new - get new shifts
     // GET /open - get open shifts
     // GET /:id/permissions - get your permissions for this location
-    // GET /:id/permissions/:id - get permissions for user
+    // GET /:id/permissions/:id/ - get permissions for user
     // POST /shift - create a shift for this location
+    // POST /:id/permissions/:id/users/:id - add user to location with permissions: also will update a users permission if they already have one set for this location
     // PATCH /:id - update a location
     // PATCH /:id/permissions/:id - update a users permissions
     // DELETE /:id - delete a location
+    // DELETE /:id/users/:id - remove a user from a location
 
     app.use(locations.route, locationsRouter);
 
