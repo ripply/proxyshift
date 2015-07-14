@@ -59,11 +59,56 @@ module.exports = function(app, roles) {
                                                             // the action will never execute since the action is different
                                                             // this means that you can have it setup for very specific routes though
 
-                                    roles.use(fullRoleActionText, fullRoute, subRoute);
+                                    if (typeof auth == 'function') {
+                                        // auth is a function which means
+                                        // we don't have to do anything special
+                                        roles.use(fullRoleActionText, fullRoute, auth);
+                                        app[verb](fullRoute, user.can(fullRoleActionText));
+                                    } else if (typeof auth == 'strring') {
+                                        // this means that we should use this string
+                                        // in place of the fullRoleActionText we
+                                        // are creating.
+                                        // the purpose of this is to allow reuse of
+                                        // auth code and to allow simple naming of
+                                        // requirements
+                                        app[verb](fullRoute, user.can(auth));
+                                    } else if (auth instanceof Array) {
+                                        // should be an array of strings
+                                        // we sort the list first then we flatten
+                                        // the list into a string
+                                        // the string becomes the lookup key.
+                                        // this lets us define special auth lookups for
+                                        // each item individually and then when they
+                                        // are combined.
+                                        // if there is no rule for handling all items
+                                        // then each item is setup in a chain for sequential
+                                        // matching
+                                        auth.sort();
+                                        var combinedRoleName = auth.reduce(function(previousValue, currentValue, index, array) {
+                                            if (index > 0) {
+                                                previousValue += " ";
+                                            }
 
-                                    app[verb](fullRoute, user.can(fullRoleActionText));
+                                            previousValue += currentValue;
+
+                                            return previousValue;
+                                        }, '');
+
+                                        if (true) {
+                                            app[verb](fullRoute, user.can(combinedRoleName));
+                                        } else {
+                                            _.each(auth, function(individualAuthRole) {
+                                                app[verb](fullRoute, individualAuthRole);
+                                            });
+                                        }
+                                    }
+
+
+
+
                                 }
 
+                                console.log(fullRoute + " -> " + subRoute);
                                 // setup actual route now
                                 app[verb](fullRoute, subRoute);
                             }
