@@ -15,25 +15,14 @@ module.exports = function(app, roles) {
 
     var user = roles;
 
+    var verbs = [
+        'get',
+        'post',
+        'patch',
+        'delete'
+    ];
+
     app.use(roles.middleware());
-
-    var rolePaths = {
-        'index': '/',
-        'getById': '/:id',
-        'postCreate': '/',
-        'putCreate': '/',
-        'patch': '/',
-        'delete': '/'
-    };
-
-    var actionToVerb = {
-        'index': 'get',
-        'getById': 'get',
-        'postCreate': 'post',
-        'putCreate': 'put',
-        'patch': 'patch',
-        'delete': 'delete'
-    };
 
     _.each(controllers, function(controller) {
         if (controller.hasOwnProperty('route')) {
@@ -43,26 +32,44 @@ module.exports = function(app, roles) {
                 console.log("WARNING: Route (" + route + ") ends with / auth roles may get messed up");
             }
 
-            _.each(rolePaths, function(path, roleAction) {
+            _.each(_.keys(controller), function(possibleRoute) {
+                // check if key could be a route
+                // a route will be an object
+                if (possibleRoute instanceof Object) {
+                    _.each(_.keys(possibleRoute), function(verb) {
+                        verb = verb.toLowerCase();
 
-                var controllerMethod = "auth" + (roleAction.charAt(0).toUpperCase() + roleAction.slice(1));
+                        if (verb instanceof Object && verbs.contains(verb)) {
+                            // verb!!
+                            // check if they have an auth property
+                            var auth = verb.auth;
+                            var subRoute = verb.route;
 
-                if (controller.hasOwnProperty(controllerMethod)) {
+                            var fullRoute = route + subRoute;
 
-                    var fullRoute = route + path;
+                            if (subRoute !== undefined) {
+                                if (auth !== undefined) {
+                                    // create action name for auth
+                                    // action name will essentially just be the verb + route
+                                    var action = verb + " " + fullRoute;
 
-                    var fullRoleActionText = (controllerMethod + " " + fullRoute)
-                        .replace(":", ";"); // due to bug somewhere, if there is a colon in the action name
-                                            // it will be converted to the path param which means
-                                            // the action will never execute since the action is different
-                                            // this means that you can have it setup for very specific routes though
+                                    var fullRoleActionText = action
+                                        .replace(":", ";"); // due to bug somewhere, if there is a colon in the action name
+                                                            // it will be converted to the path param which means
+                                                            // the action will never execute since the action is different
+                                                            // this means that you can have it setup for very specific routes though
 
-                    // setup action for role
-                    roles.use(fullRoleActionText, fullRoute, controller[controllerMethod]);
-                    // setup middleware for the route to use the new action
-                    app[actionToVerb[roleAction]](fullRoute, user.can(fullRoleActionText));
+                                    roles.use(fullRoleActionText, fullRoute, subRoute);
+
+                                    app[verb](fullRoute, user.can(fullRoleActionText));
+                                }
+
+                                // setup actual route now
+                                app[verb](fullRoute, subRoute);
+                            }
+                        }
+                    });
                 }
-
             });
         }
     });

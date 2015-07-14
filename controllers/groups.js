@@ -4,7 +4,7 @@ var models = require('../app/models'),
 module.exports = {
     route: '/api/groups',
     '/': {
-        'get': {
+        'get': { // list all groups a part of
             // auth: // anyone can query what groups they are a part of/own
             route: function(req, res) {
                 models.Group.forge({id: req.params.id})
@@ -62,7 +62,7 @@ module.exports = {
     },
     '/:id': {
         'get': {
-            auth: function (req, act) {
+            auth: function (req, act) { // owner/member
                 // check if the user has access to this group
                 // the user will be a part of the group
                 // or own the group
@@ -114,7 +114,8 @@ module.exports = {
                     });
             }
         },
-        'patch': {
+        'patch': { // update a group and group settings
+            // auth: // must be owner or privileged member
             route: function(req, res) {
                 console.log(req.body);
                 models.Group.forge({id: req.params.id})
@@ -136,6 +137,7 @@ module.exports = {
             }
         },
         'delete': {
+            // auth: // must be group owner
             route: function(req, res) {
                 models.Group.forge({id: req.params.id})
                     .fetch({require: true})
@@ -155,19 +157,88 @@ module.exports = {
         }
     },
     '/:id/classes': {
-        'get': {
+        'get': { // get list of all class types
             // auth: // must be a member/owner of the group
         },
-        'post': {
+        'post': { // create new class for group
             // auth: // must be an owner or privileged group member
         }
     },
     '/:id/classes/:classid': {
-        'get': {
+        'get': { // get info about a class type
             // auth: // must be a member/owner of the group
         },
-        'patch': {
+        'patch': { // update class type in group
             // auth: // must be an owner or privileged group member
         }
+    },
+    ':id/users': {
+        'get': { // get all group members
+            // auth: // owner/privileged member
+        }
+    },
+    ':id/users/:userid': {
+        'get': { // get basic group member info
+            // auth: // must be owner owner of group or group member
+        },
+        'delete': { // remove user from group
+            // auth: // privileged member or owner
+        }
+    },
+    ':id/users/:userid/permissions': {
+        'get': { // get a users group permissions
+            // auth: // owner/member
+        }
+    },
+    ':id/users/:userid/permissions/:id': {
+        'post': { // add user with permission level to group
+            // auth: // owner/privileged group member
+        },
+        'patch': { // update a users permission set
+            // auth: // owner/privileged group member
+        }
+    },
+    ':id/locations': {
+        'get': { // get list of all locations in group
+            // auth: // group member/owner
+        },
+        'post': { // create new location in group
+            // auth: // group owner/privileged member
+        }
+    },
+    ':id/locations/:id': {
+        'delete': { // remove location from group
+            // auth: // group owner/privileged member
+        }
+    },
+    ':id/areas': {
+        'get': { // get all areas attached
+            // auth: // owner/member
+        },
+        'post': { // create an area
+            // auth: // owner/privileged member
+        }
+    },
+    ':id/areas/:id': {
+        'delete': { // remove an area from this group
+            // auth: // owner/privileged member
+        }
+    },
+    ':id/permissions': {
+        'get': { // get all permission sets
+            // auth: // owner/member
+        },
+        'post': { // create a permission set
+            // auth: // owner/privileged member
+        }
+    },
+    ':id/permissions/:id': {
+        'patch': { // update a group permission set
+            // auth: // owner/privileged member
+        },
+        'delete': { // remove a permission set
+            // auth: // owner/privileged member
+        }
     }
-};
+}
+;
