@@ -2,8 +2,8 @@ module.exports = function(app, settings){
 
     var url = require('url'),
         express = require('express'),
-        shifts = require('../controllers/shifts'),
-        shiftsRouter = express.Router();
+        shifts = require('../controllers/shifts');
+        //shiftsRouter = express.Router();
 
     //shiftsRouter.get('/:id', shifts.getById);
     // TODO: APPLY FOR SHIFT

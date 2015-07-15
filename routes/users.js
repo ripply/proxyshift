@@ -2,8 +2,8 @@ module.exports = function(app, settings){
 
     var url = require('url'),
         express = require('express'),
-        users = require('../controllers/users'),
-        usersRouter = express.Router();
+        users = require('../controllers/users');
+        //usersRouter = express.Router();
 
     /*usersRouter.get('/', users.index);
     usersRouter.get('/:id', users.getById);

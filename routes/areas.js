@@ -12,6 +12,6 @@ module.exports = function(app, settings){
     // DELETE /:id - delete an area
     // DELETE /:id/location/:id - remove a location from an area
 
-    app.use(locations.route, locationsRouter);
+    //app.use(locations.route, locationsRouter);
 
 };

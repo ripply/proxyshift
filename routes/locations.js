@@ -2,8 +2,8 @@ module.exports = function(app, settings){
 
     var url = require('url'),
         express = require('express'),
-        locations = require('../controllers/locations'),
-        locationsRouter = express.Router();
+        locations = require('../controllers/locations');
+        //locationsRouter = express.Router();
 
     // GET / - list of all locations you have access to
     // GET /:id - get info about a location
@@ -19,6 +19,6 @@ module.exports = function(app, settings){
     // DELETE /:id - delete a location
     // DELETE /:id/users/:id - remove a user from a location
 
-    app.use(locations.route, locationsRouter);
+    //app.use(locations.route, locationsRouter);
 
 };
