@@ -53,7 +53,7 @@ module.exports = function(app, roles) {
                                     actionName = flattenArray(actionName).toLowerCase();
                                 }
                                 console.log(actionName + " => " + authFunction);
-                                app.use(actionName, authFunction);
+                                roles.use(actionName, authFunction);
                             }
                         });
                     } else {
@@ -111,7 +111,6 @@ module.exports = function(app, roles) {
                                                 var combinedRoleName = flattenArray(auth);
 
                                                 if (true) {
-                                                    //console.log("USER.CAN(" + combinedRoleName + ");");
                                                     app[verb](fullRoute, user.can(combinedRoleName));
                                                 } else {
                                                     _.each(auth, function (individualAuthRole) {
@@ -138,10 +137,14 @@ module.exports = function(app, roles) {
 
 };
 
-function flattenArray(stringArray) {
+function flattenArray(stringArray, separator) {
+    if (separator === undefined ||
+        separator === null) {
+        separator = " ";
+    }
     return stringArray.reduce(function (previousValue, currentValue, index) {
         if (index > 0) {
-            previousValue += " ";
+            previousValue += separator;
         }
 
         previousValue += currentValue;

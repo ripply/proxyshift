@@ -1,10 +1,8 @@
-var groupOwnerOrGroupMember = ['group owner', 'group member'];
-
 module.exports = {
 
     auth: {
 
-        groupOwnerOrGroupMemeber: function (req, act) { // owner/member
+        'group member group owner': function (req, act) { // owner/member
             // check if the user has access to this group
             // the user will be a part of the group
             // or own the group
@@ -28,11 +26,9 @@ module.exports = {
             })
                 .fetch({require: true})
                 .then(function (group) {
-                    console.log("SUP YEA COMEON IN");
                     return true;
                 })
                 .catch(function (err) {
-                    console.log("HEYY!");
                     return false;
                 });
         }
