@@ -35,19 +35,22 @@ module.exports = function(app, roles) {
             _.each(_.keys(controller), function(possibleRoute) {
                 // check if key could be a route
                 // a route will be an object
-                if (possibleRoute instanceof Object) {
-                    _.each(_.keys(possibleRoute), function(verb) {
+                var possibleRouteValue = controller[possibleRoute];
+                if (possibleRouteValue instanceof Object) {
+                    _.each(_.keys(possibleRouteValue), function(verb) {
                         verb = verb.toLowerCase();
 
-                        if (verb instanceof Object && verbs.contains(verb)) {
+                        var authAndRouteObject = possibleRouteValue[verb];
+                        if (authAndRouteObject instanceof Object && verbs.indexOf(verb) >= 0) {
                             // verb!!
                             // check if they have an auth property
-                            var auth = verb.auth;
-                            var subRoute = verb.route;
+                            var auth = authAndRouteObject.auth;
+                            var subRoute = authAndRouteObject.route;
 
-                            var fullRoute = route + subRoute;
+                            var fullRoute = route + possibleRoute;
 
-                            if (subRoute !== undefined) {
+                            if (subRoute !== undefined &&
+                                typeof subRoute == 'function') {
                                 if (auth !== undefined) {
                                     // create action name for auth
                                     // action name will essentially just be the verb + route
@@ -64,7 +67,7 @@ module.exports = function(app, roles) {
                                         // we don't have to do anything special
                                         roles.use(fullRoleActionText, fullRoute, auth);
                                         app[verb](fullRoute, user.can(fullRoleActionText));
-                                    } else if (typeof auth == 'strring') {
+                                    } else if (typeof auth == 'string') {
                                         // this means that we should use this string
                                         // in place of the fullRoleActionText we
                                         // are creating.
@@ -98,17 +101,15 @@ module.exports = function(app, roles) {
                                             app[verb](fullRoute, user.can(combinedRoleName));
                                         } else {
                                             _.each(auth, function(individualAuthRole) {
-                                                app[verb](fullRoute, individualAuthRole);
+                                                app[verb](fullRoute, user.can(individualAuthRole));
                                             });
                                         }
                                     }
 
 
-
-
                                 }
 
-                                console.log(fullRoute + " -> " + subRoute);
+                                console.log(verb + ": " + fullRoute + " -> " + subRoute);
                                 // setup actual route now
                                 app[verb](fullRoute, subRoute);
                             }

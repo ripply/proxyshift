@@ -15,7 +15,7 @@ module.exports = {
                     .catch(function (err) {
                         res.status(500).json({error: true, data: {message: err.message}});
                     });
-            },
+            }
         },
         'post': { // create an account
             // auth: // anyone not logged in
