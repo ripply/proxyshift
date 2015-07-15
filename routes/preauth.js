@@ -97,6 +97,6 @@ module.exports = function(app, settings){
     });
 
     // creating users is ok to do without being logged in
-    app.post('/api/users', users.add);
+    app.post('/api/users', users['/'].post.route);
 
 };
