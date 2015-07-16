@@ -60,7 +60,7 @@ module.exports = {
             }
         }
     },
-    '/:id': {
+    '/:group_id': {
         'get': {
             auth: ['group owner', 'group member'],
             route: function (req, res) {
@@ -86,7 +86,7 @@ module.exports = {
             }
         },
         'patch': { // update a group and group settings
-            // auth: // must be owner or privileged member
+            auth: ['group owner', 'privileged group member'], // must be owner or privileged member
             route: function(req, res) {
                 console.log(req.body);
                 models.Group.forge({id: req.params.id})
@@ -108,7 +108,7 @@ module.exports = {
             }
         },
         'delete': {
-            // auth: // must be group owner
+            auth: 'group owner', // must be group owner
             route: function(req, res) {
                 models.Group.forge({id: req.params.id})
                     .fetch({require: true})
@@ -127,88 +127,88 @@ module.exports = {
             }
         }
     },
-    '/:id/classes': {
+    '/group_id/classes': {
         'get': { // get list of all class types
-            // auth: // must be a member/owner of the group
+            auth: ['group owner', 'group member'] // must be a member/owner of the group
         },
         'post': { // create new class for group
-            // auth: // must be an owner or privileged group member
+            auth: ['group owner', 'privileged group member'] // must be an owner or privileged group member
         }
     },
-    '/:id/classes/:classid': {
+    '/group_id/classes/:classid': {
         'get': { // get info about a class type
-            // auth: // must be a member/owner of the group
+            auth: ['group owner', 'group member'] // must be a member/owner of the group
         },
         'patch': { // update class type in group
-            // auth: // must be an owner or privileged group member
+            auth: ['group owner', 'privileged group member'] // must be an owner or privileged group member
         }
     },
-    ':id/users': {
+    'group_id/users': {
         'get': { // get all group members
-            // auth: // owner/privileged member
+            auth: ['group owner', 'privileged group member'] // owner/privileged member
         }
     },
-    ':id/users/:userid': {
+    'group_id/users/:user_id': {
         'get': { // get basic group member info
-            // auth: // must be owner owner of group or group member
+            auth: ['group owner', 'group member'] // must be owner owner of group or group member
         },
         'delete': { // remove user from group
-            // auth: // privileged member or owner
+            auth: ['group owner', 'privileged group member'] // privileged member or owner
         }
     },
-    ':id/users/:userid/permissions': {
+    'group_id/users/:user_id/permissions': {
         'get': { // get a users group permissions
-            // auth: // owner/member
+            auth: ['group owner', 'group member'] // owner/member
         }
     },
-    ':id/users/:userid/permissions/:id': {
+    'group_id/users/:user_id/permissions/:permission_id': {
         'post': { // add user with permission level to group
-            // auth: // owner/privileged group member
+            auth: ['group owner', 'privileged group member'] // owner/privileged group member
         },
         'patch': { // update a users permission set
-            // auth: // owner/privileged group member
+            auth: ['group owner', 'privileged group member'] // owner/privileged group member
         }
     },
-    ':id/locations': {
+    'group_id/locations': {
         'get': { // get list of all locations in group
-            // auth: // group member/owner
+            auth: ['group owner', 'group member'] // group member/owner
         },
         'post': { // create new location in group
-            // auth: // group owner/privileged member
+            auth: ['group owner', 'privileged group member'] // group owner/privileged member
         }
     },
-    ':id/locations/:id': {
+    'group_id/locations/:location_id': {
         'delete': { // remove location from group
-            // auth: // group owner/privileged member
+            auth: ['group owner', 'privileged group member'] // group owner/privileged member
         }
     },
-    ':id/areas': {
+    'group_id/areas': {
         'get': { // get all areas attached
-            // auth: // owner/member
+            auth: ['group owner', 'group member'] // owner/member
         },
         'post': { // create an area
-            // auth: // owner/privileged member
+            auth: ['group owner', 'privileged group member'] // owner/privileged member
         }
     },
-    ':id/areas/:id': {
+    'group_id/areas/:area_id': {
         'delete': { // remove an area from this group
-            // auth: // owner/privileged member
+            auth: ['group owner', 'privileged group member'] // owner/privileged member
         }
     },
-    ':id/permissions': {
+    'group_id/permissions': {
         'get': { // get all permission sets
-            // auth: // owner/member
+            auth: ['group owner', 'group member'] // owner/member
         },
         'post': { // create a permission set
-            // auth: // owner/privileged member
+            auth: ['group owner', 'privileged group member'] // owner/privileged member
         }
     },
-    ':id/permissions/:id': {
+    'group_id/permissions/:permission_id': {
         'patch': { // update a group permission set
-            // auth: // owner/privileged member
+            auth: ['group owner', 'privileged group member'] // owner/privileged member
         },
         'delete': { // remove a permission set
-            // auth: // owner/privileged member
+            auth: ['group owner', 'privileged group member'] // owner/privileged member
         }
     }
 }
