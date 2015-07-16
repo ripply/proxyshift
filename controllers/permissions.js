@@ -4,6 +4,10 @@ module.exports = {
 
     auth: {
 
+        'anyone': function(req, act) {
+            return true
+        },
+
         'group member group owner': function(req, act) { // must be a group owner/member
             // check if the user has access to this group
             // the user will be a part of the group

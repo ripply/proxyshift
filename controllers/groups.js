@@ -5,7 +5,7 @@ module.exports = {
     route: '/api/groups',
     '/': {
         'get': { // list all groups a part of
-            // auth: // anyone can query what groups they are a part of/own
+            auth: ['anyone'], // anyone can query what groups they are a part of/own
             route: function(req, res) {
                 models.Group.forge({id: req.params.id})
                     .fetch()
@@ -23,7 +23,7 @@ module.exports = {
             }
         },
         'post': {
-            // auth: // anyone can create a group
+            auth: ['anyone'], // anyone can create a group
             route: function (req, res) {
                 Bookshelf.transaction(function (t) {
                     return models.GroupSetting.forge({})
@@ -108,7 +108,7 @@ module.exports = {
             }
         },
         'delete': {
-            auth: 'group owner', // must be group owner
+            auth: ['group owner'], // must be group owner
             route: function(req, res) {
                 models.Group.forge({id: req.params.id})
                     .fetch({require: true})
