@@ -37,7 +37,6 @@ module.exports = function(app, roles) {
             }
 
             _.each(_.keys(controller), function(possibleRoute) {
-                console.log("!?!?!?!:" + possibleRoute);
                 // check if key could be a route
                 // a route will be an object
                 var possibleRouteValue = controller[possibleRoute];
@@ -52,7 +51,6 @@ module.exports = function(app, roles) {
                                     actionName.sort();
                                     actionName = flattenArray(actionName).toLowerCase();
                                 }
-                                console.log(actionName + " => " + authFunction);
                                 roles.use(actionName, authFunction);
                             }
                         });
