@@ -1,4 +1,8 @@
 var _ = require('underscore');
+var Promise = require('bluebird');
+
+// Keeps track of custom authentication methods that get setup
+var authRoutes = {};
 
 var controllers = [
     require('../../controllers/permissions'),
@@ -7,12 +11,140 @@ var controllers = [
     require('../../controllers/users')
 ];
 
+function executeAuthRule(rule, req, res) {
+
+}
+
+// ['admin', 'or', 'user']
+// ['admin', 'and', ['admin', 'or', 'user']]
+function process(req, res, array) {
+    var stack = [];
+    _.each(array, function(item, index) {
+        if (stack.length > 0) {
+            stack.push(Promise.resolve(stack.pop()).then(function(top_) {
+                Promise.resolve(top).then(function(top) {
+                    if (typeof top == 'function') {
+                        // there will be a left hand side argument below the function
+                        var fn = stack.pop();
+                        if (stack.length == 0) {
+                            throw new Error("or and functions must have left hand argument");
+                        }
+                        var rhs = item;
+                        stack.push(Promise.resolve(stack.pop).then(function(lhs) {
+                            return fn(lhs, rhs);
+                        }));
+                    } else {
+                        if (typeof item === 'string') {
+                            var next = null;
+                            if (item == 'or' ||
+                                item == '||') {
+                                next = function(lhs_, rhs_) {
+                                    return Promise.resolve(lhs_).then(function(lhs) {
+                                        return Promise.resolve(rhs_).then(function(rhs) {
+                                            var left;
+                                            var right;
+                                            if (lhs == true) {
+                                                left = true;
+                                            } else if (lhs === false) {
+                                                left = false;
+                                            } else if (lhs === undefined) {
+                                                // undefined means go to next
+                                                left = true;
+                                            }
+
+                                            if (rhs == true) {
+                                                right = true;
+                                            } else if (rhs === false) {
+                                                right = false;
+                                            } else if (rhs === undefined) {
+                                                // undefined means go to next
+                                                right = true;
+                                            }
+
+                                            return left || right;
+                                        });
+                                    });
+                                };
+                            } else if (item == 'and' ||
+                                item == '&&') {
+                                next = function(lhs_, rhs_) {
+                                    return Promise.resolve(lhs_).then(function(lhs) {
+                                        return Promise.resolve(rhs_).then(function(rhs) {
+                                            var left;
+                                            var right;
+                                            if (lhs == true) {
+                                                left = true;
+                                            } else if (lhs === false) {
+                                                left = false;
+                                            } else if (lhs === undefined) {
+                                                // undefined means go to next
+                                                left = true;
+                                            }
+
+                                            if (rhs == true) {
+                                                right = true;
+                                            } else if (rhs === false) {
+                                                right = false;
+                                            } else if (rhs === undefined) {
+                                                // undefined means go to next
+                                                right = true;
+                                            }
+
+                                            return left && right;
+                                        });
+                                    });
+                                };
+                            } else {
+                                if (top !== true && top !== undefined) {
+                                    // previous result was false
+                                    // continue returning false until the end
+                                    next = false;
+                                } else {
+                                    next = executeAuthRule(item, req, res);
+                                }
+                            }
+                            stack.push(next);
+                        } else if (item instanceof Array) {
+                            // item is an array, recurse
+                            // result will be a Promise that resolves
+                            // to
+                            var recursedProcessResult = process(req, res, array);
+                            stack.push(recursedProcessResult);
+                        } else {
+                            throw new Error("Auth array cannot have a '" + typeof item + "' in it");
+                        }
+                    }
+                });
+            }));
+        } else {
+            stack.push(item);
+        }
+    });
+
+    return Promise.resolve(stack.pop()).then(function(result) {
+        // the only time that the stack will have more than one item
+        // is when processing an 'or' or 'and' function
+        // this means, if there is more than 1 item on the stack
+        // after promise resolution then there is a function without
+        // a right hand argument, so that won't work anyway
+        if (stack.length > 0) {
+            throw new Error("Auth permissions syntax is invalid");
+        }
+
+        return result;
+    });
+}
+
 /**
  * Sets up roles for routes
  * @param app require('express')
  * @param roles require('connect-roles')
  */
 module.exports = function(app, roles) {
+
+    var special = {
+
+    };
 
     var user = roles;
 
@@ -51,6 +183,8 @@ module.exports = function(app, roles) {
                                     actionName.sort();
                                     actionName = flattenArray(actionName).toLowerCase();
                                 }
+                                // keep track of auth function for custom && and || of routes
+                                authRoutes[actionName] = authFunction;
                                 roles.use(actionName, authFunction);
                             }
                         });
@@ -92,7 +226,7 @@ module.exports = function(app, roles) {
                                                 // are creating.
                                                 // the purpose of this is to allow reuse of
                                                 // auth code and to allow simple naming of
-                                                // requirements
+                                                // requirements22222222
                                                 //app[verb](fullRoute, user.can(auth));
                                             } else if (auth instanceof Array) {
                                                 // should be an array of strings
@@ -105,6 +239,10 @@ module.exports = function(app, roles) {
                                                 // if there is no rule for handling all items
                                                 // then each item is setup in a chain for sequential
                                                 // matching
+
+                                                // check if the array contains '&&' or '||'
+
+
                                                 auth.sort();
                                                 var combinedRoleName = flattenArray(auth);
 
