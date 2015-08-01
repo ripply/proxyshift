@@ -11,35 +11,79 @@ var controllers = [
     require('../../controllers/users')
 ];
 
-function executeAuthRule(rule, req, res) {
+function executeAuthRule(rule, req) {
+    if (!authRoutes.hasOwnProperty(rule)) {
+        throw new Error("Unknown auth rule: '" + rule + "'");
+    }
+    return authRoutes[rule](req, rule);
+}
 
+var processCount = 0;
+function getNextProcessName() {
+    return "Complex Auth Rule #" + ++processCount;
 }
 
 // ['admin', 'or', 'user']
 // ['admin', 'and', ['admin', 'or', 'user']]
-function process(req, res, array) {
-    var stack = [];
-    _.each(array, function(item, index) {
-        if (stack.length > 0) {
+function process(act, array) {
+    if (act === undefined ||
+        act === null) {
+        throw new Error("Invalid action specified '" + act + "'");
+    }
+
+    if (array === undefined ||
+        array === null) {
+        throw new Error("Invalid array specified: '" + array + "'");
+    }
+
+    if (typeof array == 'boolean') {
+        return function(_) {
+            return array;
+        }
+    }
+
+    // if array is a single item
+    // or an array of length 1
+    // we need to make it an array of length 2
+    // by adding null to the end of it
+    // this lets us push the first item onto the stack
+    // and then let the main logic execute in the loop
+    if (!(array instanceof Array)) {
+        array = [array];
+    }
+
+    return function(req) {
+        var stack = [];
+        _.each(array, function(item, index) {
+            if (stack.length == 0) {
+                stack.push(undefined);
+            }
+
             stack.push(Promise.resolve(stack.pop()).then(function(top_) {
-                Promise.resolve(top).then(function(top) {
+                // top_ will never be anything good
+                // it is the result of this Promise, which is undefined
+                // instead, we want the top of the stack during Promise resolution
+                top_ = stack.pop();
+                return Promise.resolve(top_).then(function(top) {
+                    // these promises do not return anything
+                    // they instead push items onto the stack
+
+                    if (stack.length != 0) {
+                        throw new Error("Stack can not have more than one item on it");
+                    }
+                    var next = null;
                     if (typeof top == 'function') {
-                        // there will be a left hand side argument below the function
-                        var fn = stack.pop();
-                        if (stack.length == 0) {
-                            throw new Error("or and functions must have left hand argument");
-                        }
-                        var rhs = item;
-                        stack.push(Promise.resolve(stack.pop).then(function(lhs) {
-                            return fn(lhs, rhs);
-                        }));
+                        var fn = top;
+                        var rhs = process(act, item)(req);
+                        next = Promise.resolve(rhs).then(function(rhsResolved) {
+                            return fn(rhsResolved);
+                        });
                     } else {
                         if (typeof item === 'string') {
-                            var next = null;
                             if (item == 'or' ||
                                 item == '||') {
-                                next = function(lhs_, rhs_) {
-                                    return Promise.resolve(lhs_).then(function(lhs) {
+                                next = function(rhs_) {
+                                    return Promise.resolve(process(act, top)(req)).then(function(lhs) {
                                         return Promise.resolve(rhs_).then(function(rhs) {
                                             var left;
                                             var right;
@@ -68,7 +112,7 @@ function process(req, res, array) {
                             } else if (item == 'and' ||
                                 item == '&&') {
                                 next = function(lhs_, rhs_) {
-                                    return Promise.resolve(lhs_).then(function(lhs) {
+                                    return Promise.resolve(process(act, top)(req)).then(function(lhs) {
                                         return Promise.resolve(rhs_).then(function(rhs) {
                                             var left;
                                             var right;
@@ -100,39 +144,42 @@ function process(req, res, array) {
                                     // continue returning false until the end
                                     next = false;
                                 } else {
-                                    next = executeAuthRule(item, req, res);
+                                    next = executeAuthRule(item, req);
                                 }
                             }
-                            stack.push(next);
                         } else if (item instanceof Array) {
                             // item is an array, recurse
                             // result will be a Promise that resolves
-                            // to
-                            var recursedProcessResult = process(req, res, array);
-                            stack.push(recursedProcessResult);
+                            next = process(act, item)(req);
                         } else {
-                            throw new Error("Auth array cannot have a '" + typeof item + "' in it");
+                            throw new Error("Auth array cannot have a '" + typeof item + "' in it\n" + item);
                         }
                     }
+                    stack.push(next);
                 });
             }));
-        } else {
-            stack.push(item);
-        }
-    });
+        });
 
-    return Promise.resolve(stack.pop()).then(function(result) {
-        // the only time that the stack will have more than one item
-        // is when processing an 'or' or 'and' function
-        // this means, if there is more than 1 item on the stack
-        // after promise resolution then there is a function without
-        // a right hand argument, so that won't work anyway
-        if (stack.length > 0) {
-            throw new Error("Auth permissions syntax is invalid");
-        }
-
-        return result;
-    });
+        return Promise.resolve(stack.pop()).then(function (result) {
+            function pop() {
+                if (stack.length != 0) {
+                    return Promise.resolve(stack.pop()).then(function(result) {
+                        if (result != true) {
+                            return false;
+                        }
+                        if (stack.length != 0) {
+                            return pop();
+                        } else {
+                            return result;
+                        }
+                    });
+                } else {
+                    return result
+                }
+            }
+            return pop();
+        });
+    };
 }
 
 /**
@@ -241,24 +288,15 @@ module.exports = function(app, roles) {
                                                 // matching
 
                                                 // check if the array contains '&&' or '||'
-
-
-                                                auth.sort();
-                                                var combinedRoleName = flattenArray(auth);
-
-                                                if (true) {
-                                                    app[verb](fullRoute, user.can(combinedRoleName));
-                                                } else {
-                                                    _.each(auth, function (individualAuthRole) {
-                                                        app[verb](fullRoute, user.can(individualAuthRole));
-                                                    });
-                                                }
+                                                var authName = getNextProcessName();
+                                                var authRule = process(authName, auth);
+                                                roles.use(authName, authRule);
+                                                app[verb](fullRoute, user.can(authName));
                                             }
 
 
                                         }
 
-                                        //console.log(verb + ": " + fullRoute + " -> " + subRoute);
                                         // setup actual route now
                                         app[verb](fullRoute, subRoute);
                                     }
