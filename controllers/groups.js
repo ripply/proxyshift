@@ -62,7 +62,7 @@ module.exports = {
     },
     '/:group_id': {
         'get': {
-            auth: ['group owner', 'group member'],
+            auth: ['group member or group owner'],
             route: function (req, res) {
                 var user_id = req.user.id;
                 models.Group.query(function (q) {

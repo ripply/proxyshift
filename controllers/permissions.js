@@ -8,7 +8,8 @@ module.exports = {
             return true
         },
 
-        'group member group owner': function(req, act) { // must be a group owner/member
+        // optimized to make 1 query
+        'group member or group owner': function(req, act) { // must be a group owner/member
             // check if the user has access to this group
             // the user will be a part of the group
             // or own the group
