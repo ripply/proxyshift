@@ -1,66 +1,69 @@
-var validationModule = angular.module('scheduling-app.validation', [
+var validationModule = angular.module('scheduling-app.validation', []);
 
-]);
-validationModule.service('ValidatorDirectiveGeneratorService', [
-    function() {
-        angular.forEach(window.Validations, function(modelName) {
-            var capitalizedModelName = capitalizeFirstLetter(modelName);
-            angular.forEach(modelName, function(validationEntries, validationKey) {
-                var validationDirectives = {};
+if (window.Validations === undefined) {
+    throw new Error("There are no validations! Include them before this script");
+}
 
-                if (!(validationEntries instanceof Array)) {
-                    validationEntries = [validationEntries];
-                }
+angular.forEach(window.Validations, function (modelValues, modelName) {
+    var capitalizedModelName = capitalizeFirstLetter(modelName);
 
-                angular.forEach(validationEntries, function(validationEntry) {
-                    console.log("Validation " + validation);
-                    if (!validationEntry.hasOwnProperty('validator')) {
-                        throw new Error("Unknown validator for model '" + modelName + "' - '" + validationEntry + "'");
-                    }
+    angular.forEach(modelValues, function (validationEntries, validationKey) {
+        var validationDirectives = {};
 
-                    var validator = validationEntry.validator;
+        if (!(validationEntries instanceof Array)) {
+            validationEntries = [validationEntries];
+        }
 
-                    var validationName = 'validation' + capitalizedModelName + capitalizeFirstLetter(validator);
+        angular.forEach(validationEntries, function (validationEntry) {
 
-                    var validationFunction = null;
-                    switch (validationName) {
-                        case 'notEmpty':
-                            validationName = 'required';
-                            validationFunction = function(modelValue) {
-                                if (modelValue === null || modelValue === undefined) {
-                                    return false;
-                                }
+            if (!validationEntry.hasOwnProperty('validator')) {
+                throw new Error("Unknown validator for model '" + modelName + "' - '" + validationEntry + "'");
+            }
 
-                                if (typeof modelValue == 'string') {
-                                    return modelValue.length > 0;
-                                }
+            var validator = validationEntry.validator;
 
-                                return true;
-                            };
-                            break;
-                        default:
-                            throw new Error("Unhandled validator: '" + validator + "'");
-                    }
+            var validationName = 'validation' + capitalizedModelName + capitalizeFirstLetter(validator);
 
-                    validationDirectives[validationName] = validationFunction;
-                });
-            });
-
-            validationModule
-                .directive('validation' + capitalizedModelName, function() {
-                    return {
-                        restrict: 'A',
-                        require: 'ngModel',
-                        link: function(scope, element, attributes, ngModel) {
-                            angular.forEach(validationDirectives)
-                            ngModel.$validators[validationName] = validationFunction;
+            var validationFunction = null;
+            switch (validator) {
+                case 'notEmpty':
+                    validationName = 'required';
+                    validationFunction = function (modelValue) {
+                        if (modelValue === null || modelValue === undefined) {
+                            return false;
                         }
+
+                        if (typeof modelValue == 'string') {
+                            return modelValue.length > 0;
+                        }
+
+                        return true;
                     };
-                });
+                    break;
+                default:
+                    throw new Error("Unhandled validator: '" + validator + "'");
+            }
+
+            validationDirectives[validationName] = validationFunction;
         });
-    }
-]);
+
+        var directiveName = 'validate' + capitalizedModelName + capitalizeFirstLetter(validationKey);
+
+        validationModule
+            .directive(directiveName, function () {
+                return {
+                    restrict: 'A',
+                    require: 'ngModel',
+                    link: function (scope, element, attributes, ngModel) {
+                        angular.forEach(validationDirectives, function (validationFunction, validationName) {
+                            ngModel.$validators[validationName] = validationFunction;
+                        });
+                    }
+                };
+            });
+    });
+});
 
 function capitalizeFirstLetter(string) {
-    string.charAt(0).toUpperCase() + string.slice(1);
+    return string.charAt(0).toUpperCase() + string.slice(1);
 }

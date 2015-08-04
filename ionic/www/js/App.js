@@ -15,7 +15,8 @@ angular.module('scheduling-app', [
     'scheduling-app.cookies',
     'scheduling-app.config',
     'scheduling-app.services.routing.statehistory',
-    'scheduling-app.services.initialize'
+    'scheduling-app.services.initialize',
+    'scheduling-app.validation'
 ])
 
     .run([
