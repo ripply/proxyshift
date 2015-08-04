@@ -29,7 +29,10 @@ angular.module('scheduling-app.controllers')
                 pagernumber: null
             };
 
-            $scope.doSignup = function() {
+            $scope.doSignup = function(valid) {
+                if (!valid) {
+                    return;
+                }
                 UsersModel.post($scope.user)
                     .then(function() {
                         console.log("Successfully created user?");

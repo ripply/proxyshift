@@ -7,16 +7,22 @@
     </ion-header-bar>
     <ion-content>
         <div ng-controller="SignupController">
-            <form ng-submit="doSignup()">
+            <form name="signupForm" ng-submit="doSignup(signupForm.$valid)" novalidate>
                 <div class="list">
                     <label class="item item-input">
                         <span class="input-label">Username</span>
-                        <input type="text" ng-model="user.username">
+                        <input type="text" name="username" ng-model="user.username" validate-user-username>
                     </label>
+                    <div ng-if="signupForm.$dirty" ng-messages="signupForm.username.$error">
+                        <div ng-message="required">Username is required</div>
+                    </div>
                     <label class="item item-input">
                         <span class="input-label">First Name</span>
-                        <input type="text" ng-model="user.firstname">
+                        <input type="text" name="firstname" ng-model="user.firstname" validate-user-firstname>
                     </label>
+                    <div ng-if="signupForm.$dirty" ng-messages="signupForm.firstname.$error">
+                        <div ng-message="required">Firstname is required</div>
+                    </div>
                     <label class="item item-input">
                         <span class="input-label">Last Name</span>
                         <input type="text" ng-model="user.lastname">
