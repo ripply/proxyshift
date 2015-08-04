@@ -1,4 +1,6 @@
-var validationModule = angular.module('scheduling-app.validation', []);
+var validationModule = angular.module('scheduling-app.validation', [
+    'ngMessages'
+]);
 
 if (window.Validations === undefined) {
     throw new Error("There are no validations! Include them before this script");
