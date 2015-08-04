@@ -11,6 +11,9 @@ var mongoose = require('mongoose'),
     mkdirp = require('mkdirp'),
     path = require('path'),
     Promise = require('bluebird'),
+    validations = require('../ionic/www/js/validation.js'),
+    Validator = require('bookshelf-validator'),
+    ValidationError = Validator.ValidationError,
     SALT_WORK_FACTOR = 10;
 
 var db_file = 'data/database.db';
@@ -43,6 +46,7 @@ var knex = require('knex')( {
 });
 
 var Bookshelf = require('bookshelf')(knex);
+Bookshelf.plugin(Validator.plugin);
 
 function lowercaseAndPluralizeModelName(name) {
     // lower case
@@ -600,6 +604,11 @@ _.each(modelNames, function(tableName, modelName) {
         // copy all custom functions into the new model
         _.extend(modelOptions, customModelRelations[modelName]);
     }
+    // setup bookshelf-validator
+    var validationOptions = getValidationOptionsForModelName(modelName);
+    if (validationOptions !== undefined) {
+        modelOptions = _.extend(_.clone(modelOptions), {validation: validationOptions});
+    }
     // create the new model
     models[modelName] = Bookshelf.Model.extend(modelOptions);
     // create the collection
@@ -608,6 +617,14 @@ _.each(modelNames, function(tableName, modelName) {
         model: models[modelName]
     });
 });
+
+function getValidationOptionsForModelName(modelName) {
+    if (validations.hasOwnProperty(modelName)) {
+        return validations[modelName];
+    }
+
+    return undefined;
+}
 
 function consumeRememberMeToken(token, next) {
     console.log("trying to consume token..");

@@ -40,8 +40,8 @@ var Validations = {
 };
 
 // Set validations to global variables client side
-if (window !== undefined) {
+if (typeof window == 'undefined') {
+    module.exports = Validations;
+} else {
     window.Validations = Validations;
 }
-
-module.exports = Validations;
