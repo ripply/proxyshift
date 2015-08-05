@@ -37,11 +37,20 @@ if (global.okToDropTables) {
     console.log("WARNING: Dropping of tables ENABLED");
 }
 
+var dbConnection = {};
+
+if ((global.db_dialect || 'sqlite3') == 'sqlite3') {
+    dbConnection.filename = database;
+} else {
+    dbConnection.host = global.db_host;
+    dbConnection.user = global.db_user;
+    dbConnection.password = global.db_password;
+    dbConnection.database = global.db_database;
+}
+
 var knex = require('knex')( {
     dialect: global.db_dialect || 'sqlite3',
-    connection: {
-        filename: database
-    }
+    connection: dbConnection
     //, debug: true
 });
 
