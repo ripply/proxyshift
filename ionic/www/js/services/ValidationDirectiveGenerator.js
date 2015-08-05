@@ -22,28 +22,31 @@ angular.forEach(window.Validations, function (modelValues, modelName) {
                 throw new Error("Unknown validator for model '" + modelName + "' - '" + validationEntry + "'");
             }
 
-            var validator = validationEntry.validator;
+            var validatorName = validationEntry.validator;
+            var args = validationEntry.args;
 
-            var validationName = 'validation' + capitalizedModelName + capitalizeFirstLetter(validator);
+            var validationName = 'validation' + capitalizedModelName + capitalizeFirstLetter(validatorName);
 
             var validationFunction = null;
-            switch (validator) {
+            switch (validatorName) {
                 case 'notEmpty':
                     validationName = 'required';
-                    validationFunction = function (modelValue) {
-                        if (modelValue === null || modelValue === undefined) {
-                            return false;
-                        }
-
-                        if (typeof modelValue == 'string') {
-                            return modelValue.length > 0;
-                        }
-
-                        return true;
+                    validationFunction = function(modelValue) {
+                        return !/^[\s\t\r\n]*$/.test(validator.toString(modelValue));
                     };
                     break;
                 default:
-                    throw new Error("Unhandled validator: '" + validator + "'");
+                    if (validatorName in validator) {
+                        validationFunction = function(modelValue) {
+                            if (args !== undefined) {
+                                return validator[validatorName].apply(undefined, [modelValue].concat(args));
+                            } else {
+                                return validator[validatorName].call(undefined, modelValue);
+                            }
+                        };
+                    } else {
+                        throw new Error("Unhandled validator: '" + validatorName + "'");
+                    }
             }
 
             validationDirectives[validationName] = validationFunction;
