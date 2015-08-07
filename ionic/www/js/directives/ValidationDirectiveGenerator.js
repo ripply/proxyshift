@@ -16,6 +16,8 @@ angular.forEach(window.Validations, function (modelValues, modelName) {
             validationEntries = [validationEntries];
         }
 
+        messages = {};
+
         angular.forEach(validationEntries, function (validationEntry) {
 
             if (!validationEntry.hasOwnProperty('validator')) {
@@ -24,6 +26,7 @@ angular.forEach(window.Validations, function (modelValues, modelName) {
 
             var validatorName = validationEntry.validator;
             var args = validationEntry.args;
+            var validatorMessage = validationEntry.message;
 
             var validationName = 'validation' + capitalizedModelName + capitalizeFirstLetter(validatorName);
 
@@ -50,6 +53,7 @@ angular.forEach(window.Validations, function (modelValues, modelName) {
             }
 
             validationDirectives[validationName] = validationFunction;
+            messages[validatorName] = validatorMessage;
         });
 
         var directiveName = 'validate' + capitalizedModelName + capitalizeFirstLetter(validationKey);
@@ -66,6 +70,36 @@ angular.forEach(window.Validations, function (modelValues, modelName) {
                     }
                 };
             });
+
+        console.log("Creating directive " + directiveName + "Messages");
+        validationModule
+            .directive(directiveName + 'Messages', [
+                '$compile',
+                function(
+                    $compile
+                ) {
+                    return {
+                        restrict: 'AE',
+                        //require: 'ngMessages',
+                        //compile: function(element, attrs, transclude) {
+                        link: function(scope, element, attributes) {
+                                var template = '';
+                                console.log("WUTUTTTUT");
+                                console.log(messages);
+                                console.log("LSKDJFLKSJFD");
+                                angular.forEach(messages, function(message, name) {
+                                    console.log(name + " => " + message);
+                                    var thisTemplate = '<div ng-message="' + name + '">' + message + '</div>';
+                                    template = template + thisTemplate;
+                                });
+
+                            console.log("Compiling: " + template);
+                                return $compile(template)(scope);
+                            }
+                        //}
+                    }
+                }
+        ]);
     });
 });
 
