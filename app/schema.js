@@ -62,6 +62,129 @@ var Schema = {
             type: string
         }
     },
+    GroupSetting: {
+        id: {
+            type: increments
+        },
+        allowalltocreateshifts: {
+            type: boolean,
+            defaultTo: false
+        },
+        requireshiftconfirmation: {
+            type: boolean,
+            defaultTo: true
+        }
+    },
+    Group: {
+        id: {
+            type: increments
+        },
+        user_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'users',
+            onDelete: restrict
+        },
+        name: {
+            type: string,
+            nullable: false
+        },
+        state: {
+            type: string
+        },
+        city: {
+            type: string
+        },
+        address: {
+            type: string
+        },
+        zipcode: {
+            type: integer // TODO: this should be a string? zipcodes can have - in them
+        },
+        weburl: {
+            type: string
+        },
+        contactemail: {
+            type: string,
+            nullable: false
+        },
+        contactphone: {
+            type: integer
+        },
+        groupsetting_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'groupsettings',
+            unique: true,
+            nullable: false
+        }
+    },
+    Location: {
+        id: {
+            type: increments
+        },
+        group_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'groups',
+            onDelete: restrict, // prevent accidental deletion of a location
+            nullable: false
+        },
+        state: {
+            type: string,
+            nullable: false
+        },
+        city: {
+            type: string,
+            nullable: false
+        },
+        address: {
+            type: string,
+            nullable: false
+        },
+        zipcode: {
+            type: integer,
+            nullable: false
+        },
+        phonenumber: {
+            type: integer,
+            nullable: false
+        }
+    },
+    Area: {
+        id: {
+            type: increments
+        },
+        title: {
+            type: string,
+            nullable: false,
+            // TODO: If we have one database for the entire site it doesn't make sense to have this be unique, each company can have identically named places
+            unique: false
+        },
+        group_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'groups',
+            onDelete: cascade
+        }
+    },
+    AreaLocation: {
+        id: {
+            type: increments
+        },
+        location_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'locations',
+            onDelete: cascade
+        },
+        area_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'areas',
+            onDelete: cascade
+        }
+    },
     Shift: {
         id: {
             type: increments
@@ -106,47 +229,24 @@ var Schema = {
             onDelete: cascade
         }
     },
-    Group: {
+    GroupPermission: {
         id: {
             type: increments
-        },
-        user_id: {
-            type: integer,
-            references: 'id',
-            inTable: 'users',
-            onDelete: restrict
-        },
-        name: {
-            type: string,
-            nullable: false
-        },
-        state: {
-            type: string
-        },
-        city: {
-            type: string
-        },
-        address: {
-            type: string
-        },
-        zipcode: {
-            type: integer // TODO: this should be a string? zipcodes can have - in them
-        },
-        weburl: {
-            type: string
-        },
-        contactemail: {
-            type: string,
-            nullable: false
-        },
-        contactphone: {
-            type: integer
         },
         groupsetting_id: {
             type: integer,
             references: 'id',
             inTable: 'groupsettings',
-            unique: true,
+            onDelete: cascade,
+            nullable: false
+        },
+        description: {
+            type: string,
+            nullable: false
+        },
+        permissionlevel: {
+            // TODO: What is this table for? it doesnt link to a user or location
+            type: integer,
             nullable: false
         }
     },
@@ -209,38 +309,6 @@ var Schema = {
             maxlen: 50
         }
     },
-    Location: {
-        id: {
-            type: increments
-        },
-        group_id: {
-            type: integer,
-            references: 'id',
-            inTable: 'groups',
-            onDelete: restrict, // prevent accidental deletion of a location
-            nullable: false
-        },
-        state: {
-            type: string,
-            nullable: false
-        },
-        city: {
-            type: string,
-            nullable: false
-        },
-        address: {
-            type: string,
-            nullable: false
-        },
-        zipcode: {
-            type: integer,
-            nullable: false
-        },
-        phonenumber: {
-            type: integer,
-            nullable: false
-        }
-    },
     SubLocation: {
         id: {
             type: increments
@@ -261,40 +329,6 @@ var Schema = {
             inTable: 'locations',
             onDeleet: cascade,
             nullable: false
-        }
-    },
-    Area: {
-        id: {
-            type: increments
-        },
-        title: {
-            type: string,
-            nullable: false,
-            // TODO: If we have one database for the entire site it doesn't make sense to have this be unique, each company can have identically named places
-            unique: false
-        },
-        group_id: {
-            type: integer,
-            references: 'id',
-            inTable: 'groups',
-            onDelete: cascade
-        }
-    },
-    AreaLocation: {
-        id: {
-            type: increments
-        },
-        location_id: {
-            type: integer,
-            references: 'id',
-            inTable: 'locations',
-            onDelete: cascade
-        },
-        area_id: {
-            type: integer,
-            references: 'id',
-            inTable: 'areas',
-            onDelete: cascade
         }
     },
     UserPermission: {
@@ -321,19 +355,6 @@ var Schema = {
             inTable: 'grouppermissions',
             onDelete: cascade,
             nullable: false
-        }
-    },
-    GroupSetting: {
-        id: {
-            type: increments
-        },
-        allowalltocreateshifts: {
-            type: boolean,
-            defaultTo: false
-        },
-        requireshiftconfirmation: {
-            type: boolean,
-            defaultTo: true
         }
     },
     GroupAdditionalInformation: {
@@ -372,27 +393,6 @@ var Schema = {
         },
         data: {
             type: string,
-            nullable: false
-        }
-    },
-    GroupPermission: {
-        id: {
-            type: increments
-        },
-        groupsetting_id: {
-            type: integer,
-            references: 'id',
-            inTable: 'groupsettings',
-            onDelete: cascade,
-            nullable: false
-        },
-        description: {
-            type: string,
-            nullable: false
-        },
-        permissionlevel: {
-            // TODO: What is this table for? it doesnt link to a user or location
-            type: integer,
             nullable: false
         }
     }

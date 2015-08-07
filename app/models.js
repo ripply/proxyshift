@@ -233,20 +233,34 @@ function initDb(dropAllTables) {
             // so.. since this method should only have one copy of it running
             // we can query which tables dont exist BEFORE the transaction
             return getListOfNonExistingTables(knex, function(nonExistingTables) {
-                return createTablesInATransaction(nonExistingTables);
+                return createTablesInATransaction(nonExistingTables, nonExistingTables);
             });
         } else {
             // create all the tables because we will be dropping them all
-            return createTablesInATransaction(Schema);
+            return getListOfNonExistingTables(knex, function(nonExistingTables) {
+                return createTablesInATransaction(Schema, nonExistingTables);
+            });
         }
-        function createTablesInATransaction(Schema) {
+        function createTablesInATransaction(Schema, nonExistingTables) {
             knex.transaction(function (trx) {
                 var current = trx.schema;
                 if (dropAllTables) {
-                    // drpo all tables and keep chaining the commands
+                    // drop all tables and keep chaining the commands
+                    var tablesToDropInReversedOrder = [];
+                    // drop tables in reverse order
+                    // in postgres (and mysql maybe) ordering of table creation matters
+                    // so does deletion
+                    // we cannot delete a table if there are other tables depending on it
+                    // so, delete them in reverse order which should work.
                     _.each(Schema, function (tableSchema, modelName) {
+                        tablesToDropInReversedOrder.unshift(modelName);
+                    });
+                    _.each(tablesToDropInReversedOrder, function (modelName) {
+                        var tableSchema = Schema[modelName];
                         var tableName = lowercaseAndPluralizeModelName(modelName);
-                        current = current.dropTable(tableName);
+                        if (!nonExistingTables.hasOwnProperty(modelName)) {
+                            current = current.dropTable(tableName);
+                        }
                     });
                     return current.then(function () {
                         // now create all the tables that they have been dropped successfully
