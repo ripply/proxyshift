@@ -17,7 +17,6 @@ var Validations = {
         firstname: [
             { validator: 'notEmpty', message: 'Fist name is required'},
             { validator: 'isLength', args: [4, 20], message: 'Username must be between 4 and 20 characters'},
-            { validator: 'isInt', message: "MUST BE INTEGER!!" },
         ],
         lastname: [
             { validator: 'notEmpty', message: 'Last name is required'},
