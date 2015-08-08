@@ -28,12 +28,13 @@ angular.forEach(window.Validations, function (modelValues, modelName) {
             var args = validationEntry.args;
             var validatorMessage = validationEntry.message;
 
-            var validationName = 'validation' + capitalizedModelName + capitalizeFirstLetter(validatorName);
+            var validationName = 'validation' + capitalizedModelName + capitalizeFirstLetter(validationKey) +
+                capitalizeFirstLetter(validatorName);
 
             var validationFunction = null;
             switch (validatorName) {
                 case 'notEmpty':
-                    validationName = 'required';
+                    //validationName = 'required';
                     validationFunction = function(modelValue) {
                         return !/^[\s\t\r\n]*$/.test(validator.toString(modelValue));
                     };
@@ -53,7 +54,7 @@ angular.forEach(window.Validations, function (modelValues, modelName) {
             }
 
             validationDirectives[validationName] = validationFunction;
-            messages[validatorName] = validatorMessage;
+            messages[validationName] = validatorMessage;
         });
 
         var directiveName = 'validate' + capitalizedModelName + capitalizeFirstLetter(validationKey);
@@ -71,33 +72,45 @@ angular.forEach(window.Validations, function (modelValues, modelName) {
                 };
             });
 
-        console.log("Creating directive " + directiveName + "Messages");
+        var fullDirectiveName = directiveName + 'Messages';
+
+        // 'messages' gets modified somewhere so the reference gets lost
+        // and ends up being the last instance of it.
+        // that makes the directive always use the messages for the final directive
+        // which is incorrect
+        var directiveReferenceToMessages = messages;
+
         validationModule
-            .directive(directiveName + 'Messages', [
+            .directive(fullDirectiveName, [
                 '$compile',
                 function(
                     $compile
                 ) {
-                    return {
-                        restrict: 'AE',
-                        //require: 'ngMessages',
-                        //compile: function(element, attrs, transclude) {
-                        link: function(scope, element, attributes) {
-                                var template = '';
-                                console.log("WUTUTTTUT");
-                                console.log(messages);
-                                console.log("LSKDJFLKSJFD");
-                                angular.forEach(messages, function(message, name) {
-                                    console.log(name + " => " + message);
-                                    var thisTemplate = '<div ng-message="' + name + '">' + message + '</div>';
-                                    template = template + thisTemplate;
-                                });
+                    var template = '';
+                    angular.forEach(directiveReferenceToMessages, function (message, name) {
+                        var thisElement = '<div ng-message="' + name + '">' + message + '</div>';
+                        template = template + thisElement;
+                    });
 
-                            console.log("Compiling: " + template);
-                                return $compile(template)(scope);
+                    var messageElements = angular.element(template);
+
+                    return ({
+                        restrict: 'A',
+                        compile: function(element, attrs) {
+                            var ngMessagesAttr = attrs[fullDirectiveName];
+                            if (!ngMessagesAttr) {
+                                console.log(fullDirectiveName + " must have attribute set");
+                            } else {
+                                var messagesElement = angular.element('<div ng-messages="' + ngMessagesAttr + '">');
+                                messagesElement.append(messageElements);
+                                element.append(messagesElement);
+
+                                return function (scope, element) {
+                                    // Do nothing no need to link anything to the scope
+                                }
                             }
-                        //}
-                    }
+                        }
+                    })
                 }
         ]);
     });

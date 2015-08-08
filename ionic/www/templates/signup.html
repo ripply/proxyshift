@@ -13,47 +13,52 @@
                         <span class="input-label">Username</span>
                         <input type="text" name="username" ng-model="user.username" validate-user-username>
                     </label>
-                    <div ng-if="signupForm.$dirty" ng-messages="signupForm.username.$error">
-                        <div ng-message="required">Username is required</div>
-                    </div>
+                    <div ng-if="signupForm.$dirty" validate-user-username-messages="signupForm.username.$error"></div>
                     <label class="item item-input">
                         <span class="input-label">First Name</span>
                         <input type="text" name="firstname" ng-model="user.firstname" validate-user-firstname>
                     </label>
-                    <div validate-user-firstname-messages>
-                    </div>
+                    <div ng-if="signupForm.$dirty" validate-user-firstname-messages="signupForm.firstname.$error"></div>
                     <label class="item item-input">
                         <span class="input-label">Last Name</span>
-                        <input type="text" ng-model="user.lastname">
+                        <input type="text" name="lastname" ng-model="user.lastname" validate-user-lastname>
                     </label>
+                    <div ng-if="signupForm.$dirty" validate-user-lastname-messages="signupForm.lastname.$error"></div>
                     <label class="item item-input">
                         <span class="input-label">Email</span>
-                        <input type="text" ng-model="user.email">
+                        <input type="text" name="email" ng-model="user.email" validate-user-email>
                     </label>
+                    <div ng-if="signupForm.$dirty" validate-user-email-messages="signupForm.email.$error"></div>
                     <label class="item item-input">
                         <span class="input-label">Password</span>
-                        <input type="password" ng-model="user.password">
+                        <input type="password" name="password" ng-model="user.password" validate-user-password>
                     </label>
+                    <div ng-if="signupForm.$dirty" validate-user-password-messages="signupForm.password.$error"></div>
                     <label class="item item-input">
                         <span class="input-label">Secret Question</span>
-                        <input type="text" ng-model="user.squestion">
+                        <input type="text" name="squestion" ng-model="user.squestion" validate-user-squestion>
                     </label>
+                    <div ng-if="signupForm.$dirty" validate-user-squestion-messages="signupForm.squestion.$error"></div>
                     <label class="item item-input">
                         <span class="input-label">Secret Answer</span>
-                        <input type="text" ng-model="user.sanswer">
+                        <input type="text" name="sanswer" ng-model="user.sanswer" validate-user-sanswer>
                     </label>
+                    <div ng-if="signupForm.$dirty" validate-user-sanswer-messages="signupForm.sanswer.$error"></div>
                     <label class="item item-input">
                         <span class="input-label">Phone (Home)</span>
-                        <input type="text" ng-model="user.phonehome">
+                        <input type="text" name="phonehome" ng-model="user.phonehome" validate-user-phonehome>
                     </label>
+                    <div ng-if="signupForm.$dirty" validate-user-phonehome-messages="signupForm.phonehome.$error"></div>
                     <label class="item item-input">
                         <span class="input-label">Phone (Mobile)</span>
-                        <input type="text" ng-model="user.phonemobile">
+                        <input type="text" name="phonemobile" ng-model="user.phonemobile" validate-user-phonemobile>
                     </label>
+                    <div ng-if="signupForm.$dirty" validate-user-phonemobile-messages="signupForm.phonemobile.$error"></div>
                     <label class="item item-input">
                         <span class="input-label">Pager Number</span>
-                        <input type="text" ng-model="user.pagernumber">
+                        <input type="text" name="pagernumber" ng-model="user.pagernumber" validate-user-pagernumber>
                     </label>
+                    <div ng-if="signupForm.$dirty" validate-user-pagernumber-messages="signupForm.pagernumber.$error"></div>
                     <label class="item" ng-show="message != null">
                         <span>{{message}}</span>
                     </label>
