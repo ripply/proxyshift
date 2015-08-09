@@ -55,6 +55,10 @@ global.sinon = require('sinon');
 global.ROOT_DIR = ROOT_DIR;
 chai.should();
 
+global.debug = function(str) {
+    //console.log(str);
+};
+
 var resetDatabasePromise = null;
 
 function setFixtures() {

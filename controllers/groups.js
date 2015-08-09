@@ -1,4 +1,5 @@
 var models = require('../app/models'),
+    updateModel = require('./controllerCommon').updateModel,
     Bookshelf = models.Bookshelf;
 
 module.exports = {
@@ -71,9 +72,9 @@ module.exports = {
                                 .where('user_id', '=', user_id);
                         });
                 })
-                    .fetchAll()
-                    .then(function (groups) {
-                        res.json(groups.toJSON());
+                    .fetch()
+                    .then(function (group) {
+                        res.json(group.toJSON());
                     })
                     .catch(function (err) {
                         res.status(500).json({error: true, data: {message: err.message}});
@@ -81,21 +82,25 @@ module.exports = {
             }
         },
         'patch': { // update a group and group settings
-            auth: ['group owner', 'privileged group member'], // must be owner or privileged member
+            auth: ['group owner', 'or', 'privileged group member'], // must be owner or privileged member
             route: function(req, res) {
-                console.log(req.body);
-                models.Group.forge({id: req.params.id})
-                    .fetch({require: true})
+                models.Group.forge({id: req.params.group_id})
+                    .fetch()
                     .then(function (group) {
-                        group.save({
-                            groupname: req.body.groupname|| group.get('groupname')
-                        })
-                            .then(function () {
-                                res.json({error: false, data: {message: 'Group details updated'}});
-                            })
-                            .catch(function (err) {
-                                res.status(500).json({error: true, data: {message: err.message}});
-                            });
+                        if (!group) {
+                            res.sendStatus(403);
+                        } else {
+                            var updated = updateModel('Group', group, req.body, ['id']);
+                            group.save(
+                                updated
+                            )
+                                .then(function () {
+                                    res.json({error: false, data: {message: 'Group details updated'}});
+                                })
+                                .catch(function (err) {
+                                    res.status(500).json({error: true, data: {message: err.message}});
+                                });
+                        }
                     })
                     .catch(function (err) {
                         res.status(500).json({error: true, data: {message: err.message}});
@@ -105,7 +110,7 @@ module.exports = {
         'delete': {
             auth: ['group owner'], // must be group owner
             route: function(req, res) {
-                models.Group.forge({id: req.params.id})
+                models.Group.forge({id: req.params.group_id})
                     .fetch({require: true})
                     .then(function (group) {
                         group.destroy()

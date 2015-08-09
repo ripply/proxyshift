@@ -8,6 +8,7 @@ var ready = models.onDatabaseReady;
 var expect = global.expect;
 var login = require('../common').login;
 var _ = require('underscore');
+var debug = global.debug;
 
 describe('#/api/groups', function() {
 
@@ -60,6 +61,7 @@ describe('#/api/groups', function() {
                                 .expect(200)
                                 .end(function(err, res) {
                                     try {
+                                        debug(res.text);
                                         var data = JSON.parse(res.text);
                                         expect(data.id).to.not.be.null;
                                         done();
@@ -100,6 +102,7 @@ describe('#/api/groups', function() {
                         .expect(200)
                         .end(function(err, res) {
                             try {
+                                debug(res.text);
                                 var data = JSON.parse(res.text);
                                 expect(data.id).to.not.be.null;
                                 done();
@@ -143,6 +146,7 @@ describe('#/api/groups', function() {
                                 .expect(200)
                                 .end(function(err, res) {
                                     try {
+                                        debug(res.text);
                                         var data = JSON.parse(res.text);
                                         data.should.be.a('array');
                                         data.length.should.equal(2);
@@ -177,6 +181,7 @@ describe('#/api/groups', function() {
                                 .expect(200)
                                 .end(function(err, res) {
                                     try {
+                                        debug(res.text);
                                         var data = JSON.parse(res.text);
                                         data.should.be.a('array');
                                         data.length.should.equal(2);
@@ -319,6 +324,9 @@ describe('#/api/groups', function() {
 
                 it('- update all group information', function(done) {
 
+                    debug("Sending updated group information: ");
+                    debug(updatedInformation);
+
                     return request(app)
                         .patch('/api/groups/2')
                         .send(updatedInformation)
@@ -328,11 +336,20 @@ describe('#/api/groups', function() {
                                 .get('/api/groups/2')
                                 .expect(200)
                                 .end(function(err2, res2) {
+                                    debug(res2.text);
                                     var data = JSON.parse(res2.text);
+                                    debug(data);
                                     try {
+                                        data.should.not.be.a('array');
+                                        data.should.be.a('object');
                                         _.each(updatedInformation, function (value, key) {
-                                            res2.body.should.have.property(data[key]);
-                                            res2.body.should.equal(data[key], value);
+                                            debug('key: ' + key);
+                                            debug('value: ' + value);
+                                            debug("Looking for key: " + key);
+                                            debug("its value is: " + data[key]);
+                                            data.should.have.property(key);
+                                            debug(data[key] + " =? " + value);
+                                            data[key].should.equal(value);
                                         });
 
                                         done();
