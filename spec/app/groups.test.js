@@ -368,7 +368,7 @@ describe('#/api/groups', function() {
 
                     request(app)
                         .patch('/api/groups/2')
-                        .send(updatedInformation.name)
+                        .send(_.pick(updatedInformation, 'name'))
                         .expect(200)
                         .end(function(err, res) {
                             return request(app)
@@ -377,6 +377,7 @@ describe('#/api/groups', function() {
                                 .end(function(err2, res2) {
                                     try {
                                         var data = JSON.parse(res2.text);
+                                        debug(data);
                                         data.name.should.equal(updatedInformation.name);
 
                                         _.each(updatedInformationCopy, function (value, key) {
