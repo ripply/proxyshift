@@ -8,14 +8,9 @@ module.exports = {
             auth: ['anyone'], // anyone can query what groups they are a part of/own
             route: function(req, res) {
                 models.Group.forge({id: req.params.id})
-                    .fetch()
-                    .then(function (group) {
-                        if (!group) {
-                            res.status(404).json({error: true, data: {}});
-                        }
-                        else {
-                            res.json(group.toJSON());
-                        }
+                    .fetchAll()
+                    .then(function (groups) {
+                        res.json(groups.toJSON());
                     })
                     .catch(function (err) {
                         res.status(500).json({error: true, data: {message: err.message}});

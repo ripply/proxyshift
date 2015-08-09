@@ -17,6 +17,9 @@ module.exports = {
             //   on groups.id = usergroups.group_id and usergroups.user_id = 3
             //   union select * from groups where user_id = 3;
             var group_id = req.params.group_id;
+            if (!req.user) {
+                return false;
+            }
             var user_id = req.user.id;
 
             if (group_id === undefined) {
@@ -51,6 +54,9 @@ module.exports = {
 
         'group owner': function(req, act) { // must be a group owner
             var group_id = req.params.group_id;
+            if (!req.user) {
+                return false;
+            }
             var user_id = req.user.id;
 
             if (group_id === undefined) {
@@ -74,6 +80,9 @@ module.exports = {
 
         'group member': function(req, act) { // must be a group member
             var group_id = req.params.group_id;
+            if (!req.user) {
+                return false;
+            }
             var user_id = req.user.id;
 
             if (group_id === undefined) {
@@ -100,12 +109,41 @@ module.exports = {
                 });
         },
 
-        'privileged member': function(req, act) {
-            throw new Error(act + " NYI");
-        },
+        'privileged group member': function(req, act) {
+            var group_id = req.params.group_id;
+            if (!req.user) {
+                return false;
+            }
+            var user_id = req.user.id;
 
-        'group owner privileged group member': function(req, act) {
-            throw new Error(act + " NYI");
+            if (group_id === undefined) {
+                throw new Error("Group is not passed into route");
+            }
+
+            if (user_id === undefined) {
+                throw new Error("User id not passed into route");
+            }
+
+            return models.UserGroup.query(function(q) {
+                q.select('usergroups.*').innerJoin('grouppermissions', function() {
+                    this.on('usergroups.grouppermission_id', '=', 'grouppermissions.id')
+                        .andOn('usergroups.user_id', '=', user_id);
+                })
+                    .where('usergroups.group_id', '=', group_id);
+            })
+                .fetchAll({require: true})
+                .then(function(grouppermissions) {
+                    for (var i = 0; i < grouppermissions.length; i++) {
+                        if (grouppermission.permissionlevel > 1) {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                })
+                .catch(function(err) {
+                    return false;
+                });
         }
 
     }

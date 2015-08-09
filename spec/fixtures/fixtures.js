@@ -61,6 +61,15 @@ module.exports = {
                 email: 'nongroupmember@example.com',
                 squestion: 'nongroupmember',
                 sanswer: encrypt(password)
+            },
+            {
+                username: 'privledgedmember',
+                password: encrypt(password),
+                firstname: 'privilegedgroupmember',
+                lastname: 'privilegedgroupmember',
+                email: 'privilegedgroupmember@example.com',
+                squestion: 'privilegedgroupmember',
+                sanswer: encrypt(password)
             }
         ],
         groupsettings: [
@@ -102,8 +111,18 @@ module.exports = {
         grouppermissions: [
             {
                 groupsetting_id: 'groupsettings:0',
-                description: 'test permission',
+                description: 'lowest permission level',
                 permissionlevel: 1
+            },
+            {
+                groupsetting_id: 'groupsettings:0',
+                description: 'second lowest permission level',
+                permissionlevel: 2
+            },
+            {
+                groupsetting_id: 'groupsettings:0',
+                description: 'highest permission level?',
+                permissionlevel: 3
             }
         ],
         usergroups: [
@@ -121,6 +140,12 @@ module.exports = {
             },
             {
                 // user 3 is a member of group 0
+                user_id: 'users:3',
+                group_id: 'groups:1',
+                grouppermission_id: 'grouppermissions:2'
+            },
+            {
+                // user 6 (priviledgegroupmember) is a member of group 0 and a privileged member
                 user_id: 'users:3',
                 group_id: 'groups:1',
                 grouppermission_id: 'grouppermissions:0'

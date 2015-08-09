@@ -133,7 +133,7 @@ describe('#/api/groups', function() {
 
             describe('- group members', function() {
 
-                it('- list all groups they are in', function(done) {
+                it('- list all groups they are in or own', function(done) {
 
                     login('groupmember',
                         'secret',
@@ -145,8 +145,14 @@ describe('#/api/groups', function() {
                                     try {
                                         var data = JSON.parse(res.text);
                                         data.should.be.a('array');
-                                        data.length.should.equal(1);
-                                        data[0].id.should.equal(2);
+                                        data.length.should.equal(2);
+                                        var match = false;
+                                        for (var i = 0; i < data.length; i++) {
+                                            if (data[i].id === 2) {
+                                                match = true;
+                                            }
+                                        }
+                                        match.should.equal(true);
 
                                         done();
                                     } catch (e) {
@@ -173,8 +179,14 @@ describe('#/api/groups', function() {
                                     try {
                                         var data = JSON.parse(res.text);
                                         data.should.be.a('array');
-                                        data.length.should.equal(1);
-                                        data[0].id.should.equal(2);
+                                        data.length.should.equal(2);
+                                        var match = false;
+                                        for (var i = 0; i < data.length; i++) {
+                                            if (data[i].id === 2) {
+                                                match = true;
+                                            }
+                                        }
+                                        match.should.equal(true);
 
                                         done();
                                     } catch (e) {
