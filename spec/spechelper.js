@@ -6,12 +6,12 @@ global.db_dialect = 'sqlite3';
 global.db_file = './data/test.db';
 // sql servers
 
-global.db_dialect = 'pg';
+//global.db_dialect = 'pg';
 //global.db_dialect = 'mysql';
-global.db_host = 'localhost';
-global.db_user = 'postgres';
-global.db_password = 'postgres';
-global.db_database = 'test';
+//global.db_host = 'localhost';
+//global.db_user = 'postgres';
+//global.db_password = 'postgres';
+//global.db_database = 'test';
 
 global.okToDropTables = true;
 
