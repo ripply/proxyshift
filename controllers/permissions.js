@@ -133,13 +133,11 @@ module.exports = {
             })
                 .fetchAll({require: true})
                 .then(function(grouppermissions) {
-                    for (var i = 0; i < grouppermissions.length; i++) {
-                        if (grouppermission.permissionlevel > 1) {
-                            return true;
-                        }
-                    }
+                    var priviledgedGroupPermission = grouppermissions.find(function(grouppermission) {
+                        return grouppermission.get('permissionlevel') > 1;
+                    });
 
-                    return false;
+                    return (!priviledgedGroupPermission);
                 })
                 .catch(function(err) {
                     return false;

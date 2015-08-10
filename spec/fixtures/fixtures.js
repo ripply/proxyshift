@@ -146,9 +146,9 @@ module.exports = {
             },
             {
                 // user 6 (priviledgegroupmember) is a member of group 0 and a privileged member
-                user_id: 'users:3',
+                user_id: 'users:6',
                 group_id: 'groups:1',
-                grouppermission_id: 'grouppermissions:0'
+                grouppermission_id: 'grouppermissions:2'
             }
         ],
         locations: [

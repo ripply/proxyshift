@@ -312,6 +312,77 @@ describe('#/api/groups', function() {
 
             });
 
+            function updateAllGroupInformation(done) {
+
+                debug("Sending updated group information: ");
+                debug(updatedInformation);
+
+                return request(app)
+                    .patch('/api/groups/2')
+                    .send(updatedInformation)
+                    .expect(200)
+                    .end(function(err, res) {
+                        return request(app)
+                            .get('/api/groups/2')
+                            .expect(200)
+                            .end(function(err2, res2) {
+                                debug(res2.text);
+                                var data = JSON.parse(res2.text);
+                                debug(data);
+                                try {
+                                    data.should.not.be.a('array');
+                                    data.should.be.a('object');
+                                    _.each(updatedInformation, function (value, key) {
+                                        debug('key: ' + key);
+                                        debug('value: ' + value);
+                                        debug("Looking for key: " + key);
+                                        debug("its value is: " + data[key]);
+                                        data.should.have.property(key);
+                                        debug(data[key] + " =? " + value);
+                                        data[key].should.equal(value);
+                                    });
+
+                                    done();
+                                } catch (e) {
+                                    done(e);
+                                }
+                            });
+                    });
+
+            }
+
+            function updatePartialGroupInformation(done) {
+
+                var updatedInformationCopy = _.clone(updatedInformation);
+                delete updatedInformationCopy['name'];
+
+                request(app)
+                    .patch('/api/groups/2')
+                    .send(_.pick(updatedInformation, 'name'))
+                    .expect(200)
+                    .end(function(err, res) {
+                        return request(app)
+                            .get('/api/groups/2')
+                            .expect(200)
+                            .end(function(err2, res2) {
+                                try {
+                                    var data = JSON.parse(res2.text);
+                                    debug(data);
+                                    data.name.should.equal(updatedInformation.name);
+
+                                    _.each(updatedInformationCopy, function (value, key) {
+                                        data[key].should.not.equal(value);
+                                    });
+
+                                    done();
+                                } catch (e) {
+                                    done(e);
+                                }
+                            });
+                    });
+
+            }
+
             describe('- group owner', function() {
 
                 beforeEach(function(done) {
@@ -322,76 +393,9 @@ describe('#/api/groups', function() {
 
                 });
 
-                it('- update all group information', function(done) {
+                it('- update all group information', updateAllGroupInformation);
 
-                    debug("Sending updated group information: ");
-                    debug(updatedInformation);
-
-                    return request(app)
-                        .patch('/api/groups/2')
-                        .send(updatedInformation)
-                        .expect(200)
-                        .end(function(err, res) {
-                            return request(app)
-                                .get('/api/groups/2')
-                                .expect(200)
-                                .end(function(err2, res2) {
-                                    debug(res2.text);
-                                    var data = JSON.parse(res2.text);
-                                    debug(data);
-                                    try {
-                                        data.should.not.be.a('array');
-                                        data.should.be.a('object');
-                                        _.each(updatedInformation, function (value, key) {
-                                            debug('key: ' + key);
-                                            debug('value: ' + value);
-                                            debug("Looking for key: " + key);
-                                            debug("its value is: " + data[key]);
-                                            data.should.have.property(key);
-                                            debug(data[key] + " =? " + value);
-                                            data[key].should.equal(value);
-                                        });
-
-                                        done();
-                                    } catch (e) {
-                                        done(e);
-                                    }
-                                });
-                        });
-
-                });
-
-                it('- update some group information', function(done) {
-
-                    var updatedInformationCopy = _.clone(updatedInformation);
-                    delete updatedInformationCopy['name'];
-
-                    request(app)
-                        .patch('/api/groups/2')
-                        .send(_.pick(updatedInformation, 'name'))
-                        .expect(200)
-                        .end(function(err, res) {
-                            return request(app)
-                                .get('/api/groups/2')
-                                .expect(200)
-                                .end(function(err2, res2) {
-                                    try {
-                                        var data = JSON.parse(res2.text);
-                                        debug(data);
-                                        data.name.should.equal(updatedInformation.name);
-
-                                        _.each(updatedInformationCopy, function (value, key) {
-                                            data[key].should.not.equal(value);
-                                        });
-
-                                        done();
-                                    } catch (e) {
-                                        done(e);
-                                    }
-                                });
-                        });
-
-                });
+                it('- update some group information', updatePartialGroupInformation);
 
             });
 
@@ -399,7 +403,7 @@ describe('#/api/groups', function() {
 
                 beforeEach(function(done) {
 
-                    login('groupmember',
+                    login('test_member_of_group',
                         'secret',
                         done);
 
@@ -420,69 +424,15 @@ describe('#/api/groups', function() {
 
                 beforeEach(function(done){
 
-                    login('privilegedgroupmember',
+                    login('privledgedmember',
                         'secret',
                         done);
 
                 });
 
-                it('- update all group information', function(done) {
+                it('- update all group information', updateAllGroupInformation);
 
-                    return request(app)
-                        .patch('/api/groups/2')
-                        .send(updatedInformation)
-                        .expect(200)
-                        .end(function(err, res) {
-                            return request(app)
-                                .get('/api/groups/2')
-                                .expect(200)
-                                .end(function(err2, res2) {
-                                    var data = JSON.parse(res2.text);
-                                    try {
-                                        _.each(updatedInformation, function (value, key) {
-                                            res2.body.should.have.property(data[key]);
-                                            res2.body.should.equal(data[key], value);
-                                        });
-
-                                        done();
-                                    } catch (e) {
-                                        done(e);
-                                    }
-                                });
-                        });
-
-                });
-
-                it('- update some group information', function(done) {
-
-                    var updatedInformationCopy = _.clone(updatedInformation);
-                    delete updatedInformationCopy['name'];
-
-                    request(app)
-                        .patch('/api/groups/2')
-                        .send(updatedInformation.name)
-                        .expect(200)
-                        .end(function(err, res) {
-                            return request(app)
-                                .get('/api/groups/2')
-                                .expect(200)
-                                .end(function(err2, res2) {
-                                    try {
-                                        var data = JSON.parse(res2.text);
-                                        data.name.should.equal(updatedInformation.name);
-
-                                        _.each(updatedInformationCopy, function (value, key) {
-                                            data[key].should.not.equal(value);
-                                        });
-
-                                        done();
-                                    } catch (e) {
-                                        done(e);
-                                    }
-                                });
-                        });
-
-                });
+                it('- update some group information', updatePartialGroupInformation);
 
             });
 
