@@ -484,7 +484,7 @@ describe('#/api/groups', function() {
             describe('- privileged group member', function(){
 
                 beforeEach(function(done) {
-                    login('privledgegroupmember',
+                    login('privledgedmember',
                         'secret',
                         done);
                 });
