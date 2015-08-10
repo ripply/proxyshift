@@ -127,7 +127,7 @@ module.exports = {
             }
         }
     },
-    '/group_id/classes': {
+    '/:group_id/classes': {
         'get': { // get list of all class types
             auth: ['group owner', 'group member'] // must be a member/owner of the group
         },
@@ -135,7 +135,7 @@ module.exports = {
             auth: ['group owner', 'privileged group member'] // must be an owner or privileged group member
         }
     },
-    '/group_id/classes/:classid': {
+    '/:group_id/classes/:classid': {
         'get': { // get info about a class type
             auth: ['group owner', 'group member'] // must be a member/owner of the group
         },
@@ -143,12 +143,12 @@ module.exports = {
             auth: ['group owner', 'privileged group member'] // must be an owner or privileged group member
         }
     },
-    'group_id/users': {
+    '/:group_id/users': {
         'get': { // get all group members
             auth: ['group owner', 'privileged group member'] // owner/privileged member
         }
     },
-    'group_id/users/:user_id': {
+    '/:group_id/users/:user_id': {
         'get': { // get basic group member info
             auth: ['group owner', 'group member'] // must be owner owner of group or group member
         },
@@ -156,12 +156,12 @@ module.exports = {
             auth: ['group owner', 'privileged group member'] // privileged member or owner
         }
     },
-    'group_id/users/:user_id/permissions': {
+    '/:group_id/users/:user_id/permissions': {
         'get': { // get a users group permissions
             auth: ['group owner', 'group member'] // owner/member
         }
     },
-    'group_id/users/:user_id/permissions/:permission_id': {
+    '/:group_id/users/:user_id/permissions/:permission_id': {
         'post': { // add user with permission level to group
             auth: ['group owner', 'privileged group member'] // owner/privileged group member
         },
@@ -169,7 +169,7 @@ module.exports = {
             auth: ['group owner', 'privileged group member'] // owner/privileged group member
         }
     },
-    'group_id/locations': {
+    '/:group_id/locations': {
         'get': { // get list of all locations in group
             auth: ['group owner', 'group member'] // group member/owner
         },
@@ -177,12 +177,12 @@ module.exports = {
             auth: ['group owner', 'privileged group member'] // group owner/privileged member
         }
     },
-    'group_id/locations/:location_id': {
+    '/:group_id/locations/:location_id': {
         'delete': { // remove location from group
             auth: ['group owner', 'privileged group member'] // group owner/privileged member
         }
     },
-    'group_id/areas': {
+    '/:group_id/areas': {
         'get': { // get all areas attached
             auth: ['group owner', 'group member'] // owner/member
         },
@@ -190,12 +190,12 @@ module.exports = {
             auth: ['group owner', 'privileged group member'] // owner/privileged member
         }
     },
-    'group_id/areas/:area_id': {
+    '/:group_id/areas/:area_id': {
         'delete': { // remove an area from this group
             auth: ['group owner', 'privileged group member'] // owner/privileged member
         }
     },
-    'group_id/permissions': {
+    '/:group_id/permissions': {
         'get': { // get all permission sets
             auth: ['group owner', 'group member'] // owner/member
         },
@@ -203,7 +203,7 @@ module.exports = {
             auth: ['group owner', 'privileged group member'] // owner/privileged member
         }
     },
-    'group_id/permissions/:permission_id': {
+    '/:group_id/permissions/:permission_id': {
         'patch': { // update a group permission set
             auth: ['group owner', 'privileged group member'] // owner/privileged member
         },
