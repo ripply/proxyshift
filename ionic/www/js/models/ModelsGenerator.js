@@ -21,8 +21,8 @@ module
             return model;
         });
 
-        newModel.register = _.bind(newModel, registerListener);
-        newModel.unregister = _.bind(newModel, unregisterListener);
+        newModel.register = _.bind(registerListener, newModel);
+        newModel.unregister = _.bind(unregisterListener, newModel);
 
         // TODO: When we switch to socket.io
         // we should be able to create an angular cache object
