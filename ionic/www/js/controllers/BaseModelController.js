@@ -4,42 +4,40 @@ angular.module('scheduling-app.controllers')
         '$injector',
         function($scope,
                  $injector) {
-            $scope.init = function (model, baseObject, addFunction) {
-                console.debug("init(" + model + ")");
-                $scope._modelName = model;
-                $scope._baseObject = baseObject;
-                // this will throw if the service doesn't exist
-                $scope._model = $injector.get(model);
-                $scope._addFunction = addFunction;
-                $scope.fetch();
-            };
-
-            function isInitialized() {
-                return $scope._model === undefined && !needsInitialization();
-            }
-
-            $scope.revertToDefaultObject = function () {
-                $scope.object = angular.extend($scope._baseObject);
-                return $scope.object;
-            };
+            $scope._models = {};
+            $scope.pending = {};
+            $scope.register = register;
+            $scope.unregister = unregister;
 
             $scope.fetch = function () {
+                angular.forEach($scope._models, function(objectMap, objectName) {
+                    var addFunction = objectMap.add;
+                    var object = objectMap.object;
+
+                    if (!objectMap.pendingFetch ||
+                        (objectMap.pendingFetch && !objectMap.pendingFetch.isPending())) {
+                        // object is currently not pending or the pending fetch is finished
+                        setPending(objectName);
+                        objectMap.pendingFetch = object.getList();
+                        objectMap.pendingFetch.then(function(result) {
+                            $scope[objectName] = result;
+                            delete objectMap.pendingFetch;
+                            setSuccess(true);
+                        }, function(err) {
+                            delete objectMap.pendingFetch;
+                            setFailed(objectName, err);
+                        });
+                    } else {
+                        // object is currently pending
+                        // no need to fetch
+                    }
+                });
                 $scope._model.getList().then(function (objects) {
                     $scope.objects = objects;
                 }, function (err) {
                     $scope.objects = null;
                     $scope.error = err;
                 });
-            };
-
-            $scope.add = function () {
-                $scope.object = $scope._addFunction($scope.revertToDefaultObject());
-                $scope._model.post($scope.object)
-                    .then(function () {
-                        //success
-                    }, function () {
-                        //error
-                    });
             };
 
             function needsInitialization() {
@@ -50,6 +48,10 @@ angular.module('scheduling-app.controllers')
                 $scope._needsInitialization = value;
             }
 
+            function isInitialized() {
+                !needsInitialization();
+            }
+
             $scope.$on('$ionicView.afterEnter', function() {
                 if (!isInitialized()) {
                     $scope.fetch();
@@ -58,6 +60,51 @@ angular.module('scheduling-app.controllers')
 
             $scope.$on('$ionicView.afterLeave', function() {
                 setNeedsInitialization(true);
-            })
+            });
+
+            function register(modelName, modelObject, addFunction) {
+                $scope.pending[modelName] = false;
+                $scope.failed[modelName] = false;
+                if ($scope._models.hasOwnProperty(modelName)) {
+                    $scope.unregister(modelName);
+                }
+                $scope._models[modelName] = {
+                    add: addFunction,
+                    object: modelObject
+                };
+            }
+
+            function unregister(modelName) {
+                delete $scope._models[modelName];
+                angular.forEach(['failed', 'errors'], function(variable) {
+                    if ($scope[variable].hasOwnProperty(modelName)) {
+                        delete $scope[variable][modelName];
+                    }
+                });
+            }
+
+            function setPending(objectName) {
+                $scope.pending[objectName] = true;
+            }
+
+            function clearPending(objectName) {
+                $scope.pending[objectName] = false;
+            }
+
+            function setFailed(objectName, err) {
+                $scope.failed[objectName] = true;
+                $scope.errors[objectName] = err;
+                $scope.success[objectName] = false
+                clearPending(objectName);
+            }
+
+            function setSuccess(objectName) {
+                $scope.failed[objectName] = false;
+                if ($scope.errors.hasOwnProperty(objectName)) {
+                    delete $scope.errors[objectName];
+                }
+                $scope.success[objectName] = true;
+                clearPending(objectName);
+            }
         }
     ]);
