@@ -6,6 +6,9 @@ angular.module('scheduling-app.controllers')
                  $injector) {
             $scope._models = {};
             $scope.pending = {};
+            $scope.failed = {};
+            $scope.errors = {};
+            $scope.success = {};
             $scope.register = register;
             $scope.unregister = unregister;
 
@@ -32,12 +35,6 @@ angular.module('scheduling-app.controllers')
                         // no need to fetch
                     }
                 });
-                $scope._model.getList().then(function (objects) {
-                    $scope.objects = objects;
-                }, function (err) {
-                    $scope.objects = null;
-                    $scope.error = err;
-                });
             };
 
             function needsInitialization() {
@@ -63,6 +60,12 @@ angular.module('scheduling-app.controllers')
             });
 
             function register(modelName, modelObject, addFunction) {
+                if (arguments.length == 2) {
+                    // assume 2nd argument is addFunction
+                    // get 2nd argument via modelName
+                    addFunction = modelObject;
+                    modelObject = $injector.get(modelName);
+                }
                 $scope.pending[modelName] = false;
                 $scope.failed[modelName] = false;
                 if ($scope._models.hasOwnProperty(modelName)) {

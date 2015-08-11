@@ -9,6 +9,7 @@ angular.module('scheduling-app.directives')
         });
 
         function link(scope, element, attributes) {
-            scope.init('UsersModel', {}, null);
+            scope.register('UsersModel', null);
+            scope.fetch();
         }
     });
