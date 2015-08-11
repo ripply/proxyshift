@@ -12,29 +12,39 @@
 var Validations = {
     User: {
         username: [
-            { validator: 'notEmpty', message: 'Name is required' },
+            { validator: 'notEmpty', message: 'Username is required.' },
+            { validator: 'isLength', args: [4, 20], message: 'Username must be between 4 and 20 characters.'},
         ],
         firstname: [
-            { validator: 'notEmpty', message: 'Fist name is required'},
-            { validator: 'isLength', args: [4, 20], message: 'Username must be between 4 and 20 characters'},
+            { validator: 'notEmpty', message: 'Fist name is required.'},
+            { validator: 'isLength', args: [0, 20], message: 'First name must be within 20 characters.'},
         ],
         lastname: [
-            { validator: 'notEmpty', message: 'Last name is required'},
+            { validator: 'notEmpty', message: 'Last name is required.'},
+            { validator: 'isLength', args: [0, 20], message: 'Last name must be within 20 characters.'},
         ],
         email: [
-            { validator: 'notEmpty', message: 'Email is required'},
+            { validator: 'notEmpty', message: 'Email is required.'},
+            { validator: 'isEmail', message: 'Invalid Email.'},
         ],
         password: [
-            { validator: 'notEmpty', message: 'Password is required'},
+            { validator: 'notEmpty', message: 'Password is required.'},
+            { validator: 'isLength', args: [4, 20], message: 'Password must be between 4 and 20 characters.'},
         ],
         squestion: [
-            { validator: 'notEmpty', message: 'Secret question is required'},
+            { validator: 'notEmpty', message: 'Secret question is required.'},
         ],
         sanswer: [
-            { validator: 'notEmpty', message: 'Secret answer is required'},
+            { validator: 'notEmpty', message: 'Secret answer is required.'},
+        ],
+        phonehome: [
+            { validator: 'isInt', message: 'Invalid Number.'},
         ],
         phonemobile: [
-            { validator: 'notEmpty', message: 'Mobile phone number required'},
+            { validator: 'isInt', message: 'Invalid Number.'},
+        ],
+        pagernumber: [
+            { validator: 'isInt', message: 'Invalid Number.'},
         ]
     }
 
