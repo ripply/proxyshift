@@ -8,5 +8,5 @@ angular.module('scheduling-app.controllers')
         'GENERAL_CONFIG',
         function($scope, $controller, GENERAL_CONFIG) {
             $controller('BaseModelController', {$scope: $scope});
-            $scope.register('GroupsModel', 'GroupsModel');
+            $scope.register('GroupsModel');
         }]);

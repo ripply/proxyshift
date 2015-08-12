@@ -77,7 +77,7 @@ angular.module('scheduling-app.controllers')
             });
 
             function register(modelName, modelObject, addFunction) {
-                if (arguments.length == 2) {
+                if (arguments.length <= 2) {
                     // assume 2nd argument is addFunction
                     // get 2nd argument via modelName
                     addFunction = modelObject;
