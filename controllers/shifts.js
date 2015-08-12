@@ -47,11 +47,11 @@ module.exports = {
             }
         }
     },
-    '/:id': {
+    '/:shift_id': {
         'get': { // get info about a shift
             // auth: // connected to shift (part of location) or managing the shift
             route: function(req, res) {
-                models.Shift.forge({id: req.params.id})
+                models.Shift.forge({id: req.params.shift_id})
                     .fetch()
                     .then(function (shift) {
                         if (!shift) {
@@ -70,7 +70,7 @@ module.exports = {
             // auth: // must be managing the shift
             route: function(req, res) {
                 console.log(req.body);
-                models.Shift.forge({id: req.params.id})
+                models.Shift.forge({id: req.params.shift_id})
                     .fetch({require: true})
                     .then(function (shift) {
                         shift.save({
@@ -94,7 +94,7 @@ module.exports = {
         'delete': { // delete a shift
             // auth: // must be managing the shift
             route: function(req, res) {
-                models.Shift.forge({id: req.params.id})
+                models.Shift.forge({id: req.params.shift_id})
                     .fetch({require: true})
                     .then(function (shift) {
                         shift.destroy()
