@@ -1,7 +1,7 @@
 <ion-view view-title="Companies">
     <ion-content>
         <ion-list>
-            <ion-item ng-repeat="group in groups" href="#/app/groups/{{group.id}}/settings">
+            <ion-item ng-repeat="group in GroupsModel" href="#/app/groups/{{group.id}}/settings">
                 {{group.name}}
                 <ion-option-button class="button-positive" ng-click="add()">+</ion-option-button>
             </ion-item>
