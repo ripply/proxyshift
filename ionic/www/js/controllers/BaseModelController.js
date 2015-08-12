@@ -4,13 +4,30 @@ angular.module('scheduling-app.controllers')
         '$injector',
         function($scope,
                  $injector) {
-            $scope._models = {};
-            $scope.pending = {};
-            $scope.failed = {};
-            $scope.errors = {};
-            $scope.success = {};
-            $scope.register = register;
-            $scope.unregister = unregister;
+            if ($scope._models === undefined) {
+                $scope._models = {};
+            }
+            if ($scope.pending === undefined) {
+                $scope.pending = {};
+            }
+            if ($scope.failed === undefined) {
+                $scope.failed = {};
+            }
+            if ($scope.errors === undefined) {
+                $scope.errors = {};
+            }
+            if ($scope.success === undefined) {
+                $scope.success = {};
+            }
+            if ($scope.objects === undefined) {
+                $scope.objects = {};
+            }
+            if ($scope.register === undefined) {
+                $scope.register = register;
+            }
+            if ($scope.unregister === undefined) {
+                $scope.unregister = unregister;
+            }
 
             $scope.fetch = function () {
                 angular.forEach($scope._models, function(objectMap, objectName) {

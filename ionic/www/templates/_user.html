@@ -1,5 +1,5 @@
 <ion-list>
-    <ion-item ng-repeat="user in objects" href="#/app/playlists/{{user.id}}">
+    <ion-item ng-repeat="user in UsersModel" href="#/app/playlists/{{user.id}}">
         {{user.username}}
         <ion-option-button class="button-positive" ng-click="add()">+</ion-option-button>
     </ion-item>
