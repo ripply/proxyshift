@@ -298,6 +298,13 @@ var Schema = {
         id: {
             type: increments
         },
+        group_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'groups',
+            onDelete: cascade,
+            nullable: false
+        },
         title: {
             type: string,
             maxlen: 50,
