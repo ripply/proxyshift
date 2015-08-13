@@ -167,6 +167,19 @@ module.exports = {
                 user_id: 'users:0',
                 grouppermission_id: 'grouppermissions:0'
             }
+        ],
+        groupuserclasses: [
+            {
+                group_id: 'groups:0',
+                title: 'User class 1',
+                description: 'User class 1 description'
+            }
+        ],
+        groupuserclasstousers: [
+            {
+                user_id: 'users:2',
+                groupuserclassses: 'groupuserclasstousers:0'
+            }
         ]
     }
 };
