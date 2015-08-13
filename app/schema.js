@@ -316,6 +316,25 @@ var Schema = {
             maxlen: 50
         }
     },
+    GroupUserClassToUser: {
+        id: {
+            type: increment
+        },
+        user_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'users',
+            onDelete: cascade,
+            nullable: false
+        },
+        groupuserclass_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'groupuserclasses',
+            onDelete: cascade,
+            nullable: false
+        }
+    },
     SubLocation: {
         id: {
             type: increments
