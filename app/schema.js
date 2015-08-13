@@ -318,7 +318,7 @@ var Schema = {
     },
     GroupUserClassToUser: {
         id: {
-            type: increment
+            type: increments
         },
         user_id: {
             type: integer,
