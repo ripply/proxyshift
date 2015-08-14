@@ -70,6 +70,15 @@ module.exports = {
                 email: 'privilegedgroupmember@example.com',
                 squestion: 'privilegedgroupmember',
                 sanswer: encrypt(password)
+            },
+            {
+                username: 'locationmember',
+                password: encrypt(password),
+                firstname: 'unprivilegedgroupmember',
+                lastname: 'unprivilegedgroupmember',
+                email: 'unprivilegedgroupmember@example.com',
+                squestion: 'unprivilegedgroupmember',
+                sanswer: encrypt(password)
             }
         ],
         groupsettings: [
@@ -84,7 +93,7 @@ module.exports = {
         ],
         groups: [
             {
-                user_id: 'users:0',
+                user_id: '@users:username:test_password',
                 name: 'test_password_group',
                 state: 'test_password_state',
                 city: 'test_password_city',
@@ -96,7 +105,7 @@ module.exports = {
                 groupsetting_id: 'groupsettings:0'
             },
             {
-                user_id: 'users:4',
+                user_id: '@users:username:groupowner',
                 name: 'membershiptest',
                 state: 'test_password_state',
                 city: 'test_password_city',
@@ -128,44 +137,76 @@ module.exports = {
         usergroups: [
             {
                 // user 1 is a member of its own group 0
-                user_id: 'users:0',
-                group_id: 'groups:0',
-                grouppermission_id: 'grouppermissions:0'
+                user_id: '@users:username:test_password',
+                group_id: '@groups:name:test_password_group',
+                grouppermission_id: '@grouppermissions:description:lowest permission level'
             },
             {
                 // user 2 is a member of group 0
-                user_id: 'users:2',
-                group_id: 'groups:0',
-                grouppermission_id: 'grouppermissions:0'
+                user_id: '@users:username:test_member_of_group',
+                group_id: '@groups:name:test_password_group',
+                grouppermission_id: '@grouppermissions:description:lowest permission level'
             },
             {
                 // user 3 is a member of group 0
-                user_id: 'users:3',
-                group_id: 'groups:1',
-                grouppermission_id: 'grouppermissions:2'
+                user_id: '@users:username:groupmember',
+                group_id: '@groups:name:membershiptest',
+                grouppermission_id: '@grouppermissions:description:second lowest permission level'
             },
             {
                 // user 6 (priviledgegroupmember) is a member of group 0 and a privileged member
-                user_id: 'users:6',
-                group_id: 'groups:1',
-                grouppermission_id: 'grouppermissions:2'
+                user_id: '@users:username:privledgedmember',
+                group_id: '@groups:name:membershiptest',
+                grouppermission_id: '@grouppermissions:description:second lowest permission level'
+            },
+            {
+                // user 7 is a member of group 1
+                user_id: '@users:username:locationmember',
+                group_id: '@groups:name:membershiptest',
+                grouppermission_id: '@grouppermissions:description:lowest permission level'
             }
         ],
         locations: [
             {
-                group_id: 'groups:0',
+                group_id: '@groups:name:test_password_group',
                 state: 'test_state',
                 city: 'test_city',
                 address: 'test_address',
                 zipcode: 12345,
                 phonenumber: 12435
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                state: 'test_state2',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
             }
         ],
         userpermissions: [
             {
                 location_id: 'locations:0',
-                user_id: 'users:0',
+                user_id: '@users:username:test_password',
+                grouppermission_id: '@grouppermissions:description:lowest permission level'
+            },
+            {
+                location_id: 'locations:1',
+                user_id: '@users:username:locationmember',
                 grouppermission_id: 'grouppermissions:0'
+            }
+        ],
+        groupuserclasses: [
+            {
+                group_id: '@groups:name:test_password_group',
+                title: 'User class 1',
+                description: 'User class 1 description'
+            }
+        ],
+        groupuserclasstousers: [
+            {
+                user_id: '@users:username:test_member_of_group',
+                groupuserclass_id: '@groupuserclasses:title:User class 1'
             }
         ]
     }
