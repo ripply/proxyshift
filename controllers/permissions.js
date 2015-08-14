@@ -110,21 +110,29 @@ module.exports = {
         },
 
         'privileged group member': function(req, act) {
-            var group_id = req.params.group_id;
+            hasGroupPermissionLevel(1, req, act);
+        },
+
+        'very privileged group member': function(req, act) {
+            hasGroupPermissionLevel(2, req, act);
+        },
+
+        'privileged location member': function(req, act) {
+            var location_id = req.params.location_id;
             if (!req.user) {
                 return false;
             }
             var user_id = req.user.id;
 
-            if (group_id === undefined) {
-                throw new Error("Group is not passed into route");
+            if (location_id === undefined) {
+                throw new Error("Location is not passed into route");
             }
 
             if (user_id === undefined) {
                 throw new Error("User id not passed into route");
             }
 
-            return models.UserGroup.query(function(q) {
+            return models.UserPermission.query(function(q) {
                 q.select('usergroups.*').innerJoin('grouppermissions', function() {
                     this.on('usergroups.grouppermission_id', '=', 'grouppermissions.id')
                         .andOn('usergroups.user_id', '=', user_id);
@@ -147,3 +155,38 @@ module.exports = {
     }
 
 };
+
+function hasGroupPermissionLevel(permissionLevel, req, act) {
+    var group_id = req.params.group_id;
+    if (!req.user) {
+        return false;
+    }
+    var user_id = req.user.id;
+
+    if (group_id === undefined) {
+        throw new Error("Group is not passed into route");
+    }
+
+    if (user_id === undefined) {
+        throw new Error("User id not passed into route");
+    }
+
+    return models.UserGroup.query(function(q) {
+        q.select('usergroups.*').innerJoin('grouppermissions', function() {
+            this.on('usergroups.grouppermission_id', '=', 'grouppermissions.id')
+                .andOn('usergroups.user_id', '=', user_id);
+        })
+            .where('usergroups.group_id', '=', group_id);
+    })
+        .fetchAll({require: true})
+        .then(function(grouppermissions) {
+            var priviledgedGroupPermission = grouppermissions.find(function(grouppermission) {
+                return grouppermission.get('permissionlevel') > permissionLevel;
+            });
+
+            return (!priviledgedGroupPermission);
+        })
+        .catch(function(err) {
+            return false;
+        });
+}
