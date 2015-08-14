@@ -1,4 +1,5 @@
 var models = require('../app/models');
+var updateModel = require('./controllerCommon').updateModel;
 var encryptKey = require('./encryption/encryption').encryptKey;
 
 module.exports = {

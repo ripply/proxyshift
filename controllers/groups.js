@@ -1,5 +1,9 @@
 var models = require('../app/models'),
     updateModel = require('./controllerCommon').updateModel,
+    simpleGetSingleModel = require('./controllerCommon').simpleGetSingleModel,
+    simpleGetListModel = require('./controllerCommon').simpleGetListModel,
+    patchModel = require('./controllerCommon').patchModel,
+    deleteModel = require('./controllerCommon').deleteModel,
     Bookshelf = models.Bookshelf;
 
 module.exports = {
@@ -84,63 +88,83 @@ module.exports = {
         'patch': { // update a group and group settings
             auth: ['group owner', 'or', 'privileged group member'], // must be owner or privileged member
             route: function(req, res) {
-                models.Group.forge({id: req.params.group_id})
-                    .fetch()
-                    .then(function (group) {
-                        if (!group) {
-                            res.sendStatus(403);
-                        } else {
-                            var updated = updateModel('Group', group, req.body, ['id']);
-                            group.save(
-                                updated
-                            )
-                                .then(function () {
-                                    res.json({error: false, data: {message: 'Group details updated'}});
-                                })
-                                .catch(function (err) {
-                                    res.status(500).json({error: true, data: {message: err.message}});
-                                });
-                        }
-                    })
-                    .catch(function (err) {
-                        res.status(500).json({error: true, data: {message: err.message}});
-                    });
+                patchModel('Group',
+                    {
+                        id: req.params.group_id
+                    },
+                    req,
+                    res,
+                    'Group details updated'
+                );
             }
         },
         'delete': {
             auth: ['group owner'], // must be group owner
             route: function(req, res) {
-                models.Group.forge({id: req.params.group_id})
-                    .fetch({require: true})
-                    .then(function (group) {
-                        group.destroy()
-                            .then(function () {
-                                res.json({error: true, data: {message: 'Group successfully deleted'}});
-                            })
-                            .catch(function (err) {
-                                res.status(500).json({error: true, data: {message: err.message}});
-                            });
-                    })
-                    .catch(function (err) {
-                        res.status(500).json({error: true, data: {message: err.message}});
-                    });
+                deleteModel('Group',
+                    {
+                        id: req.params.group_id
+                    },
+                    req,
+                    res,
+                    'Group successfully deleted'
+                );
             }
         }
     },
     '/:group_id/classes': {
         'get': { // get list of all class types
-            auth: ['group owner', 'or', 'group member'] // must be a member/owner of the group
+            auth: ['group owner', 'or', 'group member'], // must be a member/owner of the group
+            route: function(req, res) {
+                simpleGetListModel('GroupUserClass',
+                    {
+                        group_id: req.params.group_id
+                    },
+                    req,
+                    res
+                );
+            }
         },
         'post': { // create new class for group
-            auth: ['group owner', 'or', 'privileged group member'] // must be an owner or privileged group member
+            auth: ['group owner', 'or', 'privileged group member'], // must be an owner or privileged group member
+            route: function(req, res) {
+                postModel('GroupUserClass',
+                    {
+                        group_id: req.params.group_id
+                    },
+                    req,
+                    res
+                );
+            }
         }
     },
-    '/:group_id/classes/:classid': {
+    '/:group_id/classes/:class_id': {
         'get': { // get info about a class type
-            auth: ['group owner', 'or', 'group member'] // must be a member/owner of the group
+            auth: ['group owner', 'or', 'group member'], // must be a member/owner of the group
+            route: function(req, res) {
+                simpleGetSingleModel('GroupUserClass',
+                    {
+                        group_id: req.params.group_id,
+                        class_id: req.params.class_id
+                    },
+                    req,
+                    res
+                );
+            }
         },
         'patch': { // update class type in group
-            auth: ['group owner', 'or', 'privileged group member'] // must be an owner or privileged group member
+            auth: ['group owner', 'or', 'privileged group member'], // must be an owner or privileged group member
+            route: function(req, res) {
+                patchModel('GroupUserClass',
+                    {
+                        id: req.params.class_id,
+                        group_id: req.params.group_id
+                    },
+                    req,
+                    res,
+                    'User class details updated'
+                );
+            }
         }
     },
     '/:group_id/users': {
