@@ -282,6 +282,150 @@ describe('#/api/groups', function() {
 
         });
 
+        describe('- /:group_id/classes', function() {
+
+            describe('- anonymous users', function(e) {
+
+                it('- returns 401', function(done) {
+
+                    request(app)
+                        .get('/api/groups/1/classes/')
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- non privileged group members', function() {
+
+                beforeEach(function(done) {
+
+                    login('test_member_of_group',
+                        'secret',
+                        done);
+
+                });
+
+                it('- can fetch group classes', function(done) {
+
+                    request(app)
+                        .get('/api/groups/1/classes/')
+                        .expect(200)
+                        .end(function(err, res) {
+                            try {
+                                debug(res.text);
+                                var data = JSON.parse(res.text);
+                                expect(data).to.not.be.null;
+                                data.should.be.a('array');
+                                var foundUserClass = false;
+                                for (var i = 0; i < data.length; i++) {
+                                    if (data[i].title == 'User class 1') {
+                                        foundUserClass = true;
+                                    }
+                                }
+                                foundUserClass.should.equal(true);
+
+                                done();
+                            } catch (e) {
+                                done(e);
+                            }
+                        });
+
+                })
+
+            });
+
+            describe('- non group members', function() {
+
+                beforeEach(function(done) {
+
+                    login('nongroupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 401', function(done) {
+
+                    request(app)
+                        .get('/api/groups/1/classes/')
+                        .expect(401, done);
+
+                });
+
+            });
+
+        });
+
+        describe('- /:group_id/classes/:class_id', function() {
+
+            describe('- anonymous users', function(e) {
+
+                it('- returns 401', function(done) {
+
+                    request(app)
+                        .get('/api/groups/1/classes')
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- non privileged group members', function() {
+
+                beforeEach(function(done) {
+
+                    login('test_member_of_group',
+                        'secret',
+                        done);
+
+                });
+
+                it('- can fetch a specific group class', function(done) {
+
+                    request(app)
+                        .get('/api/groups/1/classes/1')
+                        .expect(200)
+                        .end(function(err, res) {
+                            try {
+                                debug(res.text);
+                                var data = JSON.parse(res.text);
+                                expect(data).to.not.be.null;
+                                data.should.not.be.a('array');
+                                data.should.be.a('object');
+                                expect(data.title).to.equal('User class 1');
+                                done();
+                            } catch (e) {
+                                done(e);
+                            }
+                        });
+
+                })
+
+            });
+
+            describe('- non group members', function() {
+
+                beforeEach(function(done) {
+
+                    login('nongroupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 401', function(done) {
+
+                    request(app)
+                        .get('/api/groups/1/classes/1')
+                        .expect(401, done);
+
+                });
+
+            });
+
+        });
+
     });
 
     var updatedInformation = {
