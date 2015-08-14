@@ -104,6 +104,7 @@ function setFixtures() {
                         resolve();
                     } else {
                         var fixture = fixturesLeft.shift();
+                        preprocessFixtures(fixture);
                         return sqlFixtures.create(knex, fixture, function (err, result) {
                             if (err) {
                                 reject(err);
@@ -132,6 +133,51 @@ function databaseReady(next) {
         return resetDatabasePromise
             .then(next);
     }
+}
+
+/**
+ * Preprocess fixtures to convert '@table.columnname:value' => 'table:0'
+ * @param fixtures
+ */
+function preprocessFixtures(fixtures) {
+    var regularExpression = /@(\w+):(\w+):(\w+)/;
+
+    _.each(fixtures, function(insertableColumns, tableName) {
+        _.each(insertableColumns, function(insertableColumn) {
+            _.each(insertableColumn, function(columnValue, columnName) {
+                var match;
+                if ((match = regularExpression.exec(columnValue)) !== null) {
+                    if (match.index === regularExpression.lastIndex) {
+                        regularExpression.lastIndex++;
+                    }
+
+                    var matchTableName = match[1];
+                    var matchColumnName = match[2];
+                    var matchColumnValue = match[3];
+
+                    /*
+                    console.log("Searching for tabel: " + match[0]);
+                    console.log("Column name: " + match[1]);
+                    console.log("Value: " + match[2]);
+                    */
+
+                    // check for this value
+                    if (fixtures.hasOwnProperty(matchTableName)) {
+                        var matchedTable = fixtures[matchTableName];
+                        _.each(matchedTable, function(matchedIndividualTable, zeroedTableIndex) {
+                            if (matchedIndividualTable.hasOwnProperty(matchColumnName) &&
+                                matchedIndividualTable[matchColumnName] == matchColumnValue) {
+                                // match, modify the text we found to use index
+                                insertableColumn[columnName] = matchTableName + ":" + zeroedTableIndex;
+                            }
+                        });
+                    }
+                }
+            });
+        });
+    });
+
+    return fixtures;
 }
 
 global.databaseReady = databaseReady;
