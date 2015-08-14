@@ -140,7 +140,7 @@ function databaseReady(next) {
  * @param fixtures
  */
 function preprocessFixtures(fixtures) {
-    var regularExpression = /@(\w+):(\w+):(\w+)/;
+    var regularExpression = /@([^:]+):([^:]+):([^:]+)/;
 
     _.each(fixtures, function(insertableColumns, tableName) {
         _.each(insertableColumns, function(insertableColumn) {
@@ -162,6 +162,7 @@ function preprocessFixtures(fixtures) {
                     */
 
                     // check for this value
+                    var found = false;
                     if (fixtures.hasOwnProperty(matchTableName)) {
                         var matchedTable = fixtures[matchTableName];
                         _.each(matchedTable, function(matchedIndividualTable, zeroedTableIndex) {
@@ -169,8 +170,13 @@ function preprocessFixtures(fixtures) {
                                 matchedIndividualTable[matchColumnName] == matchColumnValue) {
                                 // match, modify the text we found to use index
                                 insertableColumn[columnName] = matchTableName + ":" + zeroedTableIndex;
+                                found = true;
                             }
                         });
+                    }
+
+                    if (!found) {
+                        throw new Error("Cannot find: " + match[0]);
                     }
                 }
             });
