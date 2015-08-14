@@ -29,7 +29,8 @@ var Validations = {
         ],
         password: [
             { validator: 'notEmpty', message: 'Password is required.'},
-            { validator: 'isLength', args: [4, 20], message: 'Password must be between 4 and 20 characters.'},
+            // TODO: This works client side but server stores password hash which is larger than 20 chars so this needs to be changed
+            //{ validator: 'isLength', args: [4, 20], message: 'Password must be between 4 and 20 characters.'},
         ],
         squestion: [
             { validator: 'notEmpty', message: 'Secret question is required.'},
