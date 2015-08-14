@@ -165,6 +165,20 @@ module.exports = {
                     'User class details updated'
                 );
             }
+        },
+        'delete': { // delete class type in group
+            auth: ['group owner', 'or', 'very privileged group member'],
+            route: function(req, res) {
+                deleteModel('GroupUserClass',
+                    {
+                        id: req.params.class_id,
+                        group_id: req.params.group_id
+                    },
+                    req,
+                    res,
+                    'User class deleted'
+                );
+            }
         }
     },
     '/:group_id/users': {
