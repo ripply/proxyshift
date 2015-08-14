@@ -439,6 +439,11 @@ describe('#/api/groups', function() {
         contactphone: 54321
     };
 
+    var updatedClassInformation = {
+        title: 'Updated title',
+        description: 'Updated description'
+    };
+
     describe('- PATCH', function() {
 
         describe('- /:id', function() {
@@ -582,11 +587,152 @@ describe('#/api/groups', function() {
 
         });
 
+        describe('- /:group_id/classes/:class_id', function() {
+
+            describe('- anonymous user', function() {
+
+                it('- return 401', function(done) {
+
+                    return request(app)
+                        .patch('/api/groups/2')
+                        .send(updatedClassInformation)
+                        .expect(401, done);
+
+                });
+
+            });
+
+            function updateAllClassInformation(done) {
+
+                debug("Sending updated user class information: ");
+                debug(updatedClassInformation);
+
+                return request(app)
+                    .patch('/api/groups/1/classes/1')
+                    .send(updatedClassInformation)
+                    .expect(200)
+                    .end(function(err, res) {
+                        return request(app)
+                            .get('/api/groups/1/classes/1')
+                            .expect(200)
+                            .end(function(err2, res2) {
+                                debug(res2.text);
+                                var data = JSON.parse(res2.text);
+                                debug(data);
+                                try {
+                                    data.should.not.be.a('array');
+                                    data.should.be.a('object');
+                                    _.each(updatedClassInformation, function (value, key) {
+                                        debug('key: ' + key);
+                                        debug('value: ' + value);
+                                        debug("Looking for key: " + key);
+                                        debug("its value is: " + data[key]);
+                                        data.should.have.property(key);
+                                        debug(data[key] + " =? " + value);
+                                        data[key].should.equal(value);
+                                    });
+
+                                    done();
+                                } catch (e) {
+                                    done(e);
+                                }
+                            });
+                    });
+
+            }
+
+            function updatePartialClassInformation(done) {
+
+                var updatedClassInformationCopy = _.clone(updatedClassInformation);
+                delete updatedClassInformationCopy['name'];
+
+                request(app)
+                    .patch('/api/groups/1/classes/1')
+                    .send(_.pick(updatedClassInformation, 'name'))
+                    .expect(200)
+                    .end(function(err, res) {
+                        return request(app)
+                            .get('/api/groups/1/classes/1')
+                            .expect(200)
+                            .end(function(err2, res2) {
+                                try {
+                                    var data = JSON.parse(res2.text);
+                                    debug(data);
+                                    data.name.should.equal(updatedClassInformation.name);
+
+                                    _.each(updatedClassInformationCopy, function (value, key) {
+                                        data[key].should.not.equal(value);
+                                    });
+
+                                    done();
+                                } catch (e) {
+                                    done(e);
+                                }
+                            });
+                    });
+
+            }
+
+            describe('- group owner', function() {
+
+                beforeEach(function(done) {
+
+                    login('groupowner',
+                        'secret',
+                        done);
+
+                });
+
+                it('- update all user class information', updateAllClassInformation);
+
+                it('- update some user class information', updatePartialClassInformation);
+
+            });
+
+            describe('- nonprivileged group member', function() {
+
+                beforeEach(function(done) {
+
+                    login('test_member_of_group',
+                        'secret',
+                        done);
+
+                });
+
+                it('- return 401', function(done) {
+
+                    return request(app)
+                        .patch('/api/groups/1/classes/1')
+                        .send(updatedClassInformation)
+                        .expect(401, done);
+                });
+
+
+            });
+
+            describe('- privileged group member', function() {
+
+                beforeEach(function(done){
+
+                    login('privledgedmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- update all user class information', updateAllClassInformation);
+
+                it('- update some user class information', updatePartialClassInformation);
+
+            });
+
+        });
+
     });
 
     describe('- DELETE', function() {
 
-        describe('- /:id', function() {
+        describe('- /:group_id', function() {
 
             describe('- anonymous user', function() {
 
@@ -638,6 +784,106 @@ describe('#/api/groups', function() {
                     request(app)
                         .delete('/api/groups/2')
                         .expect(401, done);
+
+                })
+
+            });
+
+            describe('- group member', function(){
+
+                beforeEach(function(done) {
+                    login('groupmember',
+                        'secret',
+                        done);
+                });
+
+                it('- returns 401', function(done) {
+
+                    request(app)
+                        .delete('/api/groups/2')
+                        .expect(401, done);
+
+                })
+
+            });
+
+        });
+
+        describe('- /:group_id/classes/:class_id', function() {
+
+            describe('- anonymous user', function() {
+
+                it('- returns 401', function(done) {
+
+                    return request(app)
+                        .delete('/api/groups/1/classes/1')
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- group owner', function() {
+
+                beforeEach(function(done) {
+
+                    login('groupowner',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 200', function(done) {
+
+                    request(app)
+                        .get('/api/groups/1/classes/1')
+                        .expect(200)
+                        .end(function(err, res) {
+                            request(app)
+                                .delete('/api/groups/1/classes/1')
+                                .expect(200)
+                                .end(function(err2, res2) {
+                                    request(app)
+                                        .get('/api/groups/1/classes/1')
+                                        .expect(401, done);
+                                });
+                        });
+
+                });
+
+            });
+
+            describe('- privileged group member', function(){
+
+                beforeEach(function(done) {
+                    login('privledgedmember',
+                        'secret',
+                        done);
+                });
+
+                it('- returns 401', function(done) {
+
+                    request(app)
+                        .delete('/api/groups/1/classes/1')
+                        .expect(401, done);
+
+                })
+
+            });
+
+            describe('- very privileged group member', function(){
+
+                beforeEach(function(done) {
+                    login('veryprivledgedmember',
+                        'secret',
+                        done);
+                });
+
+                it('- returns 200', function(done) {
+
+                    request(app)
+                        .delete('/api/groups/1/classes/1')
+                        .expect(200, done);
 
                 })
 
