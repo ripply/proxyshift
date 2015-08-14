@@ -178,7 +178,7 @@ module.exports = {
         groupuserclasstousers: [
             {
                 user_id: 'users:2',
-                groupuserclassses: 'groupuserclasstousers:0'
+                groupuserclass_id: 'groupuserclasses:0'
             }
         ]
     }
