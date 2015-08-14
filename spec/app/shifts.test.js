@@ -68,7 +68,7 @@ describe("#/shifts", function() {
                 it('- returns 401', function(done) {
 
                     request(app)
-                        .post('/api/shifts/')
+                        .post('/api/locations/1/shifts')
                         .send(newShift)
                         .expect(401, done);
 

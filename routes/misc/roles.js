@@ -8,7 +8,8 @@ var controllers = [
     require('../../controllers/permissions'),
     require('../../controllers/groups'),
     require('../../controllers/shifts'),
-    require('../../controllers/users')
+    require('../../controllers/users'),
+    require('../../controllers/locations')
 ];
 
 function executeAuthRule(rule, req) {

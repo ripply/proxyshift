@@ -105,7 +105,7 @@ describe("#/session", function() {
                 it('- /logout', function(done) {
 
                     request(app)
-                        .post('/logout')
+                        .post('/session/logout')
                         .expect(200)
                         .end(function (err, res) {
                             request(app)
