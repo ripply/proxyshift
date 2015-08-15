@@ -110,11 +110,11 @@ module.exports = {
         },
 
         'privileged group member': function(req, act) {
-            hasGroupPermissionLevel(1, req, act);
+            return hasGroupPermissionLevel(1, req, act);
         },
 
         'very privileged group member': function(req, act) {
-            hasGroupPermissionLevel(2, req, act);
+            return hasGroupPermissionLevel(2, req, act);
         },
 
         'privileged location member': function(req, act) {
@@ -176,15 +176,11 @@ function hasGroupPermissionLevel(permissionLevel, req, act) {
             this.on('usergroups.grouppermission_id', '=', 'grouppermissions.id')
                 .andOn('usergroups.user_id', '=', user_id);
         })
-            .where('usergroups.group_id', '=', group_id);
+            .where('permissionlevel', '>', permissionLevel);
     })
         .fetchAll({require: true})
         .then(function(grouppermissions) {
-            var priviledgedGroupPermission = grouppermissions.find(function(grouppermission) {
-                return grouppermission.get('permissionlevel') > permissionLevel;
-            });
-
-            return (!priviledgedGroupPermission);
+            return true;
         })
         .catch(function(err) {
             return false;
