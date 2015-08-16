@@ -1242,6 +1242,98 @@ describe('#/api/groups', function() {
 
         });
 
+        describe('- /:group_id/users/:user_id', function() {
+
+            describe('- anonymous user', function() {
+
+                it('- returns 401', function(done) {
+
+                    return request(app)
+                        .delete('/api/groups/2/users/3')
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- group owner', function() {
+
+                beforeEach(function(done) {
+
+                    login('groupowner',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 200', function(done) {
+
+                    request(app)
+                        .get('/api/groups/2/users/3')
+                        .expect(200)
+                        .end(function(err, res) {
+                            request(app)
+                                .delete('/api/groups/2/users/3')
+                                .expect(200)
+                                .end(function(err2, res2) {
+                                    request(app)
+                                        .get('/api/groups/2/users/3')
+                                        .expect(403, done);
+                                });
+                        });
+
+                });
+
+            });
+
+            describe('- privileged group member', function(){
+
+                beforeEach(function(done) {
+                    login('privledgedmember',
+                        'secret',
+                        done);
+                });
+
+                it('- returns 200', function(done) {
+
+                    request(app)
+                        .get('/api/groups/2/users/3')
+                        .expect(200)
+                        .end(function(err, res) {
+                            request(app)
+                                .delete('/api/groups/2/users/3')
+                                .expect(200)
+                                .end(function(err2, res2) {
+                                    request(app)
+                                        .get('/api/groups/2/users/3')
+                                        .expect(403, done);
+                                });
+                        });
+
+                })
+
+            });
+
+            describe('- group member', function(){
+
+                beforeEach(function(done) {
+                    login('groupmember',
+                        'secret',
+                        done);
+                });
+
+                it('- returns 401', function(done) {
+
+                    request(app)
+                        .delete('/api/groups/2/users/3')
+                        .expect(401, done);
+
+                })
+
+            });
+
+        });
+
     });
 
 });
