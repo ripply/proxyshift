@@ -66,12 +66,13 @@ module.exports = {
             });
     },
     deleteModel: function(modelName, queryArgs, req, res, successMessage) {
-        models[modelName].forge(queryArgs)
-            .fetch({require: true})
+        models[modelName].forge()
+            .where(queryArgs)
+            .destroy()
             .then(function (fetchedResult) {
                 fetchedResult.destroy()
                     .then(function () {
-                        res.json({error: true, data: {message: successMessage}});
+                        res.json({error: false, data: {message: successMessage}});
                     })
                     .catch(function (err) {
                         res.status(500).json({error: true, data: {message: err.message}});
