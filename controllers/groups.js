@@ -79,7 +79,11 @@ module.exports = {
                 })
                     .fetch()
                     .then(function (group) {
-                        res.json(group.toJSON());
+                        if (group) {
+                            res.json(group.toJSON());
+                        } else {
+                            throw new Error("Error when fetching group id: " + req.params.group_id + " auth passed so group should exist");
+                        }
                     })
                     .catch(function (err) {
                         res.status(500).json({error: true, data: {message: err.message}});
