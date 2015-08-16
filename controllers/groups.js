@@ -200,7 +200,23 @@ module.exports = {
     },
     '/:group_id/users': {
         'get': { // get all group members
-            auth: ['group owner', 'or', 'privileged group member'] // owner/privileged member
+            auth: ['group owner', 'or', 'privileged group member'], // owner/privileged member
+            route: function(req, res) {
+                models.User.query(function(q) {
+                    q.select('users.id', 'users.firstname', 'users.lastname', 'users.username')
+                        .innerJoin('usergroups', function() {
+                            this.on('users.id', '=', 'usergroups.user_id')
+                    })
+                        .where('usergroups.group_id', '=', req.params.group_id);
+                })
+                    .fetchAll()
+                    .then(function(groupmembers) {
+                        res.json(groupmembers.toJSON());
+                    })
+                    .catch(function(err) {
+                        res.status(500).json({error: true, data: {message: err.message}});
+                    });
+            }
         }
     },
     '/:group_id/users/:user_id': {

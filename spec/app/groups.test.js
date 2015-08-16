@@ -426,6 +426,114 @@ describe('#/api/groups', function() {
 
         });
 
+        describe('- /:group_id/users', function() {
+
+            describe('- anonymous users', function() {
+
+                it('- return 401', function(done) {
+
+                    request(app)
+                        .get('/api/groups/2/users')
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- group owners', function() {
+
+                beforeEach(function(done) {
+
+                    login('groupowner',
+                        'secret',
+                        done);
+
+                });
+
+                it('- list all users', function(done) {
+
+                    request(app)
+                        .get('/api/groups/2/users')
+                        .expect(200)
+                        .end(function(err, res) {
+                            try {
+                                debug(res.text);
+                                var data = JSON.parse(res.text);
+                                data.should.be.a('array');
+                                for (var i = 0; i < data.length; i++) {
+                                    // do not return password or email
+                                    expect(data[i].password).to.be.undefined;
+                                    expect(data[i].email).to.be.undefined;
+                                }
+
+                                done();
+                            } catch (e) {
+                                done(e);
+                            }
+                        });
+
+                });
+
+            });
+
+            describe('- group members', function() {
+
+                beforeEach(function(done) {
+
+                    login('groupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- return 401', function(done) {
+
+                    request(app)
+                        .get('/api/groups/2/users')
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- privileged group member', function() {
+
+                beforeEach(function(done) {
+
+                    login('privledgedmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- list all users', function(done) {
+
+                    request(app)
+                        .get('/api/groups/2/users')
+                        .expect(200)
+                        .end(function(err, res) {
+                            try {
+                                debug(res.text);
+                                var data = JSON.parse(res.text);
+                                data.should.be.a('array');
+                                for (var i = 0; i < data.length; i++) {
+                                    // do not return password or email
+                                    expect(data[i].password).to.be.undefined;
+                                    expect(data[i].email).to.be.undefined;
+                                }
+
+                                done();
+                            } catch (e) {
+                                done(e);
+                            }
+                        });
+
+                });
+
+            });
+
+        });
+
     });
 
     var updatedInformation = {
