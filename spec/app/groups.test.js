@@ -608,12 +608,12 @@ describe('#/api/groups', function() {
                 debug(updatedClassInformation);
 
                 return request(app)
-                    .patch('/api/groups/1/classes/1')
+                    .patch('/api/groups/2classes/1')
                     .send(updatedClassInformation)
                     .expect(200)
                     .end(function(err, res) {
                         return request(app)
-                            .get('/api/groups/1/classes/1')
+                            .get('/api/groups/2/classes/1')
                             .expect(200)
                             .end(function(err2, res2) {
                                 debug(res2.text);
@@ -647,12 +647,12 @@ describe('#/api/groups', function() {
                 delete updatedClassInformationCopy['name'];
 
                 request(app)
-                    .patch('/api/groups/1/classes/1')
+                    .patch('/api/groups/2/classes/1')
                     .send(_.pick(updatedClassInformation, 'name'))
                     .expect(200)
                     .end(function(err, res) {
                         return request(app)
-                            .get('/api/groups/1/classes/1')
+                            .get('/api/groups/2/classes/1')
                             .expect(200)
                             .end(function(err2, res2) {
                                 try {
