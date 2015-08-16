@@ -2,16 +2,16 @@
 
 global.silent = true;
 // sqlite3
-//global.db_dialect = 'sqlite3';
-//global.db_file = './data/test.db';
+global.db_dialect = 'sqlite3';
+global.db_file = './data/test.db';
 // sql servers
 
-global.db_dialect = 'pg';
+//global.db_dialect = 'pg';
 //global.db_dialect = 'mysql';
-global.db_host = 'localhost';
-global.db_user = 'postgres';
-global.db_password = 'test';
-global.db_database = 'postgres';
+//global.db_host = 'localhost';
+//global.db_user = 'postgres';
+//global.db_password = 'test';
+//global.db_database = 'postgres';
 
 global.okToDropTables = true;
 

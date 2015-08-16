@@ -230,10 +230,11 @@ module.exports = function(grunt) {
             },
 
             server: {
-                src: ['spec/spechelper.js', 'spec/**/*.test.js']
-                //src: ['spec/spechelper.js', 'spec/app/groups.test.js']
+                //src: ['spec/spechelper.js', 'spec/**/*.test.js']
+                src: ['spec/spechelper.js', 'spec/app/groups.test.js']
                 //src: ['spec/spechelper.js', 'spec/app/session.test.js']
                 //src: ['spec/spechelper.js', 'spec/app/shifts.test.js']
+                //src: ['spec/spechelper.js', 'spec/app/users.test.js']
             }
         },
 

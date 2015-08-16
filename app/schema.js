@@ -220,12 +220,20 @@ var Schema = {
             type: date,
             nullable: false
         },
-        arealocation_id: {
+        location_id: {
             type: integer,
             references: 'id',
-            inTable: 'arealocations',
+            inTable: 'locations',
             unique: false,
             nullable: false,
+            onDelete: cascade
+        },
+        sublocation_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'sublocations',
+            unique: false,
+            nullable: true,
             onDelete: cascade
         }
     },
