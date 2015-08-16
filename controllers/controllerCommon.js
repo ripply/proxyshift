@@ -54,9 +54,10 @@ module.exports = {
     },
     postModel: function(modelName, otherArgs, req, res, bannedKeys) {
         var modelKeys = getModelKeys(modelName, bannedKeys);
-        var keysToSave = _.pick(req.body, modelKeys);
+        var keysToSave = _.pick(req.body, _.keys(modelKeys));
 
-        models[modelName].forge(_.extend(keysToSave, otherArgs))
+        var fullArgs = _.extend(keysToSave, otherArgs);
+        models[modelName].forge(fullArgs)
             .save()
             .then(function (saved) {
                 res.json({id: saved.get('id')});

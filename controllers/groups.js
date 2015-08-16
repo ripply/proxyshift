@@ -2,6 +2,7 @@ var models = require('../app/models'),
     updateModel = require('./controllerCommon').updateModel,
     simpleGetSingleModel = require('./controllerCommon').simpleGetSingleModel,
     simpleGetListModel = require('./controllerCommon').simpleGetListModel,
+    postModel = require('./controllerCommon').postModel,
     patchModel = require('./controllerCommon').patchModel,
     deleteModel = require('./controllerCommon').deleteModel,
     Bookshelf = models.Bookshelf;
@@ -62,7 +63,7 @@ module.exports = {
     },
     '/:group_id': {
         'get': {
-            auth: ['group member or group owner'],
+            auth: ['group owner or group member'],
             route: function (req, res) {
                 var user_id = req.user.id;
                 models.Group.query(function (q) {
@@ -280,10 +281,30 @@ module.exports = {
     },
     '/:group_id/locations': {
         'get': { // get list of all locations in group
-            auth: ['group owner', 'or', 'group member'] // group member/owner
+            auth: ['group owner or group member'], // group member/owner
+            route: function(req, res) {
+                simpleGetListModel(
+                    'Location',
+                    {
+                        group_id: req.params.group_id
+                    },
+                    req,
+                    res
+                );
+            }
         },
         'post': { // create new location in group
-            auth: ['group owner', 'or', 'privileged group member'] // group owner/privileged member
+            auth: ['group owner', 'or', 'privileged group member'], // group owner/privileged member
+            route: function(req, res) {
+                postModel(
+                    'Location',
+                    {
+                        group_id: req.params.group_id
+                    },
+                    req,
+                    res
+                )
+            }
         }
     },
     '/:group_id/locations/:location_id': {

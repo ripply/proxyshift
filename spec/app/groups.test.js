@@ -36,56 +36,11 @@ describe('#/api/groups', function() {
 
     describe('- POST', function() {
 
-        describe('- /', function() {
+        describe('- /', function () {
 
-            describe('- anonymous user', function() {
+            describe('- anonymous user', function () {
 
-                it('- create a group', function(done) {
-
-                    login('test_password',
-                        'secret',
-                        function(err, res) {
-                            // logged in, now create a group
-                            request(app)
-                                .post('/api/groups')
-                                .send({
-                                    name: 'test_group',
-                                    state: 'state',
-                                    city: 'city',
-                                    address: 'address',
-                                    zipcode: 'zipcode',
-                                    weburl: 'weburl',
-                                    contactemail: 'contactemail@example.com',
-                                    contactphone: '12435'
-                                })
-                                .expect(200)
-                                .end(function(err, res) {
-                                    try {
-                                        debug(res.text);
-                                        var data = JSON.parse(res.text);
-                                        expect(data.id).to.not.be.null;
-                                        done();
-                                    } catch (e) {
-                                        done(e);
-                                    }
-                                });
-                        });
-
-                });
-
-            });
-
-            describe('- logged in user', function() {
-
-                beforeEach(function(done){
-
-                    login('nongroupmember',
-                        'secret',
-                        done);
-
-                });
-
-                it('- create a group', function(done) {
+                it('- return 401', function (done) {
 
                     request(app)
                         .post('/api/groups')
@@ -94,13 +49,43 @@ describe('#/api/groups', function() {
                             state: 'state',
                             city: 'city',
                             address: 'address',
-                            zipcode: 'zipcode',
+                            zipcode: 12345,
+                            weburl: 'weburl',
+                            contactemail: 'contactemail@example.com',
+                            contactphone: '12435'
+                        })
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- logged in user', function () {
+
+                beforeEach(function (done) {
+
+                    login('nongroupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- create a group', function (done) {
+
+                    request(app)
+                        .post('/api/groups')
+                        .send({
+                            name: 'test_group',
+                            state: 'state',
+                            city: 'city',
+                            address: 'address',
+                            zipcode: 12345,
                             weburl: 'weburl',
                             contactemail: 'contactemail@example.com',
                             contactphone: '12435'
                         })
                         .expect(200)
-                        .end(function(err, res) {
+                        .end(function (err, res) {
                             try {
                                 debug(res.text);
                                 var data = JSON.parse(res.text);
@@ -110,6 +95,106 @@ describe('#/api/groups', function() {
                                 done(e);
                             }
                         });
+                });
+
+            });
+
+        });
+
+        describe('- /:group_id/locations', function () {
+
+            var newLocation = {
+                state: 'new_state',
+                city: 'new_city',
+                address: 'new address',
+                zipcode: 12345,
+                phonenumber: 12345
+            };
+
+            describe('- anonymous user', function () {
+
+                it('- return 401', function (done) {
+
+                    request(app)
+                        .post('/api/groups/2/locations')
+                        .send(newLocation)
+                        .expect(401, done);
+                });
+
+            });
+
+            describe('- non group member', function () {
+
+                beforeEach(function (done) {
+
+                    login('nongroupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 401', function (done) {
+
+                    request(app)
+                        .post('/api/groups/2/locations')
+                        .send(newLocation)
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- group member', function () {
+
+                beforeEach(function (done) {
+
+                    login('groupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 401', function (done) {
+
+                    request(app)
+                        .post('/api/groups/2/locations')
+                        .send(newLocation)
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- privileged group member', function () {
+
+                beforeEach(function (done) {
+
+                    login('privledgedmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 401', function (done) {
+
+                    request(app)
+                        .post('/api/groups/2/locations')
+                        .send(newLocation)
+                        .expect(200)
+                        .end(function(err, res) {
+                            try {
+                                debug(res.text);
+                                console.log(res.text);
+                                var data = JSON.parse(res.text);
+                                data.should.be.a('object');
+                                expect(data.id).to.not.be.undefined;
+
+                                done();
+                            } catch (e) {
+                                done(e);
+                            }
+                        });
+
                 });
 
             });
