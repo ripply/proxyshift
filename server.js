@@ -2,7 +2,7 @@ var express = require('express'),
     http = require('http'),
     path = require('path'),
     routes = require('./app/routes'),
-    exphbs = require('express3-handlebars'),
+    //exphbs = require('express3-handlebars'),
     mongoose = require('mongoose'),
     seeder = require('./app/seeder'),
     passport = require('passport'),
@@ -22,6 +22,7 @@ app.set('port', process.env.PORT || 3300);
 app.set('views', __dirname + '/views');
 app.set('view cache', process.env.NODE_ENV !== 'development');
 
+/*
 var hbs = exphbs.create();
 
 app.engine('handlebars', exphbs({
@@ -29,6 +30,7 @@ app.engine('handlebars', exphbs({
     layoutsDir: app.get('views') + '/layouts'
 }));
 app.set('view engine', 'handlebars');
+*/
 
 if (false) {
     var appLog = log4js.getLogger();
