@@ -205,9 +205,17 @@ module.exports = {
                 models.User.query(function(q) {
                     q.select('users.id', 'users.firstname', 'users.lastname', 'users.username')
                         .innerJoin('usergroups', function() {
-                            this.on('users.id', '=', 'usergroups.user_id')
+                            this.on('users.id', '=', 'usergroups.user_id');
                     })
-                        .where('usergroups.group_id', '=', req.params.group_id);
+                        .where('usergroups.group_id', '=', req.params.group_id)
+                        .union(function() {
+                            this.select('users.id', 'users.firstname', 'users.lastname', 'users.username')
+                                .from('users')
+                                .innerJoin('groups', function() {
+                                    this.on('users.id', '=', 'groups.user_id');
+                                })
+                                .where('groups.id', '=', req.params.group_id);
+                        });
                 })
                     .fetchAll()
                     .then(function(groupmembers) {
@@ -221,7 +229,24 @@ module.exports = {
     },
     '/:group_id/users/:user_id': {
         'get': { // get basic group member info
-            auth: ['group owner', 'or', 'group member'] // must be owner owner of group or group member
+            auth: ['group owner', 'or', 'privileged group member'], // must be owner owner of group or group member
+            route: function(req, res) {
+                models.User.query(function(q) {
+                    q.select('users.id', 'users.firstname', 'users.lastname', 'users.username')
+                        .innerJoin('usergroups', function() {
+                            this.on('users.id', '=', 'usergroups.user_id').
+                                andOn('users.id', '=', '')
+                        })
+                        .where('usergroups.group_id', '=', req.params.group_id);
+                })
+                    .fetch()
+                    .then(function(groupmember) {
+                        res.json(groupmember.toJSON());
+                    })
+                    .catch(function(err) {
+                        res.status(500).json({error: true, data: {message: err.message}});
+                    });
+            }
         },
         'delete': { // remove user from group
             auth: ['group owner', 'or', 'privileged group member'] // privileged member or owner
