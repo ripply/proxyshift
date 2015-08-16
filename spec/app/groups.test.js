@@ -534,6 +534,146 @@ describe('#/api/groups', function() {
 
         });
 
+        describe('- /:group_id/users/:user_id', function() {
+
+            describe('- anonymous users', function() {
+
+                it('- return 401', function(done) {
+
+                    request(app)
+                        .get('/api/groups/2/users/5')
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- group owners', function() {
+
+                beforeEach(function(done) {
+
+                    login('groupowner',
+                        'secret',
+                        done);
+
+                });
+
+                it('- can get group owner info', function(done) {
+
+                    request(app)
+                        .get('/api/groups/2/users/5')
+                        .expect(200)
+                        .end(function(err, res) {
+                            try {
+                                debug(res.text);
+                                var data = JSON.parse(res.text);
+                                data.should.be.a('object');
+                                expect(data.firstname).to.equal('groupowner');
+
+                                done();
+                            } catch (e) {
+                                done(e);
+                            }
+                        });
+
+                });
+
+                it('- can get group member info', function(done) {
+
+                    request(app)
+                        .get('/api/groups/2/users/4')
+                        .expect(200)
+                        .end(function(err, res) {
+                            try {
+                                debug(res.text);
+                                var data = JSON.parse(res.text);
+                                data.should.be.a('object');
+                                expect(data.firstname).to.equal('groupmember');
+
+                                done();
+                            } catch (e) {
+                                done(e);
+                            }
+                        });
+
+                });
+
+            });
+
+            describe('- group members', function() {
+
+                beforeEach(function(done) {
+
+                    login('groupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- return 401', function(done) {
+
+                    request(app)
+                        .get('/api/groups/2/users')
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- privileged group member', function() {
+
+                beforeEach(function(done) {
+
+                    login('privledgedmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- can get group owner info', function(done) {
+
+                    request(app)
+                        .get('/api/groups/2/users/5')
+                        .expect(200)
+                        .end(function(err, res) {
+                            try {
+                                debug(res.text);
+                                var data = JSON.parse(res.text);
+                                data.should.be.a('object');
+                                expect(data.firstname).to.equal('groupowner');
+
+                                done();
+                            } catch (e) {
+                                done(e);
+                            }
+                        });
+
+                });
+
+                it('- can get group member info', function(done) {
+
+                    request(app)
+                        .get('/api/groups/2/users/4')
+                        .expect(200)
+                        .end(function(err, res) {
+                            try {
+                                debug(res.text);
+                                var data = JSON.parse(res.text);
+                                data.should.be.a('object');
+                                expect(data.firstname).to.equal('groupmember');
+
+                                done();
+                            } catch (e) {
+                                done(e);
+                            }
+                        });
+
+                });
+
+            });
+
+        });
+
     });
 
     var updatedInformation = {

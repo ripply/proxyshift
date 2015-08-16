@@ -234,14 +234,27 @@ module.exports = {
                 models.User.query(function(q) {
                     q.select('users.id', 'users.firstname', 'users.lastname', 'users.username')
                         .innerJoin('usergroups', function() {
-                            this.on('users.id', '=', 'usergroups.user_id').
-                                andOn('users.id', '=', '')
+                            this.on('users.id', '=', 'usergroups.user_id');
                         })
-                        .where('usergroups.group_id', '=', req.params.group_id);
+                        .where('users.id', '=', req.params.user_id)
+                        .andWhere('usergroups.group_id', '=', req.params.group_id)
+                        .union(function() {
+                            this.select('users.id', 'users.firstname', 'users.lastname', 'users.username')
+                                .from('users')
+                                .innerJoin('groups', function() {
+                                    this.on('users.id', '=', 'groups.user_id');
+                                })
+                                .where('groups.id', '=', req.params.group_id)
+                                .andWhere('users.id', '=', req.params.user_id);
+                        });
                 })
                     .fetch()
-                    .then(function(groupmember) {
-                        res.json(groupmember.toJSON());
+                    .then(function(groupmembers) {
+                        if (!groupmembers) {
+                            res.sendStatus(403);
+                        } else {
+                            res.json(groupmembers.toJSON());
+                        }
                     })
                     .catch(function(err) {
                         res.status(500).json({error: true, data: {message: err.message}});
