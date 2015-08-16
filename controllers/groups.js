@@ -101,14 +101,31 @@ module.exports = {
         'delete': {
             auth: ['group owner'], // must be group owner
             route: function(req, res) {
-                deleteModel('Group',
-                    {
-                        id: req.params.group_id
-                    },
-                    req,
-                    res,
-                    'Group successfully deleted'
-                );
+                // Start a transaction
+                Bookshelf.transaction(function (t) {
+                    // delete all locations that depend on this group
+                    return models.Location
+                        .where({
+                            group_id: req.params.group_id
+                        })
+                        .destroy({transacting: t})
+                        .then(function () {
+                            // then delete the group
+                            return models.Group.forge({
+                                id: req.params.group_id
+                            })
+                                .destroy({transacting: t})
+                                .then(function() {
+                                    res.json({error: false, data: {message: "Successfully deleted groups"}});
+                                })
+                                .catch(function(err) {
+                                    res.json({error: true, data: {message: err}});
+                                })
+                        })
+                        .catch(function (err) {
+                            res.status(500).json({error: true, data: {message: err.message}});
+                        });
+                });
             }
         }
     },
@@ -144,8 +161,8 @@ module.exports = {
             route: function(req, res) {
                 simpleGetSingleModel('GroupUserClass',
                     {
-                        group_id: req.params.group_id,
-                        class_id: req.params.class_id
+                        id: req.params.class_id,
+                        group_id: req.params.group_id
                     },
                     req,
                     res
