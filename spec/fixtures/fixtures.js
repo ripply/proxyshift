@@ -151,7 +151,7 @@ module.exports = {
                 // user 3 is a member of group 0
                 user_id: '@users:username:groupmember',
                 group_id: '@groups:name:membershiptest',
-                grouppermission_id: '@grouppermissions:description:second lowest permission level'
+                grouppermission_id: '@grouppermissions:description:lowest permission level'
             },
             {
                 // user 6 (priviledgegroupmember) is a member of group 0 and a privileged member
