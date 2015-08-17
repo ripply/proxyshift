@@ -403,20 +403,111 @@ module.exports = {
             }
         }
     },
+    '/:group_id/settings': {
+        'get': { // get group settings
+            auth: ['group owner or group member'],
+            route: function(req, res) {
+                models.GroupSetting.query(function(q) {
+                    q.select()
+                        .from('groups')
+                        .innerJoin(function() {
+                            this.on('groups.groupsetting_id', '=', 'groupsettings.id');
+                        })
+                        .where('groups.id', '=', req.params.group_id);
+                })
+                    .fetch()
+                    .then(function (groupsetting) {
+                        if (groupsetting) {
+                            res.json(groupsetting);
+                        } else {
+                            throw new Error("Group setting should exist for group " + req.params.group_id);
+                        }
+                    })
+                    .catch(function (err) {
+                        res.status(500).json({error: true, data: {message: err.message}});
+                    });
+            }
+        }
+    },
     '/:group_id/permissions': {
         'get': { // get all permission sets
-            auth: ['group owner', 'or', 'group member'], // owner/member
+            auth: ['group owner or group member'], // owner/member
             route: function(req, res) {
                 // group -> groupsetting -> grouppermission
+                Bookshelf.transaction(function (t) {
+                    models.Group.forge({
+                        id: req.params.group_id
+                    })
+                        .fetch({transacting: t})
+                        .then(function(group) {
+                            models.GroupPermission.forge({
+                                groupsetting_id: group.get('groupsetting_id')
+                            })
+                                .fetchAll({transacting: t})
+                                .then(function (grouppermissions) {
+                                    // TODO: Return group settings id differently
+                                    res.json(grouppermissions);
+                                })
+                                .catch(function (err) {
+                                    res.status(500).json({error: true, data: {message: err.message}});
+                                });
+
+                        })
+                        .catch(function(err) {
+                            res.status(500).json({error: true, data: {message: err.message}});
+                        });
+                });
             }
         },
         'post': { // create a permission set
-            auth: ['group owner', 'or', 'privileged group member'] // owner/privileged member
+            auth: ['group owner', 'or', 'privileged group member'], // owner/privileged member
+            route: function(req, res) {
+                Bookshelf.transaction(function (t) {
+                    models.GroupSetting.query(function(q) {
+                        q.select()
+                            .from('groups')
+                            .innerJoin(function() {
+                                this.on('groups.groupsetting_id', '=', 'groupsettings.id');
+                            })
+                            .where('groups.id', '=', req.params.group_id);
+                    })
+                        .fetch({transacting: t})
+                        .then(function (groupsetting) {
+                            if (groupsetting) {
+                                postModel(
+                                    'GroupPermission',
+                                    {
+                                        groupsetting_id: groupsetting.get('id')
+                                    },
+                                    req,
+                                    res,
+                                    undefined,
+                                    {transacting: t}
+                                );
+                            } else {
+                                throw new Error("Group setting should exist for group " + req.params.group_id);
+                            }
+                        })
+                        .catch(function (err) {
+                            res.status(500).json({error: true, data: {message: err.message}});
+                        });
+                });
+            }
         }
     },
     '/:group_id/permissions/:permission_id': {
         'patch': { // update a group permission set
-            auth: ['group owner', 'or', 'privileged group member'] // owner/privileged member
+            auth: ['group owner', 'or', 'privileged group member'], // owner/privileged member
+            route: function(req, res) {
+                /*
+                simpleGetSingleModel(
+                    'GroupPermission',
+                    {
+                        id:
+                    }
+                )
+                 */
+            }
         },
         'delete': { // remove a permission set
             auth: ['group owner', 'or', 'privileged group member'] // owner/privileged member

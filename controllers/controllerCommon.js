@@ -52,13 +52,13 @@ module.exports = {
                 res.status(500).json({error: true, data: {message: err.message}});
             });
     },
-    postModel: function(modelName, otherArgs, req, res, bannedKeys) {
+    postModel: function(modelName, otherArgs, req, res, bannedKeys, sqlOptions) {
         var modelKeys = getModelKeys(modelName, bannedKeys);
         var keysToSave = _.pick(req.body, _.keys(modelKeys));
 
         var fullArgs = _.extend(keysToSave, otherArgs);
         models[modelName].forge(fullArgs)
-            .save()
+            .save(sqlOptions)
             .then(function (saved) {
                 res.json({id: saved.get('id')});
             })
