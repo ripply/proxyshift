@@ -14,9 +14,9 @@ if (false) {
     global.db_user = 'postgres';
     global.db_password = 'postgres';
     global.db_database = 'postgres';
-
-    global.okToDropTables = true;
 }
+
+global.okToDropTables = true;
 
 var request = require('supertest'),
     chai = require('chai'),
