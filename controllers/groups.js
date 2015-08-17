@@ -208,13 +208,14 @@ module.exports = {
             auth: ['group owner', 'or', 'privileged group member'], // owner/privileged member
             route: function(req, res) {
                 models.User.query(function(q) {
-                    q.select('users.id', 'users.firstname', 'users.lastname', 'users.username')
+                    q.select('users.id as id', 'users.firstname as firstname', 'users.lastname as lastname', 'users.username as username')
+                        .from('users')
                         .innerJoin('usergroups', function() {
                             this.on('users.id', '=', 'usergroups.user_id');
                     })
                         .where('usergroups.group_id', '=', req.params.group_id)
                         .union(function() {
-                            this.select('users.id', 'users.firstname', 'users.lastname', 'users.username')
+                            this.select('users.id as id', 'users.firstname as firstname', 'users.lastname as lastname', 'users.username as username')
                                 .from('users')
                                 .innerJoin('groups', function() {
                                     this.on('users.id', '=', 'groups.user_id');
@@ -237,14 +238,14 @@ module.exports = {
             auth: ['group owner', 'or', 'privileged group member'], // must be owner owner of group or group member
             route: function(req, res) {
                 models.User.query(function(q) {
-                    q.select('users.id', 'users.firstname', 'users.lastname', 'users.username')
+                    q.select('users.id as id', 'users.firstname as firstname', 'users.lastname as lastname', 'users.username as username')
                         .innerJoin('usergroups', function() {
                             this.on('users.id', '=', 'usergroups.user_id');
                         })
                         .where('users.id', '=', req.params.user_id)
                         .andWhere('usergroups.group_id', '=', req.params.group_id)
                         .union(function() {
-                            this.select('users.id', 'users.firstname', 'users.lastname', 'users.username')
+                            this.select('users.id as id', 'users.firstname as firstname', 'users.lastname as lastname', 'users.username as username')
                                 .from('users')
                                 .innerJoin('groups', function() {
                                     this.on('users.id', '=', 'groups.user_id');
