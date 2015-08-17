@@ -124,6 +124,9 @@ describe("#/shifts", function() {
                             .get('/api/shifts/1')
                             .expect(200)
                             .end(function(err, res) {
+                                if (err) {
+                                    done(err);
+                                }
                                 try {
                                     var data = JSON.parse(res.text);
                                     data.should.be.a('object');
@@ -188,6 +191,9 @@ describe("#/shifts", function() {
                         .get('/api/shifts/all')
                         .expect(200)
                         .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             try {
                                 var data = JSON.parse(res.text);
                                 data.should.be.a('array');
@@ -242,6 +248,9 @@ describe("#/shifts", function() {
                         .get('/api/shifts/new')
                         .expect(200)
                         .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             try {
                                 var data = JSON.parse(res.text);
                                 data.should.be.a('array');
@@ -296,6 +305,9 @@ describe("#/shifts", function() {
                         .get('/api/shifts/managing')
                         .expect(200)
                         .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             try {
                                 expect(res.text).to.not.be.undefined;
                                 expect(res.text.length).to.equal(0);
@@ -328,6 +340,9 @@ describe("#/shifts", function() {
                         .get('/api/shifts/managing')
                         .expect(200)
                         .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             try {
                                 var data = JSON.parse(res.text);
                                 data.should.be.a('array');
@@ -426,6 +441,9 @@ describe("#/shifts", function() {
                                 .get('/api/shifts/1')
                                 .expect(200)
                                 .end(function(err, res) {
+                                    if (err) {
+                                        done(err);
+                                    }
                                     try {
                                         var data = JSON.parse(res.text);
                                         data.should.be.a('object');

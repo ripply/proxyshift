@@ -62,10 +62,16 @@ describe('#/api/users', function(){
                         })
                         .expect(200)
                         .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             login(
                                 username,
                                 password,
                                 function(err2, res2) {
+                                    if (err2) {
+                                        done(err);
+                                    }
                                     try {
                                         var data = JSON.parse(res2.text);
                                         expect(data.authenticationToken).to.not.be.null;
@@ -162,6 +168,9 @@ describe('#/api/users', function(){
                             .expect('Content-Type', /json/)
                             .expect(200)
                             .end(function(err, res) {
+                                if (err) {
+                                    done(err);
+                                }
                                 try {
                                     var data = JSON.parse(res.text);
                                     data.should.be.a('object');
@@ -205,6 +214,9 @@ describe('#/api/users', function(){
                         .expect('Content-Type', /json/)
                         .expect(200)
                         .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             try {
                                 var data = JSON.parse(res.text);
                                 data.should.be.a('array');
@@ -265,6 +277,9 @@ describe('#/api/users', function(){
                             .expect('Content-Type', /json/)
                             .expect(200)
                             .end(function(err, res) {
+                                if (err) {
+                                    done(err);
+                                }
                                 try {
                                     var data = JSON.parse(res.text);
                                     data.should.be.a('object');
@@ -320,6 +335,9 @@ describe('#/api/users', function(){
                         .expect('Content-Type', /json/)
                         .expect(200)
                         .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             try {
                                 var data = JSON.parse(res.text);
                                 data.should.be.a('object');
@@ -464,6 +482,9 @@ describe('#/api/users', function(){
                                 .expect('Content-Type', /json/)
                                 .expect(200)
                                 .end(function(err, res) {
+                                    if (err) {
+                                        done(err);
+                                    }
                                     try {
                                         var data = JSON.parse(res.text);
                                         data.should.be.a('object');
@@ -504,6 +525,9 @@ describe('#/api/users', function(){
                                 .expect('Content-Type', /json/)
                                 .expect(200)
                                 .end(function(err, res) {
+                                    if (err) {
+                                        done(err);
+                                    }
                                     try {
                                         var data = JSON.parse(res.text);
                                         data.should.be.a('object');
@@ -647,6 +671,9 @@ describe('#/api/users', function(){
                                 .expect('Content-Type', /json/)
                                 .expect(200)
                                 .end(function(err, res) {
+                                    if (err) {
+                                        done(err);
+                                    }
                                     try {
                                         var data = JSON.parse(res.text);
                                         data.should.be.a('object');
@@ -687,6 +714,9 @@ describe('#/api/users', function(){
                                 .expect('Content-Type', /json/)
                                 .expect(200)
                                 .end(function(err, res) {
+                                    if (err) {
+                                        done(err);
+                                    }
                                     try {
                                         var data = JSON.parse(res.text);
                                         data.should.be.a('object');

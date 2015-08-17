@@ -257,7 +257,7 @@ module.exports = {
                     .fetch()
                     .then(function(groupmembers) {
                         if (!groupmembers) {
-                            res.sendStatus(403);
+                            res.status(403).json({error: true, data: {}});
                         } else {
                             res.json(groupmembers.toJSON());
                         }

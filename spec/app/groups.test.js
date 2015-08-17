@@ -182,6 +182,9 @@ describe('#/api/groups', function() {
                         .send(newLocation)
                         .expect(200)
                         .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             try {
                                 debug(res.text);
                                 console.log(res.text);
@@ -226,10 +229,16 @@ describe('#/api/groups', function() {
                     login('groupmember',
                         'secret',
                         function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             request(app)
                                 .get('/api/groups/')
                                 .expect(200)
-                                .end(function(err, res) {
+                                .end(function(err2, res) {
+                                    if (err2) {
+                                        done(err2);
+                                    }
                                     try {
                                         debug(res.text);
                                         var data = JSON.parse(res.text);
@@ -261,10 +270,16 @@ describe('#/api/groups', function() {
                     login('groupowner',
                         'secret',
                         function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             request(app)
                                 .get('/api/groups/')
                                 .expect(200)
                                 .end(function(err, res) {
+                                    if (err) {
+                                        done(err);
+                                    }
                                     try {
                                         debug(res.text);
                                         var data = JSON.parse(res.text);
@@ -312,6 +327,9 @@ describe('#/api/groups', function() {
                     login('groupmember',
                         'secret',
                         function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             // logged in, now query group
                             request(app)
                                 .get('/api/groups/2')
@@ -325,6 +343,9 @@ describe('#/api/groups', function() {
                     login('groupmember',
                         'secret',
                         function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             // logged in, now query group
                             request(app)
                                 .get('/api/groups/1')
@@ -342,6 +363,9 @@ describe('#/api/groups', function() {
                     login('groupowner',
                         'secret',
                         function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             // logged in, now query group
                             request(app)
                                 .get('/api/groups/2')
@@ -355,6 +379,9 @@ describe('#/api/groups', function() {
                     login('groupmember',
                         'secret',
                         function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             // logged in, now query group
                             request(app)
                                 .get('/api/groups/1')
@@ -397,6 +424,9 @@ describe('#/api/groups', function() {
                         .get('/api/groups/1/classes/')
                         .expect(200)
                         .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             try {
                                 debug(res.text);
                                 var data = JSON.parse(res.text);
@@ -472,6 +502,9 @@ describe('#/api/groups', function() {
                         .get('/api/groups/1/classes/1')
                         .expect(200)
                         .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             try {
                                 debug(res.text);
                                 var data = JSON.parse(res.text);
@@ -541,6 +574,9 @@ describe('#/api/groups', function() {
                         .get('/api/groups/2/users')
                         .expect(200)
                         .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             try {
                                 debug(res.text);
                                 var data = JSON.parse(res.text);
@@ -597,6 +633,9 @@ describe('#/api/groups', function() {
                         .get('/api/groups/2/users')
                         .expect(200)
                         .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             try {
                                 debug(res.text);
                                 var data = JSON.parse(res.text);
@@ -649,6 +688,9 @@ describe('#/api/groups', function() {
                         .get('/api/groups/2/users/5')
                         .expect(200)
                         .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             try {
                                 debug(res.text);
                                 var data = JSON.parse(res.text);
@@ -669,6 +711,9 @@ describe('#/api/groups', function() {
                         .get('/api/groups/2/users/4')
                         .expect(200)
                         .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             try {
                                 debug(res.text);
                                 var data = JSON.parse(res.text);
@@ -721,6 +766,9 @@ describe('#/api/groups', function() {
                         .get('/api/groups/2/users/5')
                         .expect(200)
                         .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             try {
                                 debug(res.text);
                                 var data = JSON.parse(res.text);
@@ -741,6 +789,9 @@ describe('#/api/groups', function() {
                         .get('/api/groups/2/users/4')
                         .expect(200)
                         .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             try {
                                 debug(res.text);
                                 var data = JSON.parse(res.text);
@@ -804,10 +855,16 @@ describe('#/api/groups', function() {
                     .send(updatedInformation)
                     .expect(200)
                     .end(function(err, res) {
+                        if (err) {
+                            done(err);
+                        }
                         return request(app)
                             .get('/api/groups/2')
                             .expect(200)
                             .end(function(err2, res2) {
+                                if (err2) {
+                                    done(err);
+                                }
                                 debug(res2.text);
                                 var data = JSON.parse(res2.text);
                                 debug(data);
@@ -843,10 +900,16 @@ describe('#/api/groups', function() {
                     .send(_.pick(updatedInformation, 'name'))
                     .expect(200)
                     .end(function(err, res) {
+                        if (err) {
+                            done(err);
+                        }
                         return request(app)
                             .get('/api/groups/2')
                             .expect(200)
                             .end(function(err2, res2) {
+                                if (err2) {
+                                    done(err);
+                                }
                                 try {
                                     var data = JSON.parse(res2.text);
                                     debug(data);
@@ -945,10 +1008,16 @@ describe('#/api/groups', function() {
                     .send(updatedClassInformation)
                     .expect(200)
                     .end(function(err, res) {
+                        if (err) {
+                            done(err);
+                        }
                         return request(app)
                             .get('/api/groups/2/classes/1')
                             .expect(200)
                             .end(function(err2, res2) {
+                                if (err2) {
+                                    done(err);
+                                }
                                 debug(res2.text);
                                 var data = JSON.parse(res2.text);
                                 debug(data);
@@ -984,10 +1053,16 @@ describe('#/api/groups', function() {
                     .send(_.pick(updatedClassInformation, 'name'))
                     .expect(200)
                     .end(function(err, res) {
+                        if (err) {
+                            done(err);
+                        }
                         return request(app)
                             .get('/api/groups/2/classes/1')
                             .expect(200)
                             .end(function(err2, res2) {
+                                if (err2) {
+                                    done(err);
+                                }
                                 try {
                                     var data = JSON.parse(res2.text);
                                     debug(data);
@@ -1095,6 +1170,9 @@ describe('#/api/groups', function() {
                         .delete('/api/groups/2')
                         .expect(200)
                         .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             request(app)
                                 .get('/api/groups/2')
                                 .expect(401, done);
@@ -1172,10 +1250,16 @@ describe('#/api/groups', function() {
                         .get('/api/groups/1/classes/1')
                         .expect(200)
                         .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             request(app)
                                 .delete('/api/groups/1/classes/1')
                                 .expect(200)
                                 .end(function(err2, res2) {
+                                    if (err2) {
+                                        done(err);
+                                    }
                                     request(app)
                                         .get('/api/groups/1/classes/1')
                                         .expect(401, done);
@@ -1272,10 +1356,17 @@ describe('#/api/groups', function() {
                         .get('/api/groups/2/users/3')
                         .expect(200)
                         .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             request(app)
                                 .delete('/api/groups/2/users/3')
                                 .expect(200)
                                 .end(function(err2, res2) {
+                                    console.log(err2);
+                                    if (err2) {
+                                        done(err2);
+                                    }
                                     request(app)
                                         .get('/api/groups/2/users/3')
                                         .expect(403, done);
@@ -1300,10 +1391,16 @@ describe('#/api/groups', function() {
                         .get('/api/groups/2/users/3')
                         .expect(200)
                         .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             request(app)
                                 .delete('/api/groups/2/users/3')
                                 .expect(200)
                                 .end(function(err2, res2) {
+                                    if (err2) {
+                                        done(err2);
+                                    }
                                     request(app)
                                         .get('/api/groups/2/users/3')
                                         .expect(403, done);

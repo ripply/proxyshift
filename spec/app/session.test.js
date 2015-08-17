@@ -40,6 +40,9 @@ describe("#/session", function() {
             return login('test_password',
                 'secret',
                 function(err, res) {
+                    if (err) {
+                        done(err);
+                    }
                     try {
                         expect(global.sess).to.not.be.undefined;
                         var sessionCookie = _.find(global.sess.cookies, function (cookie) {
@@ -82,6 +85,9 @@ describe("#/session", function() {
                         'test_password',
                         password,
                         function(err, res) {
+                            if (err) {
+                                done(err);
+                            }
                             try {
                                 var data = JSON.parse(res.text);
                                 expect(data.authenticationToken).to.not.be.null;
