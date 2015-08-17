@@ -151,6 +151,28 @@ var Schema = {
             nullable: false
         }
     },
+    SubLocation: {
+        id: {
+            type: increments
+        },
+        title: {
+            type: string,
+            nullable: false,
+            unique: false
+        },
+        description: {
+            type: string,
+            nullable: false,
+            unique: false
+        },
+        location_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'locations',
+            onDeleet: cascade,
+            nullable: false
+        }
+    },
     Area: {
         id: {
             type: increments
@@ -220,12 +242,20 @@ var Schema = {
             type: date,
             nullable: false
         },
-        arealocation_id: {
+        location_id: {
             type: integer,
             references: 'id',
-            inTable: 'arealocations',
+            inTable: 'locations',
             unique: false,
             nullable: false,
+            onDelete: cascade
+        },
+        sublocation_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'sublocations',
+            unique: false,
+            nullable: true,
             onDelete: cascade
         }
     },
@@ -332,28 +362,6 @@ var Schema = {
             references: 'id',
             inTable: 'groupuserclasses',
             onDelete: cascade,
-            nullable: false
-        }
-    },
-    SubLocation: {
-        id: {
-            type: increments
-        },
-        title: {
-            type: string,
-            nullable: false,
-            unique: false
-        },
-        description: {
-            type: string,
-            nullable: false,
-            unique: false
-        },
-        location_id: {
-            type: integer,
-            references: 'id',
-            inTable: 'locations',
-            onDeleet: cascade,
             nullable: false
         }
     },

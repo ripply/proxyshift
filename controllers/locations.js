@@ -1,8 +1,12 @@
-/**
- * Created by Zang on 2015-08-13.
- */
-var models = require('../app/models');
-var moment = require('moment');
+var models = require('../app/models'),
+    updateModel = require('./controllerCommon').updateModel,
+    simpleGetSingleModel = require('./controllerCommon').simpleGetSingleModel,
+    simpleGetListModel = require('./controllerCommon').simpleGetListModel,
+    postModel = require('./controllerCommon').postModel,
+    patchModel = require('./controllerCommon').patchModel,
+    deleteModel = require('./controllerCommon').deleteModel,
+    Bookshelf = models.Bookshelf,
+    moment = require('moment');
 
 module.exports = {
     route: '/api/locations',
@@ -55,6 +59,32 @@ module.exports = {
                     .catch(function (err) {
                         res.status(500).json({error: true, data: {message: err.message}});
                     });
+            }
+        }
+    },
+    '/:location_id/shifts': {
+        'get': { // get list of all class types
+            auth: ['group owner', 'or', 'group member'], // must be a member/owner of the group
+            route: function(req, res) {
+                simpleGetListModel('GroupUserClass',
+                    {
+                        group_id: req.params.group_id
+                    },
+                    req,
+                    res
+                );
+            }
+        },
+        'post': { // create new class for group
+            auth: ['group owner', 'or', 'privileged location member', 'or', ['anyone can create shifts', 'and', 'location member']], // must be an owner or privileged group member
+            route: function(req, res) {
+                postModel('Shifts',
+                    {
+                        location_id: req.params.location_id
+                    },
+                    req,
+                    res
+                );
             }
         }
     }

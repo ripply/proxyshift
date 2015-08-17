@@ -2,18 +2,21 @@
 
 global.silent = true;
 // sqlite3
-//global.db_dialect = 'sqlite3';
-//global.db_file = './data/test.db';
-// sql servers
+if (false) {
+    global.db_dialect = 'sqlite3';
+    global.db_file = './data/test.db';
+} else {
+    // sql servers
 
-global.db_dialect = 'pg';
-//global.db_dialect = 'mysql';
-global.db_host = 'localhost';
-global.db_user = 'postgres';
-global.db_password = 'test';
-global.db_database = 'postgres';
+    global.db_dialect = 'pg';
+    //global.db_dialect = 'mysql';
+    global.db_host = 'localhost';
+    global.db_user = 'postgres';
+    global.db_password = 'postgres';
+    global.db_database = 'postgres';
 
-global.okToDropTables = true;
+    global.okToDropTables = true;
+}
 
 var request = require('supertest'),
     chai = require('chai'),
