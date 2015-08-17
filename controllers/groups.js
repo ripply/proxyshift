@@ -124,7 +124,7 @@ module.exports = {
                                     res.json({error: false, data: {message: "Successfully deleted groups"}});
                                 })
                                 .catch(function(err) {
-                                    res.json({error: true, data: {message: err}});
+                                    res.status(500).json({error: true, data: {message: err}});
                                 })
                         })
                         .catch(function (err) {
@@ -342,25 +342,73 @@ module.exports = {
     },
     '/:group_id/locations/:location_id': {
         'delete': { // remove location from group
-            auth: ['group owner', 'or', 'privileged group member'] // group owner/privileged member
+            auth: ['group owner', 'or', 'privileged group member'], // group owner/privileged member
+            route: function(req, res) {
+                simpleGetSingleModel(
+                    'Location',
+                    {
+                        id: req.params.location_id,
+                        group_id: req.params.group_id
+                    },
+                    req,
+                    res
+                );
+            }
         }
     },
     '/:group_id/areas': {
         'get': { // get all areas attached
-            auth: ['group owner', 'or', 'group member'] // owner/member
+            auth: ['group owner', 'or', 'group member'], // owner/member
+            route: function(req, res) {
+                simpleGetListModel(
+                    'Area',
+                    {
+                        group_id: req.params.group_id
+                    },
+                    req,
+                    res
+                );
+            }
         },
         'post': { // create an area
-            auth: ['group owner', 'or', 'privileged group member'] // owner/privileged member
+            auth: ['group owner', 'or', 'privileged group member'], // owner/privileged member
+            route: function(req, res) {
+                postModel(
+                    'Area',
+                    {
+                        group_id: req.params.group_id
+                    },
+                    req,
+                    res
+                );
+            }
         }
     },
     '/:group_id/areas/:area_id': {
         'delete': { // remove an area from this group
-            auth: ['group owner', 'or', 'privileged group member'] // owner/privileged member
+            auth: ['group owner', 'or', 'privileged group member'], // owner/privileged member
+            route: function(req, res) {
+                models.Area
+                    .where({
+                        id: req.params.area_id,
+                        group_id: req.params.group_id
+                    })
+                    .destroy()
+                    .then(function() {
+                        res.json({error: false, data: {message: "Successfully deleted Area"}});
+                    })
+                    .catch(function(err) {
+                        res.status(500).json({error: true, data: {message: "Failed to delete Area"}});
+                    });
+            }
         }
     },
     '/:group_id/permissions': {
         'get': { // get all permission sets
-            auth: ['group owner', 'or', 'group member'] // owner/member
+            auth: ['group owner', 'or', 'group member'], // owner/member
+            route: function(req, res) {
+                // group -> groupsetting -> grouppermission
+            }
         },
         'post': { // create a permission set
             auth: ['group owner', 'or', 'privileged group member'] // owner/privileged member
