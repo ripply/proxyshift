@@ -189,6 +189,66 @@ function preprocessFixtures(fixtures) {
     return fixtures;
 }
 
+function parse(uri) {
+    var re = /(([^@]*)@([^:@]+):([^:@]+):([^:@]+):([^@]*))/g;
+    var match;
+
+    var textBeforeMatch = 2;
+    var modelName = 3;
+    var columnName = 4;
+    var columnValue = 5;
+    var textafterMatch = 6;
+
+    var result = '';
+
+    var sqlStartingIndex = 1;
+
+    var foundAMatch = false;
+
+    while ((match = re.exec(uri)) !== null) {
+        foundAMatch = true;
+
+        if (match.index === re.lastIndex) {
+            re.lastIndex++;
+        }
+
+        var model = global.fixtures.base[match[modelName]];
+        if (model === undefined) {
+            throw new Error("Cannot find model: " + match[modelName]);
+        }
+
+        var column = match[columnName];
+        var expectedColumnValue = match[columnValue];
+
+        var found = null;
+
+        for (var i = 0; i < model.length; i++) {
+            var realColumnValue = model[i][column];
+            if (realColumnValue == expectedColumnValue) {
+                found = i + sqlStartingIndex;
+                break;
+            }
+        }
+
+        if (found === null) {
+            throw new Error("Cannot find fixture for: @" + match[modelName] + ":" + match[columnName] + ":" + match[columnValue] + ":");
+        }
+
+        var beforeText = match[textBeforeMatch];
+        var afterText = match[textafterMatch];
+
+        result = result + (beforeText || '') + found + (afterText || '');
+    }
+
+    if (!foundAMatch) {
+        throw new Error("Could not find a match in " + uri);
+    }
+
+    return result;
+}
+
+global.parse = parse;
+
 global.databaseReady = databaseReady;
 
 function waitForFixturesToComplete(req, res, next) {
