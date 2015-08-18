@@ -9,6 +9,7 @@ var expect = global.expect;
 var login = require('../common').login;
 var _ = require('underscore');
 var debug = global.debug;
+var parse = global.parse;
 
 describe('#/api/groups', function() {
 
@@ -116,7 +117,7 @@ describe('#/api/groups', function() {
                 it('- return 401', function (done) {
 
                     request(app)
-                        .post('/api/groups/2/locations')
+                        .post(parse('/api/groups/@groups:name:membershiptest:/locations'))
                         .send(newLocation)
                         .expect(401, done);
                 });
@@ -136,7 +137,7 @@ describe('#/api/groups', function() {
                 it('- returns 401', function (done) {
 
                     request(app)
-                        .post('/api/groups/2/locations')
+                        .post(parse('/api/groups/@groups:name:membershiptest:/locations'))
                         .send(newLocation)
                         .expect(401, done);
 
@@ -157,7 +158,7 @@ describe('#/api/groups', function() {
                 it('- returns 401', function (done) {
 
                     request(app)
-                        .post('/api/groups/2/locations')
+                        .post(parse('/api/groups/@groups:name:membershiptest:/locations'))
                         .send(newLocation)
                         .expect(401, done);
 
@@ -178,7 +179,7 @@ describe('#/api/groups', function() {
                 it('- returns 401', function (done) {
 
                     request(app)
-                        .post('/api/groups/2/locations')
+                        .post(parse('/api/groups/@groups:name:membershiptest:/locations'))
                         .send(newLocation)
                         .expect(201)
                         .end(function(err, res) {
@@ -322,7 +323,7 @@ describe('#/api/groups', function() {
                 it('- fail to access group', function(done) {
 
                     request(app)
-                        .get('/api/groups/2')
+                        .get(parse('/api/groups/@groups:name:membershiptest:'))
                         .expect(401, done);
 
                 });
@@ -342,7 +343,7 @@ describe('#/api/groups', function() {
                             }
                             // logged in, now query group
                             request(app)
-                                .get('/api/groups/2')
+                                .get(parse('/api/groups/@groups:name:membershiptest:'))
                                 .expect(200, done);
                         });
 
@@ -359,7 +360,7 @@ describe('#/api/groups', function() {
                             }
                             // logged in, now query group
                             request(app)
-                                .get('/api/groups/1')
+                                .get(parse('/api/groups/@groups:name:test_password_group:'))
                                 .expect(401, done);
                         });
 
@@ -380,7 +381,7 @@ describe('#/api/groups', function() {
                             }
                             // logged in, now query group
                             request(app)
-                                .get('/api/groups/2')
+                                .get(parse('/api/groups/@groups:name:membershiptest:'))
                                 .expect(200, done);
                         });
 
@@ -397,7 +398,7 @@ describe('#/api/groups', function() {
                             }
                             // logged in, now query group
                             request(app)
-                                .get('/api/groups/1')
+                                .get(parse('/api/groups/@groups:name:test_password_group:'))
                                 .expect(401, done);
                         });
 
@@ -414,7 +415,7 @@ describe('#/api/groups', function() {
                 it('- returns 401', function(done) {
 
                     request(app)
-                        .get('/api/groups/1/classes/')
+                        .get(parse('/api/groups/@groups:name:test_password_group:/classes/'))
                         .expect(401, done);
 
                 });
@@ -434,7 +435,7 @@ describe('#/api/groups', function() {
                 it('- can fetch group classes', function(done) {
 
                     request(app)
-                        .get('/api/groups/1/classes/')
+                        .get(parse('/api/groups/@groups:name:test_password_group:/classes/'))
                         .expect(200)
                         .end(function(err, res) {
                             if (err) {
@@ -477,7 +478,7 @@ describe('#/api/groups', function() {
                 it('- returns 401', function(done) {
 
                     request(app)
-                        .get('/api/groups/1/classes/')
+                        .get(parse('/api/groups/@groups:name:test_password_group:/classes/'))
                         .expect(401, done);
 
                 });
@@ -493,7 +494,7 @@ describe('#/api/groups', function() {
                 it('- returns 401', function(done) {
 
                     request(app)
-                        .get('/api/groups/1/classes')
+                        .get(parse('/api/groups/@groups:name:test_password_group:/classes'))
                         .expect(401, done);
 
                 });
@@ -513,7 +514,7 @@ describe('#/api/groups', function() {
                 it('- can fetch a specific group class', function(done) {
 
                     request(app)
-                        .get('/api/groups/1/classes/1')
+                        .get(parse('/api/groups/@groups:name:test_password_group:/classes/@groupuserclasses:title:User class 1:'))
                         .expect(200)
                         .end(function(err, res) {
                             if (err) {
@@ -550,7 +551,7 @@ describe('#/api/groups', function() {
                 it('- returns 401', function(done) {
 
                     request(app)
-                        .get('/api/groups/1/classes/1')
+                        .get(parse('/api/groups/@groups:name:test_password_group:/classes/@groupuserclasses:title:User class 1:'))
                         .expect(401, done);
 
                 });
@@ -566,7 +567,7 @@ describe('#/api/groups', function() {
                 it('- return 401', function(done) {
 
                     request(app)
-                        .get('/api/groups/2/users')
+                        .get(parse('/api/groups/@groups:name:membershiptest:/users'))
                         .expect(401, done);
 
                 });
@@ -586,7 +587,7 @@ describe('#/api/groups', function() {
                 it('- list all users', function(done) {
 
                     request(app)
-                        .get('/api/groups/2/users')
+                        .get(parse('/api/groups/@groups:name:membershiptest:/users'))
                         .expect(200)
                         .end(function(err, res) {
                             if (err) {
@@ -626,7 +627,7 @@ describe('#/api/groups', function() {
                 it('- return 401', function(done) {
 
                     request(app)
-                        .get('/api/groups/2/users')
+                        .get(parse('/api/groups/@groups:name:membershiptest:/users'))
                         .expect(401, done);
 
                 });
@@ -646,7 +647,7 @@ describe('#/api/groups', function() {
                 it('- list all users', function(done) {
 
                     request(app)
-                        .get('/api/groups/2/users')
+                        .get(parse('/api/groups/@groups:name:membershiptest:/users'))
                         .expect(200)
                         .end(function(err, res) {
                             if (err) {
@@ -702,7 +703,7 @@ describe('#/api/groups', function() {
                 it('- can get group owner info', function(done) {
 
                     request(app)
-                        .get('/api/groups/2/users/5')
+                        .get(parse('/api/groups/@groups:name:membershiptest:/users/@users:firstname:groupowner:'))
                         .expect(200)
                         .end(function(err, res) {
                             if (err) {
@@ -726,7 +727,7 @@ describe('#/api/groups', function() {
                 it('- can get group member info', function(done) {
 
                     request(app)
-                        .get('/api/groups/2/users/4')
+                        .get(parse('/api/groups/@groups:name:membershiptest:/users/@users:firstname:groupmember:'))
                         .expect(200)
                         .end(function(err, res) {
                             if (err) {
@@ -762,7 +763,7 @@ describe('#/api/groups', function() {
                 it('- return 401', function(done) {
 
                     request(app)
-                        .get('/api/groups/2/users')
+                        .get(parse('/api/groups/@groups:name:membershiptest:/users'))
                         .expect(401, done);
 
                 });
@@ -782,7 +783,7 @@ describe('#/api/groups', function() {
                 it('- can get group owner info', function(done) {
 
                     request(app)
-                        .get('/api/groups/2/users/5')
+                        .get(parse('/api/groups/@groups:name:membershiptest:/users/@users:firstname:groupowner:'))
                         .expect(200)
                         .end(function(err, res) {
                             if (err) {
@@ -806,7 +807,7 @@ describe('#/api/groups', function() {
                 it('- can get group member info', function(done) {
 
                     request(app)
-                        .get('/api/groups/2/users/4')
+                        .get(parse('/api/groups/@groups:name:membershiptest:/users/@users:firstname:groupmember:'))
                         .expect(200)
                         .end(function(err, res) {
                             if (err) {
@@ -861,7 +862,7 @@ describe('#/api/groups', function() {
                 it('- return 401', function(done) {
 
                     return request(app)
-                        .patch('/api/groups/2')
+                        .patch(parse('/api/groups/@groups:name:membershiptest:'))
                         .send(updatedInformation)
                         .expect(401, done);
 
@@ -875,7 +876,7 @@ describe('#/api/groups', function() {
                 debug(updatedInformation);
 
                 return request(app)
-                    .patch('/api/groups/2')
+                    .patch(parse('/api/groups/@groups:name:membershiptest:'))
                     .send(updatedInformation)
                     .expect(200)
                     .end(function(err, res) {
@@ -884,7 +885,7 @@ describe('#/api/groups', function() {
                             return;
                         }
                         return request(app)
-                            .get('/api/groups/2')
+                            .get(parse('/api/groups/@groups:name:membershiptest:'))
                             .expect(200)
                             .end(function(err2, res2) {
                                 if (err2) {
@@ -922,7 +923,7 @@ describe('#/api/groups', function() {
                 delete updatedInformationCopy['name'];
 
                 request(app)
-                    .patch('/api/groups/2')
+                    .patch(parse('/api/groups/@groups:name:membershiptest:'))
                     .send(_.pick(updatedInformation, 'name'))
                     .expect(200)
                     .end(function(err, res) {
@@ -931,7 +932,7 @@ describe('#/api/groups', function() {
                             return;
                         }
                         return request(app)
-                            .get('/api/groups/2')
+                            .get(parse('/api/groups/@groups:name:membershiptest:'))
                             .expect(200)
                             .end(function(err2, res2) {
                                 if (err2) {
@@ -985,7 +986,7 @@ describe('#/api/groups', function() {
                 it('- return 401', function(done) {
 
                     return request(app)
-                        .patch('/api/groups/2')
+                        .patch(parse('/api/groups/@groups:name:membershiptest:'))
                         .send(updatedInformation)
                         .expect(401, done);
                 });
@@ -1018,7 +1019,7 @@ describe('#/api/groups', function() {
                 it('- return 401', function(done) {
 
                     return request(app)
-                        .patch('/api/groups/2')
+                        .patch(parse('/api/groups/@groups:name:membershiptest:'))
                         .send(updatedClassInformation)
                         .expect(401, done);
 
@@ -1032,20 +1033,23 @@ describe('#/api/groups', function() {
                 debug(updatedClassInformation);
 
                 return request(app)
-                    .patch('/api/groups/2classes/1')
+                    .patch(parse('/api/groups/@groups:name:membershiptest:/classes/@groupuserclasses:title:User class 1:'))
                     .send(updatedClassInformation)
                     .expect(200)
                     .end(function(err, res) {
                         if (err) {
+                            debug(res.text);
                             done(err);
                             return;
                         }
+                        debug("Successfully was able to patch class");
                         return request(app)
-                            .get('/api/groups/2/classes/1')
+                            .get(parse('/api/groups/@groups:name:membershiptest:/classes/@groupuserclasses:title:User class 1:'))
                             .expect(200)
                             .end(function(err2, res2) {
                                 if (err2) {
-                                    done(err);
+                                    debug(res2.text);
+                                    done(err2);
                                     return;
                                 }
                                 debug(res2.text);
@@ -1079,7 +1083,7 @@ describe('#/api/groups', function() {
                 delete updatedClassInformationCopy['name'];
 
                 request(app)
-                    .patch('/api/groups/2/classes/1')
+                    .patch(parse('/api/groups/@groups:name:membershiptest:/classes/@groupuserclasses:title:User class 1:'))
                     .send(_.pick(updatedClassInformation, 'name'))
                     .expect(200)
                     .end(function(err, res) {
@@ -1088,11 +1092,11 @@ describe('#/api/groups', function() {
                             return;
                         }
                         return request(app)
-                            .get('/api/groups/2/classes/1')
+                            .get(parse('/api/groups/@groups:name:membershiptest:/classes/@groupuserclasses:title:User class 1:'))
                             .expect(200)
                             .end(function(err2, res2) {
                                 if (err2) {
-                                    done(err);
+                                    done(err2);
                                     return;
                                 }
                                 try {
@@ -1142,7 +1146,7 @@ describe('#/api/groups', function() {
                 it('- return 401', function(done) {
 
                     return request(app)
-                        .patch('/api/groups/1/classes/1')
+                        .patch(parse('/api/groups/@groups:name:membershiptest:/classes/@groupuserclasses:title:User class 1:'))
                         .send(updatedClassInformation)
                         .expect(401, done);
                 });
@@ -1182,7 +1186,7 @@ describe('#/api/groups', function() {
                 it('- returns 401', function(done) {
 
                     return request(app)
-                        .delete('/api/groups/2')
+                        .delete(parse('/api/groups/@groups:name:membershiptest:'))
                         .expect(401, done);
 
                 });
@@ -1202,7 +1206,7 @@ describe('#/api/groups', function() {
                 it('- returns 200', function(done) {
 
                     request(app)
-                        .delete('/api/groups/2')
+                        .delete(parse('/api/groups/@groups:name:membershiptest:'))
                         .expect(200)
                         .end(function(err, res) {
                             if (err) {
@@ -1210,7 +1214,7 @@ describe('#/api/groups', function() {
                                 return;
                             }
                             request(app)
-                                .get('/api/groups/2')
+                                .get(parse('/api/groups/@groups:name:membershiptest:'))
                                 .expect(401, done);
                         });
 
@@ -1229,7 +1233,7 @@ describe('#/api/groups', function() {
                 it('- returns 401', function(done) {
 
                     request(app)
-                        .delete('/api/groups/2')
+                        .delete(parse('/api/groups/@groups:name:membershiptest:'))
                         .expect(401, done);
 
                 })
@@ -1247,7 +1251,7 @@ describe('#/api/groups', function() {
                 it('- returns 401', function(done) {
 
                     request(app)
-                        .delete('/api/groups/2')
+                        .delete(parse('/api/groups/@groups:name:membershiptest:'))
                         .expect(401, done);
 
                 })
@@ -1263,7 +1267,7 @@ describe('#/api/groups', function() {
                 it('- returns 401', function(done) {
 
                     return request(app)
-                        .delete('/api/groups/1/classes/1')
+                        .delete(parse('/api/groups/@groups:name:membershiptest:/classes/@groupuserclasses:title:User class 1:'))
                         .expect(401, done);
 
                 });
@@ -1283,7 +1287,7 @@ describe('#/api/groups', function() {
                 it('- returns 200', function(done) {
 
                     request(app)
-                        .get('/api/groups/1/classes/1')
+                        .get(parse('/api/groups/@groups:name:membershiptest:/classes/@groupuserclasses:title:User class 1:'))
                         .expect(200)
                         .end(function(err, res) {
                             if (err) {
@@ -1291,7 +1295,7 @@ describe('#/api/groups', function() {
                                 return;
                             }
                             request(app)
-                                .delete('/api/groups/1/classes/1')
+                                .delete(parse('/api/groups/@groups:name:membershiptest:/classes/@groupuserclasses:title:User class 1:'))
                                 .expect(200)
                                 .end(function(err2, res2) {
                                     if (err2) {
@@ -1299,7 +1303,7 @@ describe('#/api/groups', function() {
                                         return;
                                     }
                                     request(app)
-                                        .get('/api/groups/1/classes/1')
+                                        .get(parse('/api/groups/@groups:name:membershiptest:/classes/@groupuserclasses:title:User class 1:'))
                                         .expect(401, done);
                                 });
                         });
@@ -1319,7 +1323,7 @@ describe('#/api/groups', function() {
                 it('- returns 401', function(done) {
 
                     request(app)
-                        .delete('/api/groups/1/classes/1')
+                        .delete(parse('/api/groups/@groups:name:membershiptest:/classes/@groupuserclasses:title:User class 1:'))
                         .expect(401, done);
 
                 })
@@ -1337,7 +1341,7 @@ describe('#/api/groups', function() {
                 it('- returns 200', function(done) {
 
                     request(app)
-                        .delete('/api/groups/1/classes/1')
+                        .delete(parse('/api/groups/@groups:name:membershiptest:/classes/@groupuserclasses:title:User class 1:'))
                         .expect(200, done);
 
                 })
@@ -1355,7 +1359,7 @@ describe('#/api/groups', function() {
                 it('- returns 401', function(done) {
 
                     request(app)
-                        .delete('/api/groups/2')
+                        .delete(parse('/api/groups/@groups:name:membershiptest:'))
                         .expect(401, done);
 
                 })
@@ -1371,7 +1375,7 @@ describe('#/api/groups', function() {
                 it('- returns 401', function(done) {
 
                     return request(app)
-                        .delete('/api/groups/2/users/3')
+                        .delete(parse('/api/groups/@groups:name:membershiptest:/users/@users:username:test_member_of_group:'))
                         .expect(401, done);
 
                 });
@@ -1391,7 +1395,7 @@ describe('#/api/groups', function() {
                 it('- returns 200', function(done) {
 
                     request(app)
-                        .get('/api/groups/2/users/3')
+                        .get(parse('/api/groups/@groups:name:membershiptest:/users/@users:username:test_member_of_group:'))
                         .expect(200)
                         .end(function(err, res) {
                             if (err) {
@@ -1399,7 +1403,7 @@ describe('#/api/groups', function() {
                                 return;
                             }
                             request(app)
-                                .delete('/api/groups/2/users/3')
+                                .delete(parse('/api/groups/@groups:name:membershiptest:/users/@users:username:test_member_of_group:'))
                                 .expect(200)
                                 .end(function(err2, res2) {
                                     console.log(err2);
@@ -1408,7 +1412,7 @@ describe('#/api/groups', function() {
                                         return;
                                     }
                                     request(app)
-                                        .get('/api/groups/2/users/3')
+                                        .get(parse('/api/groups/@groups:name:membershiptest:/users/@users:username:test_member_of_group:'))
                                         .expect(403, done);
                                 });
                         });
@@ -1428,7 +1432,7 @@ describe('#/api/groups', function() {
                 it('- returns 200', function(done) {
 
                     request(app)
-                        .get('/api/groups/2/users/3')
+                        .get(parse('/api/groups/@groups:name:membershiptest:/users/@users:username:test_member_of_group:'))
                         .expect(200)
                         .end(function(err, res) {
                             if (err) {
@@ -1436,7 +1440,7 @@ describe('#/api/groups', function() {
                                 return;
                             }
                             request(app)
-                                .delete('/api/groups/2/users/3')
+                                .delete(parse('/api/groups/@groups:name:membershiptest:/users/@users:username:test_member_of_group:'))
                                 .expect(200)
                                 .end(function(err2, res2) {
                                     if (err2) {
@@ -1444,7 +1448,7 @@ describe('#/api/groups', function() {
                                         return;
                                     }
                                     request(app)
-                                        .get('/api/groups/2/users/3')
+                                        .get(parse('/api/groups/@groups:name:membershiptest:/users/@users:username:test_member_of_group:'))
                                         .expect(403, done);
                                 });
                         });
@@ -1464,7 +1468,7 @@ describe('#/api/groups', function() {
                 it('- returns 401', function(done) {
 
                     request(app)
-                        .delete('/api/groups/2/users/3')
+                        .delete(parse('/api/groups/@groups:name:membershiptest:/users/@users:username:test_member_of_group:'))
                         .expect(401, done);
 
                 })
