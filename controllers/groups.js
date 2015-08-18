@@ -639,19 +639,80 @@ module.exports = {
                             // 500
                         });
                 });
-                /*
-                simpleGetSingleModel(
-                    'GroupPermission',
-                    {
-                        id:
-                    }
-                )
-                 */
             }
         },
         'delete': { // remove a permission set
-            auth: ['group owner', 'or', 'privileged group member'] // owner/privileged member
+            auth: ['group owner', 'or', 'privileged group member'], // owner/privileged member
+            route: function(req, res) {
+                // make sure permission is part of the group
+                Bookshelf.transaction(function(t) {
+                    models.Group.query(function(q) {
+                        q.select()
+                            .from('groups')
+                            .where('id', '=', req.params.group_id);
+                    })
+                        .fetch({transacting: t})
+                        .then(function(group) {
+                            if (group) {
+                                var groupsetting_id = group.get('groupsetting_id');
+                                // this can 500 due to sql constraint failing if a user has this permission
+                                deleteModel(
+                                    'GroupPermission',
+                                    {
+                                        id: req.params.permission_id,
+                                        groupsetting_id: groupsetting_id
+                                    },
+                                    req,
+                                    res,
+                                    'Successfully deleted group permission',
+                                    {
+                                        transacting: t
+                                    }
+                                );
+                            } else {
+                                res.sendStatus(403);
+                            }
+                        })
+                        .catch(function(err) {
+                            // 500
+                        });
+                });
+            }
         }
-    }
+    }/*,
+    '/:group_id/permissions/:permission_id/newpermission/:newpermission_id': {
+        'delete': { // remove a permission set
+            auth: ['group owner', 'or', 'privileged group member'], // owner/privileged member
+            route: function(req, res) {
+                // make sure permission is part of the group
+                Bookshelf.transaction(function(t) {
+                    models.Group.query(function(q) {
+                        q.select()
+                            .from('groups')
+                            .where('id', '=', req.params.group_id);
+                    })
+                        .fetch({transacting: t})
+                        .then(function(group) {
+                            if (group) {
+                                var grouppermission_id = group.get('grouppermission_id');
+                                // verify that the new permission is part of the current group
+                                deleteModel(
+                                    'GroupPermission',
+                                    {
+                                        id: grouppermission_id,
+                                    }
+                                )
+                            } else {
+                                res.sendStatus(403);
+                            }
+                        })
+                        .catch(function(err) {
+                            // 500
+                        });
+                });
+            }
+        }
+    }*/
 }
+
 ;

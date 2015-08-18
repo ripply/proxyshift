@@ -82,10 +82,10 @@ module.exports = {
                 res.status(500).json({error: true, data: {message: err.message}});
             });
     },
-    deleteModel: function(modelName, queryArgs, req, res, successMessage) {
+    deleteModel: function(modelName, queryArgs, req, res, successMessage, sqlOptions) {
         models[modelName].forge()
             .where(queryArgs)
-            .destroy()
+            .destroy(sqlOptions)
             .then(function () {
                 res.json({error: false, data: {message: successMessage}});
             })
