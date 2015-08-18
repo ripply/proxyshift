@@ -2,6 +2,16 @@ var schema = require('../app/schema').Schema,
     models = require('../app/models'),
     _ = require('underscore');
 
+// TODO: Hook this up to a generalized logging utility
+function audit(req, text) {
+    var user = req.user.id;
+    if (user) {
+        user = " User: " + user;
+    }
+
+    console.log(req.path + ": " + req.ip + user + " -> " + text);
+}
+
 var defaultBannedKeys = ['id'];
 
 module.exports = {
@@ -14,6 +24,7 @@ module.exports = {
             .fetch(sqlOptions)
             .then(function (fetchedResult) {
                 if (!fetchedResult) {
+                    audit(req, "Couldn't find: " + modelName + ": " + JSON.stringify(queryArgs));
                     res.sendStatus(403);
                 } else {
                     var updated = updateModel(modelName, fetchedResult, req.body, defaultExcludes);
