@@ -102,6 +102,17 @@ var Validations = {
         contactphone: [
             { validator: 'isInt', message: 'Invalid phone number' }
         ]
+    },
+    Shift: {
+        title: [
+            { validator: 'notEmpty', message: 'A shift must have a title' },
+            { validator: 'isLength', args: [0, 30], message: 'Cannot be larger than 30 characters'},
+        ],
+        description: [
+            { validator: 'isLength', args: [0, 30], message: 'Cannot be larger than 30 characters'},
+        ]
+        // TODO: Validate start < end
+        // TODO: Client side - if shift too short then make notification window, but allow it
     }
 
 };
