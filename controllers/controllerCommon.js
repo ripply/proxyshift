@@ -48,7 +48,11 @@ module.exports = {
         models[modelName].forge(queryArgs)
             .fetch()
             .then(function (fetchedResult) {
-                res.json(fetchedResult);
+                if (fetchedResult) {
+                    res.json(fetchedResult);
+                } else {
+                    res.sendStatus(403);
+                }
             })
             .catch(function (err) {
                 res.status(500).json({error: true, data: {message: err.message}});
@@ -82,14 +86,8 @@ module.exports = {
         models[modelName].forge()
             .where(queryArgs)
             .destroy()
-            .then(function (fetchedResult) {
-                fetchedResult.destroy()
-                    .then(function () {
-                        res.json({error: false, data: {message: successMessage}});
-                    })
-                    .catch(function (err) {
-                        res.status(500).json({error: true, data: {message: err.message}});
-                    });
+            .then(function () {
+                res.json({error: false, data: {message: successMessage}});
             })
             .catch(function (err) {
                 res.status(500).json({error: true, data: {message: err.message}});

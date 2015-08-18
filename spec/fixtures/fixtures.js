@@ -79,6 +79,15 @@ module.exports = {
                 email: 'unprivilegedgroupmember@example.com',
                 squestion: 'unprivilegedgroupmember',
                 sanswer: encrypt(password)
+            },
+            {
+                username: 'veryprivileged',
+                password: encrypt(password),
+                firstname: 'veryprivileged',
+                lastname: 'veryprivileged',
+                email: 'veryprivileged@example.com',
+                squestion: 'veryprivileged',
+                sanswer: encrypt(password)
             }
         ],
         groupsettings: [
@@ -120,17 +129,17 @@ module.exports = {
         grouppermissions: [
             {
                 groupsetting_id: 'groupsettings:0',
-                description: 'lowest permission level',
+                description: 'unprivileged',
                 permissionlevel: 1
             },
             {
                 groupsetting_id: 'groupsettings:0',
-                description: 'second lowest permission level',
+                description: 'privileged',
                 permissionlevel: 2
             },
             {
                 groupsetting_id: 'groupsettings:0',
-                description: 'highest permission level?',
+                description: 'very privileged',
                 permissionlevel: 3
             }
         ],
@@ -139,31 +148,36 @@ module.exports = {
                 // user 1 is a member of its own group 0
                 user_id: '@users:username:test_password',
                 group_id: '@groups:name:test_password_group',
-                grouppermission_id: '@grouppermissions:description:lowest permission level'
+                grouppermission_id: '@grouppermissions:description:unprivileged'
             },
             {
                 // user 2 is a member of group 0
                 user_id: '@users:username:test_member_of_group',
                 group_id: '@groups:name:test_password_group',
-                grouppermission_id: '@grouppermissions:description:lowest permission level'
+                grouppermission_id: '@grouppermissions:description:unprivileged'
             },
             {
                 // user 3 is a member of group 0
                 user_id: '@users:username:groupmember',
                 group_id: '@groups:name:membershiptest',
-                grouppermission_id: '@grouppermissions:description:lowest permission level'
+                grouppermission_id: '@grouppermissions:description:unprivileged'
             },
             {
                 // user 6 (priviledgegroupmember) is a member of group 0 and a privileged member
                 user_id: '@users:username:privledgedmember',
                 group_id: '@groups:name:membershiptest',
-                grouppermission_id: '@grouppermissions:description:second lowest permission level'
+                grouppermission_id: '@grouppermissions:description:privileged'
             },
             {
                 // user 7 is a member of group 1
                 user_id: '@users:username:locationmember',
                 group_id: '@groups:name:membershiptest',
-                grouppermission_id: '@grouppermissions:description:lowest permission level'
+                grouppermission_id: '@grouppermissions:description:unprivileged'
+            },
+            {
+                user_id: '@users:username:veryprivileged',
+                group_id: '@groups:name:membershiptest',
+                grouppermission_id: '@grouppermissions:description:very privileged'
             }
         ],
         locations: [
@@ -188,7 +202,7 @@ module.exports = {
             {
                 location_id: 'locations:0',
                 user_id: '@users:username:test_password',
-                grouppermission_id: '@grouppermissions:description:lowest permission level'
+                grouppermission_id: '@grouppermissions:description:unprivileged'
             },
             {
                 location_id: 'locations:1',
@@ -198,7 +212,7 @@ module.exports = {
         ],
         groupuserclasses: [
             {
-                group_id: '@groups:name:test_password_group',
+                group_id: '@groups:name:membershiptest',
                 title: 'User class 1',
                 description: 'User class 1 description'
             }

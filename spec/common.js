@@ -8,7 +8,7 @@ function login(username, password, next) {
                 password: password
             })
             .expect(200)
-            .expect('Content-Type', /json/)
+            //.expect('Content-Type', /json/) // this takes precedence on status code expect
             .end(next);
     } catch (err) {
         next(err);

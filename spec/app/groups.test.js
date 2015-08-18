@@ -494,7 +494,7 @@ describe('#/api/groups', function() {
                 it('- returns 401', function(done) {
 
                     request(app)
-                        .get(parse('/api/groups/@groups:name:test_password_group:/classes'))
+                        .get(parse('/api/groups/@groups:name:membershiptest:/classes'))
                         .expect(401, done);
 
                 });
@@ -505,7 +505,7 @@ describe('#/api/groups', function() {
 
                 beforeEach(function(done) {
 
-                    login('test_member_of_group',
+                    login('groupmember',
                         'secret',
                         done);
 
@@ -514,7 +514,7 @@ describe('#/api/groups', function() {
                 it('- can fetch a specific group class', function(done) {
 
                     request(app)
-                        .get(parse('/api/groups/@groups:name:test_password_group:/classes/@groupuserclasses:title:User class 1:'))
+                        .get(parse('/api/groups/@groups:name:membershiptest:/classes/@groupuserclasses:title:User class 1:'))
                         .expect(200)
                         .end(function(err, res) {
                             if (err) {
@@ -551,7 +551,7 @@ describe('#/api/groups', function() {
                 it('- returns 401', function(done) {
 
                     request(app)
-                        .get(parse('/api/groups/@groups:name:test_password_group:/classes/@groupuserclasses:title:User class 1:'))
+                        .get(parse('/api/groups/@groups:name:membershiptest:/classes/@groupuserclasses:title:User class 1:'))
                         .expect(401, done);
 
                 });
@@ -1080,17 +1080,18 @@ describe('#/api/groups', function() {
             function updatePartialClassInformation(done) {
 
                 var updatedClassInformationCopy = _.clone(updatedClassInformation);
-                delete updatedClassInformationCopy['name'];
+                delete updatedClassInformationCopy['title'];
 
                 request(app)
                     .patch(parse('/api/groups/@groups:name:membershiptest:/classes/@groupuserclasses:title:User class 1:'))
-                    .send(_.pick(updatedClassInformation, 'name'))
+                    .send(_.pick(updatedClassInformation, 'title'))
                     .expect(200)
                     .end(function(err, res) {
                         if (err) {
                             done(err);
                             return;
                         }
+                        debug(res.text);
                         return request(app)
                             .get(parse('/api/groups/@groups:name:membershiptest:/classes/@groupuserclasses:title:User class 1:'))
                             .expect(200)
@@ -1102,7 +1103,7 @@ describe('#/api/groups', function() {
                                 try {
                                     var data = JSON.parse(res2.text);
                                     debug(data);
-                                    data.name.should.equal(updatedClassInformation.name);
+                                    data.title.should.equal(updatedClassInformation.title);
 
                                     _.each(updatedClassInformationCopy, function (value, key) {
                                         data[key].should.not.equal(value);
@@ -1213,6 +1214,7 @@ describe('#/api/groups', function() {
                                 done(err);
                                 return;
                             }
+                            debug(res.text);
                             request(app)
                                 .get(parse('/api/groups/@groups:name:membershiptest:'))
                                 .expect(401, done);
@@ -1291,6 +1293,7 @@ describe('#/api/groups', function() {
                         .expect(200)
                         .end(function(err, res) {
                             if (err) {
+                                debug(res);
                                 done(err);
                                 return;
                             }
@@ -1299,12 +1302,13 @@ describe('#/api/groups', function() {
                                 .expect(200)
                                 .end(function(err2, res2) {
                                     if (err2) {
-                                        done(err);
+                                        debug(res2);
+                                        done(err2);
                                         return;
                                     }
                                     request(app)
                                         .get(parse('/api/groups/@groups:name:membershiptest:/classes/@groupuserclasses:title:User class 1:'))
-                                        .expect(401, done);
+                                        .expect(403, done);
                                 });
                         });
 
@@ -1333,7 +1337,7 @@ describe('#/api/groups', function() {
             describe('- very privileged group member', function(){
 
                 beforeEach(function(done) {
-                    login('veryprivledgedmember',
+                    login('veryprivileged',
                         'secret',
                         done);
                 });
@@ -1382,6 +1386,32 @@ describe('#/api/groups', function() {
 
             });
 
+            function removeUserFromGroupTest(done) {
+                request(app)
+                    .get(parse('/api/groups/@groups:name:membershiptest:/users/@users:username:groupmember:'))
+                    .expect(200)
+                    .end(function(err, res) {
+                        if (err) {
+                            debug(res.text);
+                            done(err);
+                            return;
+                        }
+                        request(app)
+                            .delete(parse('/api/groups/@groups:name:membershiptest:/users/@users:username:groupmember:'))
+                            .expect(200)
+                            .end(function(err2, res2) {
+                                if (err2) {
+                                    debug(res2.text);
+                                    done(err2);
+                                    return;
+                                }
+                                request(app)
+                                    .get(parse('/api/groups/@groups:name:membershiptest:/users/@users:username:groupmember:'))
+                                    .expect(403, done);
+                            });
+                    });
+            }
+
             describe('- group owner', function() {
 
                 beforeEach(function(done) {
@@ -1394,28 +1424,7 @@ describe('#/api/groups', function() {
 
                 it('- returns 200', function(done) {
 
-                    request(app)
-                        .get(parse('/api/groups/@groups:name:membershiptest:/users/@users:username:test_member_of_group:'))
-                        .expect(200)
-                        .end(function(err, res) {
-                            if (err) {
-                                done(err);
-                                return;
-                            }
-                            request(app)
-                                .delete(parse('/api/groups/@groups:name:membershiptest:/users/@users:username:test_member_of_group:'))
-                                .expect(200)
-                                .end(function(err2, res2) {
-                                    console.log(err2);
-                                    if (err2) {
-                                        done(err2);
-                                        return;
-                                    }
-                                    request(app)
-                                        .get(parse('/api/groups/@groups:name:membershiptest:/users/@users:username:test_member_of_group:'))
-                                        .expect(403, done);
-                                });
-                        });
+                    removeUserFromGroupTest(done);
 
                 });
 
@@ -1431,27 +1440,7 @@ describe('#/api/groups', function() {
 
                 it('- returns 200', function(done) {
 
-                    request(app)
-                        .get(parse('/api/groups/@groups:name:membershiptest:/users/@users:username:test_member_of_group:'))
-                        .expect(200)
-                        .end(function(err, res) {
-                            if (err) {
-                                done(err);
-                                return;
-                            }
-                            request(app)
-                                .delete(parse('/api/groups/@groups:name:membershiptest:/users/@users:username:test_member_of_group:'))
-                                .expect(200)
-                                .end(function(err2, res2) {
-                                    if (err2) {
-                                        done(err2);
-                                        return;
-                                    }
-                                    request(app)
-                                        .get(parse('/api/groups/@groups:name:membershiptest:/users/@users:username:test_member_of_group:'))
-                                        .expect(403, done);
-                                });
-                        });
+                    removeUserFromGroupTest(done);
 
                 })
 

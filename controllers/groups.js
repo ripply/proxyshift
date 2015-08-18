@@ -121,7 +121,7 @@ module.exports = {
                             })
                                 .destroy({transacting: t})
                                 .then(function() {
-                                    res.json({error: false, data: {message: "Successfully deleted groups"}});
+                                    res.json({error: false, data: {message: "Successfully deleted group"}});
                                 })
                                 .catch(function(err) {
                                     res.status(500).json({error: true, data: {message: err}});
@@ -270,32 +270,16 @@ module.exports = {
         'delete': { // remove user from group
             auth: ['group owner', 'or', 'privileged group member'], // privileged member or owner
             route: function(req, res) {
-                Bookshelf.transaction(function (t) {
-                    // determine if the user is a part of the group already
-                    return models.UserGroup
-                        .where({
-                            group_id: req.params.group_id,
-                            user_id: req.params.user_id
-                        })
-                        .fetch(null, {transacting: t})
-                        .then(function (usergroup) {
-                            if (usergroup) {
-                                // exists, delete it
-                                usergroup.destroy()
-                                    .then(function() {
-                                        res.json({error: false, data: {message: "Successfully added user to group"}});
-                                    })
-                                    .catch(function(err) {
-                                        res.status(500).json({error: true, data: {message: err}});
-                                    });
-                            } else {
-                                res.status(403).json({error: false, data: {message: "User does not exist in group"}});
-                            }
-                        })
-                        .catch(function (err) {
-                            res.status(500).json({error: true, data: {message: err.message}});
-                        });
-                });
+                deleteModel(
+                    'UserGroup',
+                    {
+                        group_id: req.params.group_id,
+                        user_id: req.params.user_id
+                    },
+                    req,
+                    res,
+                    'Successfully removed user from group'
+                );
             }
         }
     },
