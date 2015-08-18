@@ -83,7 +83,8 @@ var Schema = {
             type: integer,
             references: 'id',
             inTable: 'users',
-            onDelete: restrict
+            onDelete: restrict,
+            nullable: false
         },
         name: {
             type: string,
@@ -300,7 +301,7 @@ var Schema = {
             type: integer,
             references: 'id',
             inTable: 'grouppermissions',
-            onDelete: cascade
+            onDelete: restrict
         }
     },
     Token: {
