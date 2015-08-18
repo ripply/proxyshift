@@ -180,7 +180,7 @@ describe('#/api/groups', function() {
                     request(app)
                         .post('/api/groups/2/locations')
                         .send(newLocation)
-                        .expect(200)
+                        .expect(201)
                         .end(function(err, res) {
                             if (err) {
                                 done(err);
