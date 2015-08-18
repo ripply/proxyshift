@@ -184,6 +184,7 @@ describe('#/api/groups', function() {
                         .end(function(err, res) {
                             if (err) {
                                 done(err);
+                                return;
                             }
                             try {
                                 debug(res.text);
@@ -235,6 +236,7 @@ describe('#/api/groups', function() {
                         function(err, res) {
                             if (err) {
                                 done(err);
+                                return;
                             }
                             request(app)
                                 .get('/api/groups/')
@@ -242,6 +244,7 @@ describe('#/api/groups', function() {
                                 .end(function(err2, res) {
                                     if (err2) {
                                         done(err2);
+                                        return;
                                     }
                                     try {
                                         debug(res.text);
@@ -276,6 +279,7 @@ describe('#/api/groups', function() {
                         function(err, res) {
                             if (err) {
                                 done(err);
+                                return;
                             }
                             request(app)
                                 .get('/api/groups/')
@@ -283,6 +287,7 @@ describe('#/api/groups', function() {
                                 .end(function(err, res) {
                                     if (err) {
                                         done(err);
+                                        return;
                                     }
                                     try {
                                         debug(res.text);
@@ -333,6 +338,7 @@ describe('#/api/groups', function() {
                         function(err, res) {
                             if (err) {
                                 done(err);
+                                return;
                             }
                             // logged in, now query group
                             request(app)
@@ -349,6 +355,7 @@ describe('#/api/groups', function() {
                         function(err, res) {
                             if (err) {
                                 done(err);
+                                return;
                             }
                             // logged in, now query group
                             request(app)
@@ -369,6 +376,7 @@ describe('#/api/groups', function() {
                         function(err, res) {
                             if (err) {
                                 done(err);
+                                return;
                             }
                             // logged in, now query group
                             request(app)
@@ -385,6 +393,7 @@ describe('#/api/groups', function() {
                         function(err, res) {
                             if (err) {
                                 done(err);
+                                return;
                             }
                             // logged in, now query group
                             request(app)
@@ -430,6 +439,7 @@ describe('#/api/groups', function() {
                         .end(function(err, res) {
                             if (err) {
                                 done(err);
+                                return;
                             }
                             try {
                                 debug(res.text);
@@ -508,6 +518,7 @@ describe('#/api/groups', function() {
                         .end(function(err, res) {
                             if (err) {
                                 done(err);
+                                return;
                             }
                             try {
                                 debug(res.text);
@@ -580,6 +591,7 @@ describe('#/api/groups', function() {
                         .end(function(err, res) {
                             if (err) {
                                 done(err);
+                                return;
                             }
                             try {
                                 debug(res.text);
@@ -639,6 +651,7 @@ describe('#/api/groups', function() {
                         .end(function(err, res) {
                             if (err) {
                                 done(err);
+                                return;
                             }
                             try {
                                 debug(res.text);
@@ -694,6 +707,7 @@ describe('#/api/groups', function() {
                         .end(function(err, res) {
                             if (err) {
                                 done(err);
+                                return;
                             }
                             try {
                                 debug(res.text);
@@ -717,6 +731,7 @@ describe('#/api/groups', function() {
                         .end(function(err, res) {
                             if (err) {
                                 done(err);
+                                return;
                             }
                             try {
                                 debug(res.text);
@@ -772,6 +787,7 @@ describe('#/api/groups', function() {
                         .end(function(err, res) {
                             if (err) {
                                 done(err);
+                                return;
                             }
                             try {
                                 debug(res.text);
@@ -795,6 +811,7 @@ describe('#/api/groups', function() {
                         .end(function(err, res) {
                             if (err) {
                                 done(err);
+                                return;
                             }
                             try {
                                 debug(res.text);
@@ -864,6 +881,7 @@ describe('#/api/groups', function() {
                     .end(function(err, res) {
                         if (err) {
                             done(err);
+                            return;
                         }
                         return request(app)
                             .get('/api/groups/2')
@@ -871,6 +889,7 @@ describe('#/api/groups', function() {
                             .end(function(err2, res2) {
                                 if (err2) {
                                     done(err);
+                                    return
                                 }
                                 debug(res2.text);
                                 var data = JSON.parse(res2.text);
@@ -909,6 +928,7 @@ describe('#/api/groups', function() {
                     .end(function(err, res) {
                         if (err) {
                             done(err);
+                            return;
                         }
                         return request(app)
                             .get('/api/groups/2')
@@ -916,6 +936,7 @@ describe('#/api/groups', function() {
                             .end(function(err2, res2) {
                                 if (err2) {
                                     done(err);
+                                    return;
                                 }
                                 try {
                                     var data = JSON.parse(res2.text);
@@ -1017,6 +1038,7 @@ describe('#/api/groups', function() {
                     .end(function(err, res) {
                         if (err) {
                             done(err);
+                            return;
                         }
                         return request(app)
                             .get('/api/groups/2/classes/1')
@@ -1024,6 +1046,7 @@ describe('#/api/groups', function() {
                             .end(function(err2, res2) {
                                 if (err2) {
                                     done(err);
+                                    return;
                                 }
                                 debug(res2.text);
                                 var data = JSON.parse(res2.text);
@@ -1062,6 +1085,7 @@ describe('#/api/groups', function() {
                     .end(function(err, res) {
                         if (err) {
                             done(err);
+                            return;
                         }
                         return request(app)
                             .get('/api/groups/2/classes/1')
@@ -1069,6 +1093,7 @@ describe('#/api/groups', function() {
                             .end(function(err2, res2) {
                                 if (err2) {
                                     done(err);
+                                    return;
                                 }
                                 try {
                                     var data = JSON.parse(res2.text);
@@ -1182,6 +1207,7 @@ describe('#/api/groups', function() {
                         .end(function(err, res) {
                             if (err) {
                                 done(err);
+                                return;
                             }
                             request(app)
                                 .get('/api/groups/2')
@@ -1262,6 +1288,7 @@ describe('#/api/groups', function() {
                         .end(function(err, res) {
                             if (err) {
                                 done(err);
+                                return;
                             }
                             request(app)
                                 .delete('/api/groups/1/classes/1')
@@ -1269,6 +1296,7 @@ describe('#/api/groups', function() {
                                 .end(function(err2, res2) {
                                     if (err2) {
                                         done(err);
+                                        return;
                                     }
                                     request(app)
                                         .get('/api/groups/1/classes/1')
@@ -1368,6 +1396,7 @@ describe('#/api/groups', function() {
                         .end(function(err, res) {
                             if (err) {
                                 done(err);
+                                return;
                             }
                             request(app)
                                 .delete('/api/groups/2/users/3')
@@ -1376,6 +1405,7 @@ describe('#/api/groups', function() {
                                     console.log(err2);
                                     if (err2) {
                                         done(err2);
+                                        return;
                                     }
                                     request(app)
                                         .get('/api/groups/2/users/3')
@@ -1403,6 +1433,7 @@ describe('#/api/groups', function() {
                         .end(function(err, res) {
                             if (err) {
                                 done(err);
+                                return;
                             }
                             request(app)
                                 .delete('/api/groups/2/users/3')
@@ -1410,6 +1441,7 @@ describe('#/api/groups', function() {
                                 .end(function(err2, res2) {
                                     if (err2) {
                                         done(err2);
+                                        return;
                                     }
                                     request(app)
                                         .get('/api/groups/2/users/3')
