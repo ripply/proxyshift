@@ -306,10 +306,134 @@ module.exports = {
     },
     '/:group_id/users/:user_id/permissions/:permission_id': {
         'post': { // add user with permission level to group
-            auth: ['group owner', 'or', 'privileged group member'] // owner/privileged group member
+            auth: ['group owner', 'or', 'privileged group member'], // owner/privileged group member
+            route: function(req, res) {
+                Bookshelf.transaction(function (t) {
+                    // make sure permission_id is part of group
+                    model.GroupPermission.query(function (q) {
+                        q.select()
+                            .from('grouppermissions')
+                            .innerJoin('groups', function () {
+                                this.on('groups.groupsetting_id', '=', 'grouppermissions.groupsettings_id');
+                            })
+                            .where('grouppermissions.id', '=', req.params.permission_id);
+                    })
+                        .fetch({transacting: t})
+                        .then(function (grouppermission) {
+                            if (grouppermission) {
+                                // grouppermission is tied to group
+                                // ok to add user with that permission
+                                // after we verify that they are not already a member
+                                model.UserGroup.forge({
+                                    user_id: req.params.user_id,
+                                    group_id: req.params.group_id
+                                })
+                                    .fetch({transacting: t})
+                                    .then(function (usergroup) {
+                                        if (!usergroup) {
+                                            // does not exist, create
+                                            postModel(
+                                                'UserGroup',
+                                                {
+                                                    user_id: req.params.user_id,
+                                                    group_id: req.params.group_id,
+                                                    grouppermission_id: req.params.permission_id
+                                                },
+                                                req,
+                                                res,
+                                                undefined,
+                                                {
+                                                    transacting: t
+                                                }
+                                            );
+                                        } else {
+                                            // exists, dont add
+                                            // check if permission level is identical
+                                            if (usergroup.get('grouppermission_id') == req.params.permission_id) {
+                                                res.sendStatus(200);
+                                            } else {
+                                                // doesn't match
+                                                // send error
+                                                res.sendStatus(412); // precondition failed
+                                            }
+                                        }
+                                    })
+                                    .catch(function (err) {
+                                        res.status(500).json({error: true, data: {message: err.message}});
+                                    });
+                            } else {
+                                res.sendStatus(403);
+                            }
+                        })
+                        .catch(function (err) {
+                            res.status(500).json({error: true, data: {message: err.message}});
+                        });
+                });
+            }
         },
         'patch': { // update a users permission set
-            auth: ['group owner', 'or', 'privileged group member'] // owner/privileged group member
+            auth: ['group owner', 'or', 'privileged group member'], // owner/privileged group member
+            route: function(req, res) {
+                Bookshelf.transaction(function (t) {
+                    // make sure permission_id is part of group
+                    model.GroupPermission.query(function (q) {
+                        q.select()
+                            .from('grouppermissions')
+                            .innerJoin('groups', function () {
+                                this.on('groups.groupsetting_id', '=', 'grouppermissions.groupsettings_id');
+                            })
+                            .where('grouppermissions.id', '=', req.params.permission_id);
+                    })
+                        .fetch({transacting: t})
+                        .then(function (grouppermission) {
+                            if (grouppermission) {
+                                // grouppermission is tied to group
+                                // ok to update the user with that permission
+                                // after we verify that they are not already a member
+                                model.UserGroup.forge({
+                                    user_id: req.params.user_id,
+                                    group_id: req.params.group_id
+                                })
+                                    .fetch({transacting: t})
+                                    .then(function (usergroup) {
+                                        if (!usergroup) {
+                                            // does not exist, error
+                                            res.sendStatus(412);
+                                        } else {
+                                            // exists, update
+                                            // check if permission level is identical
+                                            if (usergroup.get('grouppermission_id') == req.params.permission_id) {
+                                                res.sendStatus(200);
+                                            } else {
+                                                // doesn't match
+                                                // update it
+                                                patchModel(
+                                                    'UserGroup',
+                                                    {
+                                                        grouppermission_id: req.params.permission_id
+                                                    },
+                                                    req,
+                                                    res,
+                                                    undefined,
+                                                    {
+                                                        transacting: t
+                                                    }
+                                                );
+                                            }
+                                        }
+                                    })
+                                    .catch(function (err) {
+                                        res.status(500).json({error: true, data: {message: err.message}});
+                                    });
+                            } else {
+                                res.sendStatus(403);
+                            }
+                        })
+                        .catch(function (err) {
+                            res.status(500).json({error: true, data: {message: err.message}});
+                        });
+                });
+            }
         }
     },
     '/:group_id/locations': {

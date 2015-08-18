@@ -6,19 +6,20 @@ var defaultBannedKeys = ['id'];
 
 module.exports = {
     updateModel: updateModel,
-    patchModel: function(modelName, queryArgs, req, res, updateMessage, defaultExcludes) {
+    patchModel: function(modelName, queryArgs, req, res, updateMessage, defaultExcludes, sqlOptions) {
         if (defaultExcludes === undefined) {
             defaultExcludes = ['id'];
         }
         models[modelName].forge(queryArgs)
-            .fetch()
+            .fetch(sqlOptions)
             .then(function (fetchedResult) {
                 if (!fetchedResult) {
                     res.sendStatus(403);
                 } else {
                     var updated = updateModel(modelName, fetchedResult, req.body, defaultExcludes);
                     fetchedResult.save(
-                        updated
+                        updated,
+                        sqlOptions
                     )
                         .then(function () {
                             res.json({error: false, data: {message: updateMessage}});
@@ -60,7 +61,7 @@ module.exports = {
         models[modelName].forge(fullArgs)
             .save(sqlOptions)
             .then(function (saved) {
-                res.json({id: saved.get('id')});
+                res.status(201).json({id: saved.get('id')});
             })
             .catch(function (err) {
                 res.status(500).json({error: true, data: {message: err.message}});
