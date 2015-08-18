@@ -607,6 +607,38 @@ module.exports = {
         'patch': { // update a group permission set
             auth: ['group owner', 'or', 'privileged group member'], // owner/privileged member
             route: function(req, res) {
+                // verify that permission is part of group
+                Bookshelf.transaction(function(t) {
+                    models.Group.query(function(q) {
+                        q.select()
+                            .from('groups')
+                            .where('id', '=', req.params.group_id)
+                    })
+                        .fetch({transacting: t})
+                        .then(function(group) {
+                            if (group) {
+                                var groupsetting_id = group.get('groupsetting_id');
+                                patchModel(
+                                    'GroupPermission',
+                                    {
+                                        id: req.params.permission_id,
+                                        groupsetting_id: groupsetting_id
+                                    },
+                                    req,
+                                    res,
+                                    undefined,
+                                    {
+                                        transacting: t
+                                    }
+                                );
+                            } else {
+                                res.sendStatus(403);
+                            }
+                        })
+                        .catch(function(err) {
+                            // 500
+                        });
+                });
                 /*
                 simpleGetSingleModel(
                     'GroupPermission',
