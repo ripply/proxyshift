@@ -204,6 +204,10 @@ describe('#/api/groups', function() {
 
         });
 
+        // :group_id/areas
+        // :group_id/permissions
+        // :group_id/users/:user_id/pdermissions/:permission_id
+
     });
 
     describe('- GET', function() {
@@ -810,6 +814,9 @@ describe('#/api/groups', function() {
 
         });
 
+        // :group_id/areas
+        // :group_id/permissions
+
     });
 
     var updatedInformation = {
@@ -1136,6 +1143,9 @@ describe('#/api/groups', function() {
 
         });
 
+        // :group_id/permissions
+        // :group_id/users/:user_id/pdermissions/:permission_id
+
     });
 
     describe('- DELETE', function() {
@@ -1430,6 +1440,9 @@ describe('#/api/groups', function() {
             });
 
         });
+
+        // :group_id/locations/:location_id
+        // :group_id/areas/:area_id
 
     });
 
