@@ -2,9 +2,9 @@
 
 global.silent = true;
 // sqlite3
-if (false) {
+if (true) {
     global.db_dialect = 'sqlite3';
-    global.db_file = './data/test.db';
+    global.db_file = ':memory:';
 } else {
     // sql servers
 
