@@ -9,6 +9,7 @@ var ensureCsrf = middleware.ensureCsrf;
 var requireJson = middleware.requireJson;
 var ensureAuthenticated = middleware.ensureAuthenticated;
 var ensureDatabaseReady = models.databaseReadyMiddleware;
+var logout = middleware.logout;
 
 module.exports = function(app, settings){
 
@@ -70,15 +71,7 @@ module.exports = function(app, settings){
 
     app.post('/session/logout', ensureCsrf, ensureAuthenticated, function(req, res, next) {
 
-        if ('remember_me' in req.cookies) {
-            models.consumeRememberMeToken(req.cookies.remember_me, function(err, next) {
-                console.log("User logged out: Purged token");
-            });
-        }
-        req.logout();
-        res.clearCookie('remember_me');
-        res.clearCookie('connect.sid');
-        req.session.destroy();
+        logout();
         // client session.postAuth method expects JSON, it will error if sent a blank response
         res.send({});
     });

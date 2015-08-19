@@ -1,6 +1,22 @@
-var models = require('../app/models');
-var updateModel = require('./controllerCommon').updateModel;
-var encryptKey = require('./encryption/encryption').encryptKey;
+var models = require('../app/models'),
+    logout = require('../routes/misc/middleware').logout,
+    updateModel = require('./controllerCommon').updateModel,
+    encryptKey = require('./encryption/encryption').encryptKey,
+    simpleGetSingleModel = require('./controllerCommon').simpleGetSingleModel,
+    simpleGetListModel = require('./controllerCommon').simpleGetListModel,
+    postModel = require('./controllerCommon').postModel,
+    patchModel = require('./controllerCommon').patchModel,
+    deleteModel = require('./controllerCommon').deleteModel,
+    Bookshelf = models.Bookshelf;
+
+var modifiableAccountFields = [
+    'id',
+    'username',
+    'email',
+    'password', // require special route
+    'squestion',
+    'sanswer'
+];
 
 module.exports = {
     route: '/api/users',
@@ -44,20 +60,51 @@ module.exports = {
         },
         'patch': { // update your account
             // auth: // logged in
+            route: function(req, res) {
+                patchModel(
+                    'User',
+                    {
+                        id: req.user.id
+                    },
+                    req,
+                    res,
+                    'Account updated',
+                    modifiableAccountFields
+                );
+            }
         },
         'delete': { // delete your account
             // auth: // logged in
             route: function(req, res) {
-                models.User.forge({id: req.params.id})
-                    .fetch({require: true})
-                    .then(function (user) {
-                        user.destroy()
-                            .then(function () {
-                                res.json({error: true, data: {message: 'User successfully deleted'}});
-                            })
-                            .catch(function (err) {
-                                res.status(500).json({error: true, data: {message: err.message}});
-                            });
+                // TODO: Verify that deleting account logs you out
+                /*
+                deleteModel(
+                    'User',
+                    {
+                        id: req.params.id
+                    },
+                    req,
+                    res,
+                    'Account successfully deleted'
+                );
+                */
+                if (req.body.password === undefined) {
+                    res.status(400) // bad request
+                        .json({error: true, data: {message: 'Password required'}});
+                }
+                models.User.query(function(q) {
+                    q.select()
+                        .from('users')
+                        .where({
+                            id: req.user.id,
+                            // require password to delete account
+                            password: encryptKey(req.body.password)
+                        });
+                })
+                    .destroy()
+                    .then(function() {
+                        logout();
+                        res.json({error: false, data: {message: 'User successfully deleted'}});
                     })
                     .catch(function (err) {
                         res.status(500).json({error: true, data: {message: err.message}});
@@ -65,7 +112,7 @@ module.exports = {
             },
         }
     },
-    '/:id': {
+    '/:user_id': {
         'get': { // get info about another account
             // auth: // your account or admin
             route: function(req, res) {
@@ -87,28 +134,39 @@ module.exports = {
         'patch': { // update an account
             // auth: // your account or admin
             route: function(req, res) {
-                console.log(req.body);
-                models.User.forge({id: req.params.id})
-                    .fetch({require: true})
-                    .then(function (user) {
-                        user.save({
-                            name: req.body.name || user.get('name'),
-                            email: req.body.email || user.get('email')
-                        })
-                            .then(function () {
-                                res.json({error: false, data: {message: 'User details updated'}});
-                            })
-                            .catch(function (err) {
-                                res.status(500).json({error: true, data: {message: err.message}});
-                            });
+                patchModel(
+                    'User',
+                    {
+                        id: req.user.id
+                    },
+                    req,
+                    res,
+                    'Account updated',
+                    modifiableAccountFields
+                );
+            }
+        },
+        'delete': { // delete another account
+            // auth: // your account or admin
+            route: function(req, res) {
+                models.User.query(function(q) {
+                    q.select()
+                        .from('users')
+                        .where({
+                            id: req.params.user_id,
+                            // require password to delete account
+                            password: encryptKey(req.body.password)
+                        });
+                })
+                    .destroy()
+                    .then(function() {
+                        logout();
+                        res.json({error: false, data: {message: 'User successfully deleted'}});
                     })
                     .catch(function (err) {
                         res.status(500).json({error: true, data: {message: err.message}});
                     });
             }
-        },
-        'delete': { // delete another account
-            // auth: // your account or admin
         }
     }
 };

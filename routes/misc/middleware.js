@@ -34,8 +34,21 @@ function ensureCsrf(err, req, res, next) {
     res.send('session has expired or form tampered with');
 }
 
+function logout(req, res) {
+    if ('remember_me' in req.cookies) {
+        models.consumeRememberMeToken(req.cookies.remember_me, function(err, next) {
+            console.log("User logged out: Purged token");
+        });
+    }
+    req.logout();
+    res.clearCookie('remember_me');
+    res.clearCookie('connect.sid');
+    req.session.destroy();
+}
+
 module.exports = {
     ensureAuthenticated: ensureAuthenticated,
     requireJson: requireJson,
-    ensureCsrf: ensureCsrf
+    ensureCsrf: ensureCsrf,
+    logout: logout
 };
