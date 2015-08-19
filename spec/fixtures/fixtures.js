@@ -191,11 +191,18 @@ module.exports = {
             },
             {
                 group_id: '@groups:name:membershiptest',
-                state: 'test_state2',
+                state: 'membershiptest',
                 city: 'test_city2',
                 address: 'test_address2',
                 zipcode: 123456,
                 phonenumber: 124356
+            }
+        ],
+        sublocations: [
+            {
+                title: 'floor 1',
+                description: 'membershiptest floor 1',
+                location_id: '@locations:state:membershiptest'
             }
         ],
         userpermissions: [
@@ -221,6 +228,18 @@ module.exports = {
             {
                 user_id: '@users:username:test_member_of_group',
                 groupuserclass_id: '@groupuserclasses:title:User class 1'
+            }
+        ],
+        areas: [
+            {
+                title: 'membership test area',
+                group_id: '@groups:name:membershiptest'
+            }
+        ],
+        arealocations: [
+            {
+                location_id: '@locations:state:membershiptest',
+                area_id: '@areas:title:membership test area'
             }
         ]
     }

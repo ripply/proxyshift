@@ -832,7 +832,171 @@ describe('#/api/groups', function() {
 
         });
 
-        // :group_id/areas
+        describe('- /:group_id/areas', function() {
+
+            describe('- anonymous users', function() {
+
+                it('- return 401', function(done) {
+
+                    request(app)
+                        .get(parse('/api/groups/@groups:name:membershiptest:/areas'))
+                        .expect(401, done);
+
+                });
+
+            });
+
+            function getAreas(done) {
+
+                request(app)
+                    .get(parse('/api/groups/@groups:name:membershiptest:/areas'))
+                    .expect(200)
+                    .end(function(err, res) {
+                        if (err) {
+                            debug(res.text);
+                            done(err);
+                            return;
+                        }
+                        try {
+                            debug(res.text);
+                            var data = JSON.parse(res.text);
+                            data.should.be.a('array');
+
+                            var area = data[0];
+                            area.should.be.a('object');
+                            expect(area.id).to.not.be.undefined;
+                            expect(area.group_id).to.not.be.undefined;
+                            expect(area.title).to.equal('membership test area');
+
+                            done();
+                        } catch (err2) {
+                            done(err2);
+                        }
+                    });
+
+            }
+
+            describe('- unprivileged group member', function() {
+
+                beforeEach(function(done) {
+
+                    login('groupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 200', function(done) {
+
+                    getAreas(done);
+
+                });
+
+            });
+
+            describe('- group owner', function() {
+
+                beforeEach(function(done) {
+
+                    login('groupowner',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 200', function(done) {
+
+                    getAreas(done);
+
+                });
+
+            });
+
+        });
+
+        describe('- /:group_id/permissions', function() {
+
+            describe('- anonymous users', function () {
+
+                it('- return 401', function (done) {
+
+                    request(app)
+                        .get(parse('/api/groups/@groups:name:membershiptest:/permissions'))
+                        .expect(401, done);
+
+                });
+
+            });
+
+            function getGroupPermissions(done) {
+
+                request(app)
+                    .get(parse('/api/groups/@groups:name:membershiptest:/permissions'))
+                    .expect(200)
+                    .end(function(err, res) {
+                        if (err) {
+                            debug(res.text);
+                            done(err);
+                            return;
+                        }
+                        try {
+                            var data = JSON.parse(res.text);
+
+                            expect(data).to.be.a('array');
+                            var permission = data[0];
+                            expect(permission.groupsetting_id).to.not.be.undefined;
+                            expect(permission.description).to.not.be.undefined;
+                            expect(permission.description).to.equal('unprivileged');
+                            expect(permission.permissionlevel).to.equal(1);
+
+                            done();
+                        } catch (err2) {
+                            done(err2);
+                        }
+                    });
+
+            }
+
+            describe('- unprivileged group member', function() {
+
+                beforeEach(function(done) {
+
+                    login('groupmember',
+                        'secret',
+                        done);
+
+                });
+
+
+                it('- return 200', function(done) {
+
+                    getGroupPermissions(done);
+
+                });
+
+            });
+
+            describe('- group owner', function() {
+
+                beforeEach(function(done) {
+
+                    login('groupowner',
+                        'secret',
+                        done);
+
+                });
+
+
+                it('- return 200', function(done) {
+
+                    getGroupPermissions(done);
+
+                });
+
+            });
+
+        });
+
         // :group_id/permissions
 
     });
@@ -1174,7 +1338,7 @@ describe('#/api/groups', function() {
         });
 
         // :group_id/permissions
-        // :group_id/users/:user_id/pdermissions/:permission_id
+        // :group_id/users/:user_id/permissions/:permission_id
 
     });
 
@@ -1468,6 +1632,7 @@ describe('#/api/groups', function() {
 
         // :group_id/locations/:location_id
         // :group_id/areas/:area_id
+        // :group_id/permissions/:permission_id
 
     });
 
