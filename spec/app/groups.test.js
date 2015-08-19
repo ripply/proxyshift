@@ -914,6 +914,7 @@ describe('#/api/groups', function() {
 
         });
 
+        /*
         describe('- /:group_id/permissions', function() {
 
             describe('- anonymous users', function () {
@@ -996,7 +997,7 @@ describe('#/api/groups', function() {
             });
 
         });
-
+        */
         // :group_id/permissions
 
     });

@@ -542,6 +542,7 @@ module.exports = {
             auth: ['group owner or group member'], // owner/member
             route: function(req, res) {
                 // group -> groupsetting -> grouppermission
+                // Executing this transaction from a tests makes fixtures for next test deadlock
                 Bookshelf.transaction(function (t) {
                     models.Group.forge({
                         id: req.params.group_id
