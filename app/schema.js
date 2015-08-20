@@ -223,13 +223,9 @@ var Schema = {
             maxlen: 30,
             nullable: false
         },
-        decription: {
+        description: {
             type: string,
             maxlen: 30
-        },
-        allDay: {
-            type: boolean,
-            defaultTo: false
         },
         recurring: {
             type: boolean,
