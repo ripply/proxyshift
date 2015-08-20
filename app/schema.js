@@ -62,6 +62,7 @@ var Schema = {
             type: string
         }
     },
+    // Holds settings for groups
     GroupSetting: {
         id: {
             type: increments
@@ -120,6 +121,7 @@ var Schema = {
             nullable: false
         }
     },
+    // physical store where things happen
     Location: {
         id: {
             type: increments
@@ -152,6 +154,7 @@ var Schema = {
             nullable: false
         }
     },
+    // area of a store, eg: floor
     SubLocation: {
         id: {
             type: increments
@@ -174,6 +177,8 @@ var Schema = {
             nullable: false
         }
     },
+    // collection of locations
+    // eg: District, state
     Area: {
         id: {
             type: increments
@@ -191,6 +196,7 @@ var Schema = {
             onDelete: cascade
         }
     },
+    // connects locations to an area
     AreaLocation: {
         id: {
             type: increments
@@ -256,6 +262,9 @@ var Schema = {
             onDelete: cascade
         }
     },
+    // groups can have different permissions
+    // eg: unprivileged, privileged etc
+    // here they can customize the name of their permission levels
     GroupPermission: {
         id: {
             type: increments
@@ -277,6 +286,7 @@ var Schema = {
             nullable: false
         }
     },
+    // connects a user to a group
     UserGroup: {
         id: {
             type: increments
@@ -300,6 +310,7 @@ var Schema = {
             onDelete: restrict
         }
     },
+    // remember me tokens
     Token: {
         id: {
             type: increments
@@ -321,6 +332,7 @@ var Schema = {
             nullable: false
         }
     },
+    // job type that a user can be
     GroupUserClass: {
         id: {
             type: increments
@@ -343,6 +355,7 @@ var Schema = {
             maxlen: 50
         }
     },
+    // relates a user to a job type
     GroupUserClassToUser: {
         id: {
             type: increments
@@ -362,6 +375,8 @@ var Schema = {
             nullable: false
         }
     },
+    // Links a user to a location
+    // with the given permission
     UserPermission: {
         id: {
             type: increments
@@ -388,6 +403,7 @@ var Schema = {
             nullable: false
         }
     },
+    // TODO: DESCRIBE THIS
     GroupAdditionalInformation: {
         id: {
             type: increments
@@ -404,11 +420,12 @@ var Schema = {
             nullable: false
         }
     },
+    // TODO: DESCRIBE THIS
     GroupUserInformation: {
         id: {
             type: increments
         },
-        usersid: {
+        user_id: {
             type: integer,
             references: 'id',
             inTable: 'users',
