@@ -3,7 +3,7 @@ var moment = require('moment');
 
 module.exports = {
     route: '/api/shifts',
-    '/': {
+    '/after/:after/before/:before': {
         'get': { // return all shifts you are connected to
             // auth: // logged in
             route: function(req, res) {
