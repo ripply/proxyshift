@@ -90,7 +90,7 @@ module.exports = {
                     });
             }
         },
-        'patch': { // update a group and group settings
+        'patch': { // update a group
             auth: ['group owner', 'or', 'privileged group member'], // must be owner or privileged member
             route: function(req, res) {
                 patchModel('Group',
@@ -286,6 +286,14 @@ module.exports = {
     '/:group_id/users/:user_id/permissions': {
         'get': { // get a users group permissions
             auth: ['group owner', 'or', 'group member'] // owner/member
+        }
+    },
+    '/:group_id/users/:user_id/classes/:class_id/permissions/:permission_id': {
+        'post': { // add user with permission level AND user class
+            auth: ['group owner', 'or', 'privileged group member'],
+            route: function(req, res) {
+                // is this route even needed?
+            }
         }
     },
     '/:group_id/users/:user_id/permissions/:permission_id': {
