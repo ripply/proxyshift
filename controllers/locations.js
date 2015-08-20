@@ -69,5 +69,33 @@ module.exports = {
 
             }
         }
+    },
+    '/:location_id/sublocation': {
+        'get': { // get all sublocations
+            auth: ['location member'], // must be attached to the location
+            route: function(req, res) {
+
+            }
+        },
+        'post': { // create a sublocation
+            auth: ['privileged location member'], // must be a group owner or privileged group member attached to location
+            route: function(req, res) {
+
+            }
+        }
+    },
+    '/:location_id/sublocation/:sublocation_id': {
+        'patch': { // update a sublocation
+            auth: ['privileged location member'], // must be a group owner or privileged group member attached to location
+            route: function(req, res) {
+
+            }
+        },
+        'delete': { // delete a sublocation
+            auth: ['privileged location member'], // must be a group owner or privileged group member attached to location
+            route: function(req, res) {
+
+            }
+        }
     }
 };
