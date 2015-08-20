@@ -103,13 +103,13 @@ module.exports = {
                 })
                     .destroy()
                     .then(function() {
-                        logout();
+                        logout(req, res);
                         res.json({error: false, data: {message: 'User successfully deleted'}});
                     })
                     .catch(function (err) {
                         res.status(500).json({error: true, data: {message: err.message}});
                     });
-            },
+            }
         }
     },
     '/:user_id': {

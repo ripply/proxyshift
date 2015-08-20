@@ -71,7 +71,7 @@ module.exports = function(app, settings){
 
     app.post('/session/logout', ensureCsrf, ensureAuthenticated, function(req, res, next) {
 
-        logout();
+        logout(req, res);
         // client session.postAuth method expects JSON, it will error if sent a blank response
         res.send({});
     });

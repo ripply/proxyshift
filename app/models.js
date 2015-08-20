@@ -16,7 +16,7 @@ var mongoose = require('mongoose'),
     ValidationError = Validator.ValidationError,
     SALT_WORK_FACTOR = 10;
 
-var db_file = 'data/database.db';
+var db_file = ':memory:';
 var neverDropAllTables = false; // safety setting later for production
 function okToDropAllTables() {
     return global.okToDropTables || false;

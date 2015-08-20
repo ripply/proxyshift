@@ -6,6 +6,7 @@ var models = require('../app/models'),
     patchModel = require('./controllerCommon').patchModel,
     deleteModel = require('./controllerCommon').deleteModel,
     Bookshelf = models.Bookshelf,
+    knex = models.knex,
     moment = require('moment');
 
 module.exports = {
@@ -14,12 +15,30 @@ module.exports = {
         'get': { // list all locations a part of
             auth: ['anyone'], // anyone can query what locations they are a part of
             route: function (req, res) {
-                models.Locations.forge({id: req.params.id})
+                return models.Location.query(function(q) {
+                    var subquery =
+                        knex.select('usergroups.group_id as wat')
+                            .from('usergroups')
+                            .where('usergroups.user_id', '=', req.user.id)
+                            .union(function() {
+                                this.select('groups.id as wat')
+                                    .from('groups')
+                                    .where('groups.user_id', '=', req.user.id);
+                            });
+                    q.select()
+                        .from('locations')
+                        .whereIn('group_id', subquery);
+                })
                     .fetchAll()
-                    .then(function (groups) {
-                        res.json(groups.toJSON());
+                    .then(function(groupids) {
+                        if (groupids) {
+                            var ids = groupids.toJSON();
+                            res.json(ids);
+                        } else {
+                            res.json([]);
+                        }
                     })
-                    .catch(function (err) {
+                    .catch(function(err) {
                         res.status(500).json({error: true, data: {message: err.message}});
                     });
             }

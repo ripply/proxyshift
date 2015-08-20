@@ -998,7 +998,6 @@ describe('#/api/groups', function() {
 
         });
         */
-        // :group_id/permissions
 
     });
 
@@ -1631,7 +1630,107 @@ describe('#/api/groups', function() {
 
         });
 
-        // :group_id/locations/:location_id
+        describe('- /:group_id/locations/:location_id', function() {
+
+            describe('- anonymous user', function() {
+
+                it('- returns 401', function(done) {
+
+                    return request(app)
+                        .delete(parse('/api/groups/@groups:name:membershiptest:/locations/@locations:state:membershiptest:'))
+                        .expect(401, done);
+
+                });
+
+            });
+
+            function removeLocationFromGroupTest(done) {
+                request(app)
+                    .get(parse('/api/locations/@locations:state:membershiptest:'))
+                    .expect(200)
+                    .end(function(err, res) {
+                        if (err) {
+                            debug(res.text);
+                            done(err);
+                            return;
+                        }
+                        try {
+                            var data = JSON.parse(res.text);
+                            expect(data.group_id).to.equal(parse('@groups:name:membershiptest:'));
+                        } catch (err) {
+                            done(err);
+                            return;
+                        }
+                        request(app)
+                            .delete(parse('/api/groups/@groups:name:membershiptest:/locations/@locations:state:membershiptest:'))
+                            .expect(200)
+                            .end(function(err2, res2) {
+                                if (err2) {
+                                    debug(res2.text);
+                                    done(err2);
+                                    return;
+                                }
+                                request(app)
+                                    .get(parse('/api/locations/@locations:state:membershiptest:/api/groups/@groups:name:membershiptest:/locations/@locations:state:membershiptest:'))
+                                    .expect(403, done);
+                            });
+                    });
+            }
+
+            describe('- group owner', function() {
+
+                beforeEach(function(done) {
+
+                    login('groupowner',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 200', function(done) {
+
+                    removeLocationFromGroupTest(done);
+
+                });
+
+            });
+
+            describe('- privileged group member', function(){
+
+                beforeEach(function(done) {
+                    login('privledgedmember',
+                        'secret',
+                        done);
+                });
+
+                it('- returns 200', function(done) {
+
+                    removeLocationFromGroupTest(done);
+
+                })
+
+            });
+
+            describe('- group member', function(){
+
+                beforeEach(function(done) {
+                    login('groupmember',
+                        'secret',
+                        done);
+                });
+
+                it('- returns 401', function(done) {
+
+                    request(app)
+                        .delete(parse('/api/groups/@groups:name:membershiptest:/users/@users:username:test_member_of_group:'))
+                        .expect(401, done);
+
+                })
+
+            });
+
+        });
+
         // :group_id/areas/:area_id
         // :group_id/permissions/:permission_id
 
