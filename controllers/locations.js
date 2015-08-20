@@ -13,7 +13,7 @@ module.exports = {
     route: '/api/locations',
     '/': {
         'get': { // list all locations a part of
-            auth: ['anyone'], // anyone can query what locations they are a part of
+            //auth: ['anyone'], // anyone can query what locations they are a part of
             route: function (req, res) {
                 return models.Location.query(function(q) {
                     var subquery =
@@ -42,69 +42,32 @@ module.exports = {
                         res.status(500).json({error: true, data: {message: err.message}});
                     });
             }
-        },
-        'post': {
-            auth: ['anyone'], // anyone can create a shift
-            route: function (req, res) {
-                Bookshelf.transaction(function (t) {
-                    return models.GroupSetting.forge({})
-                        .save(null, {transacting: t})
-                        .tap(function (groupsetting) {
-                            return models.Group.forge({
-                                groupsetting_id: groupsetting.id,
-                                user_id: req.user.id,
-                                name: req.body.name,
-                                state: req.body.state,
-                                city: req.body.city,
-                                address: req.body.address,
-                                zipcode: req.body.zipcode,
-                                weburl: req.body.weburl,
-                                contactemail: req.body.contactemail,
-                                contactphone: req.body.contactphone
-                            })
-                                .save(null, {transacting: t})
-                                .tap(function (group) {
-                                    return models.UserGroup.forge({
-                                        user_id: req.user.id,
-                                        group_id: group.id
-                                    })
-                                        .save(null, {transacting: t});
-                                })
-                        })
-                })
-                    .then(function (group) {
-                        res.json({id: group.get('id')});
-                    })
-                    .catch(function (err) {
-                        res.status(500).json({error: true, data: {message: err.message}});
-                    });
-            }
         }
     },
     '/:location_id/shifts': {
-        'get': { // get list of all class types
-            auth: ['group owner', 'or', 'group member'], // must be a member/owner of the group
+        'get': { // get all shifts you are eligible for in a location?
+            auth: ['location member'], // must be member of a location
             route: function(req, res) {
-                simpleGetListModel('GroupUserClass',
-                    {
-                        group_id: req.params.group_id
-                    },
-                    req,
-                    res
-                );
+
             }
-        },
-        'post': { // create new class for group
-            auth: ['group owner', 'or', 'privileged location member', 'or', ['anyone can create shifts', 'and', 'location member']], // must be an owner or privileged group member
+        }
+    },
+    '/:location_id/shifts/after/:after/before/:before': {
+        'get': { // subroute of /:location_id/shifts with time constraints
+            auth: ['location member'], // must be member of a location
             route: function(req, res) {
-                postModel('Shifts',
-                    {
-                        location_id: req.params.location_id
-                    },
-                    req,
-                    res
-                );
+
+            }
+        }
+    },
+    '/:location_id/shifts/:groupuserclass': {
+        'get': { // get shifts in a location that are of a
+            // if privileged allow any groupuserclass
+            // else, only allow ones you are a member of
+            auth: ['group owner', 'or', 'group member'],
+            route: function(req, res) {
+
             }
         }
     }
-}
+};
