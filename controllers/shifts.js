@@ -114,6 +114,33 @@ module.exports = {
     '/all': {
         'get': { // get all shifts you are connected to
             // auth: // logged in
+            route: function(req, res) {
+                // select id from locations inner join usergroups
+                //  on locations.group_id = groups.id
+                //  where usergroups.user_id = req.user.id
+                // union
+                // select id from groups where groups.user_id = req.user.id
+                models.Shift.query(function(q) {
+                    var relatedGroupsSubQuery =
+                        knex.select('usergroups.group_id as wat')
+                            .from('usergroups')
+                            .where('usergroups.user_id', '=', req.user.id)
+                            .union(function() {
+                                this.select('groups.id as wat')
+                                    .from('groups')
+                                    .where('groups.user_id', '=', req.user.id);
+                            });
+
+                    var relatedLocationsSubQuery =
+                        knex.select('locations.id as locationid')
+                            .from('locations')
+                            .whereIn('locations.group_id', relatedGroupsSubQuery);
+
+                    q.select()
+                        .from('shifts')
+                        .where('shifts.')
+                })
+            }
         }
     },
     '/new': {

@@ -64,7 +64,7 @@ module.exports = {
         'get': { // get shifts in a location that are of a
             // if privileged allow any groupuserclass
             // else, only allow ones you are a member of
-            auth: ['group owner', 'or', 'group member'],
+            auth: ['location members'],
             route: function(req, res) {
 
             }

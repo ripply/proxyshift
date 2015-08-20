@@ -236,7 +236,7 @@ function checkLocationPermissionLevel(permissionLevel, req, act) {
             .andWhere('userpermissions.location_id', '=', location_id);
     })
         .fetchAll({require: true})
-        .then(function(grouppermissions) {
+        .then(function(locations) {
             return true;
         })
         .catch(function(err) {
