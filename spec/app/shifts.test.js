@@ -89,7 +89,6 @@ describe("#/shifts", function() {
         'user_id',
         'title',
         'description',
-        'recurring',
         'start',
         'end',
         'location_id',
