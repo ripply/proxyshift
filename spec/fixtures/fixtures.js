@@ -1,4 +1,5 @@
 var encrypt = require('../../controllers/encryption/encryption').encryptKey;
+moment = require('moment');
 
 var password = 'secret';
 
@@ -240,6 +241,15 @@ module.exports = {
             {
                 location_id: '@locations:state:membershiptest',
                 area_id: '@areas:title:membership test area'
+            }
+        ],
+        shifts: [
+            {
+                title: 'shift0',
+                description: 'shift0',
+                start: moment('2015-10-01 10:00', 'YYYY-MM-DD hh:mm').unix(),
+                end: moment('2015-10-01 22:00', 'YYYY-MM-DD hh:mm').unix(),
+                location_id: '@locations:state:test_state'
             }
         ]
     }
