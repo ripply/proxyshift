@@ -18,18 +18,10 @@ module.exports = {
                 var before = req.param("before");
                 console.log("before: " + before + ", after: " + after);
                 var now = new Date();
-                if (after === undefined) {
-                    after = moment(now)
-                        .subtract('1', 'months')
-                        .endOf('month')
-                        .unix();
-                }
-                if (before === undefined) {
-                    before = moment(now)
-                        .add('3', 'months')
-                        .startOf('month')
-                        .unix();
-                }
+                var range = grabNormalShiftRange(now, after, before);
+                after = range[0];
+                before = range[1];
+
                 if (before > after) {
                     return res.status(400).json({error: true, data: {message: 'Invalid date range'}});
                 }
@@ -52,6 +44,10 @@ module.exports = {
         'get': { // get all shifts you can register for
             // auth: // logged in
             route: function(req, res) {
+                var now = new Date();
+                var range = grabNormalShiftRange(now, after, before);
+                var after = range[0];
+                var before = range[1];
                 models.Shift.query(function(q) {
                     // grab groups the user is a part of
                     var relatedGroupsSubQuery =
@@ -86,6 +82,8 @@ module.exports = {
                         .innerJoin('locations', function() {
                             this.on('shifts.location_id', '=', 'locations.id');
                         })
+                        .where('shifts.start', '<=', before)
+                        .orWhere('shifts.end', '>=', after)
                         .whereIn('locations.id', relatedLocationsSubQuery)
                         .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery)
                         .union(function() {
@@ -103,7 +101,6 @@ module.exports = {
                             // TODO: Fetch related group user class information
                             res.json(shifts.toJSON());
                         } else {
-                            console.log("NOPE");
                             res.json([]);
                         }
                     })
@@ -114,8 +111,72 @@ module.exports = {
         }
     },
     '/new': {
-        'get': { // get new shifts
+        'get': { // get new shifts that are not expired
             // auth: // logged in
+            route: function(req, res) {
+                var now = new Date();
+                var range = grabNormalShiftRange(now);
+                var after = now;
+                models.Shift.query(function(q) {
+                    // grab groups the user is a part of
+                    var relatedGroupsSubQuery =
+                        knex.select('usergroups.group_id as wat')
+                            .from('usergroups')
+                            .where('usergroups.user_id', '=', req.user.id)
+                            .union(function() {
+                                this.select('groups.id as wat')
+                                    .from('groups')
+                                    .where('groups.user_id', '=', req.user.id);
+                            });
+
+                    // grab locations related to all of those groups
+                    var relatedLocationsSubQuery =
+                        knex.select('locations.id as locationid')
+                            .from('locations')
+                            .whereIn('locations.group_id', relatedGroupsSubQuery);
+
+                    // grab all your user classes
+                    var relatedUserClassesSubQuery =
+                        knex.select('groupuserclasses.id as groupuserclassid')
+                            .from('groupuserclasses')
+                            .innerJoin('groupuserclasstousers', function() {
+                                this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id');
+                            })
+                            .whereIn('groupuserclasses.group_id', relatedGroupsSubQuery);
+
+                    // grab all shifts at locations/sublocations that are one of your job types
+
+                    q.select()
+                        .from('shifts')
+                        .innerJoin('locations', function() {
+                            this.on('shifts.location_id', '=', 'locations.id');
+                        })
+                        //.where('shifts.start', '<=', before)
+                        .orWhere('shifts.end', '>=', after)
+                        .whereIn('locations.id', relatedLocationsSubQuery)
+                        .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery)
+                        .union(function() {
+                            this.select('shifts.*')
+                                .from('shifts')
+                                .innerJoin('sublocations', function() {
+                                    this.on('shifts.sublocation_id', '=', 'sublocations.id');
+                                })
+                                .whereIn('sublocations.location_id', relatedLocationsSubQuery);
+                        });
+                })
+                    .fetchAll()
+                    .then(function(shifts) {
+                        if (shifts) {
+                            // TODO: Fetch related group user class information
+                            res.json(shifts.toJSON());
+                        } else {
+                            res.json([]);
+                        }
+                    })
+                    .catch(function(err) {
+                        res.status(500).json({error: true, data: {message: err.message}});
+                    })
+            }
         }
     },
     '/managing': {
@@ -211,3 +272,23 @@ module.exports = {
             });
     }
 };
+
+function grabNormalShiftRange(from, after, before) {
+    if (from === undefined) {
+        from = new Date();
+    }
+    if (after === undefined) {
+        after = moment(from)
+            .subtract('1', 'months')
+            .endOf('month')
+            .unix();
+    }
+    if (before === undefined) {
+        before = moment(from)
+            .add('3', 'months')
+            .startOf('month')
+            .unix();
+    }
+
+    return [after, before];
+}

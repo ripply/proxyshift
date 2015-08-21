@@ -254,10 +254,19 @@ module.exports = {
         ],
         shifts: [
             {
-                title: 'shift0',
-                description: 'shift0',
-                start: moment('2015-10-01 10:00', 'YYYY-MM-DD hh:mm').unix(),
-                end: moment('2015-10-01 22:00', 'YYYY-MM-DD hh:mm').unix(),
+                title: 'monthshiftisover',
+                description: 'month long shift ending now',
+                start: moment(new Date()).subtract('1', 'month').unix(),
+                end: moment(new Date()).unix(),
+                location_id: '@locations:state:membershiptest',
+                user_id: '@users:username:groupmember',
+                groupuserclass_id: '@groupuserclasses:title:classtest'
+            },
+            {
+                title: 'newshift',
+                description: 'shift that starts in the future',
+                start: moment(new Date()).add('1', 'hour').unix(),
+                end: moment(new Date()).add('3', 'hour').unix(),
                 location_id: '@locations:state:membershiptest',
                 user_id: '@users:username:groupmember',
                 groupuserclass_id: '@groupuserclasses:title:classtest'

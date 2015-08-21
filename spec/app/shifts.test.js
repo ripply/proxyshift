@@ -7,6 +7,7 @@ var Promise = require('bluebird');
 var ready = models.onDatabaseReady;
 var expect = global.expect;
 var login = require('../common').login;
+var moment = require('moment');
 var _ = require('underscore');
 
 var password = 'secret';
@@ -80,9 +81,9 @@ describe("#/shifts", function() {
 
     });
 
-    var totalShiftCount = 1;
+    var totalShiftCount = 2;
 
-    var newShiftCount = 0;
+    var newShiftCount = 1;
 
     var properties = [
         'id',
@@ -249,7 +250,9 @@ describe("#/shifts", function() {
                         .expect(200)
                         .end(function(err, res) {
                             if (err) {
+                                debug(res.text);
                                 done(err);
+                                return;
                             }
                             try {
                                 var data = JSON.parse(res.text);
@@ -259,8 +262,14 @@ describe("#/shifts", function() {
                                 _.each(data, function(shift) {
                                     _.each(properties, function(property) {
                                         shift.should.have.property(property);
-                                        shift['user_id'].should.equal(userwithshifts_userid);
+                                        ('' + shift['user_id']).should.equal(parse("@users:username:groupmember:"));
                                     });
+
+                                    // check that before is correct
+                                    var offset = 0; //moment(new Date()).unix();
+                                    var now = moment(new Date).unix();
+                                    var greaterThan = parseInt(data.before) > now;
+                                    expect(greaterThan).to.be.true;
                                 });
 
                                 done();
