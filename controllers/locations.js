@@ -46,9 +46,15 @@ module.exports = {
     },
     '/:location_id/shifts': {
         'get': { // get all shifts you are eligible for in a location?
-            auth: ['location member'], // must be member of a location
-            route: function(req, res) {
-
+            auth: ['group owner', 'or', 'group member'], // must be a member/owner of the group
+            route: function (req, res) {
+                simpleGetListModel('GroupUserClass',
+                    {
+                        group_id: req.params.group_id
+                    },
+                    req,
+                    res
+                );
             }
         }
     },
