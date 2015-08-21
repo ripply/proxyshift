@@ -179,9 +179,96 @@ module.exports = {
             }
         }
     },
-    '/managing': {
+    '/:location_id/managing': {
         'get': { // get shifts you are managing including last months
             // auth: // logged in
+            route: function(req, res) {
+                var now = new Date();
+                var range = grabNormalShiftRange(now);
+                var after = now;
+                var managingPermissionLevel = 2;
+                models.Shift.query(function(q) {
+                    // grab groups the user is a part of
+                    var relatedGroupsSubQuery =
+                        knex.select('usergroups.group_id as wat')
+                            .from('usergroups')
+                            .where('usergroups.user_id', '=', req.user.id)
+                            .innerJoin('grouppermissions', function() {
+                                this.on('usergroups.grouppermission_id', '=', 'grouppermissions.id')
+                                    .andOn('grouppermissions.permissionlevel', '>', managingPermissionLevel);
+                            })
+                            .union(function() {
+                                this.select('groups.id as wat')
+                                    .from('groups')
+                                    .where('groups.user_id', '=', req.user.id);
+                            });
+
+                    // grab locations related to all of those groups
+                    var relatedLocationsSubQuery =
+                        knex.select('locations.id as locationid')
+                            .from('locations')
+                            .whereIn('locations.group_id', relatedGroupsSubQuery);
+
+                    var myUsergroupSubquery =
+                        knex.select('usergroups.id as usergroupsid')
+                            .from('usergroups')
+                            .innerJoin('groups', function() {
+                                this.on('groups.id', '=', 'usergroups.group_id')
+                            })
+                            .where('usergroups.user_id', '=', req.user.id)
+
+
+
+                    // since this is for shifts you can manage
+                    // we need to grab which userclasses
+                    var managingUserClassesSubQuery =
+                        knex.select('gropuuserclasses.id as groupuserclassid')
+                            .from('groupuserclasses')
+                            .innerJoin('groupuserclasstousers', function() {
+                                this.on('groupusercasstousers.groupuserclass_id', '=', 'groupuserclasses.id');
+                            })
+
+                    var relatedUserClassesSubQuery =
+                        knex.select('groupuserclasses.id as groupuserclassid')
+                            .from('groupuserclasses')
+                            .innerJoin('groupuserclasstousers', function() {
+                                this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id');
+                            })
+                            .whereIn('groupuserclasses.group_id', relatedGroupsSubQuery);
+
+                    // grab all shifts at locations/sublocations that are one of your job types
+
+                    q.select()
+                        .from('shifts')
+                        .innerJoin('locations', function() {
+                            this.on('shifts.location_id', '=', 'locations.id');
+                        })
+                        //.where('shifts.start', '<=', before)
+                        .orWhere('shifts.end', '>=', after)
+                        .whereIn('locations.id', relatedLocationsSubQuery)
+                        .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery)
+                        .union(function() {
+                            this.select('shifts.*')
+                                .from('shifts')
+                                .innerJoin('sublocations', function() {
+                                    this.on('shifts.sublocation_id', '=', 'sublocations.id');
+                                })
+                                .whereIn('sublocations.location_id', relatedLocationsSubQuery);
+                        });
+                })
+                    .fetchAll()
+                    .then(function(shifts) {
+                        if (shifts) {
+                            // TODO: Fetch related group user class information
+                            res.json(shifts.toJSON());
+                        } else {
+                            res.json([]);
+                        }
+                    })
+                    .catch(function(err) {
+                        res.status(500).json({error: true, data: {message: err.message}});
+                    })
+            }
         }
     },
     '/:shift_id': {

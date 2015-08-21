@@ -89,6 +89,15 @@ module.exports = {
                 email: 'veryprivileged@example.com',
                 squestion: 'veryprivileged',
                 sanswer: encrypt(password)
+            },
+            {
+                username: 'manager',
+                password: encrypt(password),
+                firstname: 'manager',
+                lastname: 'manager',
+                email: 'manager@example.com',
+                squestion: 'manager',
+                sanswer: encrypt(password)
             }
         ],
         groupsettings: [
@@ -179,6 +188,11 @@ module.exports = {
                 user_id: '@users:username:veryprivileged',
                 group_id: '@groups:name:membershiptest',
                 grouppermission_id: '@grouppermissions:description:very privileged'
+            },
+            {
+                user_id: '@users:username:manager',
+                group_id: '@groups:name:membershiptest',
+                grouppermission_id: '@grouppermissions:description:privileged'
             }
         ],
         locations: [
@@ -270,6 +284,18 @@ module.exports = {
                 location_id: '@locations:state:membershiptest',
                 user_id: '@users:username:groupmember',
                 groupuserclass_id: '@groupuserclasses:title:classtest'
+            }
+        ],
+        managingclassesatlocatios: [
+            {
+                usergroup_id: '@usergroups:6', // manager
+                location_id: '@locations:state:membershiptest',
+                groupuserclass_id: '@groupuserclasses:title:User class 1',
+            },
+            {
+                usergroup_id: '@usergroups:6', // manager
+                location_id: '@locations:state:membershiptest',
+                groupuserclass_id: '@groupuserclasses:title:classtest',
             }
         ]
     }
