@@ -233,10 +233,6 @@ var Schema = {
             type: string,
             maxlen: 30
         },
-        recurring: {
-            type: boolean,
-            defaultTo: false
-        },
         start: {
             type: date,
             nullable: false
