@@ -223,12 +223,21 @@ module.exports = {
                 group_id: '@groups:name:membershiptest',
                 title: 'User class 1',
                 description: 'User class 1 description'
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                title: 'classtest',
+                description: 'User class 1 description'
             }
         ],
         groupuserclasstousers: [
             {
                 user_id: '@users:username:test_member_of_group',
                 groupuserclass_id: '@groupuserclasses:title:User class 1'
+            },
+            {
+                user_id: '@users:username:groupmember',
+                groupuserclass_id: '@groupuserclasses:title:classtest'
             }
         ],
         areas: [
@@ -249,7 +258,9 @@ module.exports = {
                 description: 'shift0',
                 start: moment('2015-10-01 10:00', 'YYYY-MM-DD hh:mm').unix(),
                 end: moment('2015-10-01 22:00', 'YYYY-MM-DD hh:mm').unix(),
-                location_id: '@locations:state:test_state'
+                location_id: '@locations:state:membershiptest',
+                user_id: '@users:username:groupmember',
+                groupuserclass_id: '@groupuserclasses:title:classtest'
             }
         ]
     }

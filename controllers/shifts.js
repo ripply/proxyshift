@@ -1,4 +1,5 @@
 var models = require('../app/models');
+var knex = models.knex;
 var moment = require('moment');
 
 module.exports = {
@@ -45,6 +46,81 @@ module.exports = {
                         res.status(500).json({error: true, data: {message: err.message}});
                     });
             }
+        }
+    },
+    '/all': {
+        'get': { // get all shifts you can register for
+            // auth: // logged in
+            route: function(req, res) {
+                models.Shift.query(function(q) {
+                    // grab groups the user is a part of
+                    var relatedGroupsSubQuery =
+                        knex.select('usergroups.group_id as wat')
+                            .from('usergroups')
+                            .where('usergroups.user_id', '=', req.user.id)
+                            .union(function() {
+                                this.select('groups.id as wat')
+                                    .from('groups')
+                                    .where('groups.user_id', '=', req.user.id);
+                            });
+
+                    // grab locations related to all of those groups
+                    var relatedLocationsSubQuery =
+                        knex.select('locations.id as locationid')
+                            .from('locations')
+                            .whereIn('locations.group_id', relatedGroupsSubQuery);
+
+                    // grab all your user classes
+                    var relatedUserClassesSubQuery =
+                        knex.select('groupuserclasses.id as groupuserclassid')
+                            .from('groupuserclasses')
+                            .innerJoin('groupuserclasstousers', function() {
+                                this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id');
+                            })
+                            .whereIn('groupuserclasses.group_id', relatedGroupsSubQuery);
+
+                    // grab all shifts at locations/sublocations that are one of your job types
+
+                    q.select()
+                        .from('shifts')
+                        .innerJoin('locations', function() {
+                            this.on('shifts.location_id', '=', 'locations.id');
+                        })
+                        .whereIn('locations.id', relatedLocationsSubQuery)
+                        .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery)
+                        .union(function() {
+                            this.select('shifts.*')
+                                .from('shifts')
+                                .innerJoin('sublocations', function() {
+                                    this.on('shifts.sublocation_id', '=', 'sublocations.id');
+                                })
+                                .whereIn('sublocations.location_id', relatedLocationsSubQuery);
+                        });
+                })
+                    .fetchAll()
+                    .then(function(shifts) {
+                        if (shifts) {
+                            // TODO: Fetch related group user class information
+                            res.json(shifts.toJSON());
+                        } else {
+                            console.log("NOPE");
+                            res.json([]);
+                        }
+                    })
+                    .catch(function(err) {
+                        res.status(500).json({error: true, data: {message: err.message}});
+                    })
+            }
+        }
+    },
+    '/new': {
+        'get': { // get new shifts
+            // auth: // logged in
+        }
+    },
+    '/managing': {
+        'get': { // get shifts you are managing including last months
+            // auth: // logged in
         }
     },
     '/:shift_id': {
@@ -109,48 +185,6 @@ module.exports = {
                         res.status(500).json({error: true, data: {message: err.message}});
                     });
             }
-        }
-    },
-    '/all': {
-        'get': { // get all shifts you are connected to
-            // auth: // logged in
-            route: function(req, res) {
-                // select id from locations inner join usergroups
-                //  on locations.group_id = groups.id
-                //  where usergroups.user_id = req.user.id
-                // union
-                // select id from groups where groups.user_id = req.user.id
-                models.Shift.query(function(q) {
-                    var relatedGroupsSubQuery =
-                        knex.select('usergroups.group_id as wat')
-                            .from('usergroups')
-                            .where('usergroups.user_id', '=', req.user.id)
-                            .union(function() {
-                                this.select('groups.id as wat')
-                                    .from('groups')
-                                    .where('groups.user_id', '=', req.user.id);
-                            });
-
-                    var relatedLocationsSubQuery =
-                        knex.select('locations.id as locationid')
-                            .from('locations')
-                            .whereIn('locations.group_id', relatedGroupsSubQuery);
-
-                    q.select()
-                        .from('shifts')
-                        .where('shifts.')
-                })
-            }
-        }
-    },
-    '/new': {
-        'get': { // get new shifts
-            // auth: // logged in
-        }
-    },
-    '/managing': {
-        'get': { // get shifts you are managing including last months
-            // auth: // logged in
         }
     },
     // created in context of /locations

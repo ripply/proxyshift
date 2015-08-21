@@ -241,6 +241,12 @@ var Schema = {
             type: date,
             nullable: false
         },
+        groupuserclass_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'groupuserclasses',
+            onDelete: cascade
+        },
         location_id: {
             type: integer,
             references: 'id',
@@ -349,6 +355,10 @@ var Schema = {
         description: {
             type: string,
             maxlen: 50
+        },
+        cansendnotification: {
+            type: boolean,
+            defaultTo: true
         }
     },
     // relates a user to a job type

@@ -80,7 +80,7 @@ describe("#/shifts", function() {
 
     });
 
-    var totalShiftCount = 0;
+    var totalShiftCount = 1;
 
     var newShiftCount = 0;
 
@@ -89,11 +89,10 @@ describe("#/shifts", function() {
         'user_id',
         'title',
         'description',
-        'allDay',
         'recurring',
         'start',
         'end',
-        'arealocation_id'
+        'location_id',
     ];
 
     describe('- GET', function() {
@@ -179,7 +178,7 @@ describe("#/shifts", function() {
 
                 beforeEach(function(done) {
 
-                    login('userwithshifts',
+                    login('groupmember',
                         'secret',
                         done);
 
@@ -192,7 +191,9 @@ describe("#/shifts", function() {
                         .expect(200)
                         .end(function(err, res) {
                             if (err) {
+                                debug(res.text);
                                 done(err);
+                                return;
                             }
                             try {
                                 var data = JSON.parse(res.text);
@@ -202,7 +203,7 @@ describe("#/shifts", function() {
                                 _.each(data, function(shift) {
                                     _.each(properties, function(property) {
                                         shift.should.have.property(property);
-                                        shift['user_id'].should.equal(userwithshifts_userid);
+                                        ('' + shift['user_id']).should.equal(parse("@users:username:groupmember:"));
                                     });
                                 });
 
