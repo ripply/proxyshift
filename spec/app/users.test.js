@@ -58,12 +58,13 @@ describe('#/api/users', function(){
                             sanswer: 'sanswer',
                             phonehome: '12435',
                             phonemobile: '12345',
-                            pagernumer: '12435'
+                            pagernumber: '12435'
                         })
                         .expect(200)
                         .end(function(err, res) {
                             if (err) {
                                 done(err);
+                                return;
                             }
                             login(
                                 username,
@@ -71,6 +72,7 @@ describe('#/api/users', function(){
                                 function(err2, res2) {
                                     if (err2) {
                                         done(err);
+                                        return;
                                     }
                                     try {
                                         var data = JSON.parse(res2.text);
@@ -87,7 +89,50 @@ describe('#/api/users', function(){
                 });
 
                 it('- returns details as to why creation fails', function(done) {
-                    throw new Error("Not yet implemented");
+
+                    var username = 'noncreateduser';
+                    request(app)
+                        .post('/api/users/')
+                        .send({
+                            username: username,
+                            password: password,
+                            firstname: 'firstname',
+                            lastname: 'lastname',
+                            email: 'invalidemail',
+                            squestion: 'squestion',
+                            sanswer: 'sanswer',
+                            phonehome: '12435',
+                            phonemobile: '12345',
+                            pagernumber: '12435'
+                        })
+                        .expect(500)
+                        .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                                return;
+                            }
+                            login(
+                                username,
+                                password,
+                                function(err2, res2) {
+                                    if (err2) {
+                                        var data = JSON.parse(res.text);
+                                        var message = data.data.message;
+                                        done(err);
+                                        return message;
+                                    }
+                                    try {
+                                        var data = JSON.parse(res2.text);
+                                        expect(data.authenticationToken).to.not.be.null;
+
+                                        done();
+                                    } catch (e) {
+                                        done(e);
+                                    }
+                                }
+                            );
+                        });
+
                 });
 
             });
