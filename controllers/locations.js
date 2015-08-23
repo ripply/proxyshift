@@ -6,6 +6,7 @@ var models = require('../app/models'),
     patchModel = require('./controllerCommon').patchModel,
     deleteModel = require('./controllerCommon').deleteModel,
     Bookshelf = models.Bookshelf,
+    grabNormalShiftRange = require('./controllerCommon').grabNormalShiftRange,
     knex = models.knex,
     moment = require('moment');
 
@@ -41,6 +42,112 @@ module.exports = {
                     .catch(function(err) {
                         res.status(500).json({error: true, data: {message: err.message}});
                     });
+            }
+        }
+    },
+    '/:location_id/shifts/managing': {
+        'get': { // get shifts you are managing including last months
+            auth: ['location member'],
+            route: function(req, res) {
+                // this should grab groups you are a member of
+                // join them with the specific location
+                // grab user classes you are managing
+                // join them with shifts
+                var now = new Date();
+                var range = grabNormalShiftRange(now);
+                var before = range[0];
+                var after = new moment(now).unix();
+                var managingPermissionLevel = 2;
+                models.Shift.query(function(q) {
+                    /*
+                    // grab groups the user is a part of
+                    var relatedGroupsSubQuery =
+                        knex.select('usergroups.group_id as wat')
+                            .from('usergroups')
+                            .where('usergroups.user_id', '=', req.user.id)
+                            .innerJoin('grouppermissions', function() {
+                                this.on('usergroups.grouppermission_id', '=', 'grouppermissions.id')
+                                    .andOn('grouppermissions.permissionlevel', '>', managingPermissionLevel);
+                            })
+                            .union(function() {
+                                this.select('groups.id as wat')
+                                    .from('groups')
+                                    .where('groups.user_id', '=', req.user.id);
+                            });
+
+                    // make sure that the location is part of one of those groups
+                    var relatedLocationsSubQuery =
+                        knex.select('locations.id as locationid')
+                            .from('locations')
+                            .whereIn('locations.group_id', relatedGroupsSubQuery)
+                            .andWhere('locations.id', '=', req.params.location_id);
+                    */
+
+                    // fetch classes you are managing at the location
+                    var managingClassesAtLocationSubQuery =
+                        knex.select('managingclassesatlocations.groupuserclass_id')
+                            .from('managingclassesatlocations')
+                            .innerJoin('usergroups', function() {
+                                this.on('usergroups.id', '=', 'managingclassesatlocations.usergroup_id')
+                                    .andOn('usergroups.user_id', '=', req.user.id);
+                            })
+                            //.where('managingclassesatlocations.managing', '=', true)
+                            //.where('managingclassesatlocations.location_id', '=', req.params.location_id);
+
+                    // since this is for shifts you can manage
+                    // we need to grab the userids of userclasses we manage
+                    // this seems like it could be a big query returning thousands of ids
+                    // TODO: Optimize this if it becomes a bottleneck
+                    /*
+                     var relatedUserClassesSubQuery =
+                     knex.select('groupuserclasses.id as groupuserclassid')
+                     .from('groupuserclasses')
+                     .innerJoin('groupuserclasstousers', function() {
+                     this.on('groupusercasstousers.groupuserclass_id', '=', 'groupuserclasses.id');
+                     })
+                     .whereIn('groupuserclasses.group_id', relatedGroupsSubQuery);
+                     */
+                    //
+
+                    // grab all shifts at locations/sublocations that are one of your job types
+
+                    console.log("before <= " + before);
+                    console.log("end >= " + after);
+                    q.select()
+                        .from('shifts')
+                        .where('shifts.location_id', '=', req.params.location_id)
+                        .andWhere(function() {
+                            this.orWhere('shifts.start', '<=', before)
+                                .orWhere('shifts.end', '>=', after);
+                        })
+                        .whereIn('shifts.groupuserclass_id', managingClassesAtLocationSubQuery)
+                        .union(function() {
+                            this.select('shifts.*')
+                                .from('shifts')
+                                .innerJoin('sublocations', function() {
+                                    this.on('shifts.sublocation_id', '=', 'sublocations.id');
+                                })
+                                .where('sublocations.location_id', '=', req.params.location_id)
+                                //.whereIn('sublocations.location_id', relatedLocationsSubQuery)
+                                .whereIn('shifts.groupuserclass_id', managingClassesAtLocationSubQuery)
+                                .andWhere(function() {
+                                    this.orWhere('shifts.start', '<=', before)
+                                        .orWhere('shifts.end', '>=', after);
+                                });
+                        });
+                })
+                    .fetchAll()
+                    .then(function(shifts) {
+                        if (shifts) {
+                            // TODO: Fetch related group user class information
+                            res.json(shifts.toJSON());
+                        } else {
+                            res.json([]);
+                        }
+                    })
+                    .catch(function(err) {
+                        res.status(500).json({error: true, data: {message: err.message}});
+                    })
             }
         }
     },

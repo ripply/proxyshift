@@ -222,15 +222,25 @@ module.exports = {
         ],
         userpermissions: [
             {
-                location_id: 'locations:0',
+                location_id: '@locations:state:test_state',
                 user_id: '@users:username:test_password',
                 grouppermission_id: '@grouppermissions:description:unprivileged'
             },
             {
-                location_id: 'locations:1',
+                location_id: '@locations:state:membershiptest',
                 user_id: '@users:username:locationmember',
-                grouppermission_id: 'grouppermissions:0'
-            }
+                grouppermission_id: '@grouppermissions:description:unprivileged'
+            },
+            {
+                location_id: '@locations:state:membershiptest',
+                user_id: '@users:username:groupmember',
+                grouppermission_id: '@grouppermissions:description:unprivileged'
+            },
+            {
+                location_id: '@locations:state:membershiptest',
+                user_id: '@users:username:manager',
+                grouppermission_id: '@grouppermissions:description:privileged'
+            },
         ],
         groupuserclasses: [
             {
@@ -273,6 +283,7 @@ module.exports = {
                 start: moment(new Date()).subtract('1', 'month').unix(),
                 end: moment(new Date()).unix(),
                 location_id: '@locations:state:membershiptest',
+                //sublocation_id: null,
                 user_id: '@users:username:groupmember',
                 groupuserclass_id: '@groupuserclasses:title:classtest'
             },
@@ -282,20 +293,53 @@ module.exports = {
                 start: moment(new Date()).add('1', 'hour').unix(),
                 end: moment(new Date()).add('3', 'hour').unix(),
                 location_id: '@locations:state:membershiptest',
+                //sublocation_id: null,
                 user_id: '@users:username:groupmember',
                 groupuserclass_id: '@groupuserclasses:title:classtest'
-            }
-        ],
-        managingclassesatlocatios: [
-            {
-                usergroup_id: '@usergroups:6', // manager
-                location_id: '@locations:state:membershiptest',
-                groupuserclass_id: '@groupuserclasses:title:User class 1',
             },
             {
-                usergroup_id: '@usergroups:6', // manager
+                title: 'sublocationshfit',
+                description: 'shift in sublocation',
+                start: moment(new Date()).add('1', 'hour').unix(),
+                end: moment(new Date()).add('3', 'hour').unix(),
+                //location_id: null,
+                sublocation_id: '@sublocations:description:membershiptest floor 1',
+                //user_id: null,
+                groupuserclass_id: '@groupuserclasses:title:classtest'
+            },
+            {
+                title: 'sublocationshfitwithuser',
+                description: 'shift in sublocation',
+                start: moment(new Date()).add('1', 'hour').unix(),
+                end: moment(new Date()).add('3', 'hour').unix(),
+                //location_id: null,
+                sublocation_id: '@sublocations:description:membershiptest floor 1',
+                user_id: '@users:username:groupmember',
+                groupuserclass_id: '@groupuserclasses:title:classtest'
+            },
+            {
+                title: 'shift_in_other_location',
+                description: 'shift in another location',
+                start: moment(new Date()).add('1', 'hour').unix(),
+                end: moment(new Date()).add('3', 'hour').unix(),
+                location_id: '@locations:state:test_state',
+                //sublocation_id: '@sublocations:description:membershiptest floor 1',
+                user_id: '@users:username:groupmember',
+                groupuserclass_id: '@groupuserclasses:title:classtest'
+            },
+        ],
+        managingclassesatlocations: [
+            {
+                usergroup_id: 'usergroups:6', // manager
+                location_id: '@locations:state:membershiptest',
+                groupuserclass_id: '@groupuserclasses:title:User class 1',
+                managing: true
+            },
+            {
+                usergroup_id: 'usergroups:6', // manager
                 location_id: '@locations:state:membershiptest',
                 groupuserclass_id: '@groupuserclasses:title:classtest',
+                managing: true
             }
         ]
     }

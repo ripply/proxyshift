@@ -252,7 +252,7 @@ var Schema = {
             references: 'id',
             inTable: 'locations',
             unique: false,
-            nullable: false,
+            nullable: true,
             onDelete: cascade
         },
         sublocation_id: {

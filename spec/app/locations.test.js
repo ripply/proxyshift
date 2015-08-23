@@ -98,6 +98,11 @@ describe('#/api/groups', function() {
                         .get('/api/locations')
                         .expect(200)
                         .end(function (err, res) {
+                            if (err) {
+                                debug(res.text);
+                                done(err);
+                                return;
+                            }
                             try {
                                 debug(res.text);
                                 var data = JSON.parse(res.text);
@@ -129,11 +134,134 @@ describe('#/api/groups', function() {
                         .get('/api/locations')
                         .expect(200)
                         .end(function (err, res) {
+                            if (err) {
+                                debug(res.text);
+                                done(err);
+                                return;
+                            }
                             try {
                                 debug(res.text);
                                 var data = JSON.parse(res.text);
                                 data.should.be.a('array');
                                 expect(data.length).to.not.equal(0);
+                                done();
+                            } catch (e) {
+                                done(e);
+                            }
+                        });
+
+                });
+
+            });
+
+        });
+
+        describe('- /:location_id/shifts/managing', function() {
+
+            var properties = [
+                'id',
+                'user_id',
+                'title',
+                'description',
+                'start',
+                'end',
+                'location_id',
+            ];
+
+            describe('- anonymous user', function() {
+
+                it('- returns 401', function(done) {
+
+                    request(app)
+                        .get(parse('/api/locations/@locations:state:membershiptest:/shifts/managing'))
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- non manager but shift owner', function() {
+
+                beforeEach(function(done) {
+
+                    login('groupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 200 empty response', function(done) {
+
+                    request(app)
+                        .get(parse('/api/locations/@locations:state:membershiptest:/shifts/managing'))
+                        .expect(200)
+                        .end(function(err, res) {
+                            if (err) {
+                                debug(res.text);
+                                done(err);
+                                return;
+                            }
+                            try {
+                                var data = JSON.parse(res.text);
+                                debug(data);
+                                expect(data).to.not.be.undefined;
+                                data.should.be.a('array');
+                                expect(data.length).to.equal(0);
+
+                                done();
+                            } catch (e) {
+                                done(e);
+                            }
+                        });
+
+                });
+
+            });
+
+            describe('- manager', function() {
+
+                var managingShiftCount = 4 ;
+                var userwithshifts_userid = parseInt(parse('@users:username:groupmember:'));
+
+                beforeEach(function(done) {
+
+                    login('manager',
+                        'secret',
+                        done);
+
+                });
+
+                it('- lists ALL shifts the user is managing', function(done) {
+
+                    request(app)
+                        .get(parse('/api/locations/@locations:state:membershiptest:/shifts/managing'))
+                        .expect(200)
+                        .end(function(err, res) {
+                            if (err) {
+                                debug(res.text);
+                                done(err);
+                                return;
+                            }
+                            try {
+                                var data = JSON.parse(res.text);
+                                debug(data);
+                                data.should.be.a('array');
+                                data.length.should.equal(managingShiftCount);
+
+                                var foundUsedShifts = 0;
+                                var expectedUsedShifts = 3;
+                                _.each(data, function(shift) {
+                                    _.each(properties, function(property) {
+                                        shift.should.have.property(property);
+                                        if (shift['user_id'] != null) {
+                                            foundUsedShifts++;
+                                            shift['user_id'].should.equal(userwithshifts_userid);
+                                        }
+                                    });
+                                });
+
+                                expect(foundUsedShifts).to.equal(foundUsedShifts);
+
                                 done();
                             } catch (e) {
                                 done(e);

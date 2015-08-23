@@ -274,7 +274,7 @@ module.exports = function(app, roles) {
                                                 // are creating.
                                                 // the purpose of this is to allow reuse of
                                                 // auth code and to allow simple naming of
-                                                // requirements22222222
+                                                // requirements
                                                 //app[verb](fullRoute, user.can(auth));
                                             } else if (auth instanceof Array) {
                                                 // should be an array of strings
