@@ -92,7 +92,8 @@ module.exports = {
             .catch(function (err) {
                 res.status(500).json({error: true, data: {message: err.message}});
             });
-    }
+    },
+    grabNormalShiftRange: grabNormalShiftRange
 };
 
 function getModelKeys(modelName, bannedKeys) {
@@ -124,4 +125,27 @@ function updateModel(modelName, bookshelfFetchedModelObject, updatedData, banned
     });
 
     return updatedModelValues;
+}
+
+
+function grabNormalShiftRange(from, after, before) {
+    if (from === undefined) {
+        from = new Date();
+    }
+    if (after === undefined) {
+        after = moment(from)
+            .subtract('1', 'months')
+            .subtract('1', 'hour')
+            .endOf('month')
+            .unix();
+    }
+    if (before === undefined) {
+        before = moment(from)
+            .add('3', 'months')
+            .add('1', 'hour')
+            .startOf('month')
+            .unix();
+    }
+
+    return [after, before];
 }

@@ -1,6 +1,7 @@
 var models = require('../app/models');
 var knex = models.knex;
 var moment = require('moment');
+var grabNormalShiftRange = require('./controllerCommon').grabNormalShiftRange;
 
 module.exports = {
     route: '/api/shifts',
@@ -179,11 +180,6 @@ module.exports = {
             }
         }
     },
-    '/managing': {
-        'get': { // get shifts you are managing including last months
-            // auth: // logged in
-        }
-    },
     '/:shift_id': {
         'get': { // get info about a shift
             // auth: // connected to shift (part of location) or managing the shift
@@ -272,23 +268,3 @@ module.exports = {
             });
     }
 };
-
-function grabNormalShiftRange(from, after, before) {
-    if (from === undefined) {
-        from = new Date();
-    }
-    if (after === undefined) {
-        after = moment(from)
-            .subtract('1', 'months')
-            .endOf('month')
-            .unix();
-    }
-    if (before === undefined) {
-        before = moment(from)
-            .add('3', 'months')
-            .startOf('month')
-            .unix();
-    }
-
-    return [after, before];
-}

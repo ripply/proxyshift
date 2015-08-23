@@ -252,7 +252,7 @@ var Schema = {
             references: 'id',
             inTable: 'locations',
             unique: false,
-            nullable: false,
+            nullable: true,
             onDelete: cascade
         },
         sublocation_id: {
@@ -448,6 +448,42 @@ var Schema = {
         data: {
             type: string,
             nullable: false
+        }
+    },
+    // TODO: This table needs to be culled when a users' permission is lowered
+    ManagingClassesAtLocation: {
+        id: {
+            type: increments
+        },
+        // userid of a privileged member
+        usergroup_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'usergroups',
+            onDelete: cascade,
+            nullable: false
+        },
+        // location that manager is managing at
+        location_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'locations',
+            onDelete: cascade,
+            nullable: false
+        },
+        // class that manager manages
+        groupuserclass_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'groupuserclasses',
+            onDelete: cascade,
+            nullable: false
+        },
+        // Lets us notify managers when a new class is added
+        // if they want to manage that type of user
+        managing: {
+            type: boolean,
+            defaultsTo: false
         }
     }
 };
