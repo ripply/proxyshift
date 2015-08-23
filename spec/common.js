@@ -31,6 +31,19 @@ function failToLogin(username, password, code, next) {
     }
 }
 
+function logout(next) {
+    try {
+        expect(global.sess).to.not.be.undefined;
+        global.sess.post('/session/logout')
+            .expect(200)
+            .end(next);
+    } catch (err) {
+        next(err);
+    }
+}
+
 module.exports = {
-    login: login
+    login: login,
+    failToLogin: failToLogin,
+    logout: logout
 };

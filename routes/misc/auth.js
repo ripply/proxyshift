@@ -23,8 +23,8 @@ module.exports = function(app, settings){
         authRouter.get('/*', ensureAuthenticated);
 
         app.use('/api', authRouter);
-
-        require('./roles')(app, roles);
     }
+
+    require('./roles')(app, roles);
 
 };

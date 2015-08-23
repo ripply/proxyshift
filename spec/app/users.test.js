@@ -10,6 +10,7 @@ var expect = global.expect;
 
 var password = 'secret';
 var login = require('../common').login;
+var logout = require('../common').logout;
 var failToLogin = require('../common').failToLogin;
 
 describe('#/api/users', function(){
@@ -794,6 +795,10 @@ describe('#/api/users', function(){
 
     describe('- DELETE', function() {
 
+        var userDeletePayload = {
+            username: 'secret'
+        };
+
         describe('- /', function() {
 
             describe('- anonymous user', function() {
@@ -824,6 +829,7 @@ describe('#/api/users', function(){
 
                         request(app)
                             .delete('/api/users')
+                            .send(userDeletePayload)
                             .expect(200, done);
 
                     });
@@ -885,22 +891,28 @@ describe('#/api/users', function(){
 
                 describe('- self', function() {
 
-                    describe('- deletes their account', function() {
+                    describe('- fails to delete their own account', function() {
 
                         beforeEach(function(done) {
 
                             request(app)
-                                .delete('/api/users/1')
-                                .expect(200, done);
+                                .delete(parse('/api/users/@users:username:test_password:'))
+                                .expect(401, done);
 
                         });
 
-                        it('- cannot login anymore', function(done) {
+                        it('- can still login', function(done) {
 
-                            failToLogin('test_password',
-                                'secret',
-                                401,
-                                done);
+                            logout(function(err, res) {
+                                if (err) {
+                                    debug(res.text);
+                                    done(err);
+                                    return;
+                                }
+                                login('test_password',
+                                    'secret',
+                                    done);
+                            })
 
                         });
 
@@ -913,7 +925,7 @@ describe('#/api/users', function(){
                     it('- returns 401', function(done) {
 
                         request(app)
-                            .delete('/api/users/2')
+                            .delete(parse('/api/users/@users/username:groupowner'))
                             .expect(401, done);
 
                     });

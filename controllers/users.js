@@ -149,25 +149,25 @@ module.exports = {
             }
         },
         'delete': { // delete another account
-            // auth: // your account or admin
+            auth: ['server admin'], // admin
             route: function(req, res) {
-                models.User.query(function(q) {
-                    q.select()
-                        .from('users')
-                        .where({
-                            id: req.params.user_id,
-                            // require password to delete account
-                            password: encryptKey(req.body.password)
-                        });
-                })
-                    .destroy()
-                    .then(function() {
-                        logout();
-                        res.json({error: false, data: {message: 'User successfully deleted'}});
+                if (req.params.user_id === req.user.id) {
+                    models.User.query(function(q) {
+                        q.select()
+                            .from('users')
+                            .where({
+                                id: req.params.user_id,
+                            });
                     })
-                    .catch(function (err) {
-                        res.status(500).json({error: true, data: {message: err.message}});
-                    });
+                        .destroy()
+                        .then(function() {
+                            logout();
+                            res.json({error: false, data: {message: 'User successfully deleted'}});
+                        })
+                        .catch(function (err) {
+                            res.status(500).json({error: true, data: {message: err.message}});
+                        });
+                }
             }
         }
     }

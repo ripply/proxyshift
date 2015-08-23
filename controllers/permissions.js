@@ -175,6 +175,11 @@ module.exports = {
 
         'anyone can create shifts': function(req, act) {
             return false;
+        },
+
+        'server admin': function(req, act) {
+            // TODO: IMPLEMENT
+            return false;
         }
 
     }
