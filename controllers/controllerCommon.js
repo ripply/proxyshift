@@ -20,29 +20,35 @@ module.exports = {
         if (defaultExcludes === undefined) {
             defaultExcludes = ['id'];
         }
-        models[modelName].forge(queryArgs)
-            .fetch(sqlOptions)
-            .then(function (fetchedResult) {
-                if (!fetchedResult) {
-                    audit(req, "Couldn't find: " + modelName + ": " + JSON.stringify(queryArgs));
-                    res.sendStatus(403);
-                } else {
-                    var updated = updateModel(modelName, fetchedResult, req.body, defaultExcludes);
-                    fetchedResult.save(
-                        updated,
-                        sqlOptions
-                    )
-                        .then(function () {
-                            res.json({error: false, data: {message: updateMessage}});
-                        })
-                        .catch(function (err) {
-                            res.status(500).json({error: true, data: {message: err.message}});
-                        });
-                }
-            })
-            .catch(function (err) {
-                res.status(500).json({error: true, data: {message: err.message}});
-            });
+        // TODO: Do this with query => patch? instead of with a transaction
+        // TODO: Refactor all routes to use the same code paths for create/patch etc
+        // TODO: Consolidate return messages into a function so everything is consistent
+        Bookshelf.transaction(function(t) {
+            var sqlOptionsWithTransaction = _.extend({transacting: t}, sqlOptions);
+            models[modelName].forge(queryArgs)
+                .fetch(sqlOptionsWithTransaction)
+                    .then(function (fetchedResult) {
+                        if (!fetchedResult) {
+                            audit(req, "Couldn't find: " + modelName + ": " + JSON.stringify(queryArgs));
+                            res.sendStatus(403);
+                        } else {
+                            var updated = updateModel(modelName, fetchedResult, req.body, defaultExcludes);
+                            fetchedResult.save(
+                                updated,
+                                sqlOptionsWithTransaction
+                            )
+                                .then(function () {
+                                    res.json({error: false, data: {message: updateMessage}});
+                                })
+                                .catch(function (err) {
+                                    res.status(500).json({error: true, data: {message: err.message}});
+                                });
+                        }
+                    })
+                    .catch(function (err) {
+                        res.status(500).json({error: true, data: {message: err.message}});
+                    });
+        });
     },
     simpleGetSingleModel: function(modelName, queryArgs, req, res) {
         models[modelName].forge(queryArgs)
@@ -93,7 +99,8 @@ module.exports = {
                 res.status(500).json({error: true, data: {message: err.message}});
             });
     },
-    grabNormalShiftRange: grabNormalShiftRange
+    grabNormalShiftRange: grabNormalShiftRange,
+    getPatchKeysWithoutBannedKeys: getPatchKeysWithoutBannedKeys
 };
 
 function getModelKeys(modelName, bannedKeys) {
@@ -127,6 +134,17 @@ function updateModel(modelName, bookshelfFetchedModelObject, updatedData, banned
     return updatedModelValues;
 }
 
+function getPatchKeysWithoutBannedKeys(modelName, patchableData, bannedKeys) {
+    if (!bannedKeys) {
+        bannedKeys = defaultBannedKeys;
+    }
+    if (!schema.hasOwnProperty(modelName)) {
+        throw new Error("Model: " + modelName + " does not exist in Schema");
+    }
+    var modelKeys = schema[modelName];
+
+    return _.pick(patchableData, _.keys(modelKeys));
+}
 
 function grabNormalShiftRange(from, after, before) {
     if (from === undefined) {

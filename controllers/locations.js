@@ -5,6 +5,7 @@ var models = require('../app/models'),
     postModel = require('./controllerCommon').postModel,
     patchModel = require('./controllerCommon').patchModel,
     deleteModel = require('./controllerCommon').deleteModel,
+    getPatchKeysWithoutBannedKeys = requier('./controllerCommon').getPatchKeysWithoutBannedKeys,
     Bookshelf = models.Bookshelf,
     grabNormalShiftRange = require('./controllerCommon').grabNormalShiftRange,
     knex = models.knex,
@@ -270,11 +271,28 @@ module.exports = {
             }
         }
     },
-    '/:location_id/sublocation/:sublocation_id': {
+    '/:location_id/sublocations/:sublocation_id': {
         'patch': { // update a sublocation
             auth: ['privileged location member'], // must be a group owner or privileged group member attached to location
             route: function(req, res) {
-
+                models.SubLocation.query(function(q) {
+                    q.select()
+                        .from('sublocations')
+                        .where('sublocations.id', '=', req.params.sublocation_id)
+                        .innerJoin('locations', function() {
+                            this.on('locations.id', '=', 'sublocations.location_id')
+                        })
+                        .where('locations.id', '=', req.params.location_id)
+                        .patch(
+                        getPatchKeysWithoutBannedKeys(req.body)
+                    );
+                })
+                    .then(function () {
+                        res.json({error: false, data: {message: updateMessage}});
+                    })
+                    .catch(function (err) {
+                        res.status(500).json({error: true, data: {message: err.message}});
+                    });
             }
         },
         'delete': { // delete a sublocation

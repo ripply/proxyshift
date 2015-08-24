@@ -15,6 +15,7 @@ var parse = global.parse;
 // GET /api/locations/:location_id/shifts
 // GET /api/locations/:location_id/sublocations
 // POST /api/locations/:location_id/sublocations
+// PATCH /api/locations/:location_id/sublocations/:sublocation_id
 
 describe('#/api/groups', function() {
 
