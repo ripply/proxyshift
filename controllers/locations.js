@@ -5,7 +5,7 @@ var models = require('../app/models'),
     postModel = require('./controllerCommon').postModel,
     patchModel = require('./controllerCommon').patchModel,
     deleteModel = require('./controllerCommon').deleteModel,
-    getPatchKeysWithoutBannedKeys = requier('./controllerCommon').getPatchKeysWithoutBannedKeys,
+    getPatchKeysWithoutBannedKeys = require('./controllerCommon').getPatchKeysWithoutBannedKeys,
     Bookshelf = models.Bookshelf,
     grabNormalShiftRange = require('./controllerCommon').grabNormalShiftRange,
     knex = models.knex,
@@ -84,6 +84,15 @@ module.exports = {
                             .andWhere('locations.id', '=', req.params.location_id);
                     */
 
+                    var managingMemeberOfLocationSubQuery =
+                        knex.select('userpermissions.location_id as locationid')
+                            .from('userpermissions')
+                            .where('userpermissions.location_id', '=', req.params.location_id)
+                            .innerJoin('grouppermissions', function() {
+                                this.on('grouppermissions.id', '=', 'userpermissions.grouppermission_id');
+                            })
+                            .where('grouppermissions.permissionlevel', '>=', managingPermissionLevel);
+
                     // fetch classes you are managing at the location
                     var managingClassesAtLocationSubQuery =
                         knex.select('managingclassesatlocations.groupuserclass_id')
@@ -92,6 +101,7 @@ module.exports = {
                                 this.on('usergroups.id', '=', 'managingclassesatlocations.usergroup_id')
                                     .andOn('usergroups.user_id', '=', req.user.id);
                             })
+                            .whereIn('managingclassesatlocations.location_id', managingMemeberOfLocationSubQuery);
                             //.where('managingclassesatlocations.managing', '=', true)
                             //.where('managingclassesatlocations.location_id', '=', req.params.location_id);
 
