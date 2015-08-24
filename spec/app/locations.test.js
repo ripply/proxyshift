@@ -11,6 +11,11 @@ var _ = require('underscore');
 var debug = global.debug;
 var parse = global.parse;
 
+// TODO:
+// GET /api/locations/:location_id/shifts
+// GET /api/locations/:location_id/sublocations
+// POST /api/locations/:location_id/sublocations
+
 describe('#/api/groups', function() {
 
     before(function (done) {
