@@ -156,7 +156,7 @@ module.exports = {
                         q.select()
                             .from('users')
                             .where({
-                                id: req.params.user_id,
+                                id: req.params.user_id
                             });
                     })
                         .destroy()
