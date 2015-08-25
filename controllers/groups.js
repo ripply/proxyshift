@@ -551,29 +551,22 @@ module.exports = {
             route: function(req, res) {
                 // group -> groupsetting -> grouppermission
                 // Executing this transaction from a tests makes fixtures for next test deadlock
-                Bookshelf.transaction(function (t) {
-                    models.Group.forge({
-                        id: req.params.group_id
-                    })
-                        .fetch({transacting: t})
-                        .then(function(group) {
-                            models.GroupPermission.forge({
-                                groupsetting_id: group.get('groupsetting_id')
-                            })
-                                .fetchAll({transacting: t})
-                                .then(function (grouppermissions) {
-                                    // TODO: Return group settings id differently
-                                    res.json(grouppermissions);
-                                })
-                                .catch(function (err) {
-                                    res.status(500).json({error: true, data: {message: err.message}});
-                                });
-
+                models.GroupPermission.query(function(q) {
+                    q.select()
+                        .from('grouppermissions')
+                        .innerJoin('groups', function() {
+                            this.on('groups.groupsetting_id', '=', 'grouppermissions.groupsetting_id');
                         })
-                        .catch(function(err) {
-                            res.status(500).json({error: true, data: {message: err.message}});
-                        });
-                });
+                        .where('groups.id', '=', req.params.group_id);
+                })
+                    .fetchAll()
+                    .then(function (grouppermissions) {
+                        // TODO: Return group settings id differently
+                        res.json(grouppermissions);
+                    })
+                    .catch(function (err) {
+                        res.status(500).json({error: true, data: {message: err.message}});
+                    });
             }
         },
         'post': { // create a permission set
@@ -688,40 +681,30 @@ module.exports = {
                 });
             }
         }
-    }/*,
+    },
     '/:group_id/permissions/:permission_id/newpermission/:newpermission_id': {
         'delete': { // remove a permission set
             auth: ['group owner', 'or', 'privileged group member'], // owner/privileged member
             route: function(req, res) {
                 // make sure permission is part of the group
-                Bookshelf.transaction(function(t) {
-                    models.Group.query(function(q) {
-                        q.select()
-                            .from('groups')
-                            .where('id', '=', req.params.group_id);
-                    })
-                        .fetch({transacting: t})
-                        .then(function(group) {
-                            if (group) {
-                                var grouppermission_id = group.get('grouppermission_id');
-                                // verify that the new permission is part of the current group
-                                deleteModel(
-                                    'GroupPermission',
-                                    {
-                                        id: grouppermission_id,
-                                    }
-                                )
-                            } else {
-                                res.sendStatus(403);
-                            }
+                models.GroupPermission.query(function(q) {
+                    q.select()
+                        .from('GroupPermission')
+                        .innerJoin('groups', function() {
+                            this.on('groups.grouppermission_id', '=', 'grouppermissions.id');
                         })
-                        .catch(function(err) {
-                            // 500
-                        });
-                });
+                        .where('groups.id', '=', req.params.group_id)
+                        .destroy();
+                })
+                    .then(function() {
+                        res.json({error: false, data: {message: 'Success'}});
+                    })
+                    .catch(function(err) {
+                        res.status(500).json({error: true, data: {message: err}});
+                    });
             }
         }
-    }*/
+    }
 }
 
 ;

@@ -2,6 +2,8 @@ var schema = require('../app/schema').Schema,
     models = require('../app/models'),
     _ = require('underscore');
 
+var Bookshelf = models.Bookshelf;
+
 // TODO: Hook this up to a generalized logging utility
 function audit(req, text) {
     var user = req.user.id;
@@ -23,8 +25,9 @@ module.exports = {
         // TODO: Do this with query => patch? instead of with a transaction
         // TODO: Refactor all routes to use the same code paths for create/patch etc
         // TODO: Consolidate return messages into a function so everything is consistent
-        Bookshelf.transaction(function(t) {
-            var sqlOptionsWithTransaction = _.extend({transacting: t}, sqlOptions);
+        //Bookshelf.transaction(function(t) {
+            //var sqlOptionsWithTransaction = _.extend({transacting: t}, sqlOptions);
+            var sqlOptionsWithTransaction = sqlOptions;
             models[modelName].forge(queryArgs)
                 .fetch(sqlOptionsWithTransaction)
                     .then(function (fetchedResult) {
@@ -48,7 +51,7 @@ module.exports = {
                     .catch(function (err) {
                         res.status(500).json({error: true, data: {message: err.message}});
                     });
-        });
+        //});
     },
     simpleGetSingleModel: function(modelName, queryArgs, req, res) {
         models[modelName].forge(queryArgs)
