@@ -249,8 +249,12 @@ module.exports = {
                         getPatchKeysWithoutBannedKeys(req.body)
                     );
                 })
-                    .then(function () {
-                        res.json({error: false, data: {message: updateMessage}});
+                    .then(function (model) {
+                        if (model) {
+                            res.json({error: false, data: {message: 'Success'}});
+                        } else {
+                            res.status(403);
+                        }
                     })
                     .catch(function (err) {
                         res.status(500).json({error: true, data: {message: err.message}});

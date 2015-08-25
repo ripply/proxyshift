@@ -5,6 +5,7 @@ var models = require('../app/models'),
     postModel = require('./controllerCommon').postModel,
     patchModel = require('./controllerCommon').patchModel,
     deleteModel = require('./controllerCommon').deleteModel,
+    getPatchKeysWithoutBannedKeys = require('./controllerCommon').getPatchKeysWithoutBannedKeys,
     Bookshelf = models.Bookshelf;
 
 module.exports = {
@@ -120,8 +121,12 @@ module.exports = {
                                 id: req.params.group_id
                             })
                                 .destroy({transacting: t})
-                                .then(function() {
-                                    res.json({error: false, data: {message: "Successfully deleted group"}});
+                                .then(function(model) {
+                                    if (model) {
+                                        res.json({error: false, data: {message: 'Success'}});
+                                    } else {
+                                        res.status(403);
+                                    }
                                 })
                                 .catch(function(err) {
                                     res.status(500).json({error: true, data: {message: err}});
@@ -366,6 +371,7 @@ module.exports = {
         'patch': { // update a users permission set
             auth: ['group owner', 'or', 'privileged group member'], // owner/privileged group member
             route: function(req, res) {
+                // TODO: Make this an inner join with an update
                 Bookshelf.transaction(function (t) {
                     // make sure permission_id is part of group
                     model.GroupPermission.query(function (q) {
@@ -510,8 +516,12 @@ module.exports = {
                         group_id: req.params.group_id
                     })
                     .destroy()
-                    .then(function() {
-                        res.json({error: false, data: {message: "Successfully deleted Area"}});
+                    .then(function(model) {
+                        if (model) {
+                            res.json({error: false, data: {message: 'Success'}});
+                        } else {
+                            res.status(403);
+                        }
                     })
                     .catch(function(err) {
                         res.status(500).json({error: true, data: {message: "Failed to delete Area"}});
@@ -610,75 +620,58 @@ module.exports = {
             auth: ['group owner', 'or', 'privileged group member'], // owner/privileged member
             route: function(req, res) {
                 // verify that permission is part of group
-                Bookshelf.transaction(function(t) {
-                    models.Group.query(function(q) {
-                        q.select()
-                            .from('groups')
-                            .where('id', '=', req.params.group_id)
-                    })
-                        .fetch({transacting: t})
-                        .then(function(group) {
-                            if (group) {
-                                var groupsetting_id = group.get('groupsetting_id');
-                                patchModel(
-                                    'GroupPermission',
-                                    {
-                                        id: req.params.permission_id,
-                                        groupsetting_id: groupsetting_id
-                                    },
-                                    req,
-                                    res,
-                                    undefined,
-                                    {
-                                        transacting: t
-                                    }
-                                );
-                            } else {
-                                res.sendStatus(403);
-                            }
+                models.GroupPermission.query(function(q) {
+                    q.select()
+                        .from('grouppermissions')
+                        .innerJoin('groups', function() {
+                            this.on('groups.groupsetting_id', '=', 'grouppermissions.groupsetting_id');
                         })
-                        .catch(function(err) {
-                            // 500
-                        });
-                });
+                        .where('groups.id', '=', req.params.group_id);
+                })
+                    .update(getPatchKeysWithoutBannedKeys(
+                        'GroupPermission',
+                        req.body,
+                        [
+                            'id',
+                            'groupsetting_id'
+                        ]
+                    ))
+                    .then(function(model) {
+                        if (model) {
+                            res.json({error: false, data: {message: 'Success'}});
+                        } else {
+                            res.status(403);
+                        }
+                    })
+                    .catch(function(err) {
+                        res.status(500).json({error: true, data: {message: err}});
+                    });
             }
         },
         'delete': { // remove a permission set
             auth: ['group owner', 'or', 'privileged group member'], // owner/privileged member
             route: function(req, res) {
                 // make sure permission is part of the group
-                Bookshelf.transaction(function(t) {
-                    models.Group.query(function(q) {
-                        q.select()
-                            .from('groups')
-                            .where('id', '=', req.params.group_id);
-                    })
-                        .fetch({transacting: t})
-                        .then(function(group) {
-                            if (group) {
-                                var groupsetting_id = group.get('groupsetting_id');
-                                // this can 500 due to sql constraint failing if a user has this permission
-                                deleteModel(
-                                    'GroupPermission',
-                                    {
-                                        id: req.params.permission_id,
-                                        groupsetting_id: groupsetting_id
-                                    },
-                                    req,
-                                    res,
-                                    'Successfully deleted group permission',
-                                    {
-                                        transacting: t
-                                    }
-                                );
-                            } else {
-                                res.sendStatus(403);
-                            }
+                models.GroupPermission.query(function(q) {
+                    q.select()
+                        .from('grouppermissions')
+                        .innerJoin('groups', function() {
+                            this.on('groups.groupsetting_id', '=', 'grouppermissions.groupsetting_id');
                         })
-                        .catch(function(err) {
-                            // 500
-                        });
-                });
+                        .where('groups.id', '=', req.params.group_id)
+                        .where('grouppermissions.id', '=', req.params.permission_id);
+                })
+                    .destroy()
+                    .then(function(model) {
+                        if (model) {
+                            res.json({error: false, data: {message: 'Success'}});
+                        } else {
+                            res.status(403);
+                        }
+                    })
+                    .catch(function(err) {
+                        res.status(500).json({error: true, data: {message: err}});
+                    });
             }
         }
     },
@@ -693,11 +686,15 @@ module.exports = {
                         .innerJoin('groups', function() {
                             this.on('groups.grouppermission_id', '=', 'grouppermissions.id');
                         })
-                        .where('groups.id', '=', req.params.group_id)
-                        .destroy();
+                        .where('groups.id', '=', req.params.group_id);
                 })
-                    .then(function() {
-                        res.json({error: false, data: {message: 'Success'}});
+                    .destroy()
+                    .then(function(model) {
+                        if (model) {
+                            res.json({error: false, data: {message: 'Success'}});
+                        } else {
+                            res.status(403);
+                        }
                     })
                     .catch(function(err) {
                         res.status(500).json({error: true, data: {message: err}});
