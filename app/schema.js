@@ -286,6 +286,13 @@ var Schema = {
             // TODO: What is this table for? it doesnt link to a user or location
             type: integer,
             nullable: false
+        },
+        group_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'groups',
+            onDelete: cascade,
+            nulable: false
         }
     },
     // connects a user to a group

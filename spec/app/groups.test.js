@@ -11,6 +11,9 @@ var _ = require('underscore');
 var debug = global.debug;
 var parse = global.parse;
 
+// TODO:
+// POST /api/groups/:group_id/users/:user_id/classes/:class_id/permissions/:permission_id
+
 describe('#/api/groups', function() {
 
     before(function(done){

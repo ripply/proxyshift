@@ -298,6 +298,49 @@ module.exports = {
             auth: ['group owner', 'or', 'privileged group member'],
             route: function(req, res) {
                 // is this route even needed?
+                Bookshelf.transaction(function(t) {
+                    models.Group.query(function(q) {
+                        q.select()
+                            .from('groups')
+                            .where('groups.id', '=', req.params.group_id)
+                            .innerJoin('grouppermissions', function() {
+                                this.on('grouppermiissions.group_id', '=', 'groups.id');
+                            })
+                            // get only groups that the user is not a member of
+                            .leftJoin('usergroups', function() {
+                                this.on('usergroups.group_id', '=', 'groups.id')
+                                    .where('usergroups.group_id', '=', null);
+                            });
+                    })
+                        .fetch({
+                            transacting: t
+                        })
+                        .then(function(group) {
+                            if (group) {
+                                models.UserGroup.forge({
+                                    // no need to check that userid exists
+                                    // sql should throw error if it doesnt exist
+                                    user_id: req.params.user_id,
+                                    group_id: req.params.group_id,
+                                    grouppermission_id: req.params.permission_id
+                                })
+                                    .save({
+                                        transacting: t
+                                    })
+                                    .then(function(model) {
+                                        res.json({error: false, data: {message: 'Success'}});
+                                    })
+                                    .catch(function(err) {
+                                        res.status(500).json({error: true, data: {message: err.message}});
+                                    });
+                            } else {
+                                res.sendStatus(403);
+                            }
+                        })
+                        .catch(function(err) {
+                            res.status(500).json({error: true, data: {message: err.message}});
+                        })
+                });
             }
         }
     },
