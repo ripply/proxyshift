@@ -25,7 +25,7 @@ describe('#/api/users', function(){
     });
 
     beforeEach(function(done){
-        this.sess = new global.Session();
+        global.sess = new global.Session();
 
         // Done to prevent any server side console logs from the routes
         // to appear on the console when running tests
@@ -35,7 +35,7 @@ describe('#/api/users', function(){
     });
 
     afterEach(function() {
-        this.sess.destroy();
+        global.sess.destroy();
     });
 
     describe('- POST', function() {
