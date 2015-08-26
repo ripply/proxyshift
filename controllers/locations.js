@@ -264,7 +264,52 @@ module.exports = {
         'delete': { // delete a sublocation
             auth: ['privileged location member'], // must be a group owner or privileged group member attached to location
             route: function(req, res) {
-
+                Bookshelf.transaction(function(t) {
+                    // update all shifts with that sublocation to point to location
+                    models.SubLocation.forge()
+                        .where({
+                            id: req.params.sublocation_id
+                        })
+                        .fetch({
+                            transacting: t
+                        })
+                        .then(function(sublocation) {
+                            if (sublocation) {
+                                models.Shifts.query(function(q) {
+                                    q.select()
+                                        .from('shifts')
+                                        .where('shifts.sublocation_id', '=', req.params.sublocation_id);
+                                })
+                                    .save({
+                                        location_id: sublocation.get('location_id'),
+                                        sublocation_id: null
+                                    }, {
+                                        patch: true,
+                                        transacting: t
+                                    })
+                                    .then(function(model) {
+                                        sublocation.destroy({transacting: t})
+                                            .then(function(model) {
+                                                res.json({error: false, data: {message: 'Success'}});
+                                            })
+                                            .catch(function(err) {
+                                                t.rollback();
+                                                res.status(500).json({error: true, data: {message: err.message}});
+                                            });
+                                    })
+                                    .catch(function(err) {
+                                        t.rollback();
+                                        res.status(500).json({error: true, data: {message: err.message}});
+                                    });
+                            } else {
+                                req.sendStatus(403);
+                            }
+                        })
+                        .catch(function(err) {
+                            t.rollback();
+                            res.status(500).json({error: true, data: {message: err.message}});
+                        })
+                    })
             }
         }
     }
