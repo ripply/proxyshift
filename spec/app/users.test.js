@@ -89,9 +89,10 @@ describe('#/api/users', function(){
 
                 });
 
+                var username = 'noncreateduser';
+
                 it('- returns details as to why creation fails', function(done) {
 
-                    var username = 'noncreateduser';
                     request(app)
                         .post('/api/users/')
                         .send({
@@ -150,13 +151,13 @@ describe('#/api/users', function(){
                     });
 
 
-                    it('- returns 403 when creating a user', function(done) {
+                    it('- returns 401 when creating a user', function(done) {
 
                         request(app)
                             .post('/api/users/')
                             .send({
-                                username: username,
-                                password: password,
+                                username: 'noncreateduser',
+                                password: 'password',
                                 firstname: 'firstname',
                                 lastname: 'lastname',
                                 email: 'email@example.com',
@@ -166,8 +167,7 @@ describe('#/api/users', function(){
                                 phonemobile: '12345',
                                 pagernumer: '12435'
                             })
-                            .expect('Content-Type', /json/)
-                            .expect(403, done);
+                            .expect(401, done);
 
                     });
 

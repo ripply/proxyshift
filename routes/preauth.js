@@ -10,6 +10,7 @@ var requireJson = middleware.requireJson;
 var ensureAuthenticated = middleware.ensureAuthenticated;
 var ensureDatabaseReady = models.databaseReadyMiddleware;
 var logout = middleware.logout;
+var notLoggedIn = middleware.notLoggedIn;
 
 module.exports = function(app, settings){
 
@@ -90,6 +91,6 @@ module.exports = function(app, settings){
     });
 
     // creating users is ok to do without being logged in
-    app.post('/api/users', users['/'].post.route);
+    app.post('/api/users', notLoggedIn, users['/'].post.route);
 
 };
