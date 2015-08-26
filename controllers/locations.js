@@ -192,13 +192,80 @@ module.exports = {
             }
         }
     },
-    '/:location_id/shifts/:groupuserclass': {
-        'get': { // get shifts in a location that are of a
-            // if privileged allow any groupuserclass
-            // else, only allow ones you are a member of
-            auth: ['location members'],
+    '/:location_id/shifts/:groupuserclass_id': {
+        'get': { // get shifts in a location that are of a certain class you are managing
+            // filtering of /:location_id/shifts/managing
+            // TODO: if privileged allow any groupuserclass
+            // TODO: else, only allow ones you are a member of
+            auth: ['location member'],
             route: function(req, res) {
+                // this should grab groups you are a member of
+                // join them with the specific location
+                // grab user classes you are managing
+                // join them with shifts
+                var now = new Date();
+                var range = grabNormalShiftRange(now);
+                var before = range[0];
+                var after = new moment(now).unix();
+                var managingPermissionLevel = 2;
+                models.Shift.query(function(q) {
+                    var managingMemeberOfLocationSubQuery =
+                        knex.select('userpermissions.location_id as locationid')
+                            .from('userpermissions')
+                            .where('userpermissions.location_id', '=', req.params.location_id)
+                            .innerJoin('grouppermissions', function() {
+                                this.on('grouppermissions.id', '=', 'userpermissions.grouppermission_id');
+                            })
+                            .where('grouppermissions.permissionlevel', '>=', managingPermissionLevel);
 
+                    // fetch classes you are managing at the location
+                    var managingClassesAtLocationSubQuery =
+                        knex.select('managingclassesatlocations.groupuserclass_id')
+                            .from('managingclassesatlocations')
+                            .innerJoin('usergroups', function() {
+                                this.on('usergroups.id', '=', 'managingclassesatlocations.usergroup_id')
+                                    .andOn('usergroups.user_id', '=', req.user.id);
+                            })
+                            .where('managingclassesatlocations.groupuserclass_id', '=', req.params.groupuserclass_id)
+                            .whereIn('managingclassesatlocations.location_id', managingMemeberOfLocationSubQuery);
+
+                    // grab all shifts at locations/sublocations that are one of your job types
+
+                    q.select()
+                        .from('shifts')
+                        .where('shifts.location_id', '=', req.params.location_id)
+                        .andWhere(function() {
+                            this.orWhere('shifts.start', '<=', before)
+                                .orWhere('shifts.end', '>=', after);
+                        })
+                        .whereIn('shifts.groupuserclass_id', managingClassesAtLocationSubQuery)
+                        .union(function() {
+                            this.select('shifts.*')
+                                .from('shifts')
+                                .innerJoin('sublocations', function() {
+                                    this.on('shifts.sublocation_id', '=', 'sublocations.id');
+                                })
+                                .where('sublocations.location_id', '=', req.params.location_id)
+                                //.whereIn('sublocations.location_id', relatedLocationsSubQuery)
+                                .whereIn('shifts.groupuserclass_id', managingClassesAtLocationSubQuery)
+                                .andWhere(function() {
+                                    this.orWhere('shifts.start', '<=', before)
+                                        .orWhere('shifts.end', '>=', after);
+                                });
+                        });
+                })
+                    .fetchAll()
+                    .then(function(shifts) {
+                        if (shifts) {
+                            // TODO: Fetch related group user class information
+                            res.json(shifts.toJSON());
+                        } else {
+                            res.json([]);
+                        }
+                    })
+                    .catch(function(err) {
+                        res.status(500).json({error: true, data: {message: err.message}});
+                    })
             }
         }
     },
