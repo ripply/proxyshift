@@ -24,7 +24,7 @@ module.exports = {
         'get': { // get info about your account
             // auth: // anyone logged in
             route: function(req, res) {
-                models.User.forge()
+                models.Users.forge()
                     .fetch()
                     .then(function (collection) {
                         res.json(collection.toJSON());
@@ -118,12 +118,17 @@ module.exports = {
         'get': { // get info about another account
             // auth: // your account or admin
             route: function(req, res) {
-                models.User.forge({id: req.params.id})
+                models.User.forge({id: req.params.user_id})
                     .fetch()
                     .then(function (user) {
                         if (!user) {
                             res.status(404).json({error: true, data: {}});
                         }
+
+                        if (user.id !== req.user.id) {
+                            res.status(401).json({error: true, data: {}});
+                        }
+
                         else {
                             res.json(user.toJSON());
                         }
