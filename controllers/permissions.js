@@ -123,11 +123,12 @@ module.exports = {
 
             if (group_id !== undefined) {
                 return models.Group.query(function (q) {
-                    q.select('groups.*').innerJoin('usergroups', function () {
-                        this.on('groups.id', '=', 'usergroups.group_id')
-                            .andOn('usergroups.user_id', '=', user_id);
-                    })
-                        .where('groups.id', '=', group_id);
+                    q.select('groups.*')
+                        .innerJoin('usergroups', function () {
+                            this.on('groups.id', '=', 'usergroups.group_id')
+                                .andOn('usergroups.user_id', '=', user_id);
+                        })
+                        .where('groups.id', '=', group_id)
                 })
                     .fetch({require: true})
                     .then(function (group) {
@@ -138,9 +139,10 @@ module.exports = {
                     });
             } else if (location_id !== undefined) {
                 return models.UserGroups.query(function (q) {
-                    q.select('usergroups.*').innerJoin('locations', function () {
-                        this.on('usergroups.group_id', '=', 'locations.group_id');
-                    })
+                    q.select('usergroups.*')
+                        .innerJoin('locations', function () {
+                            this.on('usergroups.group_id', '=', 'locations.group_id');
+                        })
                         .where('usergroups.group_id', '=', group_id)
                         .andWhere('locations.id', '=', location_id)
                         .andWhere('usergroups.user_id', '=', user_id);
@@ -202,11 +204,13 @@ function hasGroupPermissionLevel(permissionLevel, req, act) {
     }
 
     return models.UserGroup.query(function(q) {
-        q.select('usergroups.*').innerJoin('grouppermissions', function() {
-            this.on('usergroups.grouppermission_id', '=', 'grouppermissions.id')
-                .andOn('usergroups.user_id', '=', user_id);
-        })
-            .where('permissionlevel', '>', permissionLevel);
+        q.select('usergroups.*')
+            .innerJoin('grouppermissions', function() {
+                this.on('usergroups.grouppermission_id', '=', 'grouppermissions.id')
+                    .andOn('usergroups.user_id', '=', user_id);
+            })
+            .where('permissionlevel', '>', permissionLevel)
+            .union
     })
         .fetchAll({require: true})
         .then(function(grouppermissions) {
@@ -233,10 +237,11 @@ function checkLocationPermissionLevel(permissionLevel, req, act) {
     }
 
     return models.UserPermission.query(function(q) {
-        q.select('userpermissions.*').innerJoin('grouppermissions', function() {
-            this.on('userpermissions.grouppermission_id', '=', 'grouppermissions.id')
-                .andOn('userpermissions.user_id', '=', user_id);
-        })
+        q.select('userpermissions.*')
+            .innerJoin('grouppermissions', function() {
+                this.on('userpermissions.grouppermission_id', '=', 'grouppermissions.id')
+                    .andOn('userpermissions.user_id', '=', user_id);
+            })
             .where('permissionlevel', '>', permissionLevel)
             .andWhere('userpermissions.location_id', '=', location_id);
     })
