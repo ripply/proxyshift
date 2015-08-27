@@ -98,7 +98,16 @@ module.exports = {
                 email: 'manager@example.com',
                 squestion: 'manager',
                 sanswer: encrypt(password)
-            }
+            },
+            {
+                username: 'nonlocationmem',
+                password: encrypt(password),
+                firstname: 'nonlocationmember',
+                lastname: 'nonlocationmember',
+                email: 'nonlocationmember@example.com',
+                squestion: 'nonlocationmember',
+                sanswer: encrypt(password)
+            },
         ],
         groupsettings: [
             {
@@ -193,6 +202,11 @@ module.exports = {
                 user_id: '@users:username:manager',
                 group_id: '@groups:name:membershiptest',
                 grouppermission_id: '@grouppermissions:description:privileged'
+            },
+            {
+                user_id: '@users:username:nonlocationmem',
+                group_id: '@groups:name:membershiptest',
+                grouppermission_id: '@grouppermissions:description:unprivileged'
             }
         ],
         locations: [

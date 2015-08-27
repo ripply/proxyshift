@@ -12,8 +12,6 @@ var debug = global.debug;
 var parse = global.parse;
 
 // TODO:
-// GET /api/locations/:location_id/shifts
-// GET /api/locations/:location_id/sublocations
 // POST /api/locations/:location_id/sublocations
 // PATCH /api/locations/:location_id/sublocations/:sublocation_id
 // DELETE /api/locations/:location_id/sublocations/:sublocation_id
@@ -205,6 +203,27 @@ describe('#/api/groups', function() {
 
             });
 
+            describe('- group member but not location member', function () {
+
+                beforeEach(function (done) {
+
+                    login('nonlocationmem',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 401', function (done) {
+
+                    request(app)
+                        .get(parse('/api/locations/@locations:state:membershiptest:/shifts'))
+                        .expect(401)
+                        .end(done);
+
+                });
+
+            });
+
             describe('- location member', function () {
 
                 beforeEach(function (done) {
@@ -384,6 +403,125 @@ describe('#/api/groups', function() {
                 });
 
             });
+
+        });
+
+        describe('- /:location_id/sublocations', function() {
+
+            describe('- anonymous user', function () {
+
+                it('- return 401', function (done) {
+
+                    request(app)
+                        .get(parse('/api/locations/@locations:state:membershiptest:/sublocations'))
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- non group member', function () {
+
+                beforeEach(function (done) {
+
+                    login('nongroupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- return 401', function (done) {
+
+                    request(app)
+                        .get(parse('/api/locations/@locations:state:membershiptest:/sublocations'))
+                        .expect(401)
+                        .end(done);
+
+                });
+
+            });
+
+            describe('- group member but not location member', function () {
+
+                beforeEach(function (done) {
+
+                    login('nonlocationmem',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 401', function (done) {
+
+                    request(app)
+                        .get(parse('/api/locations/@locations:state:membershiptest:/sublocations'))
+                        .expect(401)
+                        .end(done);
+
+                });
+
+            });
+
+            describe('- location member', function () {
+
+                beforeEach(function (done) {
+
+                    login('groupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- get a list of sublocations attatched to a location', function (done) {
+
+                    getSublocations(done, 1);
+
+                });
+
+            });
+
+            describe('- group owner', function () {
+
+                beforeEach(function (done) {
+
+                    login('groupowner',
+                        'secret',
+                        done);
+
+                });
+
+                it('- get a list of sublocations attatched to a location', function (done) {
+
+                    getSublocations(done, 1);
+
+                });
+
+            });
+
+            function getSublocations(done, sublocationcount) {
+                request(app)
+                    .get(parse('/api/locations/@locations:state:membershiptest:/sublocations'))
+                    .expect(200)
+                    .end(function (err, res) {
+                        if (err) {
+                            debug(res.text);
+                            done(err);
+                            return;
+                        }
+                        try {
+                            debug(res.text);
+                            var data = JSON.parse(res.text);
+                            data.should.be.a('array');
+                            expect(data.length).to.equal(sublocationcount);
+                            for (var i = 0; i < data.length; i++) {
+                                expect(data[i].location_id).to.equal(parseInt(parse('@locations:state:membershiptest:')));
+                            }
+                            done();
+                        } catch (e) {
+                            done(e);
+                        }
+                    });
+            }
 
         });
 
