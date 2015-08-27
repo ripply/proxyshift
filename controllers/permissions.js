@@ -189,6 +189,7 @@ module.exports = {
 };
 
 function hasGroupPermissionLevel(permissionLevel, req, act) {
+    // TODO: Combine group owner check
     var group_id = req.params.group_id;
     if (!req.user) {
         return false;
@@ -209,8 +210,7 @@ function hasGroupPermissionLevel(permissionLevel, req, act) {
                 this.on('usergroups.grouppermission_id', '=', 'grouppermissions.id')
                     .andOn('usergroups.user_id', '=', user_id);
             })
-            .where('permissionlevel', '>', permissionLevel)
-            .union
+            .where('permissionlevel', '>', permissionLevel);
     })
         .fetchAll({require: true})
         .then(function(grouppermissions) {
@@ -222,6 +222,7 @@ function hasGroupPermissionLevel(permissionLevel, req, act) {
 }
 
 function checkLocationPermissionLevel(permissionLevel, req, act) {
+    // TODO: Combine group owner check
     var location_id = req.params.location_id;
     if (!req.user) {
         return false;
