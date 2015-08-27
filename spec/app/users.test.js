@@ -211,7 +211,7 @@ describe('#/api/users', function(){
                     it('- returns 200 and your user info', function(done) {
 
                         request(app)
-                            .get('/api/users/')
+                            .get('/api/users/1')
                             .expect('Content-Type', /json/)
                             .expect(200)
                             .end(function(err, res) {
@@ -301,7 +301,7 @@ describe('#/api/users', function(){
 
                     request(app)
                         .get('/api/users/4')
-                        .expect(401);
+                        .expect(401, done);
 
                 });
 
@@ -320,7 +320,7 @@ describe('#/api/users', function(){
                     it('- returns 200 and your user info', function(done) {
 
                         request(app)
-                            .get('/api/users/4')
+                            .get('/api/users/1')
                             .expect('Content-Type', /json/)
                             .expect(200)
                             .end(function(err, res) {
@@ -338,7 +338,7 @@ describe('#/api/users', function(){
                                         email: 'test_password@example.com'
                                     }, function(value, key) {
                                         data.should.have.property(key);
-                                        data[value].should.equal(value);
+                                        data[key].should.equal(value);
                                     });
 
                                     done();
@@ -353,10 +353,10 @@ describe('#/api/users', function(){
 
                 describe('- other', function() {
 
-                    it('- returns 401', function() {
+                    it('- returns 401', function(done) {
 
                         request(app)
-                            .get('/api/users/1')
+                            .get('/api/users/4')
                             .expect(401, done);
 
                     });

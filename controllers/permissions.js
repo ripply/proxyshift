@@ -8,6 +8,19 @@ module.exports = {
             return true
         },
 
+        'current user': function(req, act) {
+            var current_user = req.user.id;
+            var user_id = req.params.id;
+
+            if( current_user === user_id ) {
+                return true;
+            }
+
+            else {
+                return false;
+            }
+        },
+
         // optimized to make 1 query
         'group owner or group member': function(req, act) { // must be a group owner/member
             // check if the user has access to this group
