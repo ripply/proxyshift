@@ -12,7 +12,6 @@ var debug = global.debug;
 var parse = global.parse;
 
 // TODO:
-// POST /api/locations/:location_id/sublocations
 // PATCH /api/locations/:location_id/sublocations/:sublocation_id
 // DELETE /api/locations/:location_id/sublocations/:sublocation_id
 // GET /api/locations/:location_id/shifts/:groupuserclass_id
