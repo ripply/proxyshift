@@ -7,6 +7,7 @@ var settings = {auth: true};
 var Promise = require('bluebird');
 var ready = models.onDatabaseReady;
 var expect = global.expect;
+var _ = require('underscore');
 
 var password = 'secret';
 var login = require('../common').login;
@@ -165,7 +166,7 @@ describe('#/api/users', function(){
                                 sanswer: 'sanswer',
                                 phonehome: '12435',
                                 phonemobile: '12345',
-                                pagernumer: '12435'
+                                pagernumber: '12435'
                             })
                             .expect(401, done);
 
@@ -207,7 +208,7 @@ describe('#/api/users', function(){
                     });
 
 
-                    it('- returns 200 and your user info', function(done) {
+                    it.only('- returns 200 and your user info', function(done) {
 
                         request(app)
                             .get('/api/users/')
@@ -228,7 +229,7 @@ describe('#/api/users', function(){
                                         email: 'test_password@example.com'
                                     }, function(value, key) {
                                         data.should.have.property(key);
-                                        data[value].should.equal(value);
+                                        data[key].should.equal(value);
                                     });
 
                                     done();
