@@ -24,7 +24,7 @@ module.exports = {
         'get': { // get info about your account
             // auth: // anyone logged in
             route: function(req, res) {
-                models.Users.forge()
+                models.User.forge()
                     .fetch()
                     .then(function (collection) {
                         res.json(collection.toJSON());
