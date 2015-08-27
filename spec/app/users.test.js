@@ -208,7 +208,7 @@ describe('#/api/users', function(){
                     });
 
 
-                    it.only('- returns 200 and your user info', function(done) {
+                    it('- returns 200 and your user info', function(done) {
 
                         request(app)
                             .get('/api/users/')
