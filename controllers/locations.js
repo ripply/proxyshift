@@ -284,6 +284,7 @@ module.exports = {
             }
         },
         'post': { // create a sublocation
+            // TODO: Add rule here to allow configurable permission of privileged location members being able to do this
             auth: ['group owner', 'or', 'privileged location member'], // must be a group owner or privileged group member attached to location
             route: function(req, res) {
                 postModel(
@@ -301,6 +302,20 @@ module.exports = {
         }
     },
     '/:location_id/sublocations/:sublocation_id': {
+        'get': { // fetch a sublocation
+            auth: ['group owner', 'or', 'location member'],
+            route: function(req, res) {
+                simpleGetSingleModel(
+                    'SubLocation',
+                    {
+                        id: req.params.sublocation_id,
+                        location_id: req.params.location_id
+                    },
+                    req,
+                    res
+                );
+            }
+        },
         'patch': { // update a sublocation
             auth: ['group owner', 'or', 'privileged location member'], // must be a group owner or privileged group member attached to location
             route: function(req, res) {

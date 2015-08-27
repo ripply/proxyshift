@@ -474,7 +474,7 @@ describe('#/api/groups', function() {
 
                 it('- get a list of sublocations attatched to a location', function (done) {
 
-                    getSublocations(done, 1);
+                    getSublocations(done, '@locations:state:membershiptest:', 1);
 
                 });
 
@@ -492,31 +492,323 @@ describe('#/api/groups', function() {
 
                 it('- get a list of sublocations attatched to a location', function (done) {
 
-                    getSublocations(done, 1);
+                    getSublocations(done, '@locations:state:membershiptest:', 1);
 
                 });
 
             });
 
-            function getSublocations(done, sublocationcount) {
+        });
+
+        function getSublocations(done, id, sublocationcount) {
+            request(app)
+                .get(parse('/api/locations/' + id + '/sublocations'))
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) {
+                        debug(res.text);
+                        done(err);
+                        return;
+                    }
+                    try {
+                        debug(res.text);
+                        var data = JSON.parse(res.text);
+                        data.should.be.a('array');
+                        expect(data.length).to.equal(sublocationcount);
+                        for (var i = 0; i < data.length; i++) {
+                            expect(data[i].location_id).to.equal(parseInt(parse(id)));
+                        }
+                        done();
+                    } catch (e) {
+                        done(e);
+                    }
+                });
+        }
+
+        describe('- /:location_id/sublocations/:sublocation_id', function() {
+
+            describe('- anonymous user', function () {
+
+                it('- return 401', function (done) {
+
+                    request(app)
+                        .get(parse('/api/locations/@locations:state:membershiptest:/sublocations/@sublocations:description:membershiptest floor 1:'))
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- non group member', function () {
+
+                beforeEach(function (done) {
+
+                    login('nongroupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- return 401', function (done) {
+
+                    request(app)
+                        .get(parse('/api/locations/@locations:state:membershiptest:/sublocations/@sublocations:description:membershiptest floor 1:'))
+                        .expect(401)
+                        .end(done);
+
+                });
+
+            });
+
+            describe('- group member but not location member', function () {
+
+                beforeEach(function (done) {
+
+                    login('nonlocationmem',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 401', function (done) {
+
+                    request(app)
+                        .get(parse('/api/locations/@locations:state:membershiptest:/sublocations/@sublocations:description:membershiptest floor 1:'))
+                        .expect(401)
+                        .end(done);
+
+                });
+
+            });
+
+            describe('- location member', function () {
+
+                beforeEach(function (done) {
+
+                    login('groupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- get a list of sublocations attatched to a location', function (done) {
+
+                    getSublocation(done, '@locations:state:membershiptest:', '@sublocations:description:membershiptest floor 1:');
+
+                });
+
+            });
+
+            describe('- group owner', function () {
+
+                beforeEach(function (done) {
+
+                    login('groupowner',
+                        'secret',
+                        done);
+
+                });
+
+                it('- get a list of sublocations attatched to a location', function (done) {
+
+                    getSublocation(done, '@locations:state:membershiptest:', '@sublocations:description:membershiptest floor 1:');
+
+                });
+
+            });
+
+        });
+
+        function getSublocation(done, locationid, sublocationid) {
+            request(app)
+                .get(parse('/api/locations/' + locationid + '/sublocations/' + sublocationid))
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) {
+                        debug(res.text);
+                        done(err);
+                        return;
+                    }
+                    try {
+                        debug(res.text);
+                        var data = JSON.parse(res.text);
+                        data.should.be.a('object');
+                        expect(data.id).to.equal(parseInt(parse(sublocationid)));
+                        expect(data.location_id).to.equal(parseInt(parse(locationid)));
+                        done();
+                    } catch (e) {
+                        done(e);
+                    }
+                });
+        }
+
+    });
+
+    describe('- POST', function () {
+
+        describe('- /:location_id/sublocations', function() {
+
+            var newSublocation = {
+                title: 'test',
+                description: 'test description'
+            };
+
+            describe('- anonymous user', function () {
+
+                it('- return 401', function (done) {
+
+                    request(app)
+                        .post(parse('/api/locations/@locations:state:membershiptest:/sublocations'))
+                        .send(newSublocation)
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- non group member', function () {
+
+                beforeEach(function (done) {
+
+                    login('nongroupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- return 401', function (done) {
+
+                    request(app)
+                        .post(parse('/api/locations/@locations:state:membershiptest:/sublocations'))
+                        .send(newSublocation)
+                        .expect(401)
+                        .end(done);
+
+                });
+
+            });
+
+            describe('- group member but not location member', function () {
+
+                beforeEach(function (done) {
+
+                    login('nonlocationmem',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 401', function (done) {
+
+                    request(app)
+                        .post(parse('/api/locations/@locations:state:membershiptest:/sublocations'))
+                        .send(newSublocation)
+                        .expect(401)
+                        .end(done);
+
+                });
+
+            });
+
+            describe('- location member', function () {
+
+                beforeEach(function (done) {
+
+                    login('groupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 401', function (done) {
+
+                    request(app)
+                        .post(parse('/api/locations/@locations:state:membershiptest:/sublocations'))
+                        .send(newSublocation)
+                        .expect(401)
+                        .end(done);
+
+                });
+
+            });
+
+            describe('- privileged location member', function () {
+
+                beforeEach(function (done) {
+
+                    login('manager',
+                        'secret',
+                        done);
+
+                });
+
+                it('- get a list of sublocations attatched to a location', function (done) {
+
+                    postSublocations(done, newSublocation);
+
+                });
+
+            });
+
+            describe('- group owner', function () {
+
+                beforeEach(function (done) {
+
+                    login('groupowner',
+                        'secret',
+                        done);
+
+                });
+
+                it('- able to create a sublocation', function (done) {
+
+                    postSublocations(done, newSublocation);
+
+                });
+
+            });
+
+            function postSublocations(done, postData) {
                 request(app)
-                    .get(parse('/api/locations/@locations:state:membershiptest:/sublocations'))
-                    .expect(200)
+                    .post(parse('/api/locations/@locations:state:membershiptest:/sublocations'))
+                    .send(postData)
+                    .expect(201)
                     .end(function (err, res) {
                         if (err) {
                             debug(res.text);
                             done(err);
                             return;
                         }
+                        console.log("POSTED");
                         try {
                             debug(res.text);
                             var data = JSON.parse(res.text);
-                            data.should.be.a('array');
-                            expect(data.length).to.equal(sublocationcount);
-                            for (var i = 0; i < data.length; i++) {
-                                expect(data[i].location_id).to.equal(parseInt(parse('@locations:state:membershiptest:')));
-                            }
-                            done();
+                            data.should.be.a('object');
+                            expect(data.id).to.not.be.undefined;
+
+                            request(app)
+                                .get(parse('/api/locations/@locations:state:membershiptest:/sublocations/' + data.id))
+                                .expect(200)
+                                .end(function(err, res) {
+                                    if (err) {
+                                        debug(res.text);
+                                        done(err);
+                                        return;
+                                    }
+                                    try {
+                                        debug(res.text);
+                                        var data = JSON.parse(res.text);
+                                        data.should.be.a('object');
+
+                                        expect(data.location_id).to.equal(data.id);
+                                        _.each(postData, function(value, key) {
+                                            expect(data[key]).to.equal(value);
+                                        });
+                                        done();
+                                    } catch (err2) {
+                                        done(err2);
+                                    }
+                                });
                         } catch (e) {
                             done(e);
                         }
@@ -525,6 +817,6 @@ describe('#/api/groups', function() {
 
         });
 
-    });
+    })
 
 });
