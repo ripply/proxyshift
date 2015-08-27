@@ -87,10 +87,10 @@ module.exports = {
             } else if (location_id !== undefined) {
                 return models.Group.query(function (q) {
                     q.select('groups.*').innerJoin('locations', function () {
-                        this.on('groups.id', '=', 'locations.group_id');
+                        this.on('groups.id', '=', 'locations.group_id')
+                            .andOn('locations.id', '=', location_id);
                     })
-                        .where('groups.id', '=', group_id)
-                        .andWhere('groups.user_id', '=', user_id);
+                        .where('groups.user_id', '=', user_id);
                 })
                     .fetch({require: true})
                     .then(function (group) {
