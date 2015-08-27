@@ -164,7 +164,7 @@ module.exports = {
     },
     '/:location_id/shifts': {
         'get': { // get all shifts you are eligible for in a location?
-            auth: ['location member'], // must be a member/owner of the group
+            auth: ['group owner', 'or', 'location member'], // must be a member/owner of the group
             route: function(req, res) {
                 var now = new Date();
                 var range = grabNormalShiftRange(now);
@@ -181,7 +181,7 @@ module.exports = {
     },
     '/:location_id/shifts/after/:after/before/:before': {
         'get': { // subroute of /:location_id/shifts with time constraints
-            auth: ['location member'], // must be member of a location
+            auth: ['group owner', 'or', 'location member'], // must be member of a location
             route: function(req, res) {
                 getShiftsAtLocation(
                     req,
@@ -197,7 +197,7 @@ module.exports = {
             // filtering of /:location_id/shifts/managing
             // TODO: if privileged allow any groupuserclass
             // TODO: else, only allow ones you are a member of
-            auth: ['location member'],
+            auth: ['group owner', 'or', 'location member'],
             route: function(req, res) {
                 // this should grab groups you are a member of
                 // join them with the specific location
@@ -271,7 +271,7 @@ module.exports = {
     },
     '/:location_id/sublocations': {
         'get': { // get all sublocations
-            auth: ['location member'], // must be attached to the location
+            auth: ['group owner', 'or', 'location member'], // must be attached to the location
             route: function(req, res) {
                 simpleGetListModel(
                     'SubLocation',
@@ -284,7 +284,7 @@ module.exports = {
             }
         },
         'post': { // create a sublocation
-            auth: ['privileged location member'], // must be a group owner or privileged group member attached to location
+            auth: ['group owner', 'or', 'privileged location member'], // must be a group owner or privileged group member attached to location
             route: function(req, res) {
                 postModel(
                     'SubLocation',
@@ -302,7 +302,7 @@ module.exports = {
     },
     '/:location_id/sublocations/:sublocation_id': {
         'patch': { // update a sublocation
-            auth: ['privileged location member'], // must be a group owner or privileged group member attached to location
+            auth: ['group owner', 'or', 'privileged location member'], // must be a group owner or privileged group member attached to location
             route: function(req, res) {
                 models.SubLocation.query(function(q) {
                     q.select()
@@ -329,7 +329,7 @@ module.exports = {
             }
         },
         'delete': { // delete a sublocation
-            auth: ['privileged location member'], // must be a group owner or privileged group member attached to location
+            auth: ['group owner', 'or', 'privileged location member'], // must be a group owner or privileged group member attached to location
             route: function(req, res) {
                 Bookshelf.transaction(function(t) {
                     // update all shifts with that sublocation to point to location
@@ -392,7 +392,7 @@ function getShiftsAtLocation(req, res, before, after) {
             .where('locations.id', '=', req.params.location_id);
 
     var usersClassesAtLocationSubQuery =
-        knex.select('groupuserclasstouser.groupuserclass_id as groupuserclassid')
+        knex.select('groupuserclasstousers.groupuserclass_id as groupuserclassid')
             .from('groupuserclasstousers')
             .innerJoin('usergroups', function() {
                 this.on('usergroups.id', '=', 'groupuserclasstousers.user_id')
