@@ -14,7 +14,7 @@ module.exports = {
         'get': { // list all groups a part of
             auth: ['anyone'], // anyone can query what groups they are a part of/own
             route: function(req, res) {
-                models.Group.forge({id: req.params.id})
+                models.Group.forge({id: req.params.group_id})
                     .fetchAll()
                     .then(function (groups) {
                         res.json(groups.toJSON());
