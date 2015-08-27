@@ -76,6 +76,11 @@ describe('#/api/groups', function() {
                         .get('/api/locations')
                         .expect(200)
                         .end(function (err, res) {
+                            if (err) {
+                                debug(res.text);
+                                done(err);
+                                return;
+                            }
                             try {
                                 debug(res.text);
                                 var data = JSON.parse(res.text);
@@ -162,6 +167,105 @@ describe('#/api/groups', function() {
                 });
 
             });
+
+        });
+
+        describe('- /:location_id/shifts', function() {
+
+            describe('- anonymous user', function () {
+
+                it('- return 401', function (done) {
+
+                    request(app)
+                        .get(parse('/api/locations/@locations:state:membershiptest:/shifts'))
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- non group member', function () {
+
+                beforeEach(function (done) {
+
+                    login('nongroupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- return 401', function (done) {
+
+                    request(app)
+                        .get(parse('/api/locations/@locations:state:membershiptest:/shifts'))
+                        .expect(401)
+                        .end(done);
+
+                });
+
+            });
+
+            describe('- location member', function () {
+
+                beforeEach(function (done) {
+
+                    login('groupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- get a list of shifts you are eligible for', function (done) {
+
+                    getLocationShifts(done, 4);
+
+                });
+
+            });
+
+            describe('- group owner', function () {
+
+                beforeEach(function (done) {
+
+                    login('groupowner',
+                        'secret',
+                        done);
+
+                });
+
+                it('- get a list of locations attached to', function (done) {
+
+                    getLocationShifts(done, 0);
+
+                });
+
+            });
+
+            function getLocationShifts(done, shiftcount) {
+                request(app)
+                    .get(parse('/api/locations/@locations:state:membershiptest:/shifts'))
+                    .expect(200)
+                    .end(function (err, res) {
+                        if (err) {
+                            debug(res.text);
+                            done(err);
+                            return;
+                        }
+                        try {
+                            debug(res.text);
+                            var data = JSON.parse(res.text);
+                            data.should.be.a('array');
+                            expect(data.length).to.equal(shiftcount);
+                            for (var i = 0; i < data.length; i++) {
+                                var shift = data[i];
+                                expect(shift.user_id == parse('@users:username:groupmember:') || shift.user_id == null).to.be.true;
+                            }
+                            done();
+                        } catch (e) {
+                            done(e);
+                        }
+                    });
+            }
 
         });
 
