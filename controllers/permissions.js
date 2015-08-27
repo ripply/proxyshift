@@ -141,11 +141,10 @@ module.exports = {
                 return models.UserGroups.query(function (q) {
                     q.select('usergroups.*')
                         .innerJoin('locations', function () {
-                            this.on('usergroups.group_id', '=', 'locations.group_id');
+                            this.on('usergroups.group_id', '=', 'locations.group_id')
+                                .andOn('usergroups.user_id', '=', user_id);
                         })
-                        .where('usergroups.group_id', '=', group_id)
-                        .andWhere('locations.id', '=', location_id)
-                        .andWhere('usergroups.user_id', '=', user_id);
+                        .where('locations.id', '=', location_id);
                 })
                     .fetch({require: true})
                     .then(function (group) {
