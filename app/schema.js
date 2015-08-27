@@ -262,6 +262,10 @@ var Schema = {
             unique: false,
             nullable: true,
             onDelete: cascade
+        },
+        notify: {
+            type: date,
+            nullable: true
         }
     },
     // groups can have different permissions

@@ -26,6 +26,7 @@ module.exports = {
                 if (before > after) {
                     return res.status(400).json({error: true, data: {message: 'Invalid date range'}});
                 }
+                // TODO: THIS ROUTE HAS NO SECURITY AND NEEDS TESTS
                 models.Shifts.forge()
                     .query(function(q) {
                         q.where('start', '<=', before)
@@ -244,6 +245,26 @@ module.exports = {
             }
         }
     },
+    '/:shift_id/notify': {
+        'post': { // sends out notification
+            //auth:
+            route: function(req, res) {
+                
+            }
+        }
+    },
+    '/:shift_id/register': {
+        'post': {
+            route: function(req, res) {
+                // confirm that user can register for this shift
+                // and shift has no user attached
+                // if settings allow queueing for shifts and need manager approval
+                // add to list
+                // then send notification to managers
+                // we should receive a notification when a manager approves
+            }
+        }
+    },
     // created in context of /locations
     add: function(req, res) {
         if (req.body.start > req.body.end) {
@@ -268,3 +289,7 @@ module.exports = {
             });
     }
 };
+
+function notify(data) {
+
+}
