@@ -9,7 +9,8 @@ var models = require('../app/models'),
     Bookshelf = models.Bookshelf,
     grabNormalShiftRange = require('./controllerCommon').grabNormalShiftRange,
     knex = models.knex,
-    moment = require('moment');
+    moment = require('moment'),
+    _ = require('underscore');
 
 module.exports = {
     route: '/api/locations',
@@ -326,13 +327,25 @@ module.exports = {
                         .innerJoin('locations', function() {
                             this.on('locations.id', '=', 'sublocations.location_id')
                         })
-                        .where('locations.id', '=', req.params.location_id)
-                        .patch(
-                        getPatchKeysWithoutBannedKeys(req.body)
-                    );
+                        .where('locations.id', '=', req.params.location_id);
                 })
+                    .save(
+                    _.extend({
+                            location_id: req.params.location_id
+                        },
+                        getPatchKeysWithoutBannedKeys(
+                            'SubLocation',
+                            req.body,
+                            [
+                                'location_id'
+                            ]
+                        )
+                    ),
+                    {patch: true}
+                )
                     .then(function (model) {
                         if (model) {
+                            //console.log(model.toJSON());
                             res.json({error: false, data: {message: 'Success'}});
                         } else {
                             res.status(403);

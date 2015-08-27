@@ -643,6 +643,205 @@ describe('#/api/groups', function() {
 
     });
 
+    describe('- PATCH', function () {
+
+        describe('- /:location_id/sublocations/:sublocation_id', function() {
+
+            var patchSublocationData = {
+                title: 'patched title',
+                description: 'patched description'
+            };
+
+            describe('- anonymous user', function () {
+
+                it('- return 401', function (done) {
+
+                    request(app)
+                        .patch(parse('/api/locations/@locations:state:membershiptest:/sublocations/@sublocations:description:membershiptest floor 1:'))
+                        .send(patchSublocationData)
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- non group member', function () {
+
+                beforeEach(function (done) {
+
+                    login('nongroupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- return 401', function (done) {
+
+                    request(app)
+                        .patch(parse('/api/locations/@locations:state:membershiptest:/sublocations/@sublocations:description:membershiptest floor 1:'))
+                        .send(patchSublocationData)
+                        .expect(401)
+                        .end(done);
+
+                });
+
+            });
+
+            describe('- group member but not location member', function () {
+
+                beforeEach(function (done) {
+
+                    login('nonlocationmem',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 401', function (done) {
+
+                    request(app)
+                        .patch(parse('/api/locations/@locations:state:membershiptest:/sublocations/@sublocations:description:membershiptest floor 1:'))
+                        .send(patchSublocationData)
+                        .expect(401)
+                        .end(done);
+
+                });
+
+            });
+
+            describe('- location member', function () {
+
+                beforeEach(function (done) {
+
+                    login('groupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- get a list of sublocations attatched to a location', function (done) {
+
+                    request(app)
+                        .patch(parse('/api/locations/@locations:state:membershiptest:/sublocations/@sublocations:description:membershiptest floor 1:'))
+                        .send(patchSublocationData)
+                        .expect(401)
+                        .end(done);
+
+                });
+
+            });
+
+            describe('- privileged location member', function () {
+
+                beforeEach(function (done) {
+
+                    login('manager',
+                        'secret',
+                        done);
+
+                });
+
+                it('- update a sublocation', function (done) {
+
+                    patchSublocation(done, patchSublocationData, '@locations:state:membershiptest:', '@sublocations:description:membershiptest floor 1:');
+
+                });
+
+            });
+
+            describe('- group owner', function () {
+
+                beforeEach(function (done) {
+
+                    login('groupowner',
+                        'secret',
+                        done);
+
+                });
+
+                it('- update a sublocation', function (done) {
+
+                    patchSublocation(done, patchSublocationData, '@locations:state:membershiptest:', '@sublocations:description:membershiptest floor 1:');
+
+                });
+
+            });
+
+        });
+
+        function patchSublocation(done, patchData, locationid, sublocationid) {
+            request(app)
+                .get(parse('/api/locations/' + locationid + '/sublocations/' + sublocationid))
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) {
+                        debug(res.text);
+                        done(err);
+                        return;
+                    }
+                    try {
+                        debug(res.text);
+                        var data = JSON.parse(res.text);
+                        data.should.be.a('object');
+                        expect(data.id).to.equal(parseInt(parse(sublocationid)));
+                        expect(data.location_id).to.equal(parseInt(parse(locationid)));
+
+                        request(app)
+                            .patch(parse('/api/locations/' + locationid + '/sublocations/' + sublocationid))
+                            .send(patchData)
+                            .expect(200)
+                            .end(function(err, res) {
+                                if (err) {
+                                    debug(res.text);
+                                    done(err);
+                                    return;
+                                }
+                                try {
+                                    debug(res.text);
+                                    var data2 = JSON.parse(res.text);
+                                    data2.should.be.a('object');
+                                    expect(data2.error).to.equal(false);
+
+                                    request(app)
+                                        .get(parse('/api/locations/' + locationid + '/sublocations/' + sublocationid))
+                                        .expect(200)
+                                        .end(function (err, res3) {
+                                            if (err) {
+                                                debug(res3.text);
+                                                done(err);
+                                                return;
+                                            }
+                                            try {
+                                                debug(res3.text);
+                                                var data3 = JSON.parse(res3.text);
+                                                data3.should.be.a('object');
+                                                expect(data3.id).to.equal(parseInt(parse(sublocationid)));
+                                                expect(data3.location_id).to.equal(parseInt(parse(locationid)));
+
+                                                var keys = _.keys(patchData);
+                                                for (var i = 0; i < keys.length; i++) {
+                                                    expect(data3[keys[i]]).to.equal(patchData[keys[i]]);
+                                                }
+
+                                                done();
+                                            } catch (e) {
+                                                done(e);
+                                            }
+                                        });
+
+                                } catch (err2) {
+                                    debug(err2);
+                                }
+                            });
+
+                    } catch (e) {
+                        done(e);
+                    }
+                });
+        }
+
+    });
+
     describe('- POST', function () {
 
         describe('- /:location_id/sublocations', function() {
