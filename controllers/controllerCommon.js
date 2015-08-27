@@ -146,7 +146,7 @@ function getPatchKeysWithoutBannedKeys(modelName, patchableData, bannedKeys) {
     }
     var modelKeys = schema[modelName];
 
-    return _.pick(patchableData, _.keys(modelKeys));
+    return _.pick(patchableData, _.without(_.keys(modelKeys), bannedKeys));
 }
 
 function grabNormalShiftRange(from, after, before) {
