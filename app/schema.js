@@ -2,6 +2,7 @@ var string = 'string';
 var increments = 'increments';
 var integer = 'integer';
 var cascade = 'cascade';
+var setnull = 'set null';
 var restrict = 'restrict';
 var boolean = 'boolean';
 var date = 'date';
@@ -266,6 +267,24 @@ var Schema = {
         notify: {
             type: date,
             nullable: true
+        }
+    },
+    ShiftApplication: {
+        id: {
+            type: increments
+        },
+        shift_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'shifts',
+            onDelete: cascade
+        },
+        user_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'users',
+            // TODO: Should we delete this shift application?
+            onDelete: cascade
         }
     },
     // groups can have different permissions
