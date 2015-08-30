@@ -86,6 +86,7 @@ var Schema = {
             references: 'id',
             inTable: 'users',
             onDelete: restrict,
+            onUpdate: cascade,
             nullable: false
         },
         name: {
@@ -118,6 +119,8 @@ var Schema = {
             type: integer,
             references: 'id',
             inTable: 'groupsettings',
+            onDelete: cascade,
+            onUpdate: cascade,
             unique: true,
             nullable: false
         }
@@ -132,6 +135,7 @@ var Schema = {
             references: 'id',
             inTable: 'groups',
             onDelete: restrict, // prevent accidental deletion of a location
+            onUpdate: cascade,
             nullable: false
         },
         state: {
@@ -174,7 +178,8 @@ var Schema = {
             type: integer,
             references: 'id',
             inTable: 'locations',
-            onDeleet: cascade,
+            onDelete: cascade,
+            onUpdate: cascade,
             nullable: false
         }
     },
@@ -194,6 +199,7 @@ var Schema = {
             type: integer,
             references: 'id',
             inTable: 'groups',
+            onUpdate: cascade,
             onDelete: cascade
         }
     },
@@ -206,12 +212,14 @@ var Schema = {
             type: integer,
             references: 'id',
             inTable: 'locations',
+            onUpdate: cascade,
             onDelete: cascade
         },
         area_id: {
             type: integer,
             references: 'id',
             inTable: 'areas',
+            onUpdate: cascade,
             onDelete: cascade
         }
     },
@@ -223,6 +231,7 @@ var Schema = {
             type: integer,
             references: 'id',
             inTable: 'users',
+            onUpdate: cascade,
             onDelete: cascade
         },
         title: {
@@ -246,6 +255,7 @@ var Schema = {
             type: integer,
             references: 'id',
             inTable: 'groupuserclasses',
+            onUpdate: cascade,
             onDelete: cascade
         },
         location_id: {
@@ -254,6 +264,7 @@ var Schema = {
             inTable: 'locations',
             unique: false,
             nullable: true,
+            onUpdate: cascade,
             onDelete: cascade
         },
         sublocation_id: {
@@ -262,6 +273,7 @@ var Schema = {
             inTable: 'sublocations',
             unique: false,
             nullable: true,
+            onUpdate: cascade,
             onDelete: cascade
         },
         notify: {
@@ -283,6 +295,7 @@ var Schema = {
             type: integer,
             references: 'id',
             inTable: 'users',
+            onUpdate: cascade,
             // TODO: Should we delete this shift application?
             onDelete: cascade
         }
@@ -299,6 +312,7 @@ var Schema = {
             references: 'id',
             inTable: 'groupsettings',
             onDelete: cascade,
+            onUpdate: cascade,
             nullable: false
         },
         description: {
@@ -315,6 +329,7 @@ var Schema = {
             references: 'id',
             inTable: 'groups',
             onDelete: cascade,
+            onUpdate: cascade,
             nulable: false
         }
     },
@@ -327,18 +342,21 @@ var Schema = {
             type: integer,
             references: 'id',
             inTable: 'users',
+            onUpdate: cascade,
             onDelete: cascade
         },
         group_id: {
             type: integer,
             references: 'id',
             inTable: 'groups',
+            onUpdate: cascade,
             onDelete: cascade
         },
         grouppermission_id: {
             type: integer,
             references: 'id',
             inTable: 'grouppermissions',
+            onUpdate: cascade,
             onDelete: restrict
         }
     },
@@ -351,7 +369,8 @@ var Schema = {
             type: integer,
             references: 'id',
             inTable: 'users',
-            onDeleet: cascade,
+            onDelete: cascade,
+            onUpdate: cascade,
             nullable: false
         },
         token: {
@@ -374,6 +393,7 @@ var Schema = {
             references: 'id',
             inTable: 'groups',
             onDelete: cascade,
+            onUpdate: cascade,
             nullable: false
         },
         title: {
@@ -401,6 +421,7 @@ var Schema = {
             references: 'id',
             inTable: 'users',
             onDelete: cascade,
+            onUpdate: cascade,
             nullable: false
         },
         groupuserclass_id: {
@@ -408,6 +429,7 @@ var Schema = {
             references: 'id',
             inTable: 'groupuserclasses',
             onDelete: cascade,
+            onUpdate: cascade,
             nullable: false
         }
     },
@@ -422,6 +444,7 @@ var Schema = {
             references: 'id',
             inTable: 'locations',
             onDelete: cascade,
+            onUpdate: cascade,
             nullable: false
         },
         user_id: {
@@ -436,6 +459,7 @@ var Schema = {
             references: 'id',
             inTable: 'grouppermissions',
             onDelete: cascade,
+            onUpdate: cascade,
             nullable: false
         }
     },
@@ -449,6 +473,7 @@ var Schema = {
             references: 'id',
             inTable: 'groups',
             onDelete: cascade,
+            onUpdate: cascade,
             nullable: false
         },
         title: {
@@ -466,6 +491,7 @@ var Schema = {
             references: 'id',
             inTable: 'users',
             onDelete: cascade,
+            onUpdate: cascade,
             nullable: false
         },
         groupadditionalinformation_id: {
@@ -473,6 +499,7 @@ var Schema = {
             references: 'id',
             inTable: 'groupadditionalinformations',
             onDelete: cascade,
+            onUpdate: cascade,
             nullable: false
         },
         data: {
@@ -491,6 +518,7 @@ var Schema = {
             references: 'id',
             inTable: 'usergroups',
             onDelete: cascade,
+            onUpdate: cascade,
             nullable: false
         },
         // location that manager is managing at
@@ -499,6 +527,7 @@ var Schema = {
             references: 'id',
             inTable: 'locations',
             onDelete: cascade,
+            onUpdate: cascade,
             nullable: false
         },
         // class that manager manages
@@ -507,6 +536,7 @@ var Schema = {
             references: 'id',
             inTable: 'groupuserclasses',
             onDelete: cascade,
+            onUpdate: cascade,
             nullable: false
         },
         // Lets us notify managers when a new class is added
