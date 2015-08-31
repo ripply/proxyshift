@@ -322,7 +322,7 @@ function hasGroupPermissionLevel(permissionLevel, req, act) {
                 this.on('usergroups.grouppermission_id', '=', 'grouppermissions.id')
                     .andOn('usergroups.user_id', '=', user_id);
             })
-            .where('permissionlevel', '>', permissionLevel);
+            .where('permissionlevel', '>=', permissionLevel);
     })
         .fetchAll({require: true})
         .then(function(grouppermissions) {

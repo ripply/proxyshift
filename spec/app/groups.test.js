@@ -179,7 +179,7 @@ describe('#/api/groups', function() {
 
                 });
 
-                it('- returns 401', function (done) {
+                it('- returns 201', function (done) {
 
                     request(app)
                         .post(parse('/api/groups/@groups:name:membershiptest:/locations'))
