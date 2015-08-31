@@ -20,38 +20,25 @@ module.exports = {
     updateModel: updateModel,
     patchModel: function(modelName, queryArgs, req, res, updateMessage, defaultExcludes, sqlOptions) {
         if (defaultExcludes === undefined) {
-            defaultExcludes = ['id'];
+            defaultExcludes = defaultBannedKeys;
         }
-        // TODO: Do this with query => patch? instead of with a transaction
         // TODO: Refactor all routes to use the same code paths for create/patch etc
         // TODO: Consolidate return messages into a function so everything is consistent
-        //Bookshelf.transaction(function(t) {
-            //var sqlOptionsWithTransaction = _.extend({transacting: t}, sqlOptions);
-            var sqlOptionsWithTransaction = sqlOptions;
-            models[modelName].forge(queryArgs)
-                .fetch(sqlOptionsWithTransaction)
-                    .then(function (fetchedResult) {
-                        if (!fetchedResult) {
-                            audit(req, "Couldn't find: " + modelName + ": " + JSON.stringify(queryArgs));
-                            res.sendStatus(403);
-                        } else {
-                            var updated = updateModel(modelName, fetchedResult, req.body, defaultExcludes);
-                            fetchedResult.save(
-                                updated,
-                                sqlOptionsWithTransaction
-                            )
-                                .then(function () {
-                                    res.json({error: false, data: {message: updateMessage}});
-                                })
-                                .catch(function (err) {
-                                    res.status(500).json({error: true, data: {message: err.message}});
-                                });
-                        }
-                    })
-                    .catch(function (err) {
-                        res.status(500).json({error: true, data: {message: err.message}});
-                    });
-        //});
+        models[modelName].forge(
+            queryArgs
+        )
+            .save(
+            filterClientUpdateInput(modelName, req.body, defaultExcludes),
+            {
+                patch: true
+            }
+        )
+            .then(function () {
+                res.json({error: false, data: {message: updateMessage}});
+            })
+            .catch(function (err) {
+                res.status(500).json({error: true, data: {message: err.message}});
+            });
     },
     simpleGetSingleModel: function(modelName, queryArgs, req, res) {
         models[modelName].forge(queryArgs)
@@ -116,6 +103,18 @@ function getModelKeys(modelName, bannedKeys) {
     var modelKeys = schema[modelName];
 
     return _.omit(modelKeys, bannedKeys);
+}
+
+function filterClientUpdateInput(modelName, updateData, bannedKeys) {
+    if (!bannedKeys) {
+        bannedKeys = defaultBannedKeys;
+    }
+    var modelKeys = schema[modelName];
+    if (modelKeys === undefined) {
+        throw new Error("Model: " + modelName + " does not exist in Schema");
+    }
+
+    return _.pick(_.omit(updateData, bannedKeys), _.keys(modelKeys));
 }
 
 function updateModel(modelName, bookshelfFetchedModelObject, updatedData, bannedKeys) {
