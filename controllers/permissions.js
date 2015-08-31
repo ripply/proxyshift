@@ -2,9 +2,13 @@ var models = require('../app/models');
 var knex = models.knex;
 var variables = require('./variables.js');
 
-var managingPermissionLevel = variables.managingPermissionLevel;
-var privilegedLocationMember = variables.privilegedLocationMember;
+var privilegedGroupMember = variables.privilegedGroupMember;
 var managingGroupMember = variables.managingGroupMember;
+var veryPrivilegedGroupMember = variables.veryPrivilegedGroupMember;
+
+var privilegedLocationMember = variables.privilegedLocationMember;
+var veryPrivilegedLocationMember = variables.veryPrivilegedLocationMember;
+var managingLocationMember = variables.managingLocationMember;
 var existsPermissionLevel = variables.existsPermissionLevel;
 
 module.exports = {
@@ -179,11 +183,11 @@ module.exports = {
         },
 
         'privileged group member': function(req, act) {
-            return hasGroupPermissionLevel(managingPermissionLevel, req, act);
+            return hasGroupPermissionLevel(managingGroupMember, req, act);
         },
 
         'very privileged group member': function(req, act) {
-            return hasGroupPermissionLevel(managingGroupMember, req, act);
+            return hasGroupPermissionLevel(veryPrivilegedGroupMember, req, act);
         },
 
         'location member': function(req, act) {
