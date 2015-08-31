@@ -5,7 +5,7 @@ var cascade = 'cascade';
 var setnull = 'set null';
 var restrict = 'restrict';
 var boolean = 'boolean';
-var date = 'date';
+var date = 'timestamp';
 
 // http://blog.ragingflame.co.za/2014/7/21/using-nodejs-with-mysql
 
@@ -223,6 +223,34 @@ var Schema = {
             onDelete: cascade
         }
     },
+    // job type that a user can be
+    GroupUserClass: {
+        id: {
+            type: increments
+        },
+        group_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'groups',
+            onDelete: cascade,
+            onUpdate: cascade,
+            nullable: false
+        },
+        title: {
+            type: string,
+            maxlen: 50,
+            unique: true,
+            nullable: false
+        },
+        description: {
+            type: string,
+            maxlen: 50
+        },
+        cansendnotification: {
+            type: boolean,
+            defaultTo: true
+        }
+    },
     Shift: {
         id: {
             type: increments
@@ -281,6 +309,7 @@ var Schema = {
             nullable: true
         }
     },
+    // Application for a shift
     ShiftApplication: {
         id: {
             type: increments
@@ -381,34 +410,6 @@ var Schema = {
         date: {
             type: date,
             nullable: false
-        }
-    },
-    // job type that a user can be
-    GroupUserClass: {
-        id: {
-            type: increments
-        },
-        group_id: {
-            type: integer,
-            references: 'id',
-            inTable: 'groups',
-            onDelete: cascade,
-            onUpdate: cascade,
-            nullable: false
-        },
-        title: {
-            type: string,
-            maxlen: 50,
-            unique: true,
-            nullable: false
-        },
-        description: {
-            type: string,
-            maxlen: 50
-        },
-        cansendnotification: {
-            type: boolean,
-            defaultTo: true
         }
     },
     // relates a user to a job type

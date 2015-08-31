@@ -1,4 +1,11 @@
 var models = require('../app/models');
+var knex = models.knex;
+var variables = require('./variables.js');
+
+var managingPermissionLevel = variables.managingPermissionLevel;
+var privilegedLocationMember = variables.privilegedLocationMember;
+var managingGroupMember = variables.managingGroupMember;
+var existsPermissionLevel = variables.existsPermissionLevel;
 
 module.exports = {
 
@@ -172,19 +179,19 @@ module.exports = {
         },
 
         'privileged group member': function(req, act) {
-            return hasGroupPermissionLevel(1, req, act);
+            return hasGroupPermissionLevel(managingPermissionLevel, req, act);
         },
 
         'very privileged group member': function(req, act) {
-            return hasGroupPermissionLevel(2, req, act);
+            return hasGroupPermissionLevel(managingGroupMember, req, act);
         },
 
         'location member': function(req, act) {
-            return checkLocationPermissionLevel(0, req, act);
+            return checkLocationPermissionLevel(existsPermissionLevel, req, act);
         },
 
         'privileged location member': function(req, act) {
-            return checkLocationPermissionLevel(1, req, act);
+            return checkLocationPermissionLevel(privilegedLocationMember, req, act);
         },
 
         'anyone can create shifts': function(req, act) {
@@ -194,6 +201,99 @@ module.exports = {
         'server admin': function(req, act) {
             // TODO: IMPLEMENT
             return false;
+        },
+
+        'mark if user is a group owner or privileged location member for this shift': function(req, act) {
+            var shift_id = req.params.shift_id;
+
+            if (shift_id === undefined) {
+                throw new Error("Shift is not passed into route");
+            }
+
+            return models.Shift.query(function(q) {
+                var ownedGroups =
+                    knex.select('groups.* as tmp')
+                        .from('groups')
+                        .where('groups.user_id', '=', req.user.id);
+
+                q.select('shifts.*')
+                    .from('shifts')
+                    .where('shifts.id', '=', shift_id)
+                    .innerJoin('locations', function() {
+                        this.on('locations.id', '=', 'shifts.location_id');
+                    })
+                    .whereIn('locations.group_id', ownedGroups)
+                    .union(function() {
+                        this.select('shifts.*')
+                            .from('shifts')
+                            .where('shifts_id', '=', shifts_id)
+                            .innerJoin('sublocations', function() {
+                                this.on('sublocations.id', '=', 'shifts.sublocation_id');
+                            })
+                            .innerJoin('locations', function() {
+                                this.on('locations.id', '=', 'sublocations.location_id');
+                            })
+                            .whereIn('locations.group_id', ownedGroups);
+                    });
+            })
+                .fetch({require: true})
+                .then(function (group) {
+                    // FIXME: STUPID HACK TO SEND DATA TO GET /api/shifts/:shift_id
+                    if (req.user._privileged === undefined) {
+                        req.user._privileged = {};
+                    }
+                    req.user._privileged[shift_id] = true;
+                    return true;
+                })
+                .catch(function (err) {
+                    // not the group owner for this shift
+                    // fetch the shift and get the location id
+                    // then use that to re-use our privilege checking functions
+                    return models.Location.query(function(q) {
+                        q.select('locations.id as locationid')
+                            .from('locations')
+                            .innerJoin('shifts', function() {
+                                this.on('shifts.location_id', '=', 'locations.id');
+                            })
+                            .where('shifts.id', '=', shift_id)
+                            .union(function() {
+                                this.select('locations.id as locationid')
+                                    .from('locations')
+                                    .innerJoin('sublocations', function() {
+                                        this.on('sublocations.location_id', '=', 'locations.id');
+                                    })
+                                    .innerJoin('shifts', function() {
+                                        this.on('shifts.sublocation_id', '=', 'sublocations.id');
+                                    })
+                                    .where('shifts.id', '=', shift_id);
+                            });
+                    })
+                        .fetch({require: true})
+                        .then(function(location) {
+                            var location_id = location.get('locationid');
+
+                            req.params.location_id = location_id;
+
+                            return checkLocationPermissionLevel(privilegedLocationMember, req, act)
+                                .then(function(result) {
+                                    if (result) {
+                                        if (req.user._privileged === undefined) {
+                                            req.user._privileged = {};
+                                        }
+                                        req.user._privileged[shift_id] = true;
+                                    }
+
+                                    delete req.params.location_id;
+
+                                    return true;
+                                });
+                        })
+                        .catch(function(err) {
+                            // no location tied to a shift...
+                            console.log(err.message);
+                            return true;
+                        })
+                });
         }
 
     }
@@ -255,7 +355,7 @@ function checkLocationPermissionLevel(permissionLevel, req, act) {
                 this.on('userpermissions.grouppermission_id', '=', 'grouppermissions.id')
                     .andOn('userpermissions.user_id', '=', user_id);
             })
-            .where('permissionlevel', '>', permissionLevel)
+            .where('permissionlevel', '>=', permissionLevel)
             .andWhere('userpermissions.location_id', '=', location_id);
     })
         .fetchAll({require: true})

@@ -10,7 +10,10 @@ var models = require('../app/models'),
     grabNormalShiftRange = require('./controllerCommon').grabNormalShiftRange,
     knex = models.knex,
     moment = require('moment'),
+    variables = require('./variables'),
     _ = require('underscore');
+
+var managingPermissionLevel = variables.managingPermissionLevel;
 
 module.exports = {
     route: '/api/locations',
@@ -208,7 +211,6 @@ module.exports = {
                 var range = grabNormalShiftRange(now);
                 var before = range[0];
                 var after = new moment(now).unix();
-                var managingPermissionLevel = 2;
                 models.Shift.query(function(q) {
                     var managingMemeberOfLocationSubQuery =
                         knex.select('userpermissions.location_id as locationid')

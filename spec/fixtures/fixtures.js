@@ -108,6 +108,15 @@ module.exports = {
                 squestion: 'nonlocationmember',
                 sanswer: encrypt(password)
             },
+            {
+                username: 'shiftapplied',
+                password: encrypt(password),
+                firstname: 'shiftapplied',
+                lastname: 'shiftapplied',
+                email: 'shiftapplied@example.com',
+                squestion: 'shiftapplied',
+                sanswer: encrypt(password)
+            }
         ],
         groupsettings: [
             {
@@ -207,7 +216,12 @@ module.exports = {
                 user_id: '@users:username:nonlocationmem',
                 group_id: '@groups:name:membershiptest',
                 grouppermission_id: '@grouppermissions:description:unprivileged'
-            }
+            },
+            {
+                user_id: '@users:username:shiftapplied',
+                group_id: '@groups:name:membershiptest',
+                grouppermission_id: '@grouppermissions:description:unprivileged'
+            },
         ],
         locations: [
             {
@@ -260,7 +274,7 @@ module.exports = {
             {
                 group_id: '@groups:name:membershiptest',
                 title: 'User class 1',
-                description: 'User class 1 description'
+                description: 'User class 0 description'
             },
             {
                 group_id: '@groups:name:membershiptest',
@@ -312,26 +326,7 @@ module.exports = {
                 groupuserclass_id: '@groupuserclasses:title:classtest'
             },
             {
-                title: 'sublocationshfit',
-                description: 'shift in sublocation',
-                start: moment(new Date()).add('1', 'hour').unix(),
-                end: moment(new Date()).add('3', 'hour').unix(),
-                //location_id: null,
-                sublocation_id: '@sublocations:description:membershiptest floor 1',
-                //user_id: null,
-                groupuserclass_id: '@groupuserclasses:title:classtest'
-            },
-            {
-                title: 'sublocationshfitwithuser',
-                description: 'shift in sublocation',
-                start: moment(new Date()).add('1', 'hour').unix(),
-                end: moment(new Date()).add('3', 'hour').unix(),
-                //location_id: null,
-                sublocation_id: '@sublocations:description:membershiptest floor 1',
-                user_id: '@users:username:groupmember',
-                groupuserclass_id: '@groupuserclasses:title:classtest'
-            },
-            {
+                // FIXME: This shift gets inserted into db (sqlite3) as id 3 when it is 5th in the list, so for now set it to 3rd item
                 title: 'shift_in_other_location',
                 description: 'shift in another location',
                 start: moment(new Date()).add('1', 'hour').unix(),
@@ -341,6 +336,42 @@ module.exports = {
                 user_id: '@users:username:groupmember',
                 groupuserclass_id: '@groupuserclasses:title:classtest'
             },
+            {
+                title: 'sublocationshift',
+                description: 'shift in sublocation',
+                start: moment(new Date()).add('1', 'hour').unix(),
+                end: moment(new Date()).add('3', 'hour').unix(),
+                //location_id: null,
+                sublocation_id: '@sublocations:description:membershiptest floor 1',
+                //user_id: null,
+                groupuserclass_id: '@groupuserclasses:title:classtest'
+            },
+            {
+                title: 'sublocationshiftwithuser',
+                description: 'shift in sublocation',
+                start: moment(new Date()).add('1', 'hour').unix(),
+                end: moment(new Date()).add('3', 'hour').unix(),
+                //location_id: null,
+                sublocation_id: '@sublocations:description:membershiptest floor 1',
+                user_id: '@users:username:groupmember',
+                groupuserclass_id: '@groupuserclasses:title:classtest'
+            },
+            {
+                title: 'different_classtype',
+                description: 'shift in sublocation',
+                start: moment(new Date()).add('1', 'hour').unix(),
+                end: moment(new Date()).add('3', 'hour').unix(),
+                //location_id: null,
+                sublocation_id: '@sublocations:description:membershiptest floor 1',
+                //user_id: null,
+                groupuserclass_id: '@groupuserclasses:title:User class 1'
+            },
+        ],
+        shiftapplications:[
+            {
+                shift_id: '@shifts:title:monthshiftisover',
+                user_id: '@users:username:shiftapplied'
+            }
         ],
         managingclassesatlocations: [
             {

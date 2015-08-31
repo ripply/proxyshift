@@ -10,6 +10,9 @@ var login = require('../common').login;
 var moment = require('moment');
 var _ = require('underscore');
 
+var debug = global.debug;
+var parse = global.parse;
+
 var password = 'secret';
 
 describe("#/shifts", function() {
@@ -81,7 +84,7 @@ describe("#/shifts", function() {
 
     });
 
-    var totalShiftCount = 2;
+    var totalShiftCount = 4;
 
     var newShiftCount = 1;
 
@@ -106,8 +109,104 @@ describe("#/shifts", function() {
                 it('- returns 401', function(done) {
 
                     request(app)
-                        .get('/api/shifts/1')
+                        .get(parse('/api/shifts/@shifts:title:monthshiftisover:'))
                         .expect(401, done);
+
+                });
+
+            });
+
+            describe('- location member', function() {
+
+                beforeEach(function(done) {
+
+                    login('groupmember',
+                        'secret',
+                        done);
+
+                });
+
+                describe('- accepted shift', function() {
+
+                    it('- returns 200', function(done) {
+
+                        request(app)
+                            .get(parse('/api/shifts/@shifts:title:monthshiftisover:'))
+                            .expect(200)
+                            .end(function(err, res) {
+                                if (err) {
+                                    debug(res.text);
+                                    done(err);
+                                    return;
+                                }
+                                try {
+                                    debug(res.text);
+                                    var data = JSON.parse(res.text);
+                                    data.should.be.a('object');
+
+                                    _.each(properties, function(property) {
+                                        data.should.have.property(property);
+                                    });
+
+                                    // group member is not a manager
+                                    // only managers will receive this
+                                    expect(data.shiftapplications).to.be.undefined;
+
+                                    done();
+                                } catch (e) {
+                                    done(e);
+                                }
+                            });
+
+                    });
+
+                });
+
+                describe('- unaccepted shift but accessible', function() {
+
+                    it('- returns 200', function(done) {
+
+                        request(app)
+                            .get(parse('/api/shifts/@shifts:title:sublocationshift:'))
+                            .expect(200)
+                            .end(function(err, res) {
+                                if (err) {
+                                    debug(res.text);
+                                    done(err);
+                                    return;
+                                }
+                                try {
+                                    debug(res.text);
+                                    var data = JSON.parse(res.text);
+                                    data.should.be.a('object');
+
+                                    _.each(properties, function(property) {
+                                        data.should.have.property(property);
+                                    });
+
+                                    // group member is not a manager
+                                    // only managers will receive this
+                                    expect(data.shiftapplications).to.be.undefined;
+
+                                    done();
+                                } catch (e) {
+                                    done(e);
+                                }
+                            });
+
+                    });
+
+                });
+
+                describe('- unaccepted shift and differing classtype', function() {
+
+                    it('- returns 403', function(done) {
+
+                        request(app)
+                            .get(parse('/api/shifts/@shifts:title:different_classtype:'))
+                            .expect(403, done);
+
+                    });
 
                 });
 
@@ -115,24 +214,38 @@ describe("#/shifts", function() {
 
             describe('- manager', function() {
 
+                beforeEach(function(done) {
+
+                    login('manager',
+                        'secret',
+                        done);
+
+                });
+
                 describe('- managed shift', function() {
 
                     it('- returns 200', function(done) {
 
                         request(app)
-                            .get('/api/shifts/1')
+                            .get(parse('/api/shifts/@shifts:title:monthshiftisover:'))
                             .expect(200)
                             .end(function(err, res) {
                                 if (err) {
+                                    debug(res.text);
                                     done(err);
+                                    return;
                                 }
                                 try {
+                                    debug(res.text);
                                     var data = JSON.parse(res.text);
                                     data.should.be.a('object');
 
                                     _.each(properties, function(property) {
                                         data.should.have.property(property);
                                     });
+
+                                    // only managers will receive this
+                                    expect(data.shiftapplications).to.be.undefined;
 
                                     done();
                                 } catch (e) {
@@ -146,11 +259,11 @@ describe("#/shifts", function() {
 
                 describe('- non managed shift', function() {
 
-                    it('- returns 401', function(done) {
+                    it('- returns 403', function(done) {
 
                         request(app)
-                            .get('/api/shifts/2')
-                            .expect(401, done);
+                            .get(parse('/api/shifts/@shifts:title:shift_in_other_location:'))
+                            .expect(403, done);
 
                     });
 
@@ -198,12 +311,21 @@ describe("#/shifts", function() {
                             try {
                                 var data = JSON.parse(res.text);
                                 data.should.be.a('array');
+                                if (data.length != totalShiftCount) {
+                                    debug(data);
+                                }
                                 data.length.should.equal(totalShiftCount);
 
                                 _.each(data, function(shift) {
+                                    // TODO: VALIDATE RULES FOR SHIFTS
+                                    // RULES:
+                                    // USER_ID == US
+                                    // LOCATION_ID == MEMBER OF
+                                    // SUBLOCATION_ID == PART OF LOCATION_ID
+                                    // BEFORE/AFTER CORRECT
+                                    //('' + shift['user_id']).should.equal(parse("@users:username:groupmember:"));
                                     _.each(properties, function(property) {
                                         shift.should.have.property(property);
-                                        ('' + shift['user_id']).should.equal(parse("@users:username:groupmember:"));
                                     });
                                 });
 
