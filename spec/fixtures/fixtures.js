@@ -28,7 +28,10 @@ module.exports = {
                 lastname: 'nopassword',
                 email: 'test_nopassword@example.com',
                 squestion: 'test no password',
-                sanswer: ''
+                sanswer: '',
+                phonehome: '12345',
+                phonemobile: '12345',
+                pagernumber: '12345'
             },
             {
                 username: 'test_member_of_group',
@@ -37,7 +40,10 @@ module.exports = {
                 lastname: 'password_2',
                 email: 'test_password_2@example.com',
                 squestion: 'test password',
-                sanswer: encrypt(password)
+                sanswer: encrypt(password),
+                phonehome: '12345',
+                phonemobile: '12345',
+                pagernumber: '12345'
             },
             {
                 username: 'groupmember',
@@ -46,7 +52,10 @@ module.exports = {
                 lastname: 'groupmember',
                 email: 'groupmember@example.com',
                 squestion: 'groupmember',
-                sanswer: encrypt(password)
+                sanswer: encrypt(password),
+                phonehome: '12345',
+                phonemobile: '12345',
+                pagernumber: '12345'
             },
             {
                 username: 'groupowner',
@@ -55,7 +64,10 @@ module.exports = {
                 lastname: 'groupowner',
                 email: 'groupowner@example.com',
                 squestion: 'groupowner',
-                sanswer: encrypt(password)
+                sanswer: encrypt(password),
+                phonehome: '12345',
+                phonemobile: '12345',
+                pagernumber: '12345'
             },
             {
                 username: 'nongroupmember',
@@ -64,7 +76,10 @@ module.exports = {
                 lastname: 'nongroupmember',
                 email: 'nongroupmember@example.com',
                 squestion: 'nongroupmember',
-                sanswer: encrypt(password)
+                sanswer: encrypt(password),
+                phonehome: '12345',
+                phonemobile: '12345',
+                pagernumber: '12345'
             },
             {
                 username: 'privledgedmember',
@@ -73,7 +88,10 @@ module.exports = {
                 lastname: 'privilegedgroupmember',
                 email: 'privilegedgroupmember@example.com',
                 squestion: 'privilegedgroupmember',
-                sanswer: encrypt(password)
+                sanswer: encrypt(password),
+                phonehome: '12345',
+                phonemobile: '12345',
+                pagernumber: '12345'
             },
             {
                 username: 'locationmember',
@@ -82,7 +100,10 @@ module.exports = {
                 lastname: 'unprivilegedgroupmember',
                 email: 'unprivilegedgroupmember@example.com',
                 squestion: 'unprivilegedgroupmember',
-                sanswer: encrypt(password)
+                sanswer: encrypt(password),
+                phonehome: '12345',
+                phonemobile: '12345',
+                pagernumber: '12345'
             },
             {
                 username: 'veryprivileged',
@@ -91,7 +112,10 @@ module.exports = {
                 lastname: 'veryprivileged',
                 email: 'veryprivileged@example.com',
                 squestion: 'veryprivileged',
-                sanswer: encrypt(password)
+                sanswer: encrypt(password),
+                phonehome: '12345',
+                phonemobile: '12345',
+                pagernumber: '12345'
             },
             {
                 username: 'manager',
@@ -100,7 +124,10 @@ module.exports = {
                 lastname: 'manager',
                 email: 'manager@example.com',
                 squestion: 'manager',
-                sanswer: encrypt(password)
+                sanswer: encrypt(password),
+                phonehome: '12345',
+                phonemobile: '12345',
+                pagernumber: '12345'
             },
             {
                 username: 'nonlocationmem',
@@ -109,7 +136,10 @@ module.exports = {
                 lastname: 'nonlocationmember',
                 email: 'nonlocationmember@example.com',
                 squestion: 'nonlocationmember',
-                sanswer: encrypt(password)
+                sanswer: encrypt(password),
+                phonehome: '12345',
+                phonemobile: '12345',
+                pagernumber: '12345'
             },
             {
                 username: 'shiftapplied',
@@ -118,7 +148,10 @@ module.exports = {
                 lastname: 'shiftapplied',
                 email: 'shiftapplied@example.com',
                 squestion: 'shiftapplied',
-                sanswer: encrypt(password)
+                sanswer: encrypt(password),
+                phonehome: '12345',
+                phonemobile: '12345',
+                pagernumber: '12345'
             }
         ],
         groupsettings: [
