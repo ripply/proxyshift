@@ -378,14 +378,18 @@ module.exports = {
     },
     '/:shift_id/notify': {
         'post': { // sends out notification
-            //auth:
+            auth: ['mark groupuserclass options for shift'],
             route: function(req, res) {
+                var canSendNotifications = getMark(req, 'shift.cansendnotification', req.params.shift_id);
+                var requiremanagerapproval= getMark(req, 'shift.requiremanagerapproval', req.params.shift_id);
 
+                clearMarks(req);
             }
         }
     },
     '/:shift_id/register': {
         'post': {
+            auth: ['mark groupuserclass options for shift', 'user can apply for shift'],
             route: function(req, res) {
                 // confirm that user can register for this shift
                 // and shift has no user attached
@@ -393,6 +397,10 @@ module.exports = {
                 // add to list
                 // then send notification to managers
                 // we should receive a notification when a manager approves
+                var canSendNotifications = getMark(req, 'shift.cansendnotification', req.params.shift_id);
+                var requiremanagerapproval= getMark(req, 'shift.requiremanagerapproval', req.params.shift_id);
+
+                clearMarks(req);
             }
         }
     },

@@ -11,6 +11,11 @@ var veryPrivilegedLocationMember = variables.veryPrivilegedLocationMember;
 var managingLocationMember = variables.managingLocationMember;
 var existsPermissionLevel = variables.existsPermissionLevel;
 
+var common = require('./controllerCommon');
+var getMark = common.getMark;
+var setMark = common.setMark;
+var clearMarks = common.clearMarks;
+
 module.exports = {
 
     auth: {
@@ -326,49 +331,15 @@ module.exports = {
                         return true;
                     }
                 })
+        },
+
+        'user can apply for shift': function(req, act) {
+
         }
 
     }
 
 };
-
-function setMark(req, mark, value, submark) {
-    if (req.user.marks === undefined) {
-        req.user.marks = {};
-    }
-
-    if (submark !== undefined) {
-        if (req.user.marks[submark] === undefined) {
-            req.user.marks[submark] = {};
-        }
-
-        if (typeof req.user.marks != 'object') {
-            throw new Error("Cannot set mark value, unkown type: " + (typeof req.user.marks));
-        }
-
-        req.user.marks[mark][submark] = value;
-    } else {
-        req.user.marks[mark] = value;
-    }
-}
-
-function getMark(req, mark, submark) {
-    if (req.user.marks === undefined) {
-        return undefined;
-    }
-
-    if (submark !== undefined) {
-        return req.user.marks[mark];
-    } else {
-        return req.user.marks[mark][submark];
-    }
-}
-
-function clearMarks(req) {
-    if (req.user.marks !== undefined) {
-        delete req.user.marks;
-    }
-}
 
 function hasGroupPermissionLevel(permissionLevel, req, act) {
     // TODO: Combine group owner check
