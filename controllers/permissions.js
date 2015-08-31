@@ -298,11 +298,77 @@ module.exports = {
                             return true;
                         })
                 });
+        },
+
+        'mark groupuserclass options for shift': function(req, act) {
+            var shift_id = req.params.shift_id;
+
+            if (shift_id === undefined) {
+                throw new Error("Shift not passed into route");
+            }
+
+            return models.GroupUserClass.query(function(q) {
+                q.select('groupuserclasses.* as tmp')
+                    .from('groupuserclasses')
+                    .innerJoin('shifts', function() {
+                        this.on('shifts.groupuserclass_id', '=', 'groupuserclasses.id');
+                    })
+                    .where('shifts.id', '=', shift_id);
+            })
+                .fetch()
+                .then(function(groupuserclass) {
+                    if (!groupuserclass) {
+                        setMark(req, 'shift.cansendnotification', groupuserclass.get('cansendnotification'), shift_id);
+                        setMark(req, 'shift.requiremanagerapproval', groupuserclass.get('requiermanagerapproval'), shift_id);
+                        return true;
+                    } else {
+                        // dont mark anything
+                        return true;
+                    }
+                })
         }
 
     }
 
 };
+
+function setMark(req, mark, value, submark) {
+    if (req.user.marks === undefined) {
+        req.user.marks = {};
+    }
+
+    if (submark !== undefined) {
+        if (req.user.marks[submark] === undefined) {
+            req.user.marks[submark] = {};
+        }
+
+        if (typeof req.user.marks != 'object') {
+            throw new Error("Cannot set mark value, unkown type: " + (typeof req.user.marks));
+        }
+
+        req.user.marks[mark][submark] = value;
+    } else {
+        req.user.marks[mark] = value;
+    }
+}
+
+function getMark(req, mark, submark) {
+    if (req.user.marks === undefined) {
+        return undefined;
+    }
+
+    if (submark !== undefined) {
+        return req.user.marks[mark];
+    } else {
+        return req.user.marks[mark][submark];
+    }
+}
+
+function clearMarks(req) {
+    if (req.user.marks !== undefined) {
+        delete req.user.marks;
+    }
+}
 
 function hasGroupPermissionLevel(permissionLevel, req, act) {
     // TODO: Combine group owner check

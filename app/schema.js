@@ -249,6 +249,10 @@ var Schema = {
         cansendnotification: {
             type: boolean,
             defaultTo: true
+        },
+        requiremanagerapproval: {
+            type: boolean,
+            defaultTo: true
         }
     },
     Shift: {
