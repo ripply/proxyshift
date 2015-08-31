@@ -24,17 +24,27 @@ module.exports = {
         }
         // TODO: Refactor all routes to use the same code paths for create/patch etc
         // TODO: Consolidate return messages into a function so everything is consistent
-        models[modelName].forge(
-            queryArgs
-        )
-            .save(
-            filterClientUpdateInput(modelName, req.body, defaultExcludes),
-            {
-                patch: true
-            }
-        )
-            .then(function () {
-                res.json({error: false, data: {message: updateMessage}});
+        // TODO: WARNING: UNSAFE: Submit pull request to bookshelf-validator to support {patch: true}
+        var sqlOptionsWithTransaction = sqlOptions;
+        models[modelName].forge(queryArgs)
+            .fetch(sqlOptionsWithTransaction)
+            .then(function (fetchedResult) {
+                if (!fetchedResult) {
+                    audit(req, "Couldn't find: " + modelName + ": " + JSON.stringify(queryArgs));
+                    res.sendStatus(403);
+                } else {
+                    var updated = updateModel(modelName, fetchedResult, req.body, defaultExcludes);
+                    fetchedResult.save(
+                        updated,
+                        sqlOptionsWithTransaction
+                    )
+                        .then(function () {
+                            res.json({error: false, data: {message: updateMessage}});
+                        })
+                        .catch(function (err) {
+                            res.status(500).json({error: true, data: {message: err.message}});
+                        });
+                }
             })
             .catch(function (err) {
                 res.status(500).json({error: true, data: {message: err.message}});
