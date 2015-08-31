@@ -351,7 +351,7 @@ describe('#/api/groups', function() {
 
             describe('- manager', function() {
 
-                var managingShiftCount = 4 ;
+                var managingShiftCount = 5 ;
                 var userwithshifts_userid = parseInt(parse('@users:username:groupmember:'));
 
                 beforeEach(function(done) {
