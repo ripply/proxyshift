@@ -61,8 +61,6 @@ module.exports = {
         'patch': { // update your account
             auth: ['current user'], // current logged in user
             route: function(req, res) {
-                console.log(req);
-                console.log(res);
                 patchModel(
                     'User',
                     {
@@ -132,9 +130,6 @@ module.exports = {
                         }
 
                         else {
-                            console.log(user.id);
-                            console.log(req.params.user_id);
-                            console.log(req.user.id);
                             res.json(user.toJSON());
                         }
                     })

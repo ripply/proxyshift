@@ -13,6 +13,7 @@ var password = 'secret';
 var login = require('../common').login;
 var logout = require('../common').logout;
 var failToLogin = require('../common').failToLogin;
+var encryptKey = require('../../controllers/encryption/encryption').encryptKey;
 
 describe('#/api/users', function(){
 
@@ -468,7 +469,7 @@ describe('#/api/users', function(){
 
                             request(app)
                                 .patch('/api/users/1')
-                                .send(updatePassword)
+                                .send(encryptKey(updatePassword))
                                 .expect(200, done);
 
                         });
@@ -488,6 +489,7 @@ describe('#/api/users', function(){
                                 login('test_password',
                                     updatePassword.password,
                                     done);
+
                             });
 
 
