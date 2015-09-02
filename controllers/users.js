@@ -9,11 +9,6 @@ var models = require('../app/models'),
     deleteModel = require('./controllerCommon').deleteModel,
     Bookshelf = models.Bookshelf;
 
-// TODO: NOOP this for now see if things work with bookshelf events
-encryptKey = function(key) {
-    return key;
-};
-
 var modifiableAccountFields = [
     'id',
     'username',
@@ -123,45 +118,67 @@ module.exports = {
         'get': { // get info about another account
             // auth: // your account or admin
             route: function(req, res) {
-                models.User.forge({id: req.params.user_id})
-                    .fetch()
-                    .then(function (user) {
-                        if (!user) {
-                            res.status(404).json({error: true, data: {}});
-                        }
+                var currentId = parseInt(req.user.id);
+                var urlID = parseInt(req.params.user_id);
 
-                        if (user.id !== req.user.id) {
-                            res.status(401).json({error: true, data: {}});
-                        }
+                if (urlID !== currentId) {
+                    res.status(401).json({error: true, data: {}});
+                }
 
-                        else {
-                            res.json(user.toJSON());
-                        }
-                    })
-                    .catch(function (err) {
-                        res.status(500).json({error: true, data: {message: err.message}});
-                    });
+                else {
+                    models.User.forge({id: req.params.user_id})
+                        .fetch()
+                        .then(function (user) {
+                            if (!user) {
+                                res.status(404).json({error: true, data: {}});
+                            }
+
+                            else {
+                                res.json(user.toJSON());
+                            }
+                        })
+                        .catch(function (err) {
+                            res.status(500).json({error: true, data: {message: err.message}});
+                        });
+                }
             }
         },
         'patch': { // update an account
             // auth: // your account or admin
             route: function(req, res) {
-                patchModel(
-                    'User',
-                    {
-                        id: req.params.user_id
-                    },
-                    req,
-                    res,
-                    'Account updated',
-                    modifiableAccountFields
-                );
+                var currentId = parseInt(req.user.id);
+                var urlID = parseInt(req.params.user_id);
+
+                if (urlID !== currentId) {
+                    res.status(401).json({error: true, data: {}});
+                }
+
+                else {
+                    patchModel(
+                        'User',
+                        {
+                            id: req.user.id
+                        },
+                        req,
+                        res,
+                        'Account updated',
+                        modifiableAccountFields
+                    );
+                }
+
             }
         },
         'delete': { // delete another account
-            auth: ['server admin'], // admin
+            //auth: ['server admin'], // admin
             route: function(req, res) {
-                if (req.params.user_id === req.user.id) {
+                var currentId = parseInt(req.user.id);
+                var urlID = parseInt(req.params.user_id);
+
+                if (urlID !== currentId) {
+                    res.status(401).json({error: true, data: {}});
+                }
+
+                else {
                     models.User.query(function(q) {
                         q.select()
                             .from('users')
@@ -171,7 +188,6 @@ module.exports = {
                     })
                         .destroy()
                         .then(function() {
-                            logout();
                             res.json({error: false, data: {message: 'User successfully deleted'}});
                         })
                         .catch(function (err) {

@@ -426,8 +426,12 @@ describe('#/api/users', function(){
             password: 'newpassword'
         };
 
+        var encryptedPassword = {
+            password: encryptKey('newpassword')
+        };
+
         var updateEmail = {
-            email: 'newemail'
+            email: 'newmail@email.com'
         };
 
         var updateName = {
@@ -443,7 +447,7 @@ describe('#/api/users', function(){
 
                     request(app)
                         .patch('/api/users/1')
-                        .send(updatePassword)
+                        .send(encryptedPassword)
                         .expect(401, done);
 
                 });
@@ -469,7 +473,7 @@ describe('#/api/users', function(){
 
                             request(app)
                                 .patch('/api/users/1')
-                                .send(updatePassword)
+                                .send(encryptedPassword)
                                 .expect(200, done);
 
                         });
@@ -491,7 +495,6 @@ describe('#/api/users', function(){
                                     done);
 
                             });
-
 
                             it('- can access user info', function(done) {
 
@@ -542,7 +545,7 @@ describe('#/api/users', function(){
                                             email: updateEmail.email
                                         }, function(value, key) {
                                             data.should.have.property(key);
-                                            data[value].should.equal(value);
+                                            data[key].should.equal(value);
                                         });
 
                                         done();
@@ -586,7 +589,7 @@ describe('#/api/users', function(){
                                             lastname: updateName.lastname
                                         }, function(value, key) {
                                             data.should.have.property(key);
-                                            data[value].should.equal(value);
+                                            data[key].should.equal(value);
                                         });
 
                                         done();
@@ -799,7 +802,7 @@ describe('#/api/users', function(){
     describe('- DELETE', function() {
 
         var userDeletePayload = {
-            username: 'secret'
+            password: 'secret'
         };
 
         describe('- /', function() {
@@ -831,7 +834,7 @@ describe('#/api/users', function(){
                     beforeEach(function(done) {
 
                         request(app)
-                            .delete('/api/users')
+                            .delete('/api/users/1')
                             .send(userDeletePayload)
                             .expect(200, done);
 
@@ -928,7 +931,7 @@ describe('#/api/users', function(){
                     it('- returns 401', function(done) {
 
                         request(app)
-                            .delete(parse('/api/users/@users/username:groupowner'))
+                            .delete(parse('/api/users/@users:username:groupmember:'))
                             .expect(401, done);
 
                     });
