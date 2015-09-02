@@ -9,6 +9,11 @@ var models = require('../app/models'),
     deleteModel = require('./controllerCommon').deleteModel,
     Bookshelf = models.Bookshelf;
 
+// TODO: NOOP this for now see if things work with bookshelf events
+encryptKey = function(key) {
+    return key;
+};
+
 var modifiableAccountFields = [
     'id',
     'username',
@@ -144,7 +149,7 @@ module.exports = {
                 patchModel(
                     'User',
                     {
-                        id: req.user.id
+                        id: req.params.user_id
                     },
                     req,
                     res,

@@ -42,7 +42,8 @@ var Schema = {
             type: string,
             unique: false,
             maxlen: 100,
-            nullable: false
+            nullable: false,
+            encrypt: true
         },
         squestion: {
             type: string,

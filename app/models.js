@@ -14,9 +14,11 @@ var mongoose = require('mongoose'),
     validations = require('../ionic/www/js/validation.js'),
     Validator = require('bookshelf-validator'),
     ValidationError = Validator.ValidationError,
+// TODO: move encryption file to this folder if encrypting with bookshelf events turns out to work well
+    encryptKey = require('../controllers/encryption/encryption').encryptKey,
     SALT_WORK_FACTOR = 10;
 
-var db_file = ':memory:';
+var db_file = './data/database.db';
 var neverDropAllTables = false; // safety setting later for production
 function okToDropAllTables() {
     return global.okToDropTables || false;
@@ -200,6 +202,8 @@ function getListOfNonExistingTables(trx, next) {
 
     return recurse();
 }
+
+var fieldsToEncrypt = {};
 
 function initDb(dropAllTables) {
 
@@ -632,6 +636,48 @@ _.each(modelNames, function(tableName, modelName) {
     if (validationOptions !== undefined) {
         modelOptions = _.extend(_.clone(modelOptions), {validation: validationOptions});
     }
+
+    // check if this model has any 'secret' keys
+    if (Schema[modelName] !== undefined) {
+        // iterate over keys (columns) and values (column definitions)
+        // looking for a value with a 'encrypt' attribute
+        _.each(Schema[modelName], function(columnDefinition, columnName) {
+            // columnDefinition will be an object
+            if (columnDefinition.hasOwnProperty('encrypt')) {
+                if (!fieldsToEncrypt.hasOwnProperty(modelName)) {
+                    fieldsToEncrypt[modelName] = {};
+                }
+
+                fieldsToEncrypt[modelName][columnName] = columnDefinition;
+            }
+        });
+    }
+
+    if (fieldsToEncrypt[modelName] !== undefined) {
+        var encryptableFields = fieldsToEncrypt[modelName];
+        modelOptions = _.extend(modelOptions, {
+            constructor: function() {
+                Bookshelf.Model.prototype.constructor.apply(this, arguments);
+                this.on('saving', function(model, attrs, options) {
+                    _.each(encryptableFields, function(columnDefinition, columnName) {
+                        var value = model.get(columnName);
+                        /*
+                        // Is this needed? What is the point of the attrs argument
+                        if (attrs.hasOwnProperty(columnName)) {
+                            value = attrs[columnName];
+                        }
+                        */
+
+                        if (value !== undefined) {
+                            // encrypt
+                            model.set(columnName, encryptKey(value));
+                        }
+                    });
+                });
+            }
+        });
+    }
+
     // create the new model
     models[modelName] = Bookshelf.Model.extend(modelOptions);
     // create the collection

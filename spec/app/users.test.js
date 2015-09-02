@@ -469,7 +469,7 @@ describe('#/api/users', function(){
 
                             request(app)
                                 .patch('/api/users/1')
-                                .send(encryptKey(updatePassword))
+                                .send(updatePassword)
                                 .expect(200, done);
 
                         });
