@@ -13,7 +13,11 @@ var password = 'secret';
 var login = require('../common').login;
 var logout = require('../common').logout;
 var failToLogin = require('../common').failToLogin;
-var encryptKey = require('../../controllers/encryption/encryption').encryptKey;
+
+// TODO: NOOP this for now see if things work with bookshelf events
+encryptKey = function(key) {
+    return key;
+};
 
 describe('#/api/users', function(){
 
