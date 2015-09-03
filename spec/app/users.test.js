@@ -216,7 +216,7 @@ describe('#/api/users', function(){
                     it('- returns 200 and your user info', function(done) {
 
                         request(app)
-                            .get('/api/users/1')
+                            .get(parse('/api/users/@users:username:test_password:'))
                             .expect('Content-Type', /json/)
                             .expect(200)
                             .end(function(err, res) {
@@ -305,7 +305,7 @@ describe('#/api/users', function(){
                 it('- returns 401', function(done) {
 
                     request(app)
-                        .get('/api/users/4')
+                        .get(parse('/api/users/@users:username:groupmember:'))
                         .expect(401, done);
 
                 });
@@ -325,7 +325,7 @@ describe('#/api/users', function(){
                     it('- returns 200 and your user info', function(done) {
 
                         request(app)
-                            .get('/api/users/1')
+                            .get(parse('/api/users/@users:username:test_password:'))
                             .expect('Content-Type', /json/)
                             .expect(200)
                             .end(function(err, res) {
@@ -361,7 +361,7 @@ describe('#/api/users', function(){
                     it('- returns 401', function(done) {
 
                         request(app)
-                            .get('/api/users/4')
+                            .get(parse('/api/users/@users:username:groupmember:'))
                             .expect(401, done);
 
                     });
@@ -383,7 +383,7 @@ describe('#/api/users', function(){
                 it('- always returns user', function(done) {
 
                     request(app)
-                        .get('/api/users/1')
+                        .get(parse('/api/users/@users:username:test_password:'))
                         .expect('Content-Type', /json/)
                         .expect(200)
                         .end(function(err, res) {
@@ -450,7 +450,7 @@ describe('#/api/users', function(){
                 it('- returns 401', function(done) {
 
                     request(app)
-                        .patch('/api/users/1')
+                        .patch(parse('/api/users/@users:username:test_password:'))
                         .send(encryptedPassword)
                         .expect(401, done);
 
@@ -476,7 +476,7 @@ describe('#/api/users', function(){
                         beforeEach(function(done) {
 
                             request(app)
-                                .patch('/api/users/1')
+                                .patch(parse('/api/users/@users:username:test_password:'))
                                 .send(encryptedPassword)
                                 .expect(200, done);
 
@@ -485,7 +485,7 @@ describe('#/api/users', function(){
                         it('- logged out by server', function(done) {
 
                             request(app)
-                                .get('/api/users/1')
+                                .get(parse('/api/users/@users:username:test_password:'))
                                 .expect(401, done);
 
                         });
@@ -503,7 +503,7 @@ describe('#/api/users', function(){
                             it('- can access user info', function(done) {
 
                                 request(app)
-                                    .get('/api/users/1')
+                                    .get(parse('/api/users/@users:username:test_password:'))
                                     .expect(200, done);
 
                             });
@@ -514,7 +514,7 @@ describe('#/api/users', function(){
                     it('- cannot update username', function() {
 
                         request(app)
-                            .patch('/api/users/1')
+                            .patch(parse('/api/users/@users:username:test_password:'))
                             .send(updateUsername)
 
                     });
@@ -524,7 +524,7 @@ describe('#/api/users', function(){
                         beforeEach(function(done) {
 
                             request(app)
-                                .patch('/api/users/1')
+                                .patch(parse('/api/users/@users:username:test_password:'))
                                 .send(updateEmail)
                                 .expect(200)
                                 .end(done);
@@ -534,7 +534,7 @@ describe('#/api/users', function(){
                         it('- and see updated email', function(done) {
 
                             request(app)
-                                .get('/api/users/1')
+                                .get(parse('/api/users/@users:username:test_password:'))
                                 .expect('Content-Type', /json/)
                                 .expect(200)
                                 .end(function(err, res) {
@@ -567,7 +567,7 @@ describe('#/api/users', function(){
                         beforeEach(function(done) {
 
                             request(app)
-                                .patch('/api/users/1')
+                                .patch(parse('/api/users/@users:username:test_password:'))
                                 .send(updateName)
                                 .expect(200)
                                 .end(done);
@@ -577,7 +577,7 @@ describe('#/api/users', function(){
                         it('- and see updated email', function(done) {
 
                             request(app)
-                                .get('/api/users/1')
+                                .get(parse('/api/users/@users:username:test_password:'))
                                 .expect('Content-Type', /json/)
                                 .expect(200)
                                 .end(function(err, res) {
@@ -613,7 +613,7 @@ describe('#/api/users', function(){
                     it('- cannot update password', function(done) {
 
                         request(app)
-                            .patch('/api/users/2')
+                            .patch(parse('/api/users/@users:username:groupmember:'))
                             .send(updatePassword)
                             .expect(401, done);
 
@@ -622,7 +622,7 @@ describe('#/api/users', function(){
                     it('- cannot update username', function(done) {
 
                         request(app)
-                            .patch('/api/users/2')
+                            .patch(parse('/api/users/@users:username:groupmember:'))
                             .send(updateUsername)
                             .expect(401, done);
 
@@ -631,7 +631,7 @@ describe('#/api/users', function(){
                     it('- cannot update email', function(done) {
 
                         request(app)
-                            .patch('/api/users/2')
+                            .patch(parse('/api/users/@users:username:groupmember:'))
                             .send(updateEmail)
                             .expect(401, done);
 
@@ -640,7 +640,7 @@ describe('#/api/users', function(){
                     it('- cannot update name', function(done) {
 
                         request(app)
-                            .patch('/api/users/2')
+                            .patch(parse('/api/users/@users:username:groupmember:'))
                             .send(updateName)
                             .expect(401, done);
 
@@ -665,7 +665,7 @@ describe('#/api/users', function(){
                         beforeEach(function(done) {
 
                             request(app)
-                                .patch('/api/users/1')
+                                .patch(parse('/api/users/@users:username:test_password:'))
                                 .send(updatePassword)
                                 .expect(200, done);
 
@@ -674,7 +674,7 @@ describe('#/api/users', function(){
                         it('- logged out by server', function(done) {
 
                             request(app)
-                                .get('/api/users/1')
+                                .get(parse('/api/users/@users:username:test_password:'))
                                 .expect(401, done);
 
                         });
@@ -692,7 +692,7 @@ describe('#/api/users', function(){
                             it('- can access user info', function(done) {
 
                                 request(app)
-                                    .get('/api/users/1')
+                                    .get(parse('/api/users/@users:username:test_password:'))
                                     .expect(200, done);
 
                             });
@@ -703,7 +703,7 @@ describe('#/api/users', function(){
                     it('- cannot update username', function() {
 
                         request(app)
-                            .patch('/api/users/1')
+                            .patch(parse('/api/users/@users:username:test_password:'))
                             .send(updateUsername)
 
                     });
@@ -713,7 +713,7 @@ describe('#/api/users', function(){
                         beforeEach(function(done) {
 
                             request(app)
-                                .patch('/api/users/1')
+                                .patch(parse('/api/users/@users:username:test_password:'))
                                 .send(updateEmail)
                                 .expect(200)
                                 .end(done);
@@ -723,7 +723,7 @@ describe('#/api/users', function(){
                         it('- and see updated email', function(done) {
 
                             request(app)
-                                .get('/api/users/1')
+                                .get(parse('/api/users/@users:username:test_password:'))
                                 .expect('Content-Type', /json/)
                                 .expect(200)
                                 .end(function(err, res) {
@@ -756,7 +756,7 @@ describe('#/api/users', function(){
                         beforeEach(function(done) {
 
                             request(app)
-                                .patch('/api/users/1')
+                                .patch(parse('/api/users/@users:username:test_password:'))
                                 .send(updateName)
                                 .expect(200)
                                 .end(done);
@@ -766,7 +766,7 @@ describe('#/api/users', function(){
                         it('- and see updated email', function(done) {
 
                             request(app)
-                                .get('/api/users/1')
+                                .get(parse('/api/users/@users:username:test_password:'))
                                 .expect('Content-Type', /json/)
                                 .expect(200)
                                 .end(function(err, res) {
@@ -838,7 +838,7 @@ describe('#/api/users', function(){
                     beforeEach(function(done) {
 
                         request(app)
-                            .delete('/api/users/1')
+                            .delete(parse('/api/users/@users:username:test_password:'))
                             .send(userDeletePayload)
                             .expect(200, done);
 
@@ -959,7 +959,7 @@ describe('#/api/users', function(){
                     it('- returns 200', function(done) {
 
                         requst(app)
-                            .delete('/api/users/2')
+                            .delete(parse('/api/users/@users:username:groupmember:'))
                             .expect(200, done);
 
                     });
