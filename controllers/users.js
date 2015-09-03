@@ -64,7 +64,7 @@ module.exports = {
                 patchModel(
                     'User',
                     {
-                        id: req.params.user_id
+                        id: req.user.id
                     },
                     req,
                     res,
