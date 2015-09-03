@@ -119,9 +119,9 @@ module.exports = {
             // auth: // your account or admin
             route: function(req, res) {
                 var currentId = parseInt(req.user.id);
-                var urlID = parseInt(req.params.user_id);
+                var user_id = parseInt(req.params.user_id);
 
-                if (urlID !== currentId) {
+                if (user_id !== currentId) {
                     res.status(401).json({error: true, data: {}});
                 }
 
@@ -147,9 +147,9 @@ module.exports = {
             // auth: // your account or admin
             route: function(req, res) {
                 var currentId = parseInt(req.user.id);
-                var urlID = parseInt(req.params.user_id);
+                var user_id = parseInt(req.params.user_id);
 
-                if (urlID !== currentId) {
+                if (user_id !== currentId) {
                     res.status(401).json({error: true, data: {}});
                 }
 
@@ -172,9 +172,9 @@ module.exports = {
             //auth: ['server admin'], // admin
             route: function(req, res) {
                 var currentId = parseInt(req.user.id);
-                var urlID = parseInt(req.params.user_id);
+                var user_id = parseInt(req.params.user_id);
 
-                if (urlID !== currentId) {
+                if (user_id !== currentId) {
                     res.status(401).json({error: true, data: {}});
                 }
 
