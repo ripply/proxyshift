@@ -17,6 +17,7 @@ var password = 'secret';
 
 // TODO:
 // PATCH /api/shifts/:shift_id
+// DELETE /api/shifts/:shift_idx
 
 describe("#/shifts", function() {
 

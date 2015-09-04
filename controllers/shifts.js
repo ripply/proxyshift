@@ -351,26 +351,27 @@ module.exports = {
                             'id'
                         ]
                     );
+                } else {
+                    req.sendStatus(401);
                 }
             }
         },
         'delete': { // delete a shift
-            // auth: // must be managing the shift
+            auth: ['managing shift'],// must be managing the shift
             route: function(req, res) {
-                models.Shift.forge({id: req.params.shift_id})
-                    .fetch({require: true})
-                    .then(function (shift) {
-                        shift.destroy()
-                            .then(function () {
-                                res.json({error: true, data: {message: 'Shift successfully deleted'}});
-                            })
-                            .catch(function (err) {
-                                res.status(500).json({error: true, data: {message: err.message}});
-                            });
-                    })
-                    .catch(function (err) {
-                        res.status(500).json({error: true, data: {message: err.message}});
-                    });
+                if (getMark(req, 'privilegedshift', req.param.shift_id)) {
+                    deleteModel(
+                        'Shift',
+                        {
+                            id: req.params.shift_id
+                        },
+                        req,
+                        res,
+                        'Success'
+                    );
+                } else {
+                    res.sendStatus(401);
+                }
             }
         }
     },
