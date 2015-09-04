@@ -5,6 +5,9 @@ var grabNormalShiftRange = require('./controllerCommon').grabNormalShiftRange;
 
 var variables = require('./variables');
 
+var getMark = require('./controllerCommon').getMark;
+var clearMarks = require('./controllerCommon').clearMarks;
+
 module.exports = {
     route: '/api/shifts',
     '/after/:after/before/:before': {
@@ -335,27 +338,20 @@ module.exports = {
             auth: ['managing shift'], // must be managing the shift
             route: function(req, res) {
                 console.log(req.body);
-                models.Shift.forge({
-
-                })
-                    .fetch({require: true})
-                    .then(function (shift) {
-                        shift.save({
-                            title: req.body.title|| shift.get('title'),
-                            description: req.body.description|| shift.get('description'),
-                            start: req.body.start|| shift.get('start'),
-                            end: req.body.end|| shift.get('end')
-                        })
-                            .then(function () {
-                                res.json({error: false, data: {message: 'Shift details updated'}});
-                            })
-                            .catch(function (err) {
-                                res.status(500).json({error: true, data: {message: err.message}});
-                            });
-                    })
-                    .catch(function (err) {
-                        res.status(500).json({error: true, data: {message: err.message}});
-                    });
+                if (getMark(req, 'privilegedshift', req.param.shift_id)) {
+                    patchModel(
+                        'Shift',
+                        {
+                            id: req.params.shift_id
+                        },
+                        req,
+                        res,
+                        'Success',
+                        [
+                            'id'
+                        ]
+                    );
+                }
             }
         },
         'delete': { // delete a shift

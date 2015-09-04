@@ -370,10 +370,7 @@ function markIfGroupOwnerOrPrivilegedMemberForShift(req, act) {
         .fetch({require: true})
         .then(function (group) {
             // FIXME: STUPID HACK TO SEND DATA TO GET /api/shifts/:shift_id
-            if (req.user._privileged === undefined) {
-                req.user._privileged = {};
-            }
-            req.user._privileged[shift_id] = true;
+            setMark(req, 'privilegedshift', true, shift_id);
             return true;
         })
         .catch(function (err) {
@@ -403,18 +400,16 @@ function markIfGroupOwnerOrPrivilegedMemberForShift(req, act) {
                 .then(function(location) {
                     var location_id = location.get('locationid');
 
+                    var old_location_id = req.params.location_id;
                     req.params.location_id = location_id;
 
                     return checkLocationPermissionLevel(privilegedLocationMember, req, act)
                         .then(function(result) {
                             if (result) {
-                                if (req.user._privileged === undefined) {
-                                    req.user._privileged = {};
-                                }
-                                req.user._privileged[shift_id] = true;
+                                setMark(req, 'privilegedshift', true, shift_id);
                             }
 
-                            delete req.params.location_id;
+                            req.params.location_id = old_location_id;
 
                             return true;
                         });

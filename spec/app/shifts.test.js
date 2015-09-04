@@ -15,6 +15,9 @@ var parse = global.parse;
 
 var password = 'secret';
 
+// TODO:
+// PATCH /api/shifts/:shift_id
+
 describe("#/shifts", function() {
 
     before(function (done) {
