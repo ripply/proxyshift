@@ -8,6 +8,9 @@ var variables = require('./variables');
 var getMark = require('./controllerCommon').getMark;
 var clearMarks = require('./controllerCommon').clearMarks;
 
+var patchModel = require('./controllerCommon').patchModel;
+var deleteModel = require('./controllerCommon').deleteModel;
+
 module.exports = {
     route: '/api/shifts',
     '/after/:after/before/:before': {
