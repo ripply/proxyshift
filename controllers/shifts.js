@@ -8,6 +8,7 @@ var variables = require('./variables');
 var getMark = require('./controllerCommon').getMark;
 var clearMarks = require('./controllerCommon').clearMarks;
 
+var postModel = require('./controllerCommon').postModel;
 var patchModel = require('./controllerCommon').patchModel;
 var deleteModel = require('./controllerCommon').deleteModel;
 
