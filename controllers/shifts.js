@@ -332,10 +332,12 @@ module.exports = {
             }
         },
         'patch': { // update a shift
-            // auth: // must be managing the shift
+            auth: ['managing shift'], // must be managing the shift
             route: function(req, res) {
                 console.log(req.body);
-                models.Shift.forge({id: req.params.shift_id})
+                models.Shift.forge({
+
+                })
                     .fetch({require: true})
                     .then(function (shift) {
                         shift.save({

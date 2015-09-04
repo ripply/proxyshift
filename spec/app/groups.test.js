@@ -1095,6 +1095,7 @@ describe('#/api/groups', function() {
                     .expect(200)
                     .end(function(err, res) {
                         if (err) {
+                            debug(res.text);
                             done(err);
                             return;
                         }
@@ -1103,6 +1104,7 @@ describe('#/api/groups', function() {
                             .expect(200)
                             .end(function(err2, res2) {
                                 if (err2) {
+                                    debug(res2.text);
                                     done(err);
                                     return;
                                 }

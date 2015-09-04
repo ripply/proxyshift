@@ -18,7 +18,7 @@ var defaultBannedKeys = ['id'];
 
 module.exports = {
     updateModel: updateModel,
-    patchModel: function(modelName, queryArgs, req, res, updateMessage, defaultExcludes, sqlOptions) {
+    patchModel: function(modelName, queryArgs, req, res, updateMessage, defaultExcludes, sqlOptions, successCallback) {
         if (defaultExcludes === undefined) {
             defaultExcludes = defaultBannedKeys;
         }
@@ -38,7 +38,10 @@ module.exports = {
                         updated,
                         sqlOptionsWithTransaction
                     )
-                        .then(function () {
+                        .then(function (model) {
+                            if (successCallback !== undefined) {
+                                successCallback(model);
+                            }
                             res.json({error: false, data: {message: updateMessage}});
                         })
                         .catch(function (err) {
