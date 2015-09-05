@@ -1,5 +1,6 @@
 var schema = require('../app/schema').Schema,
     models = require('../app/models'),
+    moment = require('moment'),
     _ = require('underscore');
 
 var Bookshelf = models.Bookshelf;
@@ -17,6 +18,15 @@ function audit(req, text) {
 var defaultBannedKeys = ['id'];
 
 module.exports = {
+    error: function(req, res, err) {
+        console.log(req.originalUrl + " => " + err + "\n" + err.stack);
+        if (res !== undefined && res !== null) {
+            res.status(500).json({error: true, data: {message: err}});
+        }
+    },
+    getCurrentTimeForInsertionIntoDatabase: function() {
+        return (new moment()).unix();
+    },
     updateModel: updateModel,
     patchModel: function(modelName, queryArgs, req, res, updateMessage, defaultExcludes, sqlOptions, successCallback) {
         if (defaultExcludes === undefined) {
@@ -189,6 +199,10 @@ function grabNormalShiftRange(from, after, before) {
 function setMark(req, mark, value, submark) {
     if (req.user.marks === undefined) {
         req.user.marks = {};
+    }
+
+    if (req.user.marks[mark] === undefined) {
+        req.user.marks[mark] = {};
     }
 
     if (submark !== undefined) {

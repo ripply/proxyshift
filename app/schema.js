@@ -332,6 +332,10 @@ var Schema = {
             onUpdate: cascade,
             // TODO: Should we delete this shift application?
             onDelete: cascade
+        },
+        date: {
+            type: date,
+            nullable: false
         }
     },
     // groups can have different permissions

@@ -15,6 +15,12 @@ var common = require('./controllerCommon');
 var getMark = common.getMark;
 var setMark = common.setMark;
 var clearMarks = common.clearMarks;
+var error = common.error;
+
+function errorOccurred(req, act, err) {
+    // TODO: Hook up to general logging facility
+    error(req, null, err);
+}
 
 module.exports = {
 
@@ -239,7 +245,7 @@ module.exports = {
             }
 
             return models.GroupUserClass.query(function(q) {
-                q.select('groupuserclasses.* as tmp')
+                q.select()
                     .from('groupuserclasses')
                     .innerJoin('shifts', function() {
                         this.on('shifts.groupuserclass_id', '=', 'groupuserclasses.id');
@@ -257,10 +263,41 @@ module.exports = {
                         return true;
                     }
                 })
+                .catch(function(err) {
+                    errorOccurred(req, act, err);
+                    return false;
+                });
         },
 
         'user can apply for shift': function(req, act) {
+            var shift_id = req.params.shift_id;
 
+            if (shift_id === undefined) {
+                throw new Error("Shift not passed into route");
+            }
+
+            // a user can apply for a shift if
+            // they are a part of the group user class attached to a shift
+            return models.GroupUserClass.query(function(q) {
+                q.select()
+                    .from('groupuserclasses')
+                    .innerJoin('shifts', function() {
+                        this.on('shifts.groupuserclass_id', '=', 'groupuserclasses.id');
+                    })
+                    .where('shifts.id', '=', shift_id)
+                    .innerJoin('groupuserclasstousers', function() {
+                        this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id');
+                    })
+                    .where('groupuserclasstousers.user_id', '=', req.user.id);
+            })
+                .fetch({require: true})
+                .then(function(groupuserclass) {
+                    return true;
+                })
+                .catch(function(err) {
+                    console.log(err);
+                    return false;
+                });
         }
 
     }
@@ -343,7 +380,7 @@ function markIfGroupOwnerOrPrivilegedMemberForShift(req, act) {
 
     return models.Shift.query(function(q) {
         var ownedGroups =
-            knex.select('groups.* as tmp')
+            knex.select('groups.id as groupid')
                 .from('groups')
                 .where('groups.user_id', '=', req.user.id);
 
@@ -357,7 +394,7 @@ function markIfGroupOwnerOrPrivilegedMemberForShift(req, act) {
             .union(function() {
                 this.select('shifts.*')
                     .from('shifts')
-                    .where('shifts_id', '=', shifts_id)
+                    .where('shifts.id', '=', shift_id)
                     .innerJoin('sublocations', function() {
                         this.on('sublocations.id', '=', 'shifts.sublocation_id');
                     })
@@ -374,6 +411,7 @@ function markIfGroupOwnerOrPrivilegedMemberForShift(req, act) {
             return true;
         })
         .catch(function (err) {
+            // TODO: Check if err is ModelNotFound error http://bookshelfjs.org/#section-Model-static-NotFoundError
             // not the group owner for this shift
             // fetch the shift and get the location id
             // then use that to re-use our privilege checking functions
@@ -416,7 +454,7 @@ function markIfGroupOwnerOrPrivilegedMemberForShift(req, act) {
                 })
                 .catch(function(err) {
                     // no location tied to a shift...
-                    console.log(err.message);
+                    errorOccurred(req, act, err);
                     return true;
                 })
         });

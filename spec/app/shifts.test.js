@@ -7,6 +7,7 @@ var Promise = require('bluebird');
 var ready = models.onDatabaseReady;
 var expect = global.expect;
 var login = require('../common').login;
+var logout = require('../common').logout;
 var moment = require('moment');
 var _ = require('underscore');
 
@@ -17,7 +18,7 @@ var password = 'secret';
 
 // TODO:
 // PATCH /api/shifts/:shift_id
-// DELETE /api/shifts/:shift_idx
+// DELETE /api/shifts/:shift_id
 
 describe("#/shifts", function() {
 
@@ -79,6 +80,141 @@ describe("#/shifts", function() {
                         .post('/api/locations/1/shifts')
                         .send(newShift)
                         .expect(401, done);
+
+                });
+
+            });
+
+        });
+
+        describe('- /:shift_id/register', function() {
+
+            describe('- anonymous user', function() {
+
+                it('- returns 401', function(done) {
+
+                    request(app)
+                        .post(parse('/api/shifts/@shifts:title:monthshiftisover:/register'))
+                        .send()
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- non location member', function() {
+
+                beforeEach(function(done) {
+
+                    login('test_password',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 401', function(done) {
+
+                    request(app)
+                        .post(parse('/api/shifts/@shifts:title:monthshiftisover:/register'))
+                        .send()
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- location member', function() {
+
+                var shift = '@shifts:title:newshift:';
+
+                describe('- of incorrect class type', function() {
+
+                    beforeEach(function(done) {
+
+                        login('test_member_of_group',
+                            'secret',
+                            done);
+
+                    });
+
+                    it('- returns 401', function(done) {
+
+                        request(app)
+                            .post(parse('/api/shifts/' + shift + '/register'))
+                            .send()
+                            .expect(401, done);
+
+                    });
+
+                });
+
+                describe('- of correct class type', function() {
+
+                    beforeEach(function(done) {
+
+                        login('groupmember',
+                            'secret',
+                            done);
+
+                    });
+
+
+                    describe('- can request a shift', function() {
+
+                        beforeEach(function(done) {
+
+                            // after logging in, request shift
+                            request(app)
+                                .post(parse('/api/shifts/' + shift + '/register'))
+                                .send()
+                                .expect(201, done);
+
+                        });
+
+                        describe('- then a manager', function() {
+
+                            beforeEach(function(done) {
+
+                                logout(function(err, res) {
+                                    if (err) {
+                                        debug(res.text);
+                                        done(err);
+                                    } else {
+                                        login('manager',
+                                            'secret',
+                                            done);
+                                    }
+                                });
+
+                            });
+
+                            it('- can see the users request', function(done) {
+
+                                request(app)
+                                    .get(parse('/api/shifts/' + shift))
+                                    .expect(200, function(err, res) {
+                                        if (err) {
+                                            debug(res.text);
+                                            done(err);
+                                        } else {
+                                            try {
+                                                var data = JSON.parse(res.text);
+                                                data.should.be.a('object');
+                                                expect(data.shiftapplications).to.not.be.undefined;
+                                                expect(data.shiftapplications.length).to.equal(1);
+                                                expect(data.shiftapplications[0].user_id).to.equal(parseInt(parse('@users:username:groupmember:')))
+                                                done();
+                                            } catch (err) {
+                                                done(err);
+                                            }
+                                        }
+                                    });
+
+                            });
+
+                        });
+
+                    });
 
                 });
 

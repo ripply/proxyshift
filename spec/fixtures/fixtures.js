@@ -3,6 +3,11 @@ moment = require('moment');
 
 var password = 'secret';
 
+function formatDateForDb(date) {
+    // TODO: pg needs different date formats
+    return date;
+}
+
 module.exports = {
     base: {
         users: [
@@ -344,8 +349,8 @@ module.exports = {
             {
                 title: 'monthshiftisover',
                 description: 'month long shift ending now',
-                start: moment(new Date()).subtract('1', 'month').unix(),
-                end: moment(new Date()).unix(),
+                start: formatDateForDb(moment(new Date()).subtract('1', 'month').unix()),
+                end: formatDateForDb(moment(new Date()).unix()),
                 location_id: '@locations:state:membershiptest',
                 //sublocation_id: null,
                 user_id: '@users:username:groupmember',
@@ -354,8 +359,8 @@ module.exports = {
             {
                 title: 'newshift',
                 description: 'shift that starts in the future',
-                start: moment(new Date()).add('1', 'hour').unix(),
-                end: moment(new Date()).add('3', 'hour').unix(),
+                start: formatDateForDb(moment(new Date()).add('1', 'hour').unix()),
+                end: formatDateForDb(moment(new Date()).add('3', 'hour').unix()),
                 location_id: '@locations:state:membershiptest',
                 //sublocation_id: null,
                 user_id: '@users:username:groupmember',
@@ -365,8 +370,8 @@ module.exports = {
                 // FIXME: This shift gets inserted into db (sqlite3) as id 3 when it is 5th in the list, so for now set it to 3rd item
                 title: 'shift_in_other_location',
                 description: 'shift in another location',
-                start: moment(new Date()).add('1', 'hour').unix(),
-                end: moment(new Date()).add('3', 'hour').unix(),
+                start: formatDateForDb(moment(new Date()).add('1', 'hour').unix()),
+                end: formatDateForDb(moment(new Date()).add('3', 'hour').unix()),
                 location_id: '@locations:state:test_state',
                 //sublocation_id: '@sublocations:description:membershiptest floor 1',
                 user_id: '@users:username:groupmember',
@@ -375,8 +380,8 @@ module.exports = {
             {
                 title: 'sublocationshift',
                 description: 'shift in sublocation',
-                start: moment(new Date()).add('1', 'hour').unix(),
-                end: moment(new Date()).add('3', 'hour').unix(),
+                start: formatDateForDb(moment(new Date()).add('1', 'hour').unix()),
+                end: formatDateForDb(moment(new Date()).add('3', 'hour').unix()),
                 //location_id: null,
                 sublocation_id: '@sublocations:description:membershiptest floor 1',
                 //user_id: null,
@@ -385,8 +390,8 @@ module.exports = {
             {
                 title: 'sublocationshiftwithuser',
                 description: 'shift in sublocation',
-                start: moment(new Date()).add('1', 'hour').unix(),
-                end: moment(new Date()).add('3', 'hour').unix(),
+                start: formatDateForDb(moment(new Date()).add('1', 'hour').unix()),
+                end: formatDateForDb(moment(new Date()).add('3', 'hour').unix()),
                 //location_id: null,
                 sublocation_id: '@sublocations:description:membershiptest floor 1',
                 user_id: '@users:username:groupmember',
@@ -395,8 +400,8 @@ module.exports = {
             {
                 title: 'different_classtype',
                 description: 'shift in sublocation',
-                start: moment(new Date()).add('1', 'hour').unix(),
-                end: moment(new Date()).add('3', 'hour').unix(),
+                start: formatDateForDb(moment(new Date()).add('1', 'hour').unix()),
+                end: formatDateForDb(moment(new Date()).add('3', 'hour').unix()),
                 //location_id: null,
                 sublocation_id: '@sublocations:description:membershiptest floor 1',
                 //user_id: null,
@@ -406,7 +411,8 @@ module.exports = {
         shiftapplications:[
             {
                 shift_id: '@shifts:title:monthshiftisover',
-                user_id: '@users:username:shiftapplied'
+                user_id: '@users:username:shiftapplied',
+                date: formatDateForDb(moment(new Date()).unix())
             }
         ],
         managingclassesatlocations: [
