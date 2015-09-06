@@ -179,6 +179,30 @@ describe('#/utc', function() {
 
         });
 
+        it('- returns 400 and server time on empty request', function(done) {
+
+            var currentUtc = getCurrentUtc();
+
+            request(app)
+                .post('/api/utc')
+                .expect(400, function(err, res) {
+                    if (err) {
+                        debug(res.text);
+                        done(err);
+                    } else {
+                        try {
+                            var serverUtcTime = parseInt(res.text);
+                            expect(isNaN(serverUtcTime)).to.be.false;
+                            expect(Math.abs(currentUtc - serverUtcTime)).to.be.below(10);
+                            done();
+                        } catch (err) {
+                            done(err);
+                        }
+                    }
+                });
+
+        });
+
     });
 
 });
