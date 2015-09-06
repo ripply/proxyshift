@@ -67,7 +67,7 @@ describe('#/api/users', function(){
                             phonemobile: '12345',
                             pagernumber: '12435'
                         })
-                        .expect(200)
+                        .expect(201)
                         .end(function(err, res) {
                             if (err) {
                                 done(err);
@@ -113,7 +113,7 @@ describe('#/api/users', function(){
                             phonemobile: '12345',
                             pagernumber: '12435'
                         })
-                        .expect(500)
+                        .expect(400)
                         .end(function(err, res) {
                             if (err) {
                                 done(err);

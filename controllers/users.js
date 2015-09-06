@@ -30,38 +30,30 @@ module.exports = {
         'get': { // get info about your account
             // auth: // anyone logged in
             route: function(req, res) {
-                models.Users.forge()
-                    .fetch()
-                    .then(function (collection) {
-                        res.json(collection.toJSON());
-                    })
-                    .catch(function (err) {
-                        error(req, res, err);
-                    });
+                simpleGetSingleModel(
+                    'User',
+                    {
+                        id: req.user.id
+                    },
+                    req,
+                    res
+                );
             }
         },
         'post': { // create an account
             // auth: // anyone not logged in
             route: function(req, res) {
-                models.User.forge({
-                    username: req.body.username,
-                    firstname: req.body.firstname,
-                    lastname: req.body.lastname,
-                    email: req.body.email,
-                    password: encryptKey(req.body.password),
-                    squestion: req.body.squestion,
-                    sanswer: encryptKey(req.body.sanswer),
-                    phonehome: req.body.phonehome,
-                    phonemobile: req.body.phonemobile,
-                    pagernumber: req.body.pagernumber
-                })
-                    .save()
-                    .then(function (user) {
-                        res.json({id: user.get('id')});
-                    })
-                    .catch(function (err) {
-                        error(req, res, err);
-                    });
+                postModel(
+                    'User',
+                    {
+
+                    },
+                    req,
+                    res,
+                    [
+                        'id'
+                    ]
+                );
             }
         },
         'patch': { // update your account
