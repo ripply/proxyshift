@@ -10,6 +10,11 @@ var models = require('../app/models'),
     error = require('./controllerCommon').error,
     Bookshelf = models.Bookshelf;
 
+// NO-OPing, encrypti si done backend now
+encryptKey = function(value) {
+    return value;
+};
+
 var modifiableAccountFields = [
     'id',
     'username',
