@@ -54,16 +54,34 @@ angular.module('scheduling-app', [
         '$urlRouterProvider',
         '$injector',
         'STATES',
+        'GENERAL_CONFIG',
+        'CORDOVA_SETTINGS',
         //'StateHistoryService',
         function($stateProvider,
                  $urlRouterProvider,
                  $injector,
-                 STATES
+                 STATES,
+                 GENERAL_CONFIG,
+                 CORDOVA_SETTINGS
                  // specifying this as a dependency should set up
                  // listeners on the $rootScope which will keep track
                  // of the previous and current state
                  //StateHistoryService
         ) {
+            CORDOVA_SETTINGS.isWebView = ionic.Platform.isWebView();
+            CORDOVA_SETTINGS.isIPad = ionic.Platform.isIPad();
+            CORDOVA_SETTINGS.isIOS = ionic.Platform.isIOS();
+            CORDOVA_SETTINGS.isAndroid = ionic.Platform.isAndroid();
+            CORDOVA_SETTINGS.isWindowsPhone = ionic.Platform.isWindowsPhone();
+            CORDOVA_SETTINGS.currentPlatform = ionic.Platform.platform();
+            CORDOVA_SETTINGS.currentPlatformVersion = ionic.Platform.version();
+
+            if (CORDOVA_SETTINGS.isWebView) {
+                GENERAL_CONFIG.APP_URL = GENERAL_CONFIG.APP_URL_PROD;
+                console.log("Detected running inside a webview using api source: " + GENERAL_CONFIG.APP_URL_PROD);
+            } else {
+                console.log("Running in browser using api source: " + GENERAL_CONFIG.APP_URL);
+            }
             //RestangularConfig.configure();
 
             // Services cannot be asked for during config
@@ -208,6 +226,8 @@ angular.module('scheduling-app', [
                         }
                     }
                 });
+
+            STATES.wut = 'hey';
 
             //StateHistoryService.setDefaultState('app.playlists');
             // if none of the above states are matched, use this as the fallback

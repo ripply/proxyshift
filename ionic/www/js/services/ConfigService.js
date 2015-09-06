@@ -2,7 +2,9 @@ var config_data = {
     'GENERAL_CONFIG': {
         'APP_NAME': 'Scheduling App',
         'APP_VERSION': '0.1',
-        'APP_URL': 'http://localhost:8100',
+        'APP_URL': 'http://localhost:8100', // modified during setup to point to correct url
+        'APP_URL_PROD': 'http://www.proxyshift.com',
+        'APP_URL_DEV': 'http://localhost:8100',
         'APP_URL_API': '/api',
         'APP_URL_LOGIN': '/session/login',
         'APP_URL_LOGOUT': '/session/logout',
@@ -43,6 +45,11 @@ var config_data = {
     'STATES': {
         'HOME': 'app.playlists',
         'LOGIN': 'login'
+    },
+    'CORDOVA_SETTINGS': {
+        // settings are set by app
+        // this ensures that we do not need ionic as dependency
+        // just these settings
     }
 };
 
