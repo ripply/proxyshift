@@ -504,6 +504,9 @@ var customModelRelations = {
         memberOfGroups: function() {
             return this.belongsToMany(models['Group']).through(models['UserGroup']);
         },
+        memberOfLocations: function() {
+            return this.belongsToMany(models['Location']).through(models['UserPermission']);
+        },
         locationBasedGroupPermissions: function() {
             return this.belongsToMany(models['GroupPermission']).through(models['UserPermission']);
         },

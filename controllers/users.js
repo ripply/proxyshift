@@ -8,6 +8,7 @@ var models = require('../app/models'),
     patchModel = require('./controllerCommon').patchModel,
     deleteModel = require('./controllerCommon').deleteModel,
     error = require('./controllerCommon').error,
+    variables = require('./variables'),
     Bookshelf = models.Bookshelf;
 
 // NO-OPing, encrypti si done backend now
@@ -109,6 +110,104 @@ module.exports = {
                             error(req, res, err);
                         });
                 }
+            }
+        }
+    },
+    '/userinfo': {
+        'get': { // gets related user info, including what locations/groups you manage or are a part of
+            // auth: ['anyone'], // anyone
+            route: function(req, res) {
+                return models.Group.query(function(q) {
+                    q.select()
+                        .from('groups')
+                        .where('groups.user_id', '=', req.user.id);
+                })
+                    .fetchAll()
+                    .then(function(groupsYouOwn) {
+                        // now fetch groups you are a privileged member of
+                        return models.Group.query(function(q) {
+                            q.select()
+                                .from('groups')
+                                .innerJoin('usergroups', function() {
+                                    this.on('usergroups.group_id', '=', 'groups.id');
+                                })
+                                .where('usergroups.user_id', '=', req.user_id)
+                                .innerJoin('grouppermissions', function() {
+                                    this.on('grouppermissions.id', '=', 'usergroups.grouppermission_id');
+                                })
+                                .where('grouppermissions.permissionlevel', '>=', variables.managingGroupMember);
+                        })
+                            .fetchAll()
+                            .then(function(groupsAPrivilegedMemeberOf) {
+                                return models.Location.query(function(q) {
+                                    q.select()
+                                        .from('locations')
+                                        .innerJoin('userpermissions', function() {
+                                            this.on('userpermissions.location_id', '=', 'locations.id');
+                                        })
+                                        .where('userpermissions.user_id', '=', req.user.id)
+                                        .innerJoin('grouppermissions', function() {
+                                            this.on('grouppermissions.id', '=', 'userpermissions.grouppermission_id');
+                                        })
+                                        .where('grouppermissions.permissionlevel', '>=', variables.managingLocationMember);
+                                })
+                                    .fetchAll()
+                                    .then(function(locationsAPrivilegedMemeberOf) {
+                                        return models.User.query(function(q) {
+                                            q.select(
+                                                'users.id as id',
+                                                'users.username as username',
+                                                'users.firstname as firstname',
+                                                'users.lastname as lastname'
+                                                //'user.email as email', // should be hidden
+                                            )
+                                                .from('users')
+                                                .where('users.id', '=', req.user.id);
+                                        })
+                                            .fetch({
+                                                require: true,
+                                                withRelated: [
+                                                    'memberOfGroups',
+                                                    'memberOfLocations'
+                                                ]
+                                            })
+                                            .then(function(user) {
+                                                var userJson = user.toJSON();
+                                                if (groupsYouOwn) {
+                                                    userJson.ownedGroups = groupsYouOwn.toJSON();
+                                                } else {
+                                                    userJson.ownedGroups = [];
+                                                }
+                                                if (groupsAPrivilegedMemeberOf) {
+                                                    userJson.privilegedMemberOfGroups =
+                                                        groupsAPrivilegedMemeberOf.toJSON();
+                                                } else {
+                                                    userJson.privilegedMemberOfGroups = [];
+                                                }
+                                                if (locationsAPrivilegedMemeberOf) {
+                                                    userJson.privilegedMemberOfLocations =
+                                                        locationsAPrivilegedMemeberOf.toJSON();
+                                                } else {
+                                                    userJson.privilegedMemberOfLocations = [];
+                                                }
+
+                                                res.json(userJson);
+                                            })
+                                            .catch(function(err) {
+                                                error(req, res, err);
+                                            })
+                                    })
+                                    .catch(function(err) {
+                                        error(req, res, err);
+                                    })
+                            })
+                            .catch(function(err) {
+                                error(req, res, err);
+                            });
+                    })
+                    .catch(function(err) {
+                        error(req, res, err);
+                    });
             }
         }
     },

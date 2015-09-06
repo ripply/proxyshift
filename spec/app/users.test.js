@@ -414,7 +414,493 @@ describe('#/api/users', function(){
 
             });
 
+        });
 
+        describe('- /userinfo', function() {
+
+            var uri = '/api/users/userinfo';
+
+            describe('- anonymous user', function() {
+
+                it('- returns 401', function(done) {
+
+                    request(app)
+                        .get(uri)
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- group member', function() {
+
+                beforeEach(function(done) {
+
+                    login('groupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- sends basic account information', function(done) {
+
+                    request(app)
+                        .get(uri)
+                        .expect(200, function(err, res) {
+                            if (err) {
+                                debug(res.text);
+                                done(err);
+                            } else {
+                                try {
+                                    var data = JSON.parse(res.text);
+
+                                    expect(data).to.be.a('object');
+                                    expect(data.username).to.equal('groupmember');
+                                    expect(data.firstname).to.equal('groupmember');
+                                    expect(data.lastname).to.equal('groupmember');
+
+                                    done();
+                                } catch (err) {
+                                    done(err);
+                                }
+                            }
+                        });
+
+                });
+
+                it('- does not transmit sensitive account information', function(done) {
+
+                    request(app)
+                        .get(uri)
+                        .expect(200, function(err, res) {
+                            if (err) {
+                                debug(res.text);
+                                done(err);
+                            } else {
+                                try {
+                                    var data = JSON.parse(res.text);
+
+                                    expect(data).to.be.a('object');
+                                    expect(data.password).to.be.undefined;
+                                    expect(data.squestion).to.be.undefined;
+                                    expect(data.sanswer).to.be.undefined;
+                                    expect(data.email).to.be.undefined;
+
+                                    done();
+                                } catch (err) {
+                                    done(err);
+                                }
+                            }
+                        });
+
+                });
+
+                it('- sends groups the user owns (0)', function(done) {
+
+                    request(app)
+                        .get(uri)
+                        .expect(200, function(err, res) {
+                            if (err) {
+                                debug(res.text);
+                                done(err);
+                            } else {
+                                try {
+                                    var data = JSON.parse(res.text);
+
+                                    expect(data).to.be.a('object');
+                                    expect(data.ownedGroups).to.be.a('array');
+                                    expect(data.ownedGroups.length).to.equal(0);
+
+                                    done();
+                                } catch (err) {
+                                    done(err);
+                                }
+                            }
+                        });
+
+                });
+
+                it('- sends groups the user is a member of (1)', function(done) {
+
+                    request(app)
+                        .get(uri)
+                        .expect(200, function(err, res) {
+                            if (err) {
+                                debug(res.text);
+                                done(err);
+                            } else {
+                                try {
+                                    var data = JSON.parse(res.text);
+
+                                    expect(data).to.be.a('object');
+                                    expect(data.memberOfGroups).to.be.a('array');
+                                    expect(data.memberOfGroups.length).to.equal(1);
+                                    expect(data.memberOfGroups[0].id).to.equal(parseInt(parse('@groups:name:membershiptest:')));
+
+                                    done();
+                                } catch (err) {
+                                    done(err);
+                                }
+                            }
+                        });
+
+                });
+
+                it('- sends groups the user is a privileged member of (0)', function(done) {
+
+                    request(app)
+                        .get(uri)
+                        .expect(200, function(err, res) {
+                            if (err) {
+                                debug(res.text);
+                                done(err);
+                            } else {
+                                try {
+                                    var data = JSON.parse(res.text);
+
+                                    expect(data).to.be.a('object');
+                                    expect(data.privilegedMemberOfGroups).to.be.a('array');
+                                    expect(data.privilegedMemberOfGroups.length).to.equal(0);
+
+                                    done();
+                                } catch (err) {
+                                    done(err);
+                                }
+                            }
+                        });
+
+                });
+
+                it('- sends locations the user is a member of (1)', function(done) {
+
+                    request(app)
+                        .get(uri)
+                        .expect(200, function(err, res) {
+                            if (err) {
+                                debug(res.text);
+                                done(err);
+                            } else {
+                                try {
+                                    var data = JSON.parse(res.text);
+
+                                    expect(data).to.be.a('object');
+                                    expect(data.memberOfLocations).to.be.a('array');
+                                    expect(data.memberOfLocations.length).to.equal(1);
+                                    expect(data.memberOfLocations[0].id).to.equal(parseInt(parse('@locations:state:membershiptest:')));
+
+                                    done();
+                                } catch (err) {
+                                    done(err);
+                                }
+                            }
+                        });
+
+                });
+
+                it('- sends locations the user is a privileged member of (0)', function(done) {
+
+                    request(app)
+                        .get(uri)
+                        .expect(200, function(err, res) {
+                            if (err) {
+                                debug(res.text);
+                                done(err);
+                            } else {
+                                try {
+                                    var data = JSON.parse(res.text);
+
+                                    expect(data).to.be.a('object');
+                                    expect(data.privilegedMemberOfLocations).to.be.a('array');
+                                    expect(data.privilegedMemberOfLocations.length).to.equal(0);
+
+                                    done();
+                                } catch (err) {
+                                    done(err);
+                                }
+                            }
+                        });
+
+                });
+
+            });
+
+            describe('- group owner', function() {
+
+                beforeEach(function(done) {
+
+                    login('groupowner',
+                        'secret',
+                        done);
+
+                });
+
+                it('- sends groups the user owns (1)', function(done) {
+
+                    request(app)
+                        .get(uri)
+                        .expect(200, function(err, res) {
+                            if (err) {
+                                debug(res.text);
+                                done(err);
+                            } else {
+                                try {
+                                    var data = JSON.parse(res.text);
+
+                                    expect(data).to.be.a('object');
+                                    expect(data.ownedGroups).to.be.a('array');
+                                    expect(data.ownedGroups.length).to.equal(1);
+                                    expect(data.ownedGroups[0].id).to.equal(parseInt(parse('@groups:name:membershiptest:')));
+
+                                    done();
+                                } catch (err) {
+                                    done(err);
+                                }
+                            }
+                        });
+
+                });
+
+                it('- sends groups the user is a member of (0)', function(done) {
+
+                    request(app)
+                        .get(uri)
+                        .expect(200, function(err, res) {
+                            if (err) {
+                                debug(res.text);
+                                done(err);
+                            } else {
+                                try {
+                                    var data = JSON.parse(res.text);
+
+                                    expect(data).to.be.a('object');
+                                    expect(data.memberOfGroups).to.be.a('array');
+                                    expect(data.memberOfGroups.length).to.equal(0);
+
+                                    done();
+                                } catch (err) {
+                                    done(err);
+                                }
+                            }
+                        });
+
+                });
+
+                it('- sends groups the user is a privileged member of (0)', function(done) {
+
+                    request(app)
+                        .get(uri)
+                        .expect(200, function(err, res) {
+                            if (err) {
+                                debug(res.text);
+                                done(err);
+                            } else {
+                                try {
+                                    var data = JSON.parse(res.text);
+
+                                    expect(data).to.be.a('object');
+                                    expect(data.privilegedMemberOfGroups).to.be.a('array');
+                                    expect(data.privilegedMemberOfGroups.length).to.equal(0);
+
+                                    done();
+                                } catch (err) {
+                                    done(err);
+                                }
+                            }
+                        });
+
+                });
+
+                it('- sends locations the user is a member of (0)', function(done) {
+
+                    request(app)
+                        .get(uri)
+                        .expect(200, function(err, res) {
+                            if (err) {
+                                debug(res.text);
+                                done(err);
+                            } else {
+                                try {
+                                    var data = JSON.parse(res.text);
+
+                                    expect(data).to.be.a('object');
+                                    expect(data.memberOfLocations).to.be.a('array');
+                                    expect(data.memberOfLocations.length).to.equal(0);
+
+                                    done();
+                                } catch (err) {
+                                    done(err);
+                                }
+                            }
+                        });
+
+                });
+
+                it('- sends locations the user is a privileged member of (0)', function(done) {
+
+                    request(app)
+                        .get(uri)
+                        .expect(200, function(err, res) {
+                            if (err) {
+                                debug(res.text);
+                                done(err);
+                            } else {
+                                try {
+                                    var data = JSON.parse(res.text);
+
+                                    expect(data).to.be.a('object');
+                                    expect(data.privilegedMemberOfLocations).to.be.a('array');
+                                    expect(data.privilegedMemberOfLocations.length).to.equal(0);
+
+                                    done();
+                                } catch (err) {
+                                    done(err);
+                                }
+                            }
+                        });
+
+                });
+
+            });
+
+            describe('- manager', function() {
+
+                beforeEach(function(done) {
+
+                    login('manager',
+                        'secret',
+                        done);
+
+                });
+
+                it('- sends groups the user owns (0)', function(done) {
+
+                    request(app)
+                        .get(uri)
+                        .expect(200, function(err, res) {
+                            if (err) {
+                                debug(res.text);
+                                done(err);
+                            } else {
+                                try {
+                                    var data = JSON.parse(res.text);
+
+                                    expect(data).to.be.a('object');
+                                    expect(data.ownedGroups).to.be.a('array');
+                                    expect(data.ownedGroups.length).to.equal(0);
+
+                                    done();
+                                } catch (err) {
+                                    done(err);
+                                }
+                            }
+                        });
+
+                });
+
+                it('- sends groups the user is a member of (1)', function(done) {
+
+                    request(app)
+                        .get(uri)
+                        .expect(200, function(err, res) {
+                            if (err) {
+                                debug(res.text);
+                                done(err);
+                            } else {
+                                try {
+                                    var data = JSON.parse(res.text);
+
+                                    expect(data).to.be.a('object');
+                                    expect(data.memberOfGroups).to.be.a('array');
+                                    expect(data.memberOfGroups.length).to.equal(1);
+                                    expect(data.memberOfGroups[0].id).to.equal(parseInt(parse('@groups:name:membershiptest:')));
+
+                                    done();
+                                } catch (err) {
+                                    done(err);
+                                }
+                            }
+                        });
+
+                });
+
+                it('- sends groups the user is a privileged member of (0)', function(done) {
+
+                    request(app)
+                        .get(uri)
+                        .expect(200, function(err, res) {
+                            if (err) {
+                                debug(res.text);
+                                done(err);
+                            } else {
+                                try {
+                                    var data = JSON.parse(res.text);
+
+                                    expect(data).to.be.a('object');
+                                    expect(data.privilegedMemberOfGroups).to.be.a('array');
+                                    expect(data.privilegedMemberOfGroups.length).to.equal(0);
+
+                                    done();
+                                } catch (err) {
+                                    done(err);
+                                }
+                            }
+                        });
+
+                });
+
+                it('- sends locations the user is a member of (1)', function(done) {
+
+                    request(app)
+                        .get(uri)
+                        .expect(200, function(err, res) {
+                            if (err) {
+                                debug(res.text);
+                                done(err);
+                            } else {
+                                try {
+                                    var data = JSON.parse(res.text);
+
+                                    expect(data).to.be.a('object');
+                                    expect(data.memberOfLocations).to.be.a('array');
+                                    expect(data.memberOfLocations.length).to.equal(1);
+                                    expect(data.memberOfLocations[0].id).to.equal(parseInt(parse('@locations:state:membershiptest:')));
+
+                                    done();
+                                } catch (err) {
+                                    done(err);
+                                }
+                            }
+                        });
+
+                });
+
+                it('- sends locations the user is a privileged member of (1)', function(done) {
+
+                    request(app)
+                        .get(uri)
+                        .expect(200, function(err, res) {
+                            if (err) {
+                                debug(res.text);
+                                done(err);
+                            } else {
+                                try {
+                                    var data = JSON.parse(res.text);
+
+                                    expect(data).to.be.a('object');
+                                    expect(data.privilegedMemberOfLocations).to.be.a('array');
+                                    expect(data.privilegedMemberOfLocations.length).to.equal(1);
+                                    expect(data.privilegedMemberOfLocations[0].id).to.equal(parseInt(parse('@locations:state:membershiptest:')));
+
+                                    done();
+                                } catch (err) {
+                                    done(err);
+                                }
+                            }
+                        });
+
+                });
+
+            });
 
         });
 
