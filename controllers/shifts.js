@@ -3,6 +3,7 @@ var Bookshelf = models.Bookshelf;
 var knex = models.knex;
 var moment = require('moment');
 var controllerCommon = require('./controllerCommon');
+var _ = require('underscore');
 var grabNormalShiftRange = controllerCommon.grabNormalShiftRange;
 
 var variables = require('./variables');
@@ -15,6 +16,7 @@ var patchModel = controllerCommon.patchModel;
 var deleteModel = controllerCommon.deleteModel;
 var updateModel = controllerCommon.updateModel;
 var error = controllerCommon.error;
+var clientError = controllerCommon.clientError;
 var getCurrentTimeForInsertionIntoDatabase = controllerCommon.getCurrentTimeForInsertionIntoDatabase;
 var createSelectQueryForAllColumns = controllerCommon.createSelectQueryForAllColumns;
 
@@ -535,29 +537,7 @@ module.exports = {
             }
         }
     },
-    // created in context of /locations
-    add: function(req, res) {
-        if (req.body.start > req.body.end) {
-            res.status(400).json({error: true, data: {message: 'Invalid date range'}})
-        }
-        models.Shift.forge({
-            title: req.body.title,
-            description: req.body.description,
-            allday: req.body.allday,
-            recurring: req.body.recurring,
-            start: req.body.start,
-            end: req.body.end
-        })
-            .save()
-            .then(function (shift) {
-                res.json({id: shift.get('id')});
-                console.log('Shift added:');
-                console.log(shift);
-            })
-            .catch(function (err) {
-                error(req, res, err);
-            });
-    },
+    createNewShift: createNewShift,
     getShiftsYouAreManaging: getShiftsYouAreManaging
 
 };
@@ -757,4 +737,48 @@ function getShiftsYouAreManaging(req, res) {
         .catch(function(err) {
             error(req, res, err);
         })
+}
+
+function createNewShift(req, res) {
+    // a shift needs a location or sublocation
+    var location_id = req.params.location_id;
+    var sublocation_id = req.params.sublocation_id;
+
+    var otherArgs = {};
+    if (sublocation_id) {
+        otherArgs.sublocation_id = sublocation_id;
+    } else if (location_id) {
+        // TODO: Should we support user specifying both a location and a sublocation in a route?
+        // the issues with that happen when a sublocation is moved from one location to another
+        // currently, that functionality is not supported, but if it were to be this would cause issues
+        // as a shift would be part of one location but part of another location's sublocation
+        otherArgs.location_id = location_id;
+    } else {
+        throw new Error("When creating a shift, a location or sublocation is required");
+    }
+
+    otherArgs = _.extend(otherArgs, {
+        start: req.params.start,
+        end: req.params.end,
+        groupuserclass_id: req.params.groupuserclass_id
+    });
+
+    if (req.body.start > req.body.end) {
+        clientError(req, res, 400, 'Invalid date range');
+    } else {
+        postModel(
+            'Shift',
+            otherArgs,
+            req,
+            res,
+            [
+                'id',
+                'user_id',
+                'location_id',
+                'sublocation_id',
+                'groupuserclass_id',
+                'notify'
+            ]
+        );
+    }
 }

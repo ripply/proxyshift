@@ -11,13 +11,15 @@ var _ = require('underscore');
 var debug = global.debug;
 var parse = global.parse;
 
+var time = require('../../app/time');
+
 // TODO:
 // PATCH /api/locations/:location_id/sublocations/:sublocation_id
 // DELETE /api/locations/:location_id/sublocations/:sublocation_id
 // GET /api/locations/:location_id/shifts/:groupuserclass_id
 // GET /api/locations/:location_id/shifts/after/:after/before/:before
 
-describe('#/api/groups', function() {
+describe('#/api/locations', function() {
 
     before(function (done) {
         require(ROOT_DIR + '/routes/preauth')(app, settings);
@@ -1012,6 +1014,762 @@ describe('#/api/groups', function() {
                         }
                     });
             }
+
+        });
+
+        describe('- /:location_id/', function() {
+
+            describe('- /shifts/groupuserclass/:groupuserclass_id/start/:start/end/:end', function() {
+
+                var currentTimeInUtc = time.nowInUtc();
+                var threeHoursInFuture = new moment(currentTimeInUtc * 1000).add('3', 'hour').unix();
+                var fourHoursInFuture = new moment(currentTimeInUtc * 1000).add('4', 'hour').unix();
+
+                var newShift = {
+                    title: 'new shift',
+                    description: 'new shift description'
+                };
+
+                var newShiftWithDescriptionButWithoutTitle = {
+                    description: newShift.description
+                };
+
+                //var baseUrl = parse('/api/locations/@locations:state:membershiptest:/shifts/groupuserclass/');
+                //var correctUrl = parse('@groupuserclasses:title:classtest:/') + baseUrl + 'start/' + threeHoursInFuture + '/end/' + fourHoursInFuture;
+                //var otherClassType = parse('@groupuserclasses:title:User class 1:/') + baseUrl + 'start/' + threeHoursInFuture + '/end/' + fourHoursInFuture;
+
+                var baseUrl = parse('/api/locations/@locations:state:membershiptest:/shifts/groupuserclass/');
+                var classType1 = parse('@groupuserclasses:title:classtest:/');
+                var classType2 = parse('@groupuserclasses:title:User class 1:/');
+                var subUrl1 = baseUrl + classType1;
+                var subUrl2 = baseUrl + classType2;
+                var endUrl = 'start/' + threeHoursInFuture + '/end/' + fourHoursInFuture;
+                var correctUrl = subUrl1 + endUrl;
+                var otherClassType = subUrl2 + endUrl;
+
+                describe('- anonymous user', function() {
+
+                    it('- return 401', function(done) {
+
+                        request(app)
+                            .post(correctUrl)
+                            .send(newShift)
+                            .expect(401, done);
+
+                    });
+
+                });
+
+                describe('- non location member', function() {
+
+                    beforeEach(function(done) {
+
+                        login('nongroupmember',
+                            'secret',
+                            done);
+
+                    });
+
+                    it('- return 401', function(done) {
+
+                        request(app)
+                            .post(correctUrl)
+                            .send(newShift)
+                            .expect(401, done);
+
+                    });
+
+                });
+
+                describe('- location member', function() {
+
+                    beforeEach(function(done) {
+
+                        login('groupmember',
+                            'secret',
+                            done);
+
+                    });
+
+                    it('- a shift requires a title', function(done) {
+
+                        request(app)
+                            .post(correctUrl)
+                            .send(newShiftWithDescriptionButWithoutTitle)
+                            .expect(400, function(err, res) {
+                                if (err) {
+                                    debug(res.text);
+                                    done(err);
+                                } else {
+                                    try {
+                                        var data = JSON.parse(res.text);
+                                        data.should.be.a('object');
+                                        expect(data.data).to.not.be.undefined;
+                                        expect(data.data.message).to.not.be.undefined;
+                                        expect(data.data.message.title).to.not.be.undefined;
+
+                                        done();
+                                    } catch (err) {
+                                        done(err);
+                                    }
+                                }
+                            });
+
+                    });
+
+                    it('- cannot create a shift of a class type you are not', function(done) {
+
+                        request(app)
+                            .post(otherClassType)
+                            .send(newShift)
+                            .expect(401, done);
+
+                    });
+
+                    describe('- returns 201 and returns shift_id', function() {
+
+                        var shiftids ={
+
+                        };
+
+                        beforeEach(function(done) {
+
+                            request(app)
+                                .post(correctUrl)
+                                .send(newShift)
+                                .expect(201, function(err, res) {
+                                    if (err) {
+                                        debug(res.text);
+                                        done(err);
+                                    } else {
+                                        try {
+                                            var data = JSON.parse(res.text);
+                                            data.should.be.a('object');
+                                            expect(data.id).to.not.be.undefined;
+                                            shiftids.id = data.id;
+
+                                            done();
+                                        } catch (err) {
+                                            done(err);
+                                        }
+                                    }
+                                });
+
+                        });
+
+                        it('- and the new shift is accessible', function(done) {
+
+                            request(app)
+                                .get('/api/shifts/' + shiftids.id)
+                                .expect(200, function(err, res) {
+                                    if (err) {
+                                        debug(res.text);
+                                        done(err);
+                                    } else {
+                                        try {
+                                            var data = JSON.parse(res.text);
+                                            data.should.be.a('object');
+                                            expect(data.id).to.equal(parseInt(shiftids.id));
+                                            expect(data.start).to.equal(threeHoursInFuture);
+                                            expect(data.end).to.equal(fourHoursInFuture);
+                                            expect(data.title).to.equal(newShift.title);
+                                            expect(data.description).to.equal(newShift.description);
+
+                                            done();
+                                        } catch (err) {
+                                            done(err);
+                                        }
+                                    }
+                                });
+
+                        });
+
+                    });
+
+                });
+
+                describe('- manager', function() {
+
+                    beforeEach(function(done) {
+
+                        login('manager',
+                            'secret',
+                            done);
+
+                    });
+
+                    it('- a shift requires a title', function(done) {
+
+                        request(app)
+                            .post(correctUrl)
+                            .send(newShiftWithDescriptionButWithoutTitle)
+                            .expect(400, function(err, res) {
+                                if (err) {
+                                    debug(res.text);
+                                    done(err);
+                                } else {
+                                    try {
+                                        var data = JSON.parse(res.text);
+                                        data.should.be.a('object');
+                                        expect(data.data).to.not.be.undefined;
+                                        expect(data.data.message).to.not.be.undefined;
+                                        expect(data.data.message.title).to.not.be.undefined;
+
+                                        done();
+                                    } catch (err) {
+                                        done(err);
+                                    }
+                                }
+                            });
+
+                    });
+
+                    it('- can create a shift of a class type you are not', function(done) {
+
+                        request(app)
+                            .post(otherClassType)
+                            .send(newShift)
+                            .expect(201, done);
+
+                    });
+
+                    describe('- returns 201 and returns shift_id', function() {
+
+                        var shiftids ={
+
+                        };
+
+                        beforeEach(function(done) {
+
+                            request(app)
+                                .post(correctUrl)
+                                .send(newShift)
+                                .expect(201, function(err, res) {
+                                    if (err) {
+                                        debug(res.text);
+                                        done(err);
+                                    } else {
+                                        try {
+                                            var data = JSON.parse(res.text);
+                                            data.should.be.a('object');
+                                            expect(data.id).to.not.be.undefined;
+                                            shiftids.id = data.id;
+
+                                            done();
+                                        } catch (err) {
+                                            done(err);
+                                        }
+                                    }
+                                });
+
+                        });
+
+                        it('- and the new shift is accessible', function(done) {
+
+                            request(app)
+                                .get('/api/shifts/' + shiftids.id)
+                                .expect(200, function(err, res) {
+                                    if (err) {
+                                        debug(res.text);
+                                        done(err);
+                                    } else {
+                                        try {
+                                            var data = JSON.parse(res.text);
+                                            data.should.be.a('object');
+                                            expect(data.id).to.equal(parseInt(shiftids.id));
+                                            expect(data.start).to.equal(threeHoursInFuture);
+                                            expect(data.end).to.equal(fourHoursInFuture);
+                                            expect(data.title).to.equal(newShift.title);
+                                            expect(data.description).to.equal(newShift.description);
+
+                                            done();
+                                        } catch (err) {
+                                            done(err);
+                                        }
+                                    }
+                                });
+
+                        });
+
+                    });
+
+                });
+
+                describe('- group owner', function() {
+
+                    beforeEach(function(done) {
+
+                        login('groupowner',
+                            'secret',
+                            done);
+
+                    });
+
+                    it('- a shift requires a title', function(done) {
+
+                        request(app)
+                            .post(correctUrl)
+                            .send(newShiftWithDescriptionButWithoutTitle)
+                            .expect(400, function(err, res) {
+                                if (err) {
+                                    debug(res.text);
+                                    done(err);
+                                } else {
+                                    try {
+                                        var data = JSON.parse(res.text);
+                                        data.should.be.a('object');
+                                        expect(data.data).to.not.be.undefined;
+                                        expect(data.data.message).to.not.be.undefined;
+                                        expect(data.data.message.title).to.not.be.undefined;
+
+                                        done();
+                                    } catch (err) {
+                                        done(err);
+                                    }
+                                }
+                            });
+
+                    });
+
+                    describe('- returns 201 and returns shift_id', function() {
+
+                        var shiftids ={
+
+                        };
+
+                        beforeEach(function(done) {
+
+                            request(app)
+                                .post(correctUrl)
+                                .send(newShift)
+                                .expect(201, function(err, res) {
+                                    if (err) {
+                                        debug(res.text);
+                                        done(err);
+                                    } else {
+                                        try {
+                                            var data = JSON.parse(res.text);
+                                            data.should.be.a('object');
+                                            expect(data.id).to.not.be.undefined;
+                                            shiftids.id = data.id;
+
+                                            done();
+                                        } catch (err) {
+                                            done(err);
+                                        }
+                                    }
+                                });
+
+                        });
+
+                        it('- and the new shift is accessible', function(done) {
+
+                            request(app)
+                                .get('/api/shifts/' + shiftids.id)
+                                .expect(200, function(err, res) {
+                                    if (err) {
+                                        debug(res.text);
+                                        done(err);
+                                    } else {
+                                        try {
+                                            var data = JSON.parse(res.text);
+                                            data.should.be.a('object');
+                                            expect(data.id).to.equal(parseInt(shiftids.id));
+                                            expect(data.start).to.equal(threeHoursInFuture);
+                                            expect(data.end).to.equal(fourHoursInFuture);
+                                            expect(data.title).to.equal(newShift.title);
+                                            expect(data.description).to.equal(newShift.description);
+                                            expect(data.location_id).to.equal(parseInt(parse('@locations:state:membershiptest:')));
+                                            expect(data.sublocation_id).to.be.null;
+
+                                            done();
+                                        } catch (err) {
+                                            done(err);
+                                        }
+                                    }
+                                });
+
+                        });
+
+                    });
+
+                });
+
+            });
+
+            describe('- /sublocations/:sublocation_id/shifts/groupuserclass/:groupuserclass_id/start/:start/end/:end', function() {
+
+                var currentTimeInUtc = time.nowInUtc();
+                var threeHoursInFuture = new moment(currentTimeInUtc * 1000).add('3', 'hour').unix();
+                var fourHoursInFuture = new moment(currentTimeInUtc * 1000).add('4', 'hour').unix();
+
+                var newShift = {
+                    title: 'new shift',
+                    description: 'new shift description'
+                };
+
+                var newShiftWithDescriptionButWithoutTitle = {
+                    description: newShift.description
+                };
+
+                var baseUrl = parse('/api/locations/@locations:state:membershiptest:/sublocations/@sublocations:title:floor 1:/shifts/groupuserclass/');
+                var classType1 = parse('@groupuserclasses:title:classtest:/');
+                var classType2 = parse('@groupuserclasses:title:User class 1:/');
+                var subUrl1 = baseUrl + classType1;
+                var subUrl2 = baseUrl + classType2;
+                var endUrl = 'start/' + threeHoursInFuture + '/end/' + fourHoursInFuture;
+                var correctUrl = subUrl1 + endUrl;
+                var otherClassType = subUrl2 + endUrl;
+
+                describe('- anonymous user', function() {
+
+                    it('- return 401', function(done) {
+
+                        request(app)
+                            .post(correctUrl)
+                            .send(newShift)
+                            .expect(401, done);
+
+                    });
+
+                });
+
+                describe('- non location member', function() {
+
+                    beforeEach(function(done) {
+
+                        login('nongroupmember',
+                            'secret',
+                            done);
+
+                    });
+
+                    it('- return 401', function(done) {
+
+                        request(app)
+                            .post(correctUrl)
+                            .send(newShift)
+                            .expect(401, done);
+
+                    });
+
+                });
+
+                describe('- location member', function() {
+
+                    beforeEach(function(done) {
+
+                        login('groupmember',
+                            'secret',
+                            done);
+
+                    });
+
+                    it('- a shift requires a title', function(done) {
+
+                        request(app)
+                            .post(correctUrl)
+                            .send(newShiftWithDescriptionButWithoutTitle)
+                            .expect(400, function(err, res) {
+                                if (err) {
+                                    debug(res.text);
+                                    done(err);
+                                } else {
+                                    try {
+                                        var data = JSON.parse(res.text);
+                                        data.should.be.a('object');
+                                        expect(data.data).to.not.be.undefined;
+                                        expect(data.data.message).to.not.be.undefined;
+                                        expect(data.data.message.title).to.not.be.undefined;
+
+                                        done();
+                                    } catch (err) {
+                                        done(err);
+                                    }
+                                }
+                            });
+
+                    });
+
+                    it('- cannot create a shift of a class type you are not', function(done) {
+
+                        request(app)
+                            .post(otherClassType)
+                            .send(newShift)
+                            .expect(401, done);
+
+                    });
+
+                    describe('- returns 201 and returns shift_id', function() {
+
+                        var shiftids ={
+
+                        };
+
+                        beforeEach(function(done) {
+
+                            request(app)
+                                .post(correctUrl)
+                                .send(newShift)
+                                .expect(201, function(err, res) {
+                                    if (err) {
+                                        debug(res.text);
+                                        done(err);
+                                    } else {
+                                        try {
+                                            var data = JSON.parse(res.text);
+                                            data.should.be.a('object');
+                                            expect(data.id).to.not.be.undefined;
+                                            shiftids.id = data.id;
+
+                                            done();
+                                        } catch (err) {
+                                            done(err);
+                                        }
+                                    }
+                                });
+
+                        });
+
+                        it('- and the new shift is accessible', function(done) {
+
+                            request(app)
+                                .get('/api/shifts/' + shiftids.id)
+                                .expect(200, function(err, res) {
+                                    if (err) {
+                                        debug(res.text);
+                                        done(err);
+                                    } else {
+                                        try {
+                                            var data = JSON.parse(res.text);
+                                            data.should.be.a('object');
+                                            expect(data.id).to.equal(parseInt(shiftids.id));
+                                            expect(data.start).to.equal(threeHoursInFuture);
+                                            expect(data.end).to.equal(fourHoursInFuture);
+                                            expect(data.title).to.equal(newShift.title);
+                                            expect(data.description).to.equal(newShift.description);
+                                            expect(data.location_id).to.be.null;
+                                            expect(data.sublocation_id).to.equal(parseInt(parse('@sublocations:title:floor 1:')));
+
+                                            done();
+                                        } catch (err) {
+                                            done(err);
+                                        }
+                                    }
+                                });
+
+                        });
+
+                    });
+
+                });
+
+                describe('- manager', function() {
+
+                    beforeEach(function(done) {
+
+                        login('manager',
+                            'secret',
+                            done);
+
+                    });
+
+                    it('- a shift requires a title', function(done) {
+
+                        request(app)
+                            .post(correctUrl)
+                            .send(newShiftWithDescriptionButWithoutTitle)
+                            .expect(400, function(err, res) {
+                                if (err) {
+                                    debug(res.text);
+                                    done(err);
+                                } else {
+                                    try {
+                                        var data = JSON.parse(res.text);
+                                        data.should.be.a('object');
+                                        expect(data.data).to.not.be.undefined;
+                                        expect(data.data.message).to.not.be.undefined;
+                                        expect(data.data.message.title).to.not.be.undefined;
+
+                                        done();
+                                    } catch (err) {
+                                        done(err);
+                                    }
+                                }
+                            });
+
+                    });
+
+                    it('- can create a shift of a class type you are not', function(done) {
+
+                        request(app)
+                            .post(otherClassType)
+                            .send(newShift)
+                            .expect(201, done);
+
+                    });
+
+                    describe('- returns 201 and returns shift_id', function() {
+
+                        var shiftids ={
+
+                        };
+
+                        beforeEach(function(done) {
+
+                            request(app)
+                                .post(correctUrl)
+                                .send(newShift)
+                                .expect(201, function(err, res) {
+                                    if (err) {
+                                        debug(res.text);
+                                        done(err);
+                                    } else {
+                                        try {
+                                            var data = JSON.parse(res.text);
+                                            data.should.be.a('object');
+                                            expect(data.id).to.not.be.undefined;
+                                            shiftids.id = data.id;
+
+                                            done();
+                                        } catch (err) {
+                                            done(err);
+                                        }
+                                    }
+                                });
+
+                        });
+
+                        it('- and the new shift is accessible', function(done) {
+
+                            request(app)
+                                .get('/api/shifts/' + shiftids.id)
+                                .expect(200, function(err, res) {
+                                    if (err) {
+                                        debug(res.text);
+                                        done(err);
+                                    } else {
+                                        try {
+                                            var data = JSON.parse(res.text);
+                                            data.should.be.a('object');
+                                            expect(data.id).to.equal(parseInt(shiftids.id));
+                                            expect(data.start).to.equal(threeHoursInFuture);
+                                            expect(data.end).to.equal(fourHoursInFuture);
+                                            expect(data.title).to.equal(newShift.title);
+                                            expect(data.description).to.equal(newShift.description);
+
+                                            done();
+                                        } catch (err) {
+                                            done(err);
+                                        }
+                                    }
+                                });
+
+                        });
+
+                    });
+
+                });
+
+                describe('- group owner', function() {
+
+                    beforeEach(function(done) {
+
+                        login('groupowner',
+                            'secret',
+                            done);
+
+                    });
+
+                    it('- a shift requires a title', function(done) {
+
+                        request(app)
+                            .post(correctUrl)
+                            .send(newShiftWithDescriptionButWithoutTitle)
+                            .expect(400, function(err, res) {
+                                if (err) {
+                                    debug(res.text);
+                                    done(err);
+                                } else {
+                                    try {
+                                        var data = JSON.parse(res.text);
+                                        data.should.be.a('object');
+                                        expect(data.data).to.not.be.undefined;
+                                        expect(data.data.message).to.not.be.undefined;
+                                        expect(data.data.message.title).to.not.be.undefined;
+
+                                        done();
+                                    } catch (err) {
+                                        done(err);
+                                    }
+                                }
+                            });
+
+                    });
+
+                    describe('- returns 201 and returns shift_id', function() {
+
+                        var shiftids ={
+
+                        };
+
+                        beforeEach(function(done) {
+
+                            request(app)
+                                .post(correctUrl)
+                                .send(newShift)
+                                .expect(201, function(err, res) {
+                                    if (err) {
+                                        debug(res.text);
+                                        done(err);
+                                    } else {
+                                        try {
+                                            var data = JSON.parse(res.text);
+                                            data.should.be.a('object');
+                                            expect(data.id).to.not.be.undefined;
+                                            shiftids.id = data.id;
+
+                                            done();
+                                        } catch (err) {
+                                            done(err);
+                                        }
+                                    }
+                                });
+
+                        });
+
+                        it('- and the new shift is accessible', function(done) {
+
+                            request(app)
+                                .get('/api/shifts/' + shiftids.id)
+                                .expect(200, function(err, res) {
+                                    if (err) {
+                                        debug(res.text);
+                                        done(err);
+                                    } else {
+                                        try {
+                                            var data = JSON.parse(res.text);
+                                            data.should.be.a('object');
+                                            expect(data.id).to.equal(parseInt(shiftids.id));
+                                            expect(data.start).to.equal(threeHoursInFuture);
+                                            expect(data.end).to.equal(fourHoursInFuture);
+                                            expect(data.title).to.equal(newShift.title);
+                                            expect(data.description).to.equal(newShift.description);
+
+                                            done();
+                                        } catch (err) {
+                                            done(err);
+                                        }
+                                    }
+                                });
+
+                        });
+
+                    });
+
+                });
+
+            });
 
         });
 

@@ -218,6 +218,16 @@ module.exports = {
             return false;
         },
 
+        'sublocation is part of location': function(req, act) {
+            // TODO: IMPLEMENT
+            return true;
+        },
+
+        'user can create a shift in this location': function(req, act) {
+            // TODO: IMPLEMENT
+            return true;
+        },
+
         'mark if user is a group owner or privileged location member for this shift':
             markIfGroupOwnerOrPrivilegedMemberForShift,
 

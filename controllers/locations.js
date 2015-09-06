@@ -15,6 +15,7 @@ var models = require('../app/models'),
 
 var managingPermissionLevel = variables.managingPermissionLevel;
 var getShiftsYouAreManaging = require('./shifts').getShiftsYouAreManaging;
+var createNewShift = require('./shifts').createNewShift;
 
 module.exports = {
     route: '/api/locations',
@@ -86,6 +87,14 @@ module.exports = {
                     req.params.before,
                     req.params.after
                 );
+            }
+        }
+    },
+    '/:location_id/shifts/groupuserclass/:groupuserclass_id/start/:start/end/:end': {
+        'post': {
+            auth: ['user can create a shift in this location'],
+            route: function(req, res) {
+                createNewShift(req, res);
             }
         }
     },
@@ -194,6 +203,14 @@ module.exports = {
                         'id'
                     ]
                 );
+            }
+        }
+    },
+    '/:location_id/sublocations/:sublocation_id/shifts/groupuserclass/:groupuserclass_id/start/:start/end/:end': {
+        'post': {
+            auth: ['sublocation is part of location', 'and', 'user can create a shift in this location'],// sublocation is part of location
+            route: function(req, res) {
+                createNewShift(req, res);
             }
         }
     },

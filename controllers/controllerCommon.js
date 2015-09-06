@@ -19,6 +19,7 @@ var defaultBannedKeys = ['id'];
 
 module.exports = {
     error: error,
+    clientError: clientError,
     getCurrentTimeForInsertionIntoDatabase: function() {
         return (new moment()).unix();
     },
@@ -93,7 +94,12 @@ module.exports = {
                 res.status(201).json({id: saved.get('id')});
             })
             .catch(function (err) {
-                error(req, res, err);
+                if (err.hasOwnProperty('errors')) {
+                    // bookshelf-validator errors
+                    clientError(req, res, 400, err.errors);
+                } else {
+                    error(req, res, err);
+                }
             });
     },
     deleteModel: function(modelName, queryArgs, req, res, successMessage, sqlOptions) {
@@ -255,4 +261,8 @@ function error(req, res, err, message) {
         }
         res.status(500).json({error: true, data: {message: message}});
     }
+}
+
+function clientError(req, res, status, message) {
+    res.status(status).json({error: true, data: {message: message}});
 }
