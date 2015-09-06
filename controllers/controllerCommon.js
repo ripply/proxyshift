@@ -116,7 +116,8 @@ module.exports = {
     getPatchKeysWithoutBannedKeys: getPatchKeysWithoutBannedKeys,
     getMark: getMark,
     setMark: setMark,
-    clearMarks: clearMarks
+    clearMarks: clearMarks,
+    createSelectQueryForAllColumns: createSelectQueryForAllColumns
 };
 
 function getModelKeys(modelName, bannedKeys) {
@@ -236,4 +237,17 @@ function clearMarks(req) {
     if (req.user.marks !== undefined) {
         delete req.user.marks;
     }
+}
+
+function createSelectQueryForAllColumns(modelName, tablename) {
+    if (!schema.hasOwnProperty(modelName)) {
+        throw new Error("Unknown model name: " + modelName);
+    }
+
+    var columns = [];
+    _.each(_.keys(schema[modelName]), function(columnName) {
+        columns.push(tablename + '.' + columnName + ' as ' + columnName);
+    });
+
+    return columns;
 }

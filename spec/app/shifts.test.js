@@ -564,13 +564,13 @@ describe("#/shifts", function() {
 
                 beforeEach(function(done) {
 
-                    login('userwithshifts',
+                    login('groupmember',
                         'secret',
                         done);
 
                 });
 
-                it('- returns 200 empty response', function(done) {
+                it('- returns 200 zero length array', function(done) {
 
                     request(app)
                         .get('/api/shifts/managing')
@@ -578,10 +578,13 @@ describe("#/shifts", function() {
                         .end(function(err, res) {
                             if (err) {
                                 done(err);
+                                return;
                             }
                             try {
-                                expect(res.text).to.not.be.undefined;
-                                expect(res.text.length).to.equal(0);
+                                debug(res.text);
+                                var data = JSON.parse(res.text);
+                                data.should.be.a('array');
+                                expect(data.length).to.equal(0);
 
                                 done();
                             } catch (e) {
@@ -595,7 +598,7 @@ describe("#/shifts", function() {
 
             describe('- manager', function() {
 
-                var managingShiftCount = 0;
+                var managingShiftCount = 5;
 
                 beforeEach(function(done) {
 
@@ -607,34 +610,78 @@ describe("#/shifts", function() {
 
                 it('- lists ALL shifts the user is managing', function(done) {
 
-                    request(app)
-                        .get('/api/shifts/managing')
-                        .expect(200)
-                        .end(function(err, res) {
-                            if (err) {
-                                done(err);
-                            }
-                            try {
-                                var data = JSON.parse(res.text);
-                                data.should.be.a('array');
-                                data.length.should.equal(managingShiftCount);
+                    getManagingShifts(managingShiftCount, done);
 
-                                _.each(data, function(shift) {
-                                    _.each(properties, function(property) {
-                                        shift.should.have.property(property);
-                                        shift['user_id'].should.equal(userwithshifts_userid);
-                                    });
-                                });
+                });
 
-                                done();
-                            } catch (e) {
-                                done(e);
-                            }
-                        });
+                it('- the query is quick', function(done) {
+
+                    var delta = 25; //ms
+                    var before = new Date().getTime();
+                    getManagingShifts(managingShiftCount, function(err) {
+                        if (err) {
+                            done(err);
+                        } else {
+                            var after = new Date().getTime();
+                            var computedDelta = after - before;
+                            debug("Query took: " + computedDelta);
+                            expect(computedDelta).to.be.below(delta);
+                            done();
+                        }
+                    });
 
                 });
 
             });
+
+            describe('- group owner', function() {
+
+                var managingShiftCount = 5;
+
+                beforeEach(function(done) {
+
+                    login('groupowner',
+                        'secret',
+                        done);
+
+                });
+
+                it('- lists ALL shifts the user is managing', function(done) {
+
+                    getManagingShifts(managingShiftCount, done);
+
+                });
+
+            });
+
+            function getManagingShifts(managingShiftCount, done) {
+                request(app)
+                    .get('/api/shifts/managing')
+                    .expect(200)
+                    .end(function(err, res) {
+                        if (err) {
+                            done(err);
+                            return;
+                        }
+                        try {
+                            debug(res.text);
+                            var data = JSON.parse(res.text);
+                            data.should.be.a('array');
+                            data.length.should.equal(managingShiftCount);
+
+                            _.each(data, function(shift) {
+                                _.each(properties, function(property) {
+                                    shift.should.have.property(property);
+                                    shift.should.have.property('shiftapplications');
+                                });
+                            });
+
+                            done();
+                        } catch (e) {
+                            done(e);
+                        }
+                    });
+            }
 
         });
 
