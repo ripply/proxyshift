@@ -5,7 +5,10 @@ var cascade = 'cascade';
 var setnull = 'set null';
 var restrict = 'restrict';
 var boolean = 'boolean';
-var date = 'timestamp';
+// Fixtures library does not like timestamps in postgres for some reason
+// https://github.com/city41/node-sql-fixtures/blob/master/lib/prioritize.js#L177
+// so we are going to use UTC in a bitint as integer will only get us to 2038
+var date = 'bigint';
 
 // http://blog.ragingflame.co.za/2014/7/21/using-nodejs-with-mysql
 
@@ -274,7 +277,7 @@ var Schema = {
         },
         description: {
             type: string,
-            maxlen: 30
+            maxlen: 256
         },
         start: {
             type: date,

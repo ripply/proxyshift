@@ -1,6 +1,7 @@
 var middleware = require('./misc/middleware'),
     _ = require('underscore'),
     models = require('../app/models'),
+    time = require('../app/time'),
     passport = require('passport');
 
 require('./../app/configure_passport');
@@ -38,6 +39,36 @@ module.exports = function(app, settings){
         console.log(req.session);
         res.send(200);
         console.log("Sent 200 response");
+    });
+
+    // return current server time in utc
+    app.get('/api/utc', function(req, res, next) {
+        res.status(200).send('' + time.nowInUtc());
+    });
+
+    // check that client's time is close enough to server's
+    app.post('/api/utc', function(req, res, next) {
+        var currentTimeInUtc = time.nowInUtc();
+        var keys = Object.keys(req.body);
+        var clientsTimeInUtc;
+
+        if (keys.length > 0) {
+            clientsTimeInUtc = parseInt(keys[0]);
+        }
+
+        if (isNaN(clientsTimeInUtc)) {
+            res.status(400).send('' + currentTimeInUtc);
+        } else {
+            var delta = currentTimeInUtc - clientsTimeInUtc;
+
+            if (Math.abs(delta) > time.deltaDifferenceThreshold) {
+                // client is differs too much
+                res.status(403).send('' + currentTimeInUtc);
+            } else {
+                // client's time is close enough
+                res.status(200).send('' + currentTimeInUtc);
+            }
+        }
     });
 
     app.post('/session/login', requireJson, function(req, res, next) {
