@@ -18,12 +18,7 @@ function audit(req, text) {
 var defaultBannedKeys = ['id'];
 
 module.exports = {
-    error: function(req, res, err) {
-        console.log(req.originalUrl + " => " + err + "\n" + err.stack);
-        if (res !== undefined && res !== null) {
-            res.status(500).json({error: true, data: {message: err}});
-        }
-    },
+    error: error,
     getCurrentTimeForInsertionIntoDatabase: function() {
         return (new moment()).unix();
     },
@@ -55,12 +50,12 @@ module.exports = {
                             res.json({error: false, data: {message: updateMessage}});
                         })
                         .catch(function (err) {
-                            res.status(500).json({error: true, data: {message: err.message}});
+                            error(req, res, err);
                         });
                 }
             })
             .catch(function (err) {
-                res.status(500).json({error: true, data: {message: err.message}});
+                error(req, res, err);
             });
     },
     simpleGetSingleModel: function(modelName, queryArgs, req, res) {
@@ -74,7 +69,7 @@ module.exports = {
                 }
             })
             .catch(function (err) {
-                res.status(500).json({error: true, data: {message: err.message}});
+                error(req, res, err);
             });
     },
     simpleGetListModel: function(modelName, queryArgs, req, res) {
@@ -84,7 +79,7 @@ module.exports = {
                 res.json(fetchedResult);
             })
             .catch(function (err) {
-                res.status(500).json({error: true, data: {message: err.message}});
+                error(req, res, err);
             });
     },
     postModel: function(modelName, otherArgs, req, res, bannedKeys, sqlOptions) {
@@ -98,7 +93,7 @@ module.exports = {
                 res.status(201).json({id: saved.get('id')});
             })
             .catch(function (err) {
-                res.status(500).json({error: true, data: {message: err.message}});
+                error(req, res, err);
             });
     },
     deleteModel: function(modelName, queryArgs, req, res, successMessage, sqlOptions) {
@@ -109,7 +104,7 @@ module.exports = {
                 res.json({error: false, data: {message: successMessage}});
             })
             .catch(function (err) {
-                res.status(500).json({error: true, data: {message: err.message}});
+                error(req, res, err);
             });
     },
     grabNormalShiftRange: grabNormalShiftRange,
@@ -250,4 +245,14 @@ function createSelectQueryForAllColumns(modelName, tablename) {
     });
 
     return columns;
+}
+
+function error(req, res, err, message) {
+    console.log(req.originalUrl + " => " + err + "\n" + err.stack);
+    if (res !== undefined && res !== null) {
+        if (message === undefined) {
+            message = err.message;
+        }
+        res.status(500).json({error: true, data: {message: message}});
+    }
 }

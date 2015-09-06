@@ -52,7 +52,7 @@ module.exports = {
                         res.json(collection.toJSON());
                     })
                     .catch(function(err) {
-                        res.status(500).json({error: true, data: {message: err.message}});
+                        error(req, res, err);
                     });
             }
         }
@@ -130,7 +130,7 @@ module.exports = {
                         }
                     })
                     .catch(function(err) {
-                        res.status(500).json({error: true, data: {message: err.message}});
+                        error(req, res, err);
                     })
             }
         }
@@ -205,7 +205,7 @@ module.exports = {
                         }
                     })
                     .catch(function(err) {
-                        res.status(500).json({error: true, data: {message: err.message}});
+                        error(req, res, err);
                     })
             }
         }
@@ -364,7 +364,7 @@ module.exports = {
                         // do nothing, tap should take care of it
                     })
                     .catch(function (err) {
-                        res.status(500).json({error: true, data: {message: err.message}});
+                        error(req, res, err);
                     });
             }
         },
@@ -555,7 +555,7 @@ module.exports = {
                 console.log(shift);
             })
             .catch(function (err) {
-                res.status(500).json({error: true, data: {message: err.message}});
+                error(req, res, err);
             });
     },
     getShiftsYouAreManaging: getShiftsYouAreManaging

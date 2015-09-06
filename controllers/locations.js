@@ -46,7 +46,7 @@ module.exports = {
                         }
                     })
                     .catch(function(err) {
-                        res.status(500).json({error: true, data: {message: err.message}});
+                        error(req, res, err);
                     });
             }
         }
@@ -160,7 +160,7 @@ module.exports = {
                         }
                     })
                     .catch(function(err) {
-                        res.status(500).json({error: true, data: {message: err.message}});
+                        error(req, res, err);
                     })
             }
         }
@@ -247,7 +247,7 @@ module.exports = {
                         }
                     })
                     .catch(function (err) {
-                        res.status(500).json({error: true, data: {message: err.message}});
+                        error(req, res, err);
                     });
             }
         },
@@ -284,12 +284,12 @@ module.exports = {
                                             })
                                             .catch(function(err) {
                                                 t.rollback();
-                                                res.status(500).json({error: true, data: {message: err.message}});
+                                                error(req, res, err);
                                             });
                                     })
                                     .catch(function(err) {
                                         t.rollback();
-                                        res.status(500).json({error: true, data: {message: err.message}});
+                                        error(req, res, err);
                                     });
                             } else {
                                 req.sendStatus(403);
@@ -297,7 +297,7 @@ module.exports = {
                         })
                         .catch(function(err) {
                             t.rollback();
-                            res.status(500).json({error: true, data: {message: err.message}});
+                            error(req, res, err);
                         })
                     })
             }
@@ -363,6 +363,6 @@ function getShiftsAtLocation(req, res, before, after) {
             }
         })
         .catch(function(err) {
-            res.status(500).json({error: true, data: {message: err.message}});
+            error(req, res, err);
         })
 }

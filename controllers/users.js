@@ -7,6 +7,7 @@ var models = require('../app/models'),
     postModel = require('./controllerCommon').postModel,
     patchModel = require('./controllerCommon').patchModel,
     deleteModel = require('./controllerCommon').deleteModel,
+    error = require('./controllerCommon').error,
     Bookshelf = models.Bookshelf;
 
 var modifiableAccountFields = [
@@ -30,7 +31,7 @@ module.exports = {
                         res.json(collection.toJSON());
                     })
                     .catch(function (err) {
-                        res.status(500).json({error: true, data: {message: err.message}});
+                        error(req, res, err);
                     });
             }
         },
@@ -54,7 +55,7 @@ module.exports = {
                         res.json({id: user.get('id')});
                     })
                     .catch(function (err) {
-                        res.status(500).json({error: true, data: {message: err.message}});
+                        error(req, res, err);
                     });
             }
         },
@@ -108,7 +109,7 @@ module.exports = {
                             res.json({error: false, data: {message: 'User successfully deleted'}});
                         })
                         .catch(function (err) {
-                            res.status(500).json({error: true, data: {message: err.message}});
+                            error(req, res, err);
                         });
                 }
             }
@@ -138,7 +139,7 @@ module.exports = {
                             }
                         })
                         .catch(function (err) {
-                            res.status(500).json({error: true, data: {message: err.message}});
+                            error(req, res, err);
                         });
                 }
             }
@@ -191,7 +192,7 @@ module.exports = {
                             res.json({error: false, data: {message: 'User successfully deleted'}});
                         })
                         .catch(function (err) {
-                            res.status(500).json({error: true, data: {message: err.message}});
+                            error(req, res, err);
                         });
                 }
             }

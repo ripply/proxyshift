@@ -6,6 +6,7 @@ var models = require('../app/models'),
     patchModel = require('./controllerCommon').patchModel,
     deleteModel = require('./controllerCommon').deleteModel,
     getPatchKeysWithoutBannedKeys = require('./controllerCommon').getPatchKeysWithoutBannedKeys,
+    error = require('./controllerCommon').error,
     Bookshelf = models.Bookshelf;
 
 module.exports = {
@@ -20,7 +21,7 @@ module.exports = {
                         res.json(groups.toJSON());
                     })
                     .catch(function (err) {
-                        res.status(500).json({error: true, data: {message: err.message}});
+                        error(req, res, err);
                     });
             }
         },
@@ -57,7 +58,7 @@ module.exports = {
                         res.json({id: group.get('id')});
                     })
                     .catch(function (err) {
-                        res.status(500).json({error: true, data: {message: err.message}});
+                        error(req, res, err);
                     });
             }
         }
@@ -87,7 +88,7 @@ module.exports = {
                         }
                     })
                     .catch(function (err) {
-                        res.status(500).json({error: true, data: {message: err.message}});
+                        error(req, res, err);
                     });
             }
         },
@@ -129,11 +130,11 @@ module.exports = {
                                     }
                                 })
                                 .catch(function(err) {
-                                    res.status(500).json({error: true, data: {message: err}});
+                                    error(req, res, err);
                                 })
                         })
                         .catch(function (err) {
-                            res.status(500).json({error: true, data: {message: err.message}});
+                            error(req, res, err);
                         });
                 });
             }
@@ -233,7 +234,7 @@ module.exports = {
                         res.json(groupmembers.toJSON());
                     })
                     .catch(function(err) {
-                        res.status(500).json({error: true, data: {message: err.message}});
+                        error(req, res, err);
                     });
             }
         }
@@ -268,7 +269,7 @@ module.exports = {
                         }
                     })
                     .catch(function(err) {
-                        res.status(500).json({error: true, data: {message: err.message}});
+                        error(req, res, err);
                     });
             }
         },
@@ -331,14 +332,14 @@ module.exports = {
                                         res.json({error: false, data: {message: 'Success'}});
                                     })
                                     .catch(function(err) {
-                                        res.status(500).json({error: true, data: {message: err.message}});
+                                        error(req, res, err);
                                     });
                             } else {
                                 res.sendStatus(403);
                             }
                         })
                         .catch(function(err) {
-                            res.status(500).json({error: true, data: {message: err.message}});
+                            error(req, res, err);
                         })
                 });
             }
@@ -399,14 +400,14 @@ module.exports = {
                                         }
                                     })
                                     .catch(function (err) {
-                                        res.status(500).json({error: true, data: {message: err.message}});
+                                        error(req, res, err);
                                     });
                             } else {
                                 res.sendStatus(403);
                             }
                         })
                         .catch(function (err) {
-                            res.status(500).json({error: true, data: {message: err.message}});
+                            error(req, res, err);
                         });
                 });
             }
@@ -464,14 +465,14 @@ module.exports = {
                                         }
                                     })
                                     .catch(function (err) {
-                                        res.status(500).json({error: true, data: {message: err.message}});
+                                        error(req, res, err);
                                     });
                             } else {
                                 res.sendStatus(403);
                             }
                         })
                         .catch(function (err) {
-                            res.status(500).json({error: true, data: {message: err.message}});
+                            error(req, res, err);
                         });
                 });
             }
@@ -567,7 +568,7 @@ module.exports = {
                         }
                     })
                     .catch(function(err) {
-                        res.status(500).json({error: true, data: {message: "Failed to delete Area"}});
+                        error(req, res, err, 'Failed to delete Area');
                     });
             }
         }
@@ -593,7 +594,7 @@ module.exports = {
                         }
                     })
                     .catch(function (err) {
-                        res.status(500).json({error: true, data: {message: err.message}});
+                        error(req, res, err);
                     });
             }
         }
@@ -618,7 +619,7 @@ module.exports = {
                         res.json(grouppermissions);
                     })
                     .catch(function (err) {
-                        res.status(500).json({error: true, data: {message: err.message}});
+                        error(req, res, err);
                     });
             }
         },
@@ -652,7 +653,7 @@ module.exports = {
                             }
                         })
                         .catch(function (err) {
-                            res.status(500).json({error: true, data: {message: err.message}});
+                            error(req, res, err);
                         });
                 });
             }
@@ -687,7 +688,7 @@ module.exports = {
                         }
                     })
                     .catch(function(err) {
-                        res.status(500).json({error: true, data: {message: err}});
+                        error(req, res, err);
                     });
             }
         },
@@ -713,7 +714,7 @@ module.exports = {
                         }
                     })
                     .catch(function(err) {
-                        res.status(500).json({error: true, data: {message: err}});
+                        error(req, res, err);
                     });
             }
         }
@@ -740,7 +741,7 @@ module.exports = {
                         }
                     })
                     .catch(function(err) {
-                        res.status(500).json({error: true, data: {message: err}});
+                        error(req, res, err);
                     });
             }
         }
