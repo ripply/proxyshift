@@ -16,7 +16,7 @@ var time = require('../../app/time');
 var debug = global.debug;
 var parse = global.parse;
 
-describe('#/utc', function() {
+describe('#/api/utc', function() {
 
     before(function (done) {
         require(ROOT_DIR + '/routes/preauth')(app, settings);

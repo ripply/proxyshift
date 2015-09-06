@@ -1,3 +1,5 @@
+var logger = require('./../../app/logger');
+
 // Simple route middleware to ensure user is authenticated.
 //   Use this route middleware on any resource that needs to be protected.  If
 //   the request is authenticated (typically via a persistent login session),
@@ -11,7 +13,7 @@ function ensureAuthenticated(req, res, next) {
         //console.log("Authentication failed");
     }
     // 401 is Unauthorized response
-    console.log(req.baseUrl);
+    logger.unauthenticatedUserTriedToAccessProtectedResource(req, res);
     res.sendStatus(401);
 }
 
