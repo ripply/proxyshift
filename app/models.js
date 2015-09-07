@@ -44,7 +44,7 @@ var dbConnection = {};
 if (global.db_dialect === undefined) {
     if (process.env.DATABASE_URL !== undefined) {
         // running in heroku?
-        var re = /postgres:\/\/([^:]*):([^@]*)@([^:]*):(\d*)\/(.*)/;
+        var re = /([^:]):\/\/([^:]*):([^@]*)@([^:]*):(\d*)\/(.*)/;
         var match;
 
         if ((match = re.exec(process.env.DATABASE_URL)) !== null) {
@@ -53,12 +53,22 @@ if (global.db_dialect === undefined) {
             }
             console.log("Seem to be running in heroku, trying to connect to database");
 
-            global.db_dialect = 'pg';
-            global.db_user = match[1];
-            global.db_password = match[2];
-            global.db_host = match[3];
-            global.db_port = match[4];
-            global.db_database = match[5];
+            switch(match[1]) {
+                case 'postgres':
+                    global.db_dialect = 'pg';
+                    break;
+                case 'mysql':
+                    global.db_dialect = 'mysql';
+                    break;
+                default:
+                    console.log("Unknown database type: " + match[1]);
+                    global.db_dialect = 'pg';
+            }
+            global.db_user = match[2];
+            global.db_password = match[3];
+            global.db_host = match[4];
+            global.db_port = match[5];
+            global.db_database = match[6];
             global.db_ssl = true;
         }
     }
