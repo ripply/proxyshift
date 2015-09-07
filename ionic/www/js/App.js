@@ -7,6 +7,7 @@
 angular.module('scheduling-app', [
     'ionic',
     'ngCookies',
+    'gettext',
     'scheduling-app.controllers',
     'scheduling-app.authentication',
     'scheduling-app.models',
