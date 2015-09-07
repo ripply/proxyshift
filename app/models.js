@@ -16,6 +16,7 @@ var mongoose = require('mongoose'),
     ValidationError = Validator.ValidationError,
 // TODO: move encryption file to this folder if encrypting with bookshelf events turns out to work well
     encryptKey = require('../controllers/encryption/encryption').encryptKey,
+    time = require('./time'),
     SALT_WORK_FACTOR = 10;
 
 var db_file = './data/database.db';
@@ -743,7 +744,7 @@ function consumeRememberMeToken(token, next) {
         q.select('tokens.*')
             .innerJoin('users', function () {
                 this.on('tokens.user_id', '=', 'users.id')
-                    .andOn('tokens.date', '>', new Date().getTime())
+                    .andOn('tokens.date', '>', time.nowInUtc())
                     .andOn('tokens.token' , token)
             })
     })
@@ -779,11 +780,10 @@ function saveRememberMeToken(token, uid, next) {
     models.User.forge({id: uid})
         .fetch({require: true})
         .then(function(foundUser) {
-            var expires = new Date();
-            expires.setDate(expires.getDate() + tokens_expire_in_x_days);
+            var expires = new moment().add(tokens_expire_in_x_days, 'days').unix();
 
             Bookshelf.knex('tokens')
-                .where('date', '<', Date.now())
+                .where('date', '<', time.nowInUtc())
                 .del()
                 .then(function(numRows) {
                     if (numRows > 0) {
