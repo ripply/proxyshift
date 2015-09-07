@@ -35,6 +35,8 @@ angular.module('scheduling-app.session', [
             var accessedRestrictedResourceExpires = null;
             var retryResourceIn = GENERAL_CONFIG.SESSION_RETRY_ACCESSED_RESOURCE_IN;
             var failedLogin = false;
+            var userinfo = {};
+            this.userinfo = userinfo;
 
             function setAuthenticated(authenticated) {
                 accessedRestrictedResource = authenticated;
@@ -45,7 +47,11 @@ angular.module('scheduling-app.session', [
             }
 
             function isAuthenticated() {
-                return (accessedRestrictedResource && moment() < accessedRestrictedResourceExpires);
+                if (Object.keys(userinfo).length === 0) {
+                    return false;
+                } else {
+                    return (accessedRestrictedResource && moment() < accessedRestrictedResourceExpires);
+                }
             }
 
             function fireAuthenticaionRequiredEvent(loggingOut) {
@@ -112,19 +118,33 @@ angular.module('scheduling-app.session', [
                                 // successfully accessed a restriced resource
                                 // we are already logged in
                                 console.debug("Able to access protected resource, logged in.");
-                                fireAuthenticationConfirmedEvent(loggingOut);
-                                resolve(deferred);
+                                $http.get(api_url + GENERAL_CONFIG.APP_URL_API + "/users/userinfo", {
+                                    timeout: GENERAL_CONFIG.LOGIN_TIMEOUT
+                                })
+                                    .success(function (data, status, headers, config) {
+                                        angular.extend(userinfo, data);
+                                        fireAuthenticationConfirmedEvent(loggingOut);
+                                        resolve(deferred);
+                                    })
+                                    .error(function (data, status, headers, config) {
+                                        console.debug("Failed to fetch userinfo, which is required");
+                                        failedLoginFunc();
+                                    });
                             })
                             .error(function (data, status, headers, config) {
                                 // failed to access a protected resource
                                 // TODO: Handle connection timeouts here
                                 console.debug("Failed to access protected resource, not logged in");
-                                // set flag that forces this method to return false
-                                // until the user is logged in
-                                failedLogin = true;
-                                fireAuthenticaionRequiredEvent(loggingOut);
-                                reject(deferred);
+                                failedLoginFunc();
                             });
+
+                        function failedLoginFunc() {
+                            // set flag that forces this method to return false
+                            // until the user is logged in
+                            failedLogin = true;
+                            fireAuthenticaionRequiredEvent(loggingOut);
+                            reject(deferred);
+                        }
                     }
                 } else {
                     // remember me token exists.
