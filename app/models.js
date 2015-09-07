@@ -41,6 +41,27 @@ if (global.okToDropTables) {
 
 var dbConnection = {};
 
+if (global.db_dialect === undefined) {
+    if (process.env.DATABASE_URL !== undefined) {
+        // running in heroku?
+        var re = /postgres:\/\/([^:]*):([^@]*)@([^:]*):(\d*)\/(.*)/;
+        var match;
+
+        if ((match = re.exec(process.env.DATABASE_URL)) !== null) {
+            if (match.index === re.lastIndex) {
+                re.lastIndex++;
+            }
+            console.log("Seem to be running in heroku, trying to connect to database");
+
+            global.db_dialect = 'pg';
+            global.user = match[1];
+            global.password = match[2];
+            global.host = match[3] + ':' + match[4];
+            global.database = match[5];
+        }
+    }
+}
+
 if ((global.db_dialect || 'sqlite3') == 'sqlite3') {
     dbConnection.filename = database;
 } else {
