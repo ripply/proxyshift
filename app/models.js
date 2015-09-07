@@ -54,15 +54,12 @@ if (global.db_dialect === undefined) {
             console.log("Seem to be running in heroku, trying to connect to database");
 
             global.db_dialect = 'pg';
-            global.user = match[1];
-            global.password = match[2];
-            global.host = match[3] + ':' + match[4];
-            global.database = match[5];
-
-            console.log("User: " + global.user);
-            console.log("Password: " + global.password);
-            console.log("Host: " + global.host);
-            console.log("Database: " + global.database);
+            global.db_user = match[1];
+            global.db_password = match[2];
+            global.db_host = match[3];
+            global.db_port = match[4];
+            global.db_database = match[5];
+            global.db_ssl = true;
         }
     }
 }
@@ -72,8 +69,14 @@ if ((global.db_dialect || 'sqlite3') == 'sqlite3') {
 } else {
     dbConnection.host = global.db_host;
     dbConnection.user = global.db_user;
+    if (global.db_port !== undefined) {
+        dbConnection.port = global.db_port;
+    }
     dbConnection.password = global.db_password;
     dbConnection.database = global.db_database;
+    if (global.db_ssl !== undefined) {
+        dbConnection.ssl = global.db_ssl;
+    }
 }
 
 var knex = require('knex')( {
