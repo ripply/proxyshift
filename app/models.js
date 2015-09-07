@@ -58,6 +58,11 @@ if (global.db_dialect === undefined) {
             global.password = match[2];
             global.host = match[3] + ':' + match[4];
             global.database = match[5];
+
+            console.log("User: " + global.user);
+            console.log("Password: " + global.password);
+            console.log("Host: " + global.host);
+            console.log("Database: " + global.database);
         }
     }
 }
