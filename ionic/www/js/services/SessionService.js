@@ -36,7 +36,7 @@ angular.module('scheduling-app.session', [
             var retryResourceIn = GENERAL_CONFIG.SESSION_RETRY_ACCESSED_RESOURCE_IN;
             var failedLogin = false;
             var userinfo = {};
-            this.userinfo = userinfo;
+            $rootScope.userinfo = userinfo;
 
             function setAuthenticated(authenticated) {
                 accessedRestrictedResource = authenticated;
@@ -71,6 +71,29 @@ angular.module('scheduling-app.session', [
             $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.CONFIRMED, function() {
                 failedLogin = false;
             });
+
+            $rootScope.$on(GENERAL_EVENTS.UPDATES.USERINFO.UPDATENEEDED, function() {
+                updateUserInfo($rootScope);
+            });
+
+            function updateUserInfo($scope, success, error) {
+                $http.get(GENERAL_CONFIG.APP_URL + GENERAL_CONFIG.APP_URL_API + "/users/userinfo", {
+                    timeout: GENERAL_CONFIG.LOGIN_TIMEOUT
+                })
+                    .success(function (data, status, headers, config) {
+                        angular.extend(userinfo, data);
+                        $scope.$emit(GENERAL_EVENTS.UPDATES.USERINFO.SUCCESS);
+                        if (success) {
+                            success();
+                        }
+                    })
+                    .error(function (data, status, headers, config) {
+                        $scope.$emit(GENERAL_EVENTS.UPDATES.USERINFO.FAILED);
+                        if (error) {
+                            error();
+                        }
+                    });
+            }
 
             var checkingAuthenticationPromise = false;
 
@@ -118,18 +141,13 @@ angular.module('scheduling-app.session', [
                                 // successfully accessed a restriced resource
                                 // we are already logged in
                                 console.debug("Able to access protected resource, logged in.");
-                                $http.get(api_url + GENERAL_CONFIG.APP_URL_API + "/users/userinfo", {
-                                    timeout: GENERAL_CONFIG.LOGIN_TIMEOUT
-                                })
-                                    .success(function (data, status, headers, config) {
-                                        angular.extend(userinfo, data);
-                                        fireAuthenticationConfirmedEvent(loggingOut);
-                                        resolve(deferred);
-                                    })
-                                    .error(function (data, status, headers, config) {
-                                        console.debug("Failed to fetch userinfo, which is required");
-                                        failedLoginFunc();
-                                    });
+                                updateUserInfo($rootScope, function() {
+                                    fireAuthenticationConfirmedEvent(loggingOut);
+                                    resolve(deferred);
+                                }, function() {
+                                    console.debug("Failed to fetch userinfo, which is required");
+                                    failedLoginFunc();
+                                });
                             })
                             .error(function (data, status, headers, config) {
                                 // failed to access a protected resource

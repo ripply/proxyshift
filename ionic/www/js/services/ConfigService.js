@@ -36,7 +36,14 @@ var config_data = {
             'FAILED': 'event:auth-logout-failed',
             'REQUESTED': 'event:auth-logout-requested'
         },
-        'SLOW_REQUEST': 'events:slow-request'
+        'SLOW_REQUEST': 'events:slow-request',
+        'UPDATES': {
+            'USERINFO': {
+                'UPDATENEEDED': 'events:updates:userinfo:updateneeded',
+                'FAILED': 'events:updates:userinfo:failed',
+                'SUCCESS': 'events:updates:userinfo:success'
+            }
+        }
     },
     'TOKENS': {
         'SESSION': 'connect.sid',
