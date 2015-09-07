@@ -17,6 +17,7 @@ function login(username, password, next) {
 
 function failToLogin(username, password, code, next) {
     try {
+        expect(code).to.not.be.undefined;
         expect(global.sess).to.not.be.undefined;
         global.sess.post('/session/login')
             .set('Accept', 'application/json')

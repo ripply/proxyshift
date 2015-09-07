@@ -7,6 +7,7 @@ var Promise = require('bluebird');
 var ready = models.onDatabaseReady;
 var expect = global.expect;
 var login = require('../common').login;
+var failToLogin = require('../common').failToLogin;
 var _ = require('underscore');
 
 var password = 'secret';
@@ -76,6 +77,15 @@ describe("#/session", function() {
                         .expect(401, done);
                 });
 
+                it('- password is case sensitive', function(done) {
+
+                    failToLogin('groupmember',
+                        'SECRET',
+                        401,
+                        done);
+
+                });
+
             });
 
             describe('- return 200', function() {
@@ -98,6 +108,14 @@ describe("#/session", function() {
                             }
                         }
                     );
+                });
+
+                it('- username is case insensitive', function(done) {
+
+                    login('groupMember',
+                        'secret',
+                        done);
+
                 });
 
                 it('- /session', function(done) {

@@ -34,7 +34,11 @@ passport.deserializeUser(function(id, done) {
 //   with a user object.  In the real world, this would query a database;
 //   however, in this example we are using a baked-in set of users.
 passport.use(new LocalStrategy(function(username, password, done) {
-    return new models.User({username: username})
+    return models.User.query(function(q) {
+        q.select()
+            .from('users')
+            .whereRaw('LOWER(username) LIKE ?', username.toLowerCase());
+    })
         .fetch({require: true})
         .then(function (user) {
             if(bcrypt.compareSync(password, user.get('password'))) {
