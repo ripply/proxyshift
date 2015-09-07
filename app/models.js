@@ -14,6 +14,7 @@ var mongoose = require('mongoose'),
     validations = require('../ionic/www/js/validation.js'),
     Validator = require('bookshelf-validator'),
     ValidationError = Validator.ValidationError,
+    moment = require('moment'),
 // TODO: move encryption file to this folder if encrypting with bookshelf events turns out to work well
     encryptKey = require('../controllers/encryption/encryption').encryptKey,
     time = require('./time'),
