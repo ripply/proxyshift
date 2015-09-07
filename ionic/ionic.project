@@ -1,6 +1,6 @@
 {
-  "name": "ionic",
-  "app_id": "b4e2134d",
+  "name": "Live Heroku - test/test",
+  "app_id": "ddcff636",
   "proxies": [
     {
       "path": "/csrf",

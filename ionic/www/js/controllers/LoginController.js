@@ -88,6 +88,7 @@ angular.module('scheduling-app.controllers')
         '$http',
         '$state',
         '$ionicModal',
+        'GENERAL_CONFIG',
         'AuthenticationService',
         'SessionService',
         'LoginControllerService',
@@ -96,10 +97,13 @@ angular.module('scheduling-app.controllers')
                  $http,
                  $state,
                  $ionicModal,
+                 GENERAL_CONFIG,
                  AuthenticationService,
                  SessionService,
                  LoginControllerService,
                  GENERAL_EVENTS) {
+
+            $scope.api = GENERAL_CONFIG.APP_URL;
 
             // TEMP FIX TO GET SIGNUP WORKING AGAIN
             // Create the signup modal that we will use later

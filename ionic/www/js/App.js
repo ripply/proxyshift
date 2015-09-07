@@ -23,14 +23,16 @@ angular.module('scheduling-app', [
         '$rootScope',
         '$ionicPlatform',
         'GENERAL_EVENTS',
+        'STATES',
         'StateHistoryService',
         'InitializeServices',
         function($rootScope,
                  $ionicPlatform,
                  GENERAL_EVENTS,
+                 STATES,
                  StateHistoryService,
                  InitializeServices) {
-            StateHistoryService.setDefaultState('app.playlists');
+            StateHistoryService.setDefaultState(STATES.HOME);
             function triggerAuthenticationCheck() {
                 console.log("Triggering auth check");
                 $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.CHECK);
@@ -79,8 +81,15 @@ angular.module('scheduling-app', [
             if (CORDOVA_SETTINGS.isWebView) {
                 GENERAL_CONFIG.APP_URL = GENERAL_CONFIG.APP_URL_PROD;
                 console.log("Detected running inside a webview using api source: " + GENERAL_CONFIG.APP_URL_PROD);
+            } else if (window.cordova) {
+                GENERAL_CONFIG.APP_URL = GENERAL_CONFIG.APP_URL_PROD;
+                console.log("Detected cordova, using api source: " + GENERAL_CONFIG.APP_URL_PROD);
+            } else if (document.location.protocol == "file:") {
+                GENERAL_CONFIG.APP_URL = GENERAL_CONFIG.APP_URL_PROD;
+                console.log("Detected running in ionic view, using api source: " + GENERAL_CONFIG.APP_URL_PROD);
             } else {
-                console.log("Running in browser using api source: " + GENERAL_CONFIG.APP_URL);
+                GENERAL_CONFIG.APP_URL = GENERAL_CONFIG.APP_URL_DEV;
+                console.log("Running in browser using dev api source: " + GENERAL_CONFIG.APP_URL);
             }
             //RestangularConfig.configure();
 
@@ -159,11 +168,15 @@ angular.module('scheduling-app', [
                     }
                 })
 
-                .state('app.search', {
-                    url: "/search",
+                .state('app.openshifts', {
+                    url: "/openshifts",
+                    //controller: 'EmployeeCtrl',
                     views: {
                         'menuContent': {
-                            templateUrl: "templates/search.html"
+                            templateUrl: "templates/openshifts.html",
+                        },
+                        'menu': {
+                            templateUrl: "templates/menuimpl.html",
                         }
                     }
                 })
@@ -177,7 +190,7 @@ angular.module('scheduling-app', [
                     }
                 })
 
-                .state(STATES.HOME, {
+                /*.state(STATES.HOME, {
                     url: "/playlists",
                     views: {
                         'menuContent': {
@@ -185,7 +198,7 @@ angular.module('scheduling-app', [
                             controller: 'PlaylistsCtrl'
                         }
                     }
-                })
+                })*/
 
                 .state('app.single', {
                     url: "/playlists/:playlistId",
@@ -227,9 +240,7 @@ angular.module('scheduling-app', [
                     }
                 });
 
-            STATES.wut = 'hey';
-
             //StateHistoryService.setDefaultState('app.playlists');
             // if none of the above states are matched, use this as the fallback
-            $urlRouterProvider.otherwise('/app/playlists');
+            $urlRouterProvider.otherwise(STATES.HOME);
         }]);
