@@ -1,9 +1,10 @@
 <div ng-show="AllShifts">
-    <div class="list card has-header">
+    <div class="list card has-header" ng-repeat="shift in AllShifts">
         <div class="item">
-            <h2>11/05/2015 8am-10pm</h2>
-            <p>Evo Hospital - Floor 2</p>
-            <p>Description</p>
+            <h2>{{shift.start}} - {{shift.end}}</h2>
+            <p>{{shift.title}}</p>
+            <p>Location: {{shift.location_id}}</p>
+            <p>{{shift.description}}</p>
         </div>
 
         <div class="item tabs tabs-secondary">
