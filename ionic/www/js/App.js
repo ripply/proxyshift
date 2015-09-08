@@ -8,6 +8,7 @@ angular.module('scheduling-app', [
     'ionic',
     'ngCookies',
     'gettext',
+    'restangular',
     'scheduling-app.controllers',
     'scheduling-app.authentication',
     'scheduling-app.models',
@@ -56,6 +57,7 @@ angular.module('scheduling-app', [
         '$stateProvider',
         '$urlRouterProvider',
         '$injector',
+        'RestangularProvider',
         'STATES',
         'GENERAL_CONFIG',
         'CORDOVA_SETTINGS',
@@ -63,6 +65,7 @@ angular.module('scheduling-app', [
         function($stateProvider,
                  $urlRouterProvider,
                  $injector,
+                 RestangularProvider,
                  STATES,
                  GENERAL_CONFIG,
                  CORDOVA_SETTINGS
@@ -92,6 +95,9 @@ angular.module('scheduling-app', [
                 GENERAL_CONFIG.APP_URL = GENERAL_CONFIG.APP_URL_DEV;
                 console.log("Running in browser using dev api source: " + GENERAL_CONFIG.APP_URL);
             }
+            // update restangular configuration so that models will use new base url
+            var base_url = GENERAL_CONFIG.APP_URL + GENERAL_CONFIG.APP_URL_API;
+            RestangularProvider.setBaseUrl(base_url);
             //RestangularConfig.configure();
 
             // Services cannot be asked for during config
