@@ -32,15 +32,40 @@ angular.module('scheduling-app.controllers')
             $scope.fetch = function () {
                 angular.forEach($scope._models, function(objectMap, objectName) {
                     var addFunction = objectMap.add;
+                    var subRouteFunction = objectMap.subRoute;
                     var object = objectMap.object;
 
                     if (!objectMap.pendingFetch ||
                         (objectMap.pendingFetch && !objectMap.pendingFetch.isPending())) {
                         // object is currently not pending or the pending fetch is finished
                         setPending(objectName);
-                        objectMap.pendingFetch = object.getList();
+                        objectMap.pendingFetch = subRouteFunction(object);
                         objectMap.pendingFetch.then(function(result) {
-                            $scope[objectName] = result;
+                            // check if result is an empty array or empty object
+                            // if it is, then delete the variable from scope
+                            // this makes it easy to ng-show in templates
+
+                            // TODO: Make this check an optional flag
+                            if (result !== null && result !== undefined) {
+                                if (result instanceof Array) {
+                                    if (result.length === 0) {
+                                        result = undefined;
+                                    }
+                                } else if (typeof result === 'object') {
+                                    result = undefined;
+                                }
+                            }
+
+                            if (result === undefined || result === null) {
+                                if ($scope.hasOwnProperty(objectName)) {
+                                    delete $scope[objectMap];
+                                } else {
+                                    // do nothing
+                                }
+                            } else {
+                                $scope[objectName] = result;
+                            }
+
                             delete objectMap.pendingFetch;
                             setSuccess(true);
                         }, function(err) {
@@ -76,7 +101,7 @@ angular.module('scheduling-app.controllers')
                 setNeedsInitialization(true);
             });
 
-            function register(modelName, modelObject, addFunction) {
+            function register(modelName, modelObject, addFunction, subRouteFetchFunction) {
                 if (arguments.length <= 2) {
                     // assume 2nd argument is addFunction
                     // get 2nd argument via modelName
@@ -88,8 +113,14 @@ angular.module('scheduling-app.controllers')
                 if ($scope._models.hasOwnProperty(modelName)) {
                     $scope.unregister(modelName);
                 }
+                if (subRouteFetchFunction === undefined) {
+                    subRouteFetchFunction = function(model) {
+                        return model.getList();
+                    }
+                }
                 $scope._models[modelName] = {
                     add: addFunction,
+                    subRoute: subRouteFetchFunction,
                     object: modelObject
                 };
             }

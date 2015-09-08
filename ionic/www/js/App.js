@@ -177,7 +177,7 @@ angular.module('scheduling-app', [
 
                 .state('app.openshifts', {
                     url: "/openshifts",
-                    //controller: 'EmployeeCtrl',
+                    controller: 'OpenShiftsController',
                     views: {
                         'menuContent': {
                             templateUrl: "templates/openshifts.html",

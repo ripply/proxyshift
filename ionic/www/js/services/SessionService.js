@@ -47,7 +47,12 @@ angular.module('scheduling-app.session', [
             }
 
             function isAuthenticated() {
-                if (Object.keys(userinfo).length === 0) {
+                var keys = [];
+                for (var key in userinfo) {
+                    keys.push(key);
+                }
+
+                if (keys.length === 0) {
                     return false;
                 } else {
                     return (accessedRestrictedResource && moment() < accessedRestrictedResourceExpires);

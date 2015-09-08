@@ -2,13 +2,52 @@
  * UserModel
  */
 module = angular.module('scheduling-app.models');
-_.each(['Users', 'Shifts', 'Groups', 'UserGroups', 'GroupSettings'], function(key, index) {
+_.each({
+    'Users': 'Users',
+    'Shifts': 'Shifts',
+    'AllShifts': {
+        'Shifts': '/all'
+    },
+    'Groups': 'Groups',
+    'UserGroups': 'UserGroups',
+    'GroupSettings': 'GroupSettings'
+}, function(definition, modelName) {
 
 module
-    .service(key + 'Model', ['Restangular', function(Restangular) {
-        var newModel = Restangular.service(key);
+    .service(modelName + 'Model', ['Restangular', function(Restangular) {
+        var baseRoute = definition;
+        var nestedRoutes;
+        if (typeof definition === 'object') {
+            // build nested route
+            var keys = [];
+            for (var key in definition) {
+                keys.push(key);
+            }
+            nestedRoutes = keys[0];
+            subRoute = definition[nestedRoutes];
+            subRoutes = subRoute.split('/');
+            nestedRoutes = Restangular.one(nestedRoutes.toLowerCase());
+            for (var i = 0; i < subRoutes.length; i++) {
+                if (subRoutes[i].length > 0) {
+                    if (subRoutes[i] < (i - 1)) {
+                        nestedRoutes = nestedRoutes.one(subRoutes[i]);
+                    } else {
+                        // last item goes as first argument to Restangular.service
+                        baseRoute = subRoutes[i];
+                    }
+                }
+            }
+        }
 
-        Restangular.extendModel(key, function(model) {
+        var newModel;
+        if (nestedRoutes === undefined) {
+            newModel = Restangular.service(baseRoute);
+        } else {
+            newModel = Restangular.service(baseRoute, nestedRoutes);
+        }
+
+
+        Restangular.extendModel(modelName, function(model) {
             model.getResult = function() {
                 if (this.status == 'complete') {
                     if (this.passed === null) return "Finished";

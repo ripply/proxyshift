@@ -6,7 +6,8 @@ angular.module('scheduling-app.controllers')
         '$scope',
         '$controller',
         'GENERAL_CONFIG',
-        function($scope, $controller, GENERAL_CONFIG) {
+        'GroupsModel',
+        function($scope, $controller, GENERAL_CONFIG, GroupsModel) {
             $controller('BaseModelController', {$scope: $scope});
-            $scope.register('GroupsModel');
+            $scope.register('GroupsModel', GroupsModel);
         }]);
