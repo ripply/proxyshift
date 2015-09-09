@@ -235,8 +235,10 @@ module.exports = {
             // TODO: Refactor this method to return true/false and make new method that has original behavior
             return markIfGroupOwnerOrPrivilegedMemberForShift
                 .then(function(result) {
-                    if (req.user._privileged && req.user._privileged[req.params.shift_id]) {
-                        delete req.user._privileged[req.params.shift_id];
+                    var mark = getMark(req, 'privilegedshift', req.params.shift_id);
+                    clearMarks(req);
+
+                    if (mark) {
                         return true;
                     }
 
