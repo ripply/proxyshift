@@ -42,7 +42,8 @@ var config_data = {
                 'UPDATENEEDED': 'events:updates:userinfo:updateneeded',
                 'FAILED': 'events:updates:userinfo:failed',
                 'SUCCESS': 'events:updates:userinfo:success'
-            }
+            },
+            'RESOURCE': 'events:updates:resource'
         }
     },
     'TOKENS': {

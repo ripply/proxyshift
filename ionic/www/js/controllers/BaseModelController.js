@@ -2,8 +2,11 @@ angular.module('scheduling-app.controllers')
     .controller('BaseModelController', [
         '$scope',
         '$injector',
+        'GENERAL_EVENTS',
         function($scope,
-                 $injector) {
+                 $injector,
+                 GENERAL_EVENTS
+        ) {
             if ($scope._models === undefined) {
                 $scope._models = {};
             }
@@ -56,6 +59,8 @@ angular.module('scheduling-app.controllers')
                                 }
                             }
 
+                            var oldValue = $scope[objectName];
+
                             if (result === undefined || result === null) {
                                 if ($scope.hasOwnProperty(objectName)) {
                                     delete $scope[objectMap];
@@ -68,6 +73,8 @@ angular.module('scheduling-app.controllers')
 
                             delete objectMap.pendingFetch;
                             setSuccess(true);
+
+                            $scope.$emit(GENERAL_EVENTS.UPDATES.RESOURCE, objectName, result, oldValue);
                         }, function(err) {
                             delete objectMap.pendingFetch;
                             setFailed(objectName, err);
