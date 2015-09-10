@@ -24,38 +24,9 @@ module.exports = {
     route: '/api/shifts',
     '/after/:after/before/:before': {
         'get': { // return all shifts you are connected to
-            // auth: // logged in
+            auth: ['mark if user is a group owner or privileged location member for this shift'],// logged in
             route: function(req, res) {
-                // fetch the last month of shifts
-                // the current month
-                // and the next 2 months
-                // if the user needs more in the calendar
-                // the calendar will request specific ranges
-                // TODO: Cache these dates until month ticks?
-                var after = req.param("after");
-                var before = req.param("before");
-                console.log("before: " + before + ", after: " + after);
-                var now = new Date();
-                var range = grabNormalShiftRange(now, after, before);
-                after = range[0];
-                before = range[1];
-
-                if (before > after) {
-                    return res.status(400).json({error: true, data: {message: 'Invalid date range'}});
-                }
-                // TODO: THIS ROUTE HAS NO SECURITY AND NEEDS TESTS
-                models.Shifts.forge()
-                    .query(function(q) {
-                        q.where('start', '<=', before)
-                            .orWhere('end', '>=', after)
-                    })
-                    .fetch()
-                    .then(function(collection) {
-                        res.json(collection.toJSON());
-                    })
-                    .catch(function(err) {
-                        error(req, res, err);
-                    });
+                getShifts(req, res);
             }
         }
     },
@@ -225,149 +196,7 @@ module.exports = {
         'get': { // get info about a shift
             auth: ['mark if user is a group owner or privileged location member for this shift'], // connected to shift (part of location) or managing the shift
             route: function(req, res) {
-                // determine if the user is allowed to access this
-                var privilegedshift = getMark(req, 'privilegedshift', req.params.shift_id);
-                clearMarks(req);
-                Bookshelf.transaction(function(t) {
-
-                    var query = null;
-                    if (privilegedshift) {
-                        // privileged user
-                        // has to allow fetching of managing shifts
-                        query = models.Shift.query(function (q) {
-                            // there does not need to be any complex
-                            // security checking in this method
-                            // the auth method has already performed the following checks:
-                            // that the user is either a group owner tied to the location or sublocation of the shift
-                            // or that the user is a privileged location member tied to the location or sublocation
-                            // therefore, since privileged location members should be able to access any shift they want
-                            // and they specifically accessed this one
-                            // we will allow it since the prerequisites have already been checked
-                            q.select('shifts.*')
-                                .from('shifts')
-                                .where('shifts.id', '=', req.params.shift_id)
-                                .innerJoin('locations', function () {
-                                    this.on('shifts.location_id', '=', 'locations.id');
-                                });
-                        })
-                    } else {
-                        // unprivileged user
-                        // only allows shifts they are elligible for
-                        query = models.Shift.query(function (q) {
-                            // grab groups the user is a part of
-                            var relatedGroupsSubQuery =
-                                knex.select('usergroups.group_id as wat')
-                                    .from('usergroups')
-                                    .where('usergroups.user_id', '=', req.user.id)
-                                    .union(function () {
-                                        this.select('groups.id as wat')
-                                            .from('groups')
-                                            .where('groups.user_id', '=', req.user.id);
-                                    });
-
-                            // grab locations related to all of those groups
-                            var relatedLocationsSubQuery =
-                                knex.select('locations.id as locationid')
-                                    .from('locations')
-                                    .whereIn('locations.group_id', relatedGroupsSubQuery);
-
-                            // grab all your user classes
-                            var relatedUserClassesSubQuery =
-                                knex.select('groupuserclasses.id as groupuserclassid')
-                                    .from('groupuserclasses')
-                                    .innerJoin('groupuserclasstousers', function () {
-                                        this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id');
-                                    })
-                                    .where('groupuserclasstousers.user_id', '=', req.user.id)
-                                    .whereIn('groupuserclasses.group_id', relatedGroupsSubQuery);
-
-                            // grab all shifts at locations/sublocations that are one of your job types
-
-                            q.select('shifts.*')
-                                .from('shifts')
-                                .where('shifts.id', '=', req.params.shift_id)
-                                .innerJoin('locations', function () {
-                                    this.on('shifts.location_id', '=', 'locations.id');
-                                })
-                                /*.where(function() {
-                                 this.where('shifts.start', '<=', before)
-                                 .orWhere('shifts.end', '>=', after);
-                                 })*/
-                                .whereIn('locations.id', relatedLocationsSubQuery)
-                                .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery)
-                                .union(function () {
-                                    this.select('shifts.*')
-                                        .from('shifts')
-                                        .where('shifts.id', '=', req.params.shift_id)
-                                        .innerJoin('sublocations', function () {
-                                            this.on('shifts.sublocation_id', '=', 'sublocations.id');
-                                        })
-                                        /*.where(function() {
-                                         this.where('shifts.start', '<=', before)
-                                         .orWhere('shifts.end', '>=', after);
-                                         })*/
-                                        .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery)
-                                        .whereIn('sublocations.location_id', relatedLocationsSubQuery);
-                                });
-                        })
-                    }
-
-                    var withRelatedOptions = {
-                        transacting: t
-                    };
-
-                    if (privilegedshift) {
-                        // people who have privileged access to shifts (group owners/managers)
-                        // will also be sent who has applied for the shift
-                        withRelatedOptions.withRelated = 'shiftapplications';
-                    }
-
-                    clearMarks(req);
-
-                    return query
-                        .fetch(withRelatedOptions)
-                        .tap(function (shift) {
-                            if (!shift) {
-                                // check if the shift exists
-                                // TODO: This should be inside a transaction
-                                // but putting it inside one ends up deadlocking the server
-                                // not high priority this only checks if the user
-                                // does not have access to the shift after the fact.
-                                // very very low priority
-                                return models.Shift.forge({
-                                    id: req.params.shift_id
-                                })
-                                    .fetch({
-                                        transacting: t
-                                    })
-                                    .tap(function (model) {
-                                        if (model) {
-                                            // shift exists
-                                            // they dont have access to it though
-                                            res.sendStatus(403);
-                                        } else {
-                                            // shift actually doesn't exist
-                                            // just send 200 empty object
-                                            res.sendStatus(204); // no content
-                                        }
-                                    })
-                            } else {
-                                // determine if the user is a manager for this shift
-                                // if they are not a manager
-                                // we need to strip the 'shiftapplications'
-                                // relation from the response
-                                // non-managers should not be able to access that
-
-                                res.json(shift.toJSON());
-                            }
-                        });
-                })
-                    .then(function(model) {
-                        // do nothing, tap should take care of it
-                    })
-                    .catch(function (err) {
-                        error(req, res, err);
-                    });
+                getShifts(req, res);
             }
         },
         'patch': { // update a shift
@@ -781,4 +610,174 @@ function createNewShift(req, res) {
             ]
         );
     }
+}
+
+/**
+ * Should be called with
+ * 'mark if user is a group owner or privileged location member for this shift'
+ * @param req
+ * @param res
+ */
+function getShifts(req, res) {
+    // determine if the user is allowed to access this
+    var privilegedshift = getMark(req, 'privilegedshift', req.params.shift_id);
+    clearMarks(req);
+
+    function applySearchConstraintsOnShiftsTable(query) {
+        if (req.params.hasOwnProperty('shift_id')) {
+            // getting specific shift
+            return query.where('shifts.id', '=', req.params.shift_id);
+        } else if (req.params.hasOwnProperty('before') &&
+            req.params.hasOwnProperty('after')) {
+            return query.where(function() {
+                this.where('shifts.start', '<=', req.params.before)
+                    .orWhere('end', '>=', req.params.after);
+            });
+        } else {
+            throw new Error("No parameters passed in");
+        }
+    }
+
+    Bookshelf.transaction(function(t) {
+
+        var query = null;
+        if (privilegedshift) {
+            // privileged user
+            // has to allow fetching of managing shifts
+            query = models.Shift.query(function (q) {
+                // there does not need to be any complex
+                // security checking in this method
+                // the auth method has already performed the following checks:
+                // that the user is either a group owner tied to the location or sublocation of the shift
+                // or that the user is a privileged location member tied to the location or sublocation
+                // therefore, since privileged location members should be able to access any shift they want
+                // and they specifically accessed this one
+                // we will allow it since the prerequisites have already been checked
+                var query = q.select('shifts.*')
+                    .from('shifts');
+                applySearchConstraintsOnShiftsTable(query)
+                    .innerJoin('locations', function () {
+                        this.on('shifts.location_id', '=', 'locations.id');
+                    });
+            })
+        } else {
+            // unprivileged user
+            // only allows shifts they are elligible for
+            query = models.Shift.query(function (q) {
+                // grab groups the user is a part of
+                var relatedGroupsSubQuery =
+                    knex.select('usergroups.group_id as wat')
+                        .from('usergroups')
+                        .where('usergroups.user_id', '=', req.user.id)
+                        .union(function () {
+                            this.select('groups.id as wat')
+                                .from('groups')
+                                .where('groups.user_id', '=', req.user.id);
+                        });
+
+                // grab locations related to all of those groups
+                var relatedLocationsSubQuery =
+                    knex.select('locations.id as locationid')
+                        .from('locations')
+                        .whereIn('locations.group_id', relatedGroupsSubQuery);
+
+                // grab all your user classes
+                var relatedUserClassesSubQuery =
+                    knex.select('groupuserclasses.id as groupuserclassid')
+                        .from('groupuserclasses')
+                        .innerJoin('groupuserclasstousers', function () {
+                            this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id');
+                        })
+                        .where('groupuserclasstousers.user_id', '=', req.user.id)
+                        .whereIn('groupuserclasses.group_id', relatedGroupsSubQuery);
+
+                // grab all shifts at locations/sublocations that are one of your job types
+
+                var query = q.select('shifts.*')
+                    .from('shifts');
+                applySearchConstraintsOnShiftsTable(query)
+                    //.where('shifts.id', '=', req.params.shift_id)
+                    .innerJoin('locations', function () {
+                        this.on('shifts.location_id', '=', 'locations.id');
+                    })
+                    /*.where(function() {
+                     this.where('shifts.start', '<=', before)
+                     .orWhere('shifts.end', '>=', after);
+                     })*/
+                    .whereIn('locations.id', relatedLocationsSubQuery)
+                    .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery)
+                    .union(function () {
+                        var query = this.select('shifts.*')
+                            .from('shifts');
+                        applySearchConstraintsOnShiftsTable(query)
+                            //.where('shifts.id', '=', req.params.shift_id)
+                            .innerJoin('sublocations', function () {
+                                this.on('shifts.sublocation_id', '=', 'sublocations.id');
+                            })
+                            /*.where(function() {
+                             this.where('shifts.start', '<=', before)
+                             .orWhere('shifts.end', '>=', after);
+                             })*/
+                            .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery)
+                            .whereIn('sublocations.location_id', relatedLocationsSubQuery);
+                    });
+            })
+        }
+
+        var withRelatedOptions = {
+            transacting: t
+        };
+
+        if (privilegedshift) {
+            // people who have privileged access to shifts (group owners/managers)
+            // will also be sent who has applied for the shift
+            withRelatedOptions.withRelated = 'shiftapplications';
+        }
+
+        clearMarks(req);
+
+        return query
+            .fetch(withRelatedOptions)
+            .tap(function (shift) {
+                if (!shift) {
+                    // check if the shift exists
+                    // TODO: This should be inside a transaction
+                    // but putting it inside one ends up deadlocking the server
+                    // not high priority this only checks if the user
+                    // does not have access to the shift after the fact.
+                    // very very low priority
+                    return models.Shift.forge({
+                        id: req.params.shift_id
+                    })
+                        .fetch({
+                            transacting: t
+                        })
+                        .tap(function (model) {
+                            if (model) {
+                                // shift exists
+                                // they dont have access to it though
+                                res.sendStatus(403);
+                            } else {
+                                // shift actually doesn't exist
+                                // just send 200 empty object
+                                res.sendStatus(204); // no content
+                            }
+                        })
+                } else {
+                    // determine if the user is a manager for this shift
+                    // if they are not a manager
+                    // we need to strip the 'shiftapplications'
+                    // relation from the response
+                    // non-managers should not be able to access that
+
+                    res.json(shift.toJSON());
+                }
+            });
+    })
+        .then(function(model) {
+            // do nothing, tap should take care of it
+        })
+        .catch(function (err) {
+            error(req, res, err);
+        });
 }
