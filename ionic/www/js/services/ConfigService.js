@@ -44,6 +44,12 @@ var config_data = {
                 'SUCCESS': 'events:updates:userinfo:success'
             },
             'RESOURCE': 'events:updates:resource'
+        },
+        'CALENDAR': {
+            // events for controlling calendar from outside calendar scope
+            'NEXTMONTH': 'events:calendar:nextmonthe',
+            'PREVIOUSMONTH': 'events:calendar:previousmonth',
+            'CURRENTMONTH': 'events:calendar:currentmonth'
         }
     },
     'TOKENS': {

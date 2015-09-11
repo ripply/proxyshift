@@ -26,7 +26,45 @@ angular.module('scheduling-app.controllers')
 
             $scope.$on('$ionicView.beforeEnter', calculateCalendar());
 
+            $scope.$on(GENERAL_EVENTS.CALENDAR.NEXTMONTH, nextMonth);
+            $scope.$on(GENERAL_EVENTS.CALENDAR.PREVIOUSMONTH, previousMonth);
+            $scope.$on(GENERAL_EVENTS.CALENDAR.CURRENTMONTH, currentMonth);
+
+            $scope.nextMonth = nextMonth;
+            $scope.previousMonth = previousMonth;
+            $scope.currentMonth = currentMonth;
+
+            function nextMonth() {
+                $scope.offset += 1;
+                calculateCalendar();
+                modifyCurrentShiftRetrievalRange();
+            }
+
+            function previousMonth() {
+                $scope.offset -= 1;
+                calculateCalendar();
+                modifyCurrentShiftRetrievalRange();
+            }
+
+            function currentMonth() {
+                $scope.offset = 0;
+                calculateCalendar();
+                modifyCurrentShiftRetrievalRange();
+            }
+
+            function modifyCurrentShiftRetrievalRange() {
+                // TODO: Check that the current shifts being retrieved
+                // are visible from the calendar with the offset
+                // it should be visible.
+                // we just need to make sure there is buffer room of several months
+                // and fetch more shifts if needed to fill buffer
+            }
+
             function calculateCalendar() {
+                if ($scope.offset === undefined) {
+                    $scope.offset = 0;
+                }
+
                 var data = getData();
                 if (data === undefined) {
                     data = [];
@@ -39,10 +77,13 @@ angular.module('scheduling-app.controllers')
                 ];
 
                 var now = moment();
+                if ($scope.offset) {
+                    now = now.add($scope.offset, 'month');
+                }
                 var month = now.month();
 
-                var calendarStart = moment().startOf("month").startOf("week").startOf("day");
-                var calendarEnd = moment().endOf("month").endOf("week").endOf("day");
+                var calendarStart = moment(now).startOf("month").startOf("week").startOf("day");
+                var calendarEnd = moment(now).endOf("month").endOf("week").endOf("day");
 
                 var calendarStartUnix = calendarStart.unix();
                 var calendarEndUnix = calendarEnd.unix();
