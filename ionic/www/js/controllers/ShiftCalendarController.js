@@ -1,0 +1,146 @@
+angular.module('scheduling-app.controllers')
+    .controller('ShiftCalendarController', [
+        '$scope',
+        '$controller',
+        'GENERAL_CONFIG',
+        'GENERAL_EVENTS',
+        'AllShiftsModel',
+        function($scope,
+                 $controller,
+                 GENERAL_CONFIG,
+                 GENERAL_EVENTS
+        ) {
+            $controller('BaseModelController', {$scope: $scope});
+
+            $scope.$on(GENERAL_EVENTS.UPDATES.RESOURCE,
+                function(event, resourceName, newValue, oldValue) {
+                    if (getValueName() == resourceName) {
+                        // value was updated
+                        // re-compute calendar
+                        console.log("Calendar's datasource was updated...");
+                        calculateCalendar();
+                    }
+                }
+            );
+
+            calculateCalendar();
+
+            function calculateCalendar() {
+                var data = getData();
+                if (data === undefined) {
+                    data = [];
+                }
+                var transform = getTransformationFunction();
+                // create map of date => shift object
+                var calendarDateMap = {};
+                var calendar = [
+                    []
+                ];
+
+                var now = moment();
+                var month = now.month();
+
+                var calendarStart = moment().startOf("month").startOf("week").startOf("day");
+                var calendarEnd = moment().endOf("month").endOf("week").endOf("day");
+
+                var calendarStartUnix = calendarStart.unix();
+                var calendarEndUnix = calendarEnd.unix();
+
+                // create calendar days
+                var countingDays = moment(calendarStart);
+                while(countingDays.isBefore(calendarEnd)) {
+                    var thisWeek = calendar[calendar.length - 1];
+                    if (thisWeek.length === 7) {
+                        // new week
+                        thisWeek = [];
+                        calendar.push(thisWeek);
+                    }
+                    var today = {
+                        number: countingDays.date()
+                    };
+
+                    calendarDateMap[countingDays.startOf("day").unix()] = today;
+                    thisWeek.push(today);
+                    countingDays = countingDays.add(1, 'day');
+                }
+
+                for (var i = 0; i < data.length; i++) {
+                    var transformed = transform(data[i]);
+                    var start = transformed.start;
+                    var end = transformed.end;
+
+                    var startMoment = moment(start, 'X');
+                    var endMoment = moment(end, 'X');
+
+                    if (startMoment.isAfter(calendarStart) || endMoment.isBefore(calendarEndUnix)) {
+                        // edge case: determine if the shift perhaps takes an entire month
+                        var shiftStartMoment = moment(startMoment);
+                        if (shiftStartMoment.isBefore(calendarStart)) {
+                            // shift starts before calendar, jump to start of calendar
+                            shiftStartMoment = moment(calendarStart);
+                        } else {
+                            // shift starts after calendar starts
+                            // this is OK
+                        }
+
+                        var shiftEndMoment = moment(endMoment);
+                        if (shiftEndMoment.isAfter(calendarEnd)) {
+                            shiftEndMoment = moment(calendarEnd);
+                        } else {
+                            // shift ends before calendar ends
+                            // this is OK
+                        }
+
+                        while (shiftStartMoment.isBefore(shiftEndMoment)) {
+                            var calendarDay = calendarDateMap[shiftStartMoment.startOf("day").unix()];
+                            if (!calendarDay) {
+                                throw new Error("Error generating calendar for shift " + transformed);
+                            }
+                            if (calendarDay.shifts === undefined) {
+                                calendarDay.shifts = [];
+                            }
+
+                            calendarDay.shifts.push(transformed);
+                            shiftStartMoment = shiftStartMoment.add(1, "day");
+                        }
+
+                    }
+                }
+
+                $scope.calendarData = calendar;
+            }
+
+            function getTransformationFunction() {
+                var attributes = $scope.attributes;
+                var transform;
+                if (attributes !== undefined) {
+                    transform = $scope[attributes.transform];
+
+                    if (transform !== undefined) {
+                        transform = $rootScope[transform];
+                    }
+
+                    if (transform === undefined) {
+                        transform = function (input) {
+                            return input;
+                        }
+                    }
+                }
+
+                return transform;
+            }
+
+            function getData() {
+                return $scope[getValueName()];
+            }
+
+            function getValueName() {
+                var attributes = $scope.attributes;
+                var value;
+                if (attributes !== undefined) {
+                    value = attributes.value;
+                }
+
+                return value;
+            }
+        }]);

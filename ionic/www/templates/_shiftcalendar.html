@@ -1,0 +1,19 @@
+<div ng-show="calendarData">
+    <div class="list card has-header">
+        <table class="calendar month">
+            <tr class="week" ng-repeat="week in calendarData">
+                <td class="day" ng-repeat="day in week">
+                    <p ng-show="day.shifts">({{day.number}})</p>
+                    <p ng-hide="day.shifts">{{day.number}}</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div ng-hide="calendarData">
+    <div class="list card has-header">
+        <div class="item">
+            Calendar loading...
+        </div>
+    </div>
+</div>
