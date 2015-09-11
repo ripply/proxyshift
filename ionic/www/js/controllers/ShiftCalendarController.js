@@ -134,7 +134,7 @@ angular.module('scheduling-app.controllers')
                             // edge case:
                             // reached month where we display an extra week
                             var newWeek = [];
-                            for (var i = 0; i < 7; i++) {
+                            for (var j = 0; j < 7; j++) {
                                 newWeek.push({});
                             }
 
@@ -147,13 +147,14 @@ angular.module('scheduling-app.controllers')
                         }
                     }
                     today.number = countingDays.date();
+                    today.thisMonth = countingDays.month() === month;
 
                     calendarDateMap[countingDays.startOf("day").unix()] = today;
                     countingDays = countingDays.add(1, 'day');
                 }
 
                 // edge case:
-                // make sure that we remove extra unused months from DOM
+                // make sure that we remove extra unused weeks from DOM
                 if (!creatingDates) {
                     while ((calendar.length - 1) > currentWeek) {
                         calendar.pop();
@@ -204,7 +205,6 @@ angular.module('scheduling-app.controllers')
                 }
 
                 $scope.calendarData = calendar;
-                var endTime = new Date().getTime();
             }
 
             function getTransformationFunction() {
