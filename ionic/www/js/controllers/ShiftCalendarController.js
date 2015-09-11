@@ -4,7 +4,6 @@ angular.module('scheduling-app.controllers')
         '$controller',
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
-        'AllShiftsModel',
         function($scope,
                  $controller,
                  GENERAL_CONFIG,
@@ -24,6 +23,8 @@ angular.module('scheduling-app.controllers')
             );
 
             calculateCalendar();
+
+            $scope.$on('$ionicView.beforeEnter', calculateCalendar());
 
             function calculateCalendar() {
                 var data = getData();
