@@ -100,7 +100,8 @@ angular.module('scheduling-app.controllers')
                 var month = now.month();
                 $scope.monthData = {
                     name: now.format("MMMM"),
-                    number: month
+                    month: month,
+                    year: now.format("YYYY")
                 };
 
                 var calendarStart = moment(now).startOf("month").startOf("week").startOf("day");
