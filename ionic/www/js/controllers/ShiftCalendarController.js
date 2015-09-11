@@ -22,6 +22,7 @@ angular.module('scheduling-app.controllers')
                 }
             );
 
+            createCalendarHeaderData();
             calculateCalendar();
 
             $scope.$on('$ionicView.beforeEnter', calculateCalendar());
@@ -60,6 +61,18 @@ angular.module('scheduling-app.controllers')
                 // and fetch more shifts if needed to fill buffer
             }
 
+            function createCalendarHeaderData() {
+                var startOfWeek = new moment().startOf("week");
+
+                var weekData = [];
+                for (var i = 0; i < 7; i++) {
+                    weekData.push(startOfWeek.format("dd"));
+                    startOfWeek.add(1, "day");
+                }
+
+                $scope.weekData = weekData;
+            }
+
             function calculateCalendar() {
                 if ($scope.offset === undefined) {
                     $scope.offset = 0;
@@ -72,15 +85,23 @@ angular.module('scheduling-app.controllers')
                 var transform = getTransformationFunction();
                 // create map of date => shift object
                 var calendarDateMap = {};
-                var calendar = [
-                    []
-                ];
+                var calendar = $scope.calendarData;
+                var creatingDates = calendar === undefined;
+                if (creatingDates) {
+                    calendar = [
+                        []
+                    ];
+                }
 
                 var now = moment();
                 if ($scope.offset) {
                     now = now.add($scope.offset, 'month');
                 }
                 var month = now.month();
+                $scope.monthData = {
+                    name: now.format("MMMM"),
+                    number: month
+                };
 
                 var calendarStart = moment(now).startOf("month").startOf("week").startOf("day");
                 var calendarEnd = moment(now).endOf("month").endOf("week").endOf("day");
@@ -90,20 +111,50 @@ angular.module('scheduling-app.controllers')
 
                 // create calendar days
                 var countingDays = moment(calendarStart);
+                var currentWeek = -1;
+                var currentDay = -1;
                 while(countingDays.isBefore(calendarEnd)) {
-                    var thisWeek = calendar[calendar.length - 1];
-                    if (thisWeek.length === 7) {
-                        // new week
-                        thisWeek = [];
-                        calendar.push(thisWeek);
+                    var thisWeek;
+                    var today;
+                    if (creatingDates) {
+                        thisWeek = calendar[calendar.length - 1];
+                        if (thisWeek.length === 7) {
+                            // new week
+                            thisWeek = [];
+                            calendar.push(thisWeek);
+                        }
+                        today = {};
+                        thisWeek.push(today);
+                    } else {
+                        currentDay = (currentDay + 1) % 7;
+                        if (currentDay === 0) {
+                            ++currentWeek;
+                        }
+                        if (calendar[currentWeek] === undefined) {
+                            // edge case:
+                            // reached month where we display an extra week
+                            var newWeek = [];
+                            for (var i = 0; i < 7; i++) {
+                                newWeek.push({});
+                            }
+
+                            calendar.push(newWeek);
+                        }
+                        thisWeek = calendar[currentWeek];
+                        today = thisWeek[currentDay];
                     }
-                    var today = {
-                        number: countingDays.date()
-                    };
+                    today.number = countingDays.date();
 
                     calendarDateMap[countingDays.startOf("day").unix()] = today;
-                    thisWeek.push(today);
                     countingDays = countingDays.add(1, 'day');
+                }
+
+                // edge case:
+                // make sure that we remove extra unused months from DOM
+                if (!creatingDates) {
+                    while ((calendar.length - 1) > currentWeek) {
+                        calendar.pop();
+                    }
                 }
 
                 for (var i = 0; i < data.length; i++) {
@@ -150,6 +201,7 @@ angular.module('scheduling-app.controllers')
                 }
 
                 $scope.calendarData = calendar;
+                var endTime = new Date().getTime();
             }
 
             function getTransformationFunction() {

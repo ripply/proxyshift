@@ -1,11 +1,13 @@
 <div ng-show="calendarData">
     <div class="list card has-header">
+        <a ng-click="previousMonth()" href="#" class="calendarback"><-</a>
+        <a ng-click="currentMonth()" href="#" class="calendarnow">now</a>
+        <a ng-click="nextMonth()" href="#" class="calendarnext">-></a>
+        {{monthData.name}}
         <table class="calendar month">
-            <th>
-                <a ng-click="previousMonth()" href="#" class="calendarback"><-</a>
-                <a ng-click="currentMonth()" href="#" class="calendarnow">now</a>
-                <a ng-click="nextMonth()" href="#" class="calendarnext">-></a>
-            </th>
+            <tr>
+                <th ng-repeat="day in weekData">{{day}}</th>
+            </tr>
             <tr class="week" ng-repeat="week in calendarData">
                 <td class="day" ng-repeat="day in week">
                     <p ng-show="day.shifts">({{day.number}})</p>
