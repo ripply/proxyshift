@@ -142,6 +142,9 @@ angular.module('scheduling-app.controllers')
                         }
                         thisWeek = calendar[currentWeek];
                         today = thisWeek[currentDay];
+                        if (today.hasOwnProperty('shifts')) {
+                            delete today['shifts'];
+                        }
                     }
                     today.number = countingDays.date();
 
