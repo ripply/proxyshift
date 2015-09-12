@@ -1,6 +1,6 @@
 <div>
     <div class="list card has-header">
-        <div ng-show="calendarData" class="calendar">
+        <div ng-show="calendarData" class="calendar" ng-class="{'calendar-loading': calendarData.loading}">
             <a ng-click="previousMonth()" href="#" class="calendarback"><-</a>
             <a ng-click="currentMonth()" href="#" class="calendarnow">now</a>
             <a ng-click="nextMonth()" href="#" class="calendarnext">-></a>
