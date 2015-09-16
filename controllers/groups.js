@@ -613,7 +613,7 @@ module.exports = {
                         })
                         .where('groups.id', '=', req.params.group_id);
                 })
-                    .fetchAll()
+                    .fetchAll({withRelated: ['groupsetting']})
                     .then(function (grouppermissions) {
                         // TODO: Return group settings id differently
                         res.json(grouppermissions);
@@ -626,16 +626,18 @@ module.exports = {
         'post': { // create a permission set
             auth: ['group owner', 'or', 'privileged group member'], // owner/privileged member
             route: function(req, res) {
-                Bookshelf.transaction(function (t) {
+                //Bookshelf.transaction(function (t) {
                     models.GroupSetting.query(function(q) {
                         q.select()
                             .from('groups')
-                            .innerJoin(function() {
-                                this.on('groups.groupsetting_id', '=', 'groupsettings.id');
+                            .innerJoin('groupsettings', function() {
+                                this.on('groupsettings.id', '=', 'groups.groupsetting_id');
                             })
                             .where('groups.id', '=', req.params.group_id);
                     })
-                        .fetch({transacting: t})
+                        //TODO Transacting
+                        //.fetch({transacting: t})
+                        .fetch()
                         .then(function (groupsetting) {
                             if (groupsetting) {
                                 postModel(
@@ -645,8 +647,8 @@ module.exports = {
                                     },
                                     req,
                                     res,
-                                    undefined,
-                                    {transacting: t}
+                                    undefined
+                                    //{transacting: t}
                                 );
                             } else {
                                 throw new Error("Group setting should exist for group " + req.params.group_id);
@@ -655,7 +657,7 @@ module.exports = {
                         .catch(function (err) {
                             error(req, res, err);
                         });
-                });
+                //});
             }
         }
     },

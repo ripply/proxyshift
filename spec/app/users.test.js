@@ -222,6 +222,7 @@ describe('#/api/users', function(){
                             .end(function(err, res) {
                                 if (err) {
                                     done(err);
+                                    return;
                                 }
                                 try {
                                     var data = JSON.parse(res.text);
