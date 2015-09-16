@@ -105,208 +105,102 @@ describe('#/api/groups', function() {
 
         });
 
-        describe('- /:group_id/locations', function () {
+        describe('- post locations', function () {
 
-            describe('- get locations', function () {
+            var newLocation = {
+                state: 'new_state',
+                city: 'new_city',
+                address: 'new address',
+                zipcode: 12345,
+                phonenumber: 12345
+            };
 
-                describe('- anonymous user', function () {
+            describe('- anonymous user', function () {
 
-                    it('- return 401', function (done) {
+                it('- return 401', function (done) {
 
-                        request(app)
-                            .get(parse('/api/groups/@groups:name:membershiptest:/locations'))
-                            .expect(401, done);
-                    });
-
+                    request(app)
+                        .post(parse('/api/groups/@groups:name:membershiptest:/locations'))
+                        .send(newLocation)
+                        .expect(401, done);
                 });
 
-                describe('- non group member', function () {
-
-                    beforeEach(function (done) {
-
-                        login('nongroupmember',
-                            'secret',
-                            done);
-
-                    });
-
-                    it('- returns 401', function (done) {
-
-                        request(app)
-                            .get(parse('/api/groups/@groups:name:membershiptest:/locations'))
-                            .expect(401, done);
-
-                    });
-
-                });
-
-                describe('- group member', function () {
-
-                    beforeEach(function (done) {
-
-                        login('groupmember',
-                            'secret',
-                            done);
-
-                    });
-
-                    it('- returns 200', function (done) {
-
-                        var location = {
-                            id: 1,
-                            group_id: 1,
-                            state: 'test_state',
-                            city: 'test_city',
-                            address: 'test_address',
-                            zipcode: 12345,
-                            phonenumber: 12435
-                        };
-
-                        request(app)
-                            .get(parse('/api/groups/@groups:name:membershiptest:/locations'))
-                            .expect(200)
-                            .end(function(err, res) {
-                                if (err) {
-                                    done(err);
-                                    return;
-                                }
-                                try {
-                                    var data = JSON.parse(res.text);
-                                    data.should.be.a('array');
-
-                                    if (!_.isEqual(data[0], location)) {
-                                        throw 'data does not match';
-                                    }
-
-                                    done();
-                                } catch (e) {
-                                    done(e);
-                                }
-                            });
-
-                    });
-
-                });
-
-                describe('- privileged group member', function () {
-
-                    beforeEach(function (done) {
-
-                        login('privledgedmember',
-                            'secret',
-                            done);
-
-                    });
-
-                    it('- returns 200', function (done) {
-
-                        request(app)
-                            .get(parse('/api/groups/@groups:name:membershiptest:/locations'))
-                            .expect(200, done);
-
-                    });
-
-                });
             });
 
-            describe('- post locations', function () {
+            describe('- non group member', function () {
 
-                var newLocation = {
-                    state: 'new_state',
-                    city: 'new_city',
-                    address: 'new address',
-                    zipcode: 12345,
-                    phonenumber: 12345
-                };
+                beforeEach(function (done) {
 
-                describe('- anonymous user', function () {
-
-                    it('- return 401', function (done) {
-
-                        request(app)
-                            .post(parse('/api/groups/@groups:name:membershiptest:/locations'))
-                            .send(newLocation)
-                            .expect(401, done);
-                    });
+                    login('nongroupmember',
+                        'secret',
+                        done);
 
                 });
 
-                describe('- non group member', function () {
+                it('- returns 401', function (done) {
 
-                    beforeEach(function (done) {
-
-                        login('nongroupmember',
-                            'secret',
-                            done);
-
-                    });
-
-                    it('- returns 401', function (done) {
-
-                        request(app)
-                            .post(parse('/api/groups/@groups:name:membershiptest:/locations'))
-                            .send(newLocation)
-                            .expect(401, done);
-
-                    });
+                    request(app)
+                        .post(parse('/api/groups/@groups:name:membershiptest:/locations'))
+                        .send(newLocation)
+                        .expect(401, done);
 
                 });
 
-                describe('- group member', function () {
+            });
 
-                    beforeEach(function (done) {
+            describe('- group member', function () {
 
-                        login('groupmember',
-                            'secret',
-                            done);
+                beforeEach(function (done) {
 
-                    });
-
-                    it('- returns 401', function (done) {
-
-                        request(app)
-                            .post(parse('/api/groups/@groups:name:membershiptest:/locations'))
-                            .send(newLocation)
-                            .expect(401, done);
-
-                    });
+                    login('groupmember',
+                        'secret',
+                        done);
 
                 });
 
-                describe('- privileged group member', function () {
+                it('- returns 401', function (done) {
 
-                    beforeEach(function (done) {
+                    request(app)
+                        .post(parse('/api/groups/@groups:name:membershiptest:/locations'))
+                        .send(newLocation)
+                        .expect(401, done);
 
-                        login('privledgedmember',
-                            'secret',
-                            done);
+                });
 
-                    });
+            });
 
-                    it('- returns 201', function (done) {
+            describe('- privileged group member', function () {
 
-                        request(app)
-                            .post(parse('/api/groups/@groups:name:membershiptest:/locations'))
-                            .send(newLocation)
-                            .expect(201)
-                            .end(function(err, res) {
-                                if (err) {
-                                    done(err);
-                                    return;
-                                }
-                                try {
-                                    debug(res.text);
-                                    var data = JSON.parse(res.text);
-                                    data.should.be.a('object');
-                                    expect(data.id).to.not.be.undefined;
+                beforeEach(function (done) {
 
-                                    done();
-                                } catch (e) {
-                                    done(e);
-                                }
-                            });
+                    login('privledgedmember',
+                        'secret',
+                        done);
 
-                    });
+                });
+
+                it('- returns 201', function (done) {
+
+                    request(app)
+                        .post(parse('/api/groups/@groups:name:membershiptest:/locations'))
+                        .send(newLocation)
+                        .expect(201)
+                        .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                                return;
+                            }
+                            try {
+                                debug(res.text);
+                                var data = JSON.parse(res.text);
+                                data.should.be.a('object');
+                                expect(data.id).to.not.be.undefined;
+
+                                done();
+                            } catch (e) {
+                                done(e);
+                            }
+                        });
 
                 });
 
@@ -314,406 +208,197 @@ describe('#/api/groups', function() {
 
         });
 
-        describe('- /:group_id/areas', function () {
+        describe('- post areas', function () {
 
-            describe('- get areas', function () {
+            var newArea = {
+                title: 'new_area'
+            };
 
-                describe('- anonymous user', function () {
+            describe('- anonymous user', function () {
 
-                    it('- return 401', function (done) {
+                it('- return 401', function (done) {
 
-                        request(app)
-                            .get(parse('/api/groups/@groups:name:membershiptest:/areas'))
-                            .expect(401, done);
-                    });
-
+                    request(app)
+                        .post(parse('/api/groups/@groups:name:membershiptest:/areas'))
+                        .send(newArea)
+                        .expect(401, done);
                 });
 
-                describe('- non group member', function () {
-
-                    beforeEach(function (done) {
-
-                        login('nongroupmember',
-                            'secret',
-                            done);
-
-                    });
-
-                    it('- returns 401', function (done) {
-
-                        request(app)
-                            .get(parse('/api/groups/@groups:name:membershiptest:/areas'))
-                            .expect(401, done);
-
-                    });
-
-                });
-
-                describe('- group member', function () {
-
-                    beforeEach(function (done) {
-
-                        login('groupmember',
-                            'secret',
-                            done);
-
-                    });
-
-                    it('- returns 200', function (done) {
-
-                        var area = {
-                            id: 1,
-                            title: 'membership test area',
-                            group_id: 2
-                        };
-
-                        request(app)
-                            .get(parse('/api/groups/@groups:name:membershiptest:/areas'))
-                            .expect(200)
-                            .end(function(err, res) {
-                                if (err) {
-                                    done(err);
-                                    return;
-                                }
-                                try {
-                                    var data = JSON.parse(res.text);
-                                    data.should.be.a('array');
-
-                                    console.log(data);
-
-                                    if (!_.isEqual(data[0], area)) {
-                                        throw 'data does not match';
-                                    }
-
-                                    done();
-                                } catch (e) {
-                                    done(e);
-                                }
-                            });
-
-                    });
-
-                });
-
-                describe('- privileged group member', function () {
-
-                    beforeEach(function (done) {
-
-                        login('privledgedmember',
-                            'secret',
-                            done);
-
-                    });
-
-                    it('- returns 200', function (done) {
-
-                        request(app)
-                            .get(parse('/api/groups/@groups:name:membershiptest:/areas'))
-                            .expect(200, done);
-
-                    });
-
-                });
             });
 
-            describe('- post areas', function () {
+            describe('- non group member', function () {
 
-                var newArea = {
-                    title: 'new_area'
-                };
+                beforeEach(function (done) {
 
-                describe('- anonymous user', function () {
-
-                    it('- return 401', function (done) {
-
-                        request(app)
-                            .post(parse('/api/groups/@groups:name:membershiptest:/areas'))
-                            .send(newArea)
-                            .expect(401, done);
-                    });
+                    login('nongroupmember',
+                        'secret',
+                        done);
 
                 });
 
-                describe('- non group member', function () {
+                it('- returns 401', function (done) {
 
-                    beforeEach(function (done) {
-
-                        login('nongroupmember',
-                            'secret',
-                            done);
-
-                    });
-
-                    it('- returns 401', function (done) {
-
-                        request(app)
-                            .post(parse('/api/groups/@groups:name:membershiptest:/areas'))
-                            .send(newArea)
-                            .expect(401, done);
-
-                    });
+                    request(app)
+                        .post(parse('/api/groups/@groups:name:membershiptest:/areas'))
+                        .send(newArea)
+                        .expect(401, done);
 
                 });
 
-                describe('- group member', function () {
-
-                    beforeEach(function (done) {
-
-                        login('groupmember',
-                            'secret',
-                            done);
-
-                    });
-
-                    it('- returns 401', function (done) {
-
-                        request(app)
-                            .post(parse('/api/groups/@groups:name:membershiptest:/areas'))
-                            .send(newArea)
-                            .expect(401, done);
-
-                    });
-
-                });
-
-                describe('- privileged group member', function () {
-
-                    beforeEach(function (done) {
-
-                        login('privledgedmember',
-                            'secret',
-                            done);
-
-                    });
-
-                    it('- returns 201', function (done) {
-
-                        request(app)
-                            .post(parse('/api/groups/@groups:name:membershiptest:/areas'))
-                            .send(newArea)
-                            .expect(201)
-                            .end(function(err, res) {
-                                if (err) {
-                                    done(err);
-                                    return;
-                                }
-                                try {
-                                    debug(res.text);
-                                    var data = JSON.parse(res.text);
-                                    data.should.be.a('object');
-                                    expect(data.id).to.not.be.undefined;
-
-                                    done();
-                                } catch (e) {
-                                    done(e);
-                                }
-                            });
-
-                    });
-
-                });
             });
 
+            describe('- group member', function () {
+
+                beforeEach(function (done) {
+
+                    login('groupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 401', function (done) {
+
+                    request(app)
+                        .post(parse('/api/groups/@groups:name:membershiptest:/areas'))
+                        .send(newArea)
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- privileged group member', function () {
+
+                beforeEach(function (done) {
+
+                    login('privledgedmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 201', function (done) {
+
+                    request(app)
+                        .post(parse('/api/groups/@groups:name:membershiptest:/areas'))
+                        .send(newArea)
+                        .expect(201)
+                        .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                                return;
+                            }
+                            try {
+                                debug(res.text);
+                                var data = JSON.parse(res.text);
+                                data.should.be.a('object');
+                                expect(data.id).to.not.be.undefined;
+
+                                done();
+                            } catch (e) {
+                                done(e);
+                            }
+                        });
+
+                });
+
+            });
         });
 
-        describe('- /:group_id/permissions', function () {
+        describe('- post permissions', function () {
 
-            describe('- get permissions', function () {
+            var newPermission = {
+                description: 'new_permission',
+                permissionlevel: '1'
+            };
 
-                describe('- anonymous user', function () {
+            describe('- anonymous user', function () {
 
-                    it('- return 401', function (done) {
+                it('- return 401', function (done) {
 
-                        request(app)
-                            .get(parse('/api/groups/@groups:name:membershiptest:/permissions'))
-                            .expect(401, done);
-                    });
-
+                    request(app)
+                        .post(parse('/api/groups/@groups:name:membershiptest:/permissions'))
+                        .send(newPermission)
+                        .expect(401, done);
                 });
 
-                describe('- non group member', function () {
-
-                    beforeEach(function (done) {
-
-                        login('nongroupmember',
-                            'secret',
-                            done);
-
-                    });
-
-                    it('- returns 401', function (done) {
-
-                        request(app)
-                            .get(parse('/api/groups/@groups:name:membershiptest:/permissions'))
-                            .expect(401, done);
-
-                    });
-
-                });
-
-                describe('- group member', function () {
-
-                    beforeEach(function (done) {
-
-                        login('groupmember',
-                            'secret',
-                            done);
-
-                    });
-
-                    it('- returns 200', function (done) {
-
-                        var groupsetting = {
-                            id: 1,
-                            groupsetting_id: 1,
-                            description: 'unprivileged',
-                            permissionlevel: 1,
-                            group_id: null,
-                            groupsetting: { id: 1, allowalltocreateshifts: 1, requireshiftconfirmation: 1 }
-                        };
-
-                        request(app)
-                            .get(parse('/api/groups/@groups:name:membershiptest:/permissions'))
-                            .expect(200)
-                            .end(function(err, res) {
-                                if (err) {
-                                    done(err);
-                                    return;
-                                }
-                                try {
-                                    var data = JSON.parse(res.text);
-                                    data.should.be.a('array');
-
-                                    if (!_.isEqual(data[0], groupsetting)) {
-                                        throw 'data does not match';
-                                    }
-
-                                    done();
-                                } catch (e) {
-                                    done(e);
-                                }
-                            });
-
-                    });
-
-                });
-
-                describe('- privileged group member', function () {
-
-                    beforeEach(function (done) {
-
-                        login('privledgedmember',
-                            'secret',
-                            done);
-
-                    });
-
-                    it('- returns 200', function (done) {
-
-                        request(app)
-                            .get(parse('/api/groups/@groups:name:membershiptest:/permissions'))
-                            .expect(200, done);
-
-                    });
-
-                });
             });
 
-            describe('- post permissions', function () {
+            describe('- non group member', function () {
 
-                var newPermission = {
-                    description: 'new_permission',
-                    permissionlevel: '1'
-                };
+                beforeEach(function (done) {
 
-                describe('- anonymous user', function () {
-
-                    it('- return 401', function (done) {
-
-                        request(app)
-                            .post(parse('/api/groups/@groups:name:membershiptest:/permissions'))
-                            .send(newPermission)
-                            .expect(401, done);
-                    });
+                    login('nongroupmember',
+                        'secret',
+                        done);
 
                 });
 
-                describe('- non group member', function () {
+                it('- returns 401', function (done) {
 
-                    beforeEach(function (done) {
-
-                        login('nongroupmember',
-                            'secret',
-                            done);
-
-                    });
-
-                    it('- returns 401', function (done) {
-
-                        request(app)
-                            .post(parse('/api/groups/@groups:name:membershiptest:/permissions'))
-                            .send(newPermission)
-                            .expect(401, done);
-
-                    });
+                    request(app)
+                        .post(parse('/api/groups/@groups:name:membershiptest:/permissions'))
+                        .send(newPermission)
+                        .expect(401, done);
 
                 });
 
-                describe('- group member', function () {
+            });
 
-                    beforeEach(function (done) {
+            describe('- group member', function () {
 
-                        login('groupmember',
-                            'secret',
-                            done);
+                beforeEach(function (done) {
 
-                    });
-
-                    it('- returns 401', function (done) {
-
-                        request(app)
-                            .post(parse('/api/groups/@groups:name:membershiptest:/permissions'))
-                            .send(newPermission)
-                            .expect(401, done);
-
-                    });
+                    login('groupmember',
+                        'secret',
+                        done);
 
                 });
 
-                describe('- privileged group member', function () {
+                it('- returns 401', function (done) {
 
-                    beforeEach(function (done) {
+                    request(app)
+                        .post(parse('/api/groups/@groups:name:membershiptest:/permissions'))
+                        .send(newPermission)
+                        .expect(401, done);
 
-                        login('privledgedmember',
-                            'secret',
-                            done);
+                });
 
-                    });
+            });
 
-                    it('- returns 201', function (done) {
+            describe('- privileged group member', function () {
 
-                        request(app)
-                            .post(parse('/api/groups/@groups:name:membershiptest:/permissions'))
-                            .send(newPermission)
-                            .expect(201)
-                            .end(function(err, res) {
-                                if (err) {
-                                    done(err);
-                                    return;
-                                }
-                                try {
-                                    debug(res.text);
-                                    var data = JSON.parse(res.text);
-                                    data.should.be.a('object');
-                                    expect(data.id).to.not.be.undefined;
+                beforeEach(function (done) {
 
-                                    done();
-                                } catch (e) {
-                                    done(e);
-                                }
-                            });
+                    login('privledgedmember',
+                        'secret',
+                        done);
 
-                    });
+                });
+
+                it('- returns 201', function (done) {
+
+                    request(app)
+                        .post(parse('/api/groups/@groups:name:membershiptest:/permissions'))
+                        .send(newPermission)
+                        .expect(201)
+                        .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                                return;
+                            }
+                            try {
+                                debug(res.text);
+                                var data = JSON.parse(res.text);
+                                data.should.be.a('object');
+                                expect(data.id).to.not.be.undefined;
+
+                                done();
+                            } catch (e) {
+                                done(e);
+                            }
+                        });
 
                 });
 
@@ -721,7 +406,6 @@ describe('#/api/groups', function() {
 
         });
 
-        // :group_id/permissions
         // :group_id/users/:user_id/pdermissions/:permission_id
 
     });
@@ -1512,6 +1196,309 @@ describe('#/api/groups', function() {
 
         });
         */
+
+        describe('- get locations', function () {
+
+            describe('- anonymous user', function () {
+
+                it('- return 401', function (done) {
+
+                    request(app)
+                        .get(parse('/api/groups/@groups:name:membershiptest:/locations'))
+                        .expect(401, done);
+                });
+
+            });
+
+            describe('- non group member', function () {
+
+                beforeEach(function (done) {
+
+                    login('nongroupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 401', function (done) {
+
+                    request(app)
+                        .get(parse('/api/groups/@groups:name:membershiptest:/locations'))
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- group member', function () {
+
+                beforeEach(function (done) {
+
+                    login('groupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 200', function (done) {
+
+                    var location = {
+                        id: 1,
+                        group_id: 1,
+                        state: 'test_state',
+                        city: 'test_city',
+                        address: 'test_address',
+                        zipcode: 12345,
+                        phonenumber: 12435
+                    };
+
+                    request(app)
+                        .get(parse('/api/groups/@groups:name:membershiptest:/locations'))
+                        .expect(200)
+                        .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                                return;
+                            }
+                            try {
+                                var data = JSON.parse(res.text);
+                                data.should.be.a('array');
+
+                                if (!_.isEqual(data[0], location)) {
+                                    throw 'data does not match';
+                                }
+
+                                done();
+                            } catch (e) {
+                                done(e);
+                            }
+                        });
+
+                });
+
+            });
+
+            describe('- privileged group member', function () {
+
+                beforeEach(function (done) {
+
+                    login('privledgedmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 200', function (done) {
+
+                    request(app)
+                        .get(parse('/api/groups/@groups:name:membershiptest:/locations'))
+                        .expect(200, done);
+
+                });
+
+            });
+        });
+
+        describe('- get areas', function () {
+
+            describe('- anonymous user', function () {
+
+                it('- return 401', function (done) {
+
+                    request(app)
+                        .get(parse('/api/groups/@groups:name:membershiptest:/areas'))
+                        .expect(401, done);
+                });
+
+            });
+
+            describe('- non group member', function () {
+
+                beforeEach(function (done) {
+
+                    login('nongroupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 401', function (done) {
+
+                    request(app)
+                        .get(parse('/api/groups/@groups:name:membershiptest:/areas'))
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- group member', function () {
+
+                beforeEach(function (done) {
+
+                    login('groupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 200', function (done) {
+
+                    var area = {
+                        id: 1,
+                        title: 'membership test area',
+                        group_id: 2
+                    };
+
+                    request(app)
+                        .get(parse('/api/groups/@groups:name:membershiptest:/areas'))
+                        .expect(200)
+                        .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                                return;
+                            }
+                            try {
+                                var data = JSON.parse(res.text);
+                                data.should.be.a('array');
+
+                                console.log(data);
+
+                                if (!_.isEqual(data[0], area)) {
+                                    throw 'data does not match';
+                                }
+
+                                done();
+                            } catch (e) {
+                                done(e);
+                            }
+                        });
+
+                });
+
+            });
+
+            describe('- privileged group member', function () {
+
+                beforeEach(function (done) {
+
+                    login('privledgedmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 200', function (done) {
+
+                    request(app)
+                        .get(parse('/api/groups/@groups:name:membershiptest:/areas'))
+                        .expect(200, done);
+
+                });
+
+            });
+        });
+
+        describe('- get permissions', function () {
+
+            describe('- anonymous user', function () {
+
+                it('- return 401', function (done) {
+
+                    request(app)
+                        .get(parse('/api/groups/@groups:name:membershiptest:/permissions'))
+                        .expect(401, done);
+                });
+
+            });
+
+            describe('- non group member', function () {
+
+                beforeEach(function (done) {
+
+                    login('nongroupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 401', function (done) {
+
+                    request(app)
+                        .get(parse('/api/groups/@groups:name:membershiptest:/permissions'))
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- group member', function () {
+
+                beforeEach(function (done) {
+
+                    login('groupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 200', function (done) {
+
+                    var groupsetting = {
+                        id: 1,
+                        groupsetting_id: 1,
+                        description: 'unprivileged',
+                        permissionlevel: 1,
+                        group_id: null,
+                        groupsetting: { id: 1, allowalltocreateshifts: 1, requireshiftconfirmation: 1 }
+                    };
+
+                    request(app)
+                        .get(parse('/api/groups/@groups:name:membershiptest:/permissions'))
+                        .expect(200)
+                        .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                                return;
+                            }
+                            try {
+                                var data = JSON.parse(res.text);
+                                data.should.be.a('array');
+
+                                if (!_.isEqual(data[0], groupsetting)) {
+                                    throw 'data does not match';
+                                }
+
+                                done();
+                            } catch (e) {
+                                done(e);
+                            }
+                        });
+
+                });
+
+            });
+
+            describe('- privileged group member', function () {
+
+                beforeEach(function (done) {
+
+                    login('privledgedmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 200', function (done) {
+
+                    request(app)
+                        .get(parse('/api/groups/@groups:name:membershiptest:/permissions'))
+                        .expect(200, done);
+
+                });
+
+            });
+        });
 
     });
 
