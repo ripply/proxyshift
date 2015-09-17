@@ -180,7 +180,7 @@ module.exports = {
                 weburl: 'test_password_weburl',
                 contactemail: 'test_password_2@example.com',
                 contactphone: 12435,
-                groupsetting_id: 'groupsettings:0'
+                groupsetting_id: 'groupsettings:1'
             },
             {
                 user_id: '@users:username:groupowner',
@@ -192,22 +192,25 @@ module.exports = {
                 weburl: 'membershiptest',
                 contactemail: 'membershiptest@example.com',
                 contactphone: 12435,
-                groupsetting_id: 'groupsettings:1'
+                groupsetting_id: 'groupsettings:0'
             }
         ],
         grouppermissions: [
             {
                 groupsetting_id: 'groupsettings:0',
+                group_id: '@groups:name:membershiptest',
                 description: 'unprivileged',
                 permissionlevel: 1
             },
             {
                 groupsetting_id: 'groupsettings:0',
+                group_id: '@groups:name:membershiptest',
                 description: 'privileged',
                 permissionlevel: 2
             },
             {
                 groupsetting_id: 'groupsettings:0',
+                group_id: '@groups:name:membershiptest',
                 description: 'very privileged',
                 permissionlevel: 3
             }
