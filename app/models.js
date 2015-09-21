@@ -1,6 +1,4 @@
-var mongoose = require('mongoose'),
-    //Schema = mongoose.Schema,
-    Schema = require('./schema').Schema,
+var Schema = require('./schema').Schema,
     ObjectId = Schema.ObjectId,
     bcrypt = require('bcrypt-nodejs'),
     passport = require('passport'),
