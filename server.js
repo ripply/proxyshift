@@ -3,7 +3,6 @@ var express = require('express'),
     path = require('path'),
     routes = require('./app/routes'),
     //exphbs = require('express3-handlebars'),
-    mongoose = require('mongoose'),
     seeder = require('./app/seeder'),
     passport = require('passport'),
     passportLocal = require('passport-local').Strategy,
@@ -114,17 +113,6 @@ app.use('/', express.static(path.join(__dirname, 'ionic/www')));
 if ('development' == app.get('env')) {
     app.use(errorHandler());
 }
-
-//connect to the db server:
-/*
-mongoose.connect('mongodb://localhost/MyApp');
-mongoose.connection.on('open', function() {
-    console.log("Connected to Mongoose...");
-
-    // check if the db is empty, if so seed it with some contacts:
-    //seeder.check();
-});
-*/
 
 //routes list:
 routes.initialize(app);
