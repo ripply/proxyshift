@@ -75,6 +75,9 @@ angular.module('scheduling-app.controllers')
                             setSuccess(true);
 
                             $scope.$emit(GENERAL_EVENTS.UPDATES.RESOURCE, objectName, result, oldValue);
+                            if ($scope.fetchComplete !== undefined) {
+                                $scope.fetchComplete(result, oldValue);
+                            }
                         }, function(err) {
                             delete objectMap.pendingFetch;
                             setFailed(objectName, err);

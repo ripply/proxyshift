@@ -15,11 +15,11 @@
     <!-- ionic/angularjs js -->
     <script src="lib/jquery/dist/jquery.min.js"></script>
     <script src="lib/ionic/js/ionic.bundle.js"></script>
-    <script src="lib/lodash/lodash.js"></script>
-    <script src="lib/restangular/src/restangular.js"></script>
-    <script src="lib/angular-cookies/angular-cookies.js"></script>
+    <script src="lib/lodash/lodash.min.js"></script>
+    <script src="lib/restangular/dist/restangular.min.js"></script>
+    <script src="lib/angular-cookies/angular-cookies.min.js"></script>
     <script src="lib/angular-http-auth/src/http-auth-interceptor.js"></script>
-    <script src="lib/angular-messages/angular-messages.js"></script>
+    <script src="lib/angular-messages/angular-messages.min.js"></script>
     <script src="lib/momentjs/min/moment.min.js"></script>
     <script src="lib/validator-js/validator.min.js"></script>
     <script src="lib/angular-gettext/dist/angular-gettext.min.js"></script>
@@ -27,13 +27,8 @@
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
 
-    <!-- FIXME WE SHOULD USE BOWER TO INSTALL THIS, THIS IS A TEMPORARY COPY/PASTE -->
-    <!-- https://github.com/witoldsz/angular-http-auth -->
-    <!-- bower install --save angular-http-auth -->
-    <!-- your app's js -->
     <script src="js/App.js"></script>
     <!-- **** CONTROLLERS **** -->
-    <!-- Initializes controllers module -->
     <script src="js/controllers/Controllers.js"></script>
 
     <script src="js/controllers/AppController.js"></script>
@@ -48,11 +43,12 @@
     <script src="js/controllers/OpenShiftsDirectiveController.js"></script>
     <script src="js/controllers/BaseModelController.js"></script>
     <script src="js/controllers/ShiftCalendarController.js"></script>
-    <!-- Models -->
+    <!-- **** MODELS **** -->
     <script src="js/models/Models.js"></script>
     <script src="js/models/ModelsGenerator.js"></script>
     <!-- **** DIRECTIVES **** -->
-    <script src="js/validation.js"></script>
+    <script src="js/shared/Validation.js"></script>
+    <script src="js/shared/ShiftShared.js"></script>
     <script src="js/directives/ValidationDirectiveGenerator.js"></script>
     <script src="js/directives/Directives.js"></script>
     <script src="js/directives/LoginDirective.js"></script>
@@ -70,6 +66,7 @@
     <script src="js/services/routing/StateHistoryService.js"></script>
     <script src="js/services/InitializeServices.js"></script>
     <script src="js/services/ResourceUpdateAggregatorService.js"></script>
+    <script src="js/services/ShiftIntervalTreeCacheService.js"></script>
 </head>
 
   <body ng-app="scheduling-app">

@@ -49,7 +49,17 @@ var config_data = {
             // events for controlling calendar from outside calendar scope
             'NEXTMONTH': 'events:calendar:nextmonthe',
             'PREVIOUSMONTH': 'events:calendar:previousmonth',
-            'CURRENTMONTH': 'events:calendar:currentmonth'
+            'CURRENTMONTH': 'events:calendar:currentmonth',
+            'UPDATE': {
+                'NEEDED': 'events:calendar:update:needed',
+                'FETCHING': 'events:calendar:update:fetching',
+                'FAILURE': 'events:calendar:update:failure',
+                'DONE': 'events:calendar:update:done',
+                'RANGE': 'events:calendar:update:range',
+                'DATASETUPDATED': 'events:calendar:update:datasetupdated'
+            },
+            'VIEW': 'events:calendar:view',
+            'INVALIDATE': 'events:calendar:invalidate'
         }
     },
     'TOKENS': {

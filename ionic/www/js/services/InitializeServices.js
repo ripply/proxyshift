@@ -5,9 +5,11 @@ angular.module('scheduling-app.services.initialize', [
     .service('InitializeServices', [
         'LoginControllerService',
         'ResourceUpdateAggregatorService',
+        'ShiftIntervalTreeCacheService',
         function(
             LoginControllerService,
-            ResourceUpdateAggregatorService
+            ResourceUpdateAggregatorService,
+            ShiftIntervalTreeCacheService
         ) {
             // Services should be initialized
         }

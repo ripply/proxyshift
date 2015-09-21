@@ -2,7 +2,7 @@
  * UserModel
  */
 module = angular.module('scheduling-app.models');
-_.each({
+angular.forEach({
     'Users': 'Users',
     'Shifts': 'Shifts',
     'AllShifts': {

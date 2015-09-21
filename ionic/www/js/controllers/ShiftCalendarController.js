@@ -1,26 +1,19 @@
 angular.module('scheduling-app.controllers')
     .controller('ShiftCalendarController', [
         '$scope',
+        '$rootScope',
         '$controller',
+        'ShiftIntervalTreeCacheService',
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
         function($scope,
+                 $rootScope,
                  $controller,
+                 ShiftIntervalTreeCacheService,
                  GENERAL_CONFIG,
                  GENERAL_EVENTS
         ) {
             $controller('BaseModelController', {$scope: $scope});
-
-            $scope.$on(GENERAL_EVENTS.UPDATES.RESOURCE,
-                function(event, resourceName, newValue, oldValue) {
-                    if (getValueName() == resourceName) {
-                        // value was updated
-                        // re-compute calendar
-                        console.log("Calendar's datasource was updated...");
-                        calculateCalendar();
-                    }
-                }
-            );
 
             createCalendarHeaderData();
             calculateCalendar();
@@ -30,10 +23,27 @@ angular.module('scheduling-app.controllers')
             $scope.$on(GENERAL_EVENTS.CALENDAR.NEXTMONTH, nextMonth);
             $scope.$on(GENERAL_EVENTS.CALENDAR.PREVIOUSMONTH, previousMonth);
             $scope.$on(GENERAL_EVENTS.CALENDAR.CURRENTMONTH, currentMonth);
+            $scope.$on(GENERAL_EVENTS.CALENDAR.VIEW, view);
+            $scope.$on(GENERAL_EVENTS.CALENDAR.UPDATE.DATASETUPDATED, render);
+
+            $scope.$on(GENERAL_EVENTS.CALENDAR.UPDATE.FETCHING, loading);
+            $scope.$on(GENERAL_EVENTS.CALENDAR.UPDATE.DONE, loadingComplete);
 
             $scope.nextMonth = nextMonth;
             $scope.previousMonth = previousMonth;
             $scope.currentMonth = currentMonth;
+
+            function view(event, shift) {
+                var shiftStart = moment(shift.start*1000);
+                var now = moment();
+                $scope.offset = shiftStart.month() - now.month();
+                calculateCalendar();
+                modifyCurrentShiftRetrievalRange();
+            }
+
+            function render() {
+                calculateCalendar();
+            }
 
             function nextMonth() {
                 $scope.offset += 1;
@@ -53,12 +63,68 @@ angular.module('scheduling-app.controllers')
                 modifyCurrentShiftRetrievalRange();
             }
 
+            function loading(event, start, end) {
+                if ($scope.calendarData.loadingData === undefined) {
+                    $scope.calendarData.loadingData = [];
+                }
+
+                $scope.calendarData.loadingData.push({
+                    start: start.unix(),
+                    end: start.end()
+                });
+            }
+
+            function loadingFailed(event, start, end) {
+                // should be unix time
+                loadingStopped(start, end);
+                // TODO: Retry or setup an error css class for these months
+            }
+
+            function loadingComplete(event, start, end) {
+                // should be unix time
+                loadingStopped(start, end);
+                calculateCalendar();
+            }
+
+            function loadingStopped(event, start, end) {
+                if (start && end) {
+                    var loadingData = $scope.calendarData.loadingData;
+                    for (var i = 0; i < loadingData.length; i++) {
+                        if (loadingData[i].start === start &&
+                            loadingData[i].end === end) {
+                            delete loadingData[i];
+                            break;
+                        }
+                    }
+                }
+            }
+
             function modifyCurrentShiftRetrievalRange() {
                 // TODO: Check that the current shifts being retrieved
                 // are visible from the calendar with the offset
                 // it should be visible.
                 // we just need to make sure there is buffer room of several months
                 // and fetch more shifts if needed to fill buffer
+                var minBuffer = 5;
+                var buffer = 8;
+                var bufferUnit = "months";
+                var calendarBounds = getCalendarBounds();
+                var now = moment();
+                var start = calendarBounds.start;
+                var end = calendarBounds.end;
+                if (moment(calendarBounds.now).add(minBuffer, bufferUnit).isBefore(now)) {
+                    // user is going forward in time
+                    end = moment(end).add(buffer, bufferUnit).endOf(bufferUnit);
+                }
+                if (moment(calendarBounds.now).subtract(minBuffer, bufferUnit)) {
+                    start = moment(start).subtract(buffer, bufferUnit).startOf(bufferUnit);
+                }
+
+                requestShiftFetching(start, end);
+            }
+
+            function requestShiftFetching(start, end) {
+                $scope.$emit(GENERAL_EVENTS.CALENDAR.UPDATE.NEEDED, getVariableName(), start, end);
             }
 
             function createCalendarHeaderData() {
@@ -73,12 +139,27 @@ angular.module('scheduling-app.controllers')
                 $scope.weekData = weekData;
             }
 
+            function getCalendarBounds() {
+                var calendarBounds = {};
+                var now = moment();
+                calendarBounds.now = now;
+
+                if ($scope.offset) {
+                    calendarBounds.now.add($scope.offset, 'month');
+                }
+
+                calendarBounds.start = moment(now).startOf("month").startOf("week").startOf("day");
+                calendarBounds.end = moment(now).endOf("month").endOf("week").endOf("day");
+
+                return calendarBounds;
+            }
+
             function calculateCalendar() {
                 if ($scope.offset === undefined) {
                     $scope.offset = 0;
                 }
 
-                var data = getData();
+                var data = getOneMonthOfDataFromOffset();
                 if (data === undefined) {
                     data = [];
                 }
@@ -93,19 +174,16 @@ angular.module('scheduling-app.controllers')
                     ];
                 }
 
-                var now = moment();
-                if ($scope.offset) {
-                    now = now.add($scope.offset, 'month');
-                }
-                var month = now.month();
+                var calendarBounds = getCalendarBounds();
+                var month = calendarBounds.now.month();
+                var calendarStart = calendarBounds.start;
+                var calendarEnd = calendarBounds.end;
+                var now = calendarBounds.now;
                 $scope.monthData = {
                     name: now.format("MMMM"),
                     month: month,
                     year: now.format("YYYY")
                 };
-
-                var calendarStart = moment(now).startOf("month").startOf("week").startOf("day");
-                var calendarEnd = moment(now).endOf("month").endOf("week").endOf("day");
 
                 var calendarStartUnix = calendarStart.unix();
                 var calendarEndUnix = calendarEnd.unix();
@@ -170,7 +248,7 @@ angular.module('scheduling-app.controllers')
                     var startMoment = moment(start, 'X');
                     var endMoment = moment(end, 'X');
 
-                    if (startMoment.isAfter(calendarStart) || endMoment.isBefore(calendarEndUnix)) {
+                    if (startMoment.isAfter(calendarStart) || endMoment.isBefore(calendarEnd)) {
                         // edge case: determine if the shift perhaps takes an entire month
                         var shiftStartMoment = moment(startMoment);
                         if (shiftStartMoment.isBefore(calendarStart)) {
@@ -228,11 +306,26 @@ angular.module('scheduling-app.controllers')
                 return transform;
             }
 
-            function getData() {
-                return $scope[getValueName()];
+            function getOneMonthOfDataFromOffset() {
+                var calendarBounds = getCalendarBounds();
+                var now = calendarBounds.now;
+                var month = calendarBounds.now.month();
+                var calendarStart = calendarBounds.start.unix();
+                var calendarEnd = calendarBounds.end.unix();
+                $scope.monthData = {
+                    name: now.format("MMMM"),
+                    month: month,
+                    year: now.format("YYYY")
+                };
+                return getData(calendarStart, calendarEnd);
             }
 
-            function getValueName() {
+            function getData(start, end) {
+                var data = ShiftIntervalTreeCacheService.get(start, end, getTransformationFunction());
+                return data;
+            }
+
+            function getVariableName() {
                 var attributes = $scope.attributes;
                 var value;
                 if (attributes !== undefined) {
