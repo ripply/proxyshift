@@ -2,9 +2,9 @@ var config_data = {
     'GENERAL_CONFIG': {
         'APP_NAME': 'Scheduling App',
         'APP_VERSION': '0.1',
-        'APP_URL': 'https://guarded-waters-3652.herokuapp.com', // modified during setup to point to correct url
+        'APP_URL': '', // modified during setup to point to correct url
         'APP_URL_PROD': 'https://guarded-waters-3652.herokuapp.com',
-        'APP_URL_DEV': 'http://localhost:8100',
+        'APP_URL_DEV': '',
         'APP_URL_API': '/api',
         'APP_URL_LOGIN': '/session/login',
         'APP_URL_LOGOUT': '/session/logout',
