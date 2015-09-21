@@ -3,16 +3,20 @@
  */
 angular.module('scheduling-app.controllers')
     .controller('SignupController', [
+        '$rootScope',
         '$scope',
         '$http',
         '$state',
         'UsersModel',
+        'ErrorMessageService',
         'GENERAL_EVENTS',
         'STATES',
-        function($scope,
+        function($rootScope,
+                 $scope,
                  $http,
                  $state,
                  UsersModel,
+                 ErrorMessageService,
                  GENERAL_EVENTS,
                  STATES) {
 
@@ -35,9 +39,12 @@ angular.module('scheduling-app.controllers')
                 }
                 UsersModel.post($scope.user)
                     .then(function() {
-                        console.log("Successfully created user?");
+                        console.log("User successfully signed up.");
+                        $rootScope.$broadcast(GENERAL_EVENTS.SIGNUP.SUCCESS);
                     }, function(response) {
-                        console.log("Failed to create user with response: " + response.status);
+                        console.log("User failed to signup.");
+                        console.log(response);
+                        $rootScope.$broadcast(GENERAL_EVENTS.SIGNUP.FAILED, ErrorMessageService.parse(response, 'An error occurred'));
                     });
             };
 
@@ -76,6 +83,26 @@ angular.module('scheduling-app.controllers')
             });
 
             $scope.$on(GENERAL_EVENTS.SIGNUP.FAILED, function(e, message) {
+                if (typeof message === 'object') {
+                    var error;
+                    angular.forEach(message, function(value, key) {
+                        if (value instanceof Array) {
+                            angular.forEach(value, function(errorMessage) {
+                                if (error === undefined) {
+                                    error = errorMessage;
+                                } else {
+                                    error += ", " + errorMessage;
+                                }
+                            });
+                        }
+                    });
+
+                    if (!error) {
+                        error = "Unknown error";
+                    }
+
+                    message = error;
+                }
                 $scope.message = message;
             });
 
