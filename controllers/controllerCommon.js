@@ -1,6 +1,7 @@
 var schema = require('../app/schema').Schema,
     models = require('../app/models'),
     moment = require('moment'),
+    ShiftShared = require('../ionic/www/js/shared/ShiftShared'),
     _ = require('underscore');
 
 var Bookshelf = models.Bookshelf;
@@ -113,7 +114,7 @@ module.exports = {
                 error(req, res, err);
             });
     },
-    grabNormalShiftRange: grabNormalShiftRange,
+    grabNormalShiftRange: ShiftShared.grabNormalShiftRange,
     getPatchKeysWithoutBannedKeys: getPatchKeysWithoutBannedKeys,
     getMark: getMark,
     setMark: setMark,
@@ -174,28 +175,6 @@ function getPatchKeysWithoutBannedKeys(modelName, patchableData, bannedKeys) {
     var modelKeys = schema[modelName];
 
     return _.pick(patchableData, _.without(_.keys(modelKeys), bannedKeys));
-}
-
-function grabNormalShiftRange(from, after, before) {
-    if (from === undefined) {
-        from = new Date();
-    }
-    if (after === undefined) {
-        after = moment(from)
-            .subtract('1', 'months')
-            .subtract('1', 'hour')
-            .endOf('month')
-            .unix();
-    }
-    if (before === undefined) {
-        before = moment(from)
-            .add('3', 'months')
-            .add('1', 'hour')
-            .startOf('month')
-            .unix();
-    }
-
-    return [after, before];
 }
 
 function setMark(req, mark, value, submark) {

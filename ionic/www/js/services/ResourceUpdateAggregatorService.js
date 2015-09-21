@@ -1,5 +1,5 @@
 angular.module('scheduling-app.services', [
-    'scheduling-app.config',
+    'scheduling-app.config'
 ])
     .service('ResourceUpdateAggregatorService', [
         '$rootScope',

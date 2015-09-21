@@ -54,8 +54,12 @@ var config_data = {
                 'NEEDED': 'events:calendar:update:needed',
                 'FETCHING': 'events:calendar:update:fetching',
                 'FAILURE': 'events:calendar:update:failure',
-                'DONE': 'events:calendar:update:done'
-            }
+                'DONE': 'events:calendar:update:done',
+                'RANGE': 'events:calendar:update:range',
+                'DATASETUPDATED': 'events:calendar:update:datasetupdated'
+            },
+            'VIEW': 'events:calendar:view',
+            'INVALIDATE': 'events:calendar:invalidate'
         }
     },
     'TOKENS': {
