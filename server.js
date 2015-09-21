@@ -108,7 +108,7 @@ app.use(passport.authenticate('remember-me'));
 
 //app.use(app.router);
 // serves clients our files in public
-app.use('/', express.static(path.join(__dirname, 'public')));
+app.use('/', express.static(path.join(__dirname, 'ionic/www')));
 
 // development only
 if ('development' == app.get('env')) {
