@@ -70,6 +70,8 @@ if (global.db_dialect === undefined) {
             global.db_port = match[5];
             global.db_database = match[6];
             global.db_ssl = true;
+        } else {
+            console.log("WARNING: DATABASE_URL is of the INCORRECT FORMAT");
         }
     }
 }
@@ -738,14 +740,13 @@ function getValidationOptionsForModelName(modelName) {
 }
 
 function consumeRememberMeToken(token, next) {
-    console.log("trying to consume token..");
     return models.Token.query(function(q) {
         q.select('tokens.*')
             .innerJoin('users', function () {
-                this.on('tokens.user_id', '=', 'users.id')
-                    .andOn('tokens.date', '>', time.nowInUtc())
-                    .andOn('tokens.token' , token)
+                this.on('tokens.user_id', '=', 'users.id');
             })
+            .where('tokens.token', '=', token)
+            .andWhere('tokens.date', '>', time.nowInUtc());
     })
         .fetch({require: true})
         .then(function(foundToken) {
@@ -756,7 +757,6 @@ function consumeRememberMeToken(token, next) {
                     return next(null, user_id);
                 })
                 .catch(function(err) {
-                    console.log(err);
                     return next(null, null);
                 });
         })
