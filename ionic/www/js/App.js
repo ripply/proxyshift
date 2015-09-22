@@ -1,5 +1,8 @@
 // Ionic Starter App
 
+// TODO: Fix this hack that uses a global variable
+var sessionHack = [];
+
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
@@ -24,16 +27,19 @@ angular.module('scheduling-app', [
     .run([
         '$rootScope',
         '$ionicPlatform',
+        'SessionService',
         'GENERAL_EVENTS',
         'STATES',
         'StateHistoryService',
         'InitializeServices',
         function($rootScope,
                  $ionicPlatform,
+                 SessionService,
                  GENERAL_EVENTS,
                  STATES,
                  StateHistoryService,
                  InitializeServices) {
+            sessionHack.push(SessionService);
             StateHistoryService.setDefaultState(STATES.HOME);
             function triggerAuthenticationCheck() {
                 console.log("Triggering auth check");
@@ -57,6 +63,7 @@ angular.module('scheduling-app', [
         '$stateProvider',
         '$urlRouterProvider',
         '$injector',
+        '$provide',
         'RestangularProvider',
         'STATES',
         'GENERAL_CONFIG',
@@ -65,6 +72,7 @@ angular.module('scheduling-app', [
         function($stateProvider,
                  $urlRouterProvider,
                  $injector,
+                 $provide,
                  RestangularProvider,
                  STATES,
                  GENERAL_CONFIG,
@@ -108,7 +116,11 @@ angular.module('scheduling-app', [
                 try {
                     if (SessionService === null ||
                         SessionService === undefined) {
-                        SessionService = $injector.get('SessionServiceProvider').$get();
+                        // This creates a second instance of SessionService which ends up having two instances consume token at once
+                        // the server consumes the token for the first request then rejects the second request and user fails to login
+                        // this hack uses a global variable to grab the instance used in run above
+                        SessionService = sessionHack[0];
+                        //SessionService = $injector.get('SessionServiceProvider').$get();
                     }
                 } catch (err) {
                     console.debug(err);
@@ -117,23 +129,48 @@ angular.module('scheduling-app', [
             }
 
             function requireSession() {
-                return getSessionService().requireSession();
+                var sess = getSessionService();
+                if (sess) {
+                    return sess.requrieSession();
+                } else {
+                    return false;
+                }
             }
 
             function requireSessionOrBack() {
-                return getSessionService().requireSessionOrBack();
+                var sess = getSessionService();
+                if (sess) {
+                    return sess.requireSessionOrBack();
+                } else {
+                    return false;
+                }
             }
 
             function requireSessionOrGoLogin() {
-                return getSessionService().requireSessionOrGoLogin();
+                var sess = getSessionService();
+                if (sess) {
+                    return sess.requireSessionOrGoLogin();
+                } else {
+                    return false;
+                }
             }
 
             function requireNoSession() {
-                return getSessionService().requireNoSession();
+                var sess = getSessionService();
+                if (sess) {
+                    return sess.requireNoSession();
+                } else {
+                    return false;
+                }
             }
 
             function requireNoSessionOrBack() {
-                return getSessionService().requireNoSessionOrBack();
+                var sess = getSessionService();
+                if (sess) {
+                    return sess.requireNoSessionOrBack();
+                } else {
+                    return false;
+                }
             }
 
             $stateProvider
