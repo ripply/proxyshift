@@ -2398,7 +2398,7 @@ describe('#/api/groups', function() {
 
         });
 
-        describe.only('- /:areas', function() {
+        describe('- /:areas', function() {
 
             describe('- anonymous user', function() {
 
