@@ -11,7 +11,7 @@ var config_data = {
         'APP_REMEMBER_ME_TOKEN': 'remember_me',
         'SESSION_RETRY_ACCESSED_RESOURCE_IN': {
             value: 30,
-            interval: 'mins'
+            interval: 'm'
         },
         'LOGIN_TIMEOUT': 15 * 1000 // milliseconds
     },
