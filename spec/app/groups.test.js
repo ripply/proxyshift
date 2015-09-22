@@ -1444,12 +1444,12 @@ describe('#/api/groups', function() {
 
                 it('- returns 200', function (done) {
 
-                    var groupsetting = {
+                    var grouppermission = {
                         id: 1,
                         groupsetting_id: 1,
                         description: 'unprivileged',
                         permissionlevel: 1,
-                        group_id: null,
+                        group_id: 2,
                         groupsetting: { id: 1, allowalltocreateshifts: 1, requireshiftconfirmation: 1 }
                     };
 
@@ -1465,7 +1465,7 @@ describe('#/api/groups', function() {
                                 var data = JSON.parse(res.text);
                                 data.should.be.a('array');
 
-                                if (!_.isEqual(data[0], groupsetting)) {
+                                if (!_.isEqual(data[0], grouppermission)) {
                                     throw 'data does not match';
                                 }
 
@@ -1840,8 +1840,126 @@ describe('#/api/groups', function() {
 
         });
 
-        // :group_id/permissions
-        // :group_id/users/:user_id/permissions/:permission_id
+        describe('- /:permissions', function() {
+
+            var newpermissions = {
+                description: 'updateddescription',
+                permissionlevel: '99'
+            };
+
+            describe('- anonymous user', function() {
+
+                it('- returns 401', function(done) {
+
+                    request(app)
+                        .patch(parse('/api/groups/@groups:name:membershiptest:/permissions/1'))
+                        .send(newpermissions)
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- non group member', function() {
+
+                beforeEach(function(done) {
+
+                    login('nongroupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 401', function(done) {
+
+                    request(app)
+                        .patch(parse('/api/groups/@groups:name:membershiptest:/permissions/1'))
+                        .send(newpermissions)
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- group member', function() {
+
+                beforeEach(function(done) {
+
+                    login('groupmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 401', function(done) {
+
+                    request(app)
+                        .patch(parse('/api/groups/@groups:name:membershiptest:/permissions/1'))
+                        .send(newpermissions)
+                        .expect(401, done);
+
+                });
+
+            });
+
+            describe('- privileged group member', function() {
+
+                beforeEach(function(done) {
+
+                    login('privledgedmember',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 200', function(done) {
+
+                    request(app)
+                        .patch(parse('/api/groups/@groups:name:membershiptest:/permissions/1'))
+                        .send(newpermissions)
+                        .expect(200, done);
+
+                });
+
+                it('- verify updated permission', function (done) {
+
+                    var grouppermission = {
+                        id: 1,
+                        groupsetting_id: 1,
+                        description: 'updateddescription',
+                        permissionlevel: 99,
+                        group_id: 2,
+                        groupsetting: { id: 1, allowalltocreateshifts: 1, requireshiftconfirmation: 1 }
+                    };
+
+                    request(app)
+                        .get(parse('/api/groups/@groups:name:membershiptest:/permissions'))
+                        .expect(200)
+                        .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                                return;
+                            }
+                            try {
+                                var data = JSON.parse(res.text);
+                                data.should.be.a('array');
+                                console.log(data);
+
+                                if (!_.isEqual(data[0], grouppermission)) {
+                                    throw 'data does not match';
+                                }
+
+                                done();
+                            } catch (e) {
+                                done(e);
+                            }
+                        });
+
+                });
+
+            });
+
+        });
 
     });
 
@@ -2316,14 +2434,14 @@ describe('#/api/groups', function() {
 
         });
 
-        describe('- /:permissions', function() {
+        describe('- /:areas', function() {
 
             describe('- anonymous user', function() {
 
                 it('- returns 401', function(done) {
 
                     return request(app)
-                        .delete(parse('/api/groups/@groups:name:membershiptest:/permissions/1'))
+                        .delete(parse('/api/groups/@groups:name:membershiptest:/areas/1'))
                         .expect(401, done);
 
                 });
@@ -2343,7 +2461,7 @@ describe('#/api/groups', function() {
                 it('- returns 200', function(done) {
 
                     request(app)
-                        .delete(parse('/api/groups/@groups:name:membershiptest:/permissions/1'))
+                        .delete(parse('/api/groups/@groups:name:membershiptest:/areas/1'))
                         .expect(200)
                         .end(function(err, res) {
                             if (err) {
@@ -2352,7 +2470,7 @@ describe('#/api/groups', function() {
                             }
                             debug(res.text);
                             request(app)
-                                .get(parse('/api/groups/@groups:name:membershiptest:/permissions/1'))
+                                .get(parse('/api/groups/@groups:name:membershiptest:/areas/1'))
                                 .expect(404, done);
                         });
 
@@ -2371,7 +2489,7 @@ describe('#/api/groups', function() {
                 it('- returns 200', function(done) {
 
                     request(app)
-                        .delete(parse('/api/groups/@groups:name:membershiptest:/permissions/1'))
+                        .delete(parse('/api/groups/@groups:name:membershiptest:/areas/1'))
                         .expect(200, done);
 
                 })
@@ -2389,7 +2507,7 @@ describe('#/api/groups', function() {
                 it('- returns 401', function(done) {
 
                     request(app)
-                        .delete(parse('/api/groups/@groups:name:membershiptest:/permissions/1'))
+                        .delete(parse('/api/groups/@groups:name:membershiptest:/areas/1'))
                         .expect(401, done);
 
                 })
@@ -2398,7 +2516,7 @@ describe('#/api/groups', function() {
 
         });
 
-        describe('- /:areas', function() {
+        describe('- /:permissions', function() {
 
             describe('- anonymous user', function() {
 
