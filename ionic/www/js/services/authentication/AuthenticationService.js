@@ -64,14 +64,14 @@ angular.module('scheduling-app.authentication', [
                             // will configure the request headers with the authorization token so
                             // previously failed requests(aka with status == 401) will be resent with the
                             // authorization token placed in the header
+                            resolveLogin(deferred);
+                            $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.CONFIRMED);
+                            console.log("Fired login confirmed event");
                             authService.loginConfirmed(data, function (config) {  // Step 2 & 3
                                 //config.headers.Authorization = data.authorizationToken;
                                 //deferred.resolve(config);
                                 return config;
                             });
-                            resolveLogin(deferred);
-                            $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.CONFIRMED);
-                            console.log("Fired login confirmed event");
                         })
                         .error(function (data, status, headers, config) {
                             rejectLogin(deferred);
