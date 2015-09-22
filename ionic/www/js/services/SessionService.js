@@ -46,6 +46,8 @@ angular.module('scheduling-app.session', [
                 }
             }
 
+            this.setAuthenticated = setAuthenticated;
+
             function isAuthenticated() {
                 var keys = [];
                 for (var key in userinfo) {
