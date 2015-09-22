@@ -175,6 +175,12 @@ angular.module('scheduling-app', [
 
             $stateProvider
 
+                .state('loading', {
+                    url: '/loading',
+                    templateUrl: "templates/loading.html",
+                    controller: "LoadingController"
+                })
+
                 .state(STATES.LOGIN, {
                     url: '/login',
                     templateUrl: "templates/login.html",
@@ -286,5 +292,5 @@ angular.module('scheduling-app', [
 
             //StateHistoryService.setDefaultState('app.playlists');
             // if none of the above states are matched, use this as the fallback
-            $urlRouterProvider.otherwise(STATES.HOME);
+            $urlRouterProvider.otherwise(STATES.LOADING);
         }]);

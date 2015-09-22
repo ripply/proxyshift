@@ -59,6 +59,8 @@ angular.module('scheduling-app.session', [
                 }
             }
 
+            this.isAuthenticated = isAuthenticated;
+
             function fireAuthenticaionRequiredEvent(loggingOut) {
                 setAuthenticated(false);
                 if (!loggingOut) {
@@ -71,6 +73,10 @@ angular.module('scheduling-app.session', [
                 if (!loggingOut) {
                     $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.CONFIRMED);
                 }
+            }
+
+            function fireAuthenticationPendingEvent() {
+                $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.PENDING);
             }
 
             $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.CONFIRMED, function() {
@@ -138,6 +144,7 @@ angular.module('scheduling-app.session', [
                     } else if (failedLogin) {
                         reject(deferred);
                     } else {
+                        fireAuthenticationPendingEvent();
                         $http.get(api_url + "/session", {
                             ignoreAuthModule: true,
                             timeout: GENERAL_CONFIG.LOGIN_TIMEOUT

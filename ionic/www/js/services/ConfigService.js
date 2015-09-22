@@ -19,6 +19,7 @@ var config_data = {
         // TODO: NONE OF THESE EVENT NAMES FOLLOW A CONSISTENT PATTERN
         'AUTHENTICATION': {
             'CHECK': 'events:auth-check-authentication',
+            'PENDING': 'events:auth-check-pending',
             // This is broadcast by angular-http-auth on 401 code
             'REQUIRED': 'event:auth-loginRequired',
             'CONFIRMED': 'event:auth-loginConfirmed',
@@ -26,7 +27,7 @@ var config_data = {
             'FAILED': 'event:auth-login-failed'
         },
         'SIGNUP': {
-            'REQUIRED': 'event:signup-requierd',
+            'REQUIRED': 'event:signup-required',
             'SUCCESS': 'event:signup-successful',
             'FAILED': 'event:signup-failed',
             'COMPLETE': 'event:signup-complete'
@@ -67,6 +68,7 @@ var config_data = {
         'REMEMBERME': 'remember_me'
     },
     'STATES': {
+        'LOADING': 'loading',
         'HOME': 'app.openshifts',
         'LOGIN': 'login'
     },
