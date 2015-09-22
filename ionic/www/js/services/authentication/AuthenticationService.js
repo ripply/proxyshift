@@ -122,6 +122,7 @@ angular.module('scheduling-app.authentication', [
                         }).
                             success(function(data, status, headers, config) {
                                 // ensure that rememberme token is gone
+                                SessionService.setAuthenticated(false);
                                 var token = CookiesService.getCookie(GENERAL_CONFIG.APP_REMEMBER_ME_TOKEN);
                                 if (token === undefined ||
                                     token === null ||
