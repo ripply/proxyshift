@@ -40,7 +40,7 @@ angular.module('scheduling-app.session', [
 
             function setAuthenticated(authenticated) {
                 accessedRestrictedResource = authenticated;
-                if (authenticated !== true) {
+                if (authenticated === true) {
                     // only update expiration if authenticated
                     accessedRestrictedResourceExpires = moment().add(retryResourceIn.value, retryResourceIn.interval);
                 }
@@ -54,10 +54,13 @@ angular.module('scheduling-app.session', [
                     keys.push(key);
                 }
 
-                if (keys.length === 0) {
+                var accessedRestricedResourceRecently =
+                    (accessedRestrictedResource && moment() < accessedRestrictedResourceExpires);
+
+                if (!accessedRestricedResourceRecently && keys.length === 0) {
                     return false;
                 } else {
-                    return (accessedRestrictedResource && moment() < accessedRestrictedResourceExpires);
+                    return accessedRestricedResourceRecently;
                 }
             }
 
