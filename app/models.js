@@ -244,7 +244,35 @@ function getListOfNonExistingTables(trx, next) {
     return recurse();
 }
 
-var fieldsToEncrypt = {};
+var specialFields = {};
+var specialFieldList = {
+    'encrypt': function(fields) {
+        this.on('saving', function (model, attrs, options) {
+            _.each(fields, function (columnDefinition, columnName) {
+                var value = model.get(columnName);
+                /*
+                 // Is this needed? What is the point of the attrs argument
+                 if (attrs.hasOwnProperty(columnName)) {
+                 value = attrs[columnName];
+                 }
+                 */
+
+                if (value !== undefined) {
+                    // encrypt
+                    model.set(columnName, encryptKey(value));
+                }
+            });
+        });
+    },
+    'lowercase': function(fields) {
+        this.on('saving', function (model, attrs, options) {
+            _.each(fields, function (columnDefinition, columnName) {
+                var value = model.get(columnName);
+                model.set(columnName, value.toLowerCase());
+            });
+        });
+    }
+};
 
 function initDb(dropAllTables) {
 
@@ -687,40 +715,34 @@ _.each(modelNames, function(tableName, modelName) {
         // looking for a value with a 'encrypt' attribute
         _.each(Schema[modelName], function(columnDefinition, columnName) {
             // columnDefinition will be an object
-            if (columnDefinition.hasOwnProperty('encrypt')) {
-                if (!fieldsToEncrypt.hasOwnProperty(modelName)) {
-                    fieldsToEncrypt[modelName] = {};
-                }
+            _.each(specialFieldList, function(valueFunction, property) {
+                if (columnDefinition.hasOwnProperty(property)) {
+                    if (specialFields[property] === undefined) {
+                        specialFields[property] = {};
+                    }
+                    if (!specialFields[property].hasOwnProperty(modelName)) {
+                        specialFields[property][modelName] = {};
+                    }
 
-                fieldsToEncrypt[modelName][columnName] = columnDefinition;
-            }
+                    specialFields[property][modelName][columnName] = columnDefinition;
+                }
+            });
         });
     }
 
-    if (fieldsToEncrypt[modelName] !== undefined) {
-        var encryptableFields = fieldsToEncrypt[modelName];
-        modelOptions = _.extend(modelOptions, {
-            constructor: function() {
-                Bookshelf.Model.prototype.constructor.apply(this, arguments);
-                this.on('saving', function(model, attrs, options) {
-                    _.each(encryptableFields, function(columnDefinition, columnName) {
-                        var value = model.get(columnName);
-                        /*
-                        // Is this needed? What is the point of the attrs argument
-                        if (attrs.hasOwnProperty(columnName)) {
-                            value = attrs[columnName];
-                        }
-                        */
-
-                        if (value !== undefined) {
-                            // encrypt
-                            model.set(columnName, encryptKey(value));
-                        }
-                    });
+    _.each(specialFieldList, function(valueFunction, property) {
+        if (specialFields[property] !== undefined) {
+            if (specialFields[property][modelName] !== undefined) {
+                var fields = specialFields[property][modelName];
+                modelOptions = _.extend(modelOptions, {
+                    constructor: function () {
+                        Bookshelf.Model.prototype.constructor.apply(this, arguments);
+                        _.bind(valueFunction, this)(fields);
+                    }
                 });
             }
-        });
-    }
+        }
+    });
 
     // create the new model
     models[modelName] = Bookshelf.Model.extend(modelOptions);

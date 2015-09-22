@@ -26,6 +26,7 @@ var Schema = {
             type: string,
             unique: true,
             nullable: false,
+            lowercase: true,
             maxlen: 20
         },
         firstname: {
@@ -39,6 +40,7 @@ var Schema = {
         email: {
             type: string,
             unique: true,
+            lowercase: true,
             nullable: false
         },
         password: {
