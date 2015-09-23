@@ -1962,7 +1962,7 @@ describe('#/api/groups', function() {
 
             });
 
-            describe.only('- group owner', function() {
+            describe('- group owner', function() {
 
                 beforeEach(function(done) {
 
