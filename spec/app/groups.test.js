@@ -1912,16 +1912,7 @@ describe('#/api/groups', function() {
 
                 });
 
-                it('- returns 200', function(done) {
-
-                    request(app)
-                        .patch(parse('/api/groups/@groups:name:membershiptest:/permissions/1'))
-                        .send(newpermissions)
-                        .expect(200, done);
-
-                });
-
-                it('- verify updated permission', function (done) {
+                describe('- update permissions', function() {
 
                     var grouppermission = {
                         id: 1,
@@ -1932,33 +1923,46 @@ describe('#/api/groups', function() {
                         groupsetting: { id: 1, allowalltocreateshifts: 1, requireshiftconfirmation: 1 }
                     };
 
-                    request(app)
-                        .get(parse('/api/groups/@groups:name:membershiptest:/permissions'))
-                        .expect(200)
-                        .end(function(err, res) {
-                            if (err) {
-                                done(err);
-                                return;
-                            }
-                            try {
-                                var data = JSON.parse(res.text);
-                                data.should.be.a('array');
+                    beforeEach(function(done) {
 
-                                if (!_.isEqual(data[0], grouppermission)) {
-                                    throw new Error('data does not match');
+                        request(app)
+                            .patch(parse('/api/groups/@groups:name:membershiptest:/permissions/1'))
+                            .send(grouppermission)
+                            .expect(200, done);
+
+                    });
+
+                    it('- verify updated data', function(done) {
+
+                        request(app)
+                            .get(parse('/api/groups/@groups:name:membershiptest:/permissions'))
+                            .expect(200)
+                            .end(function(err, res) {
+                                if (err) {
+                                    done(err);
+                                    return;
                                 }
+                                try {
+                                    var data = JSON.parse(res.text);
+                                    data.should.be.a('array');
 
-                                done();
-                            } catch (e) {
-                                done(e);
-                            }
-                        });
+                                    if (!_.isEqual(data[0], grouppermission)) {
+                                        throw new Error('data does not match');
+                                    }
+
+                                    done();
+                                } catch (e) {
+                                    done(e);
+                                }
+                            });
+
+                    });
 
                 });
 
             });
 
-            describe('- group owner', function() {
+            describe.only('- group owner', function() {
 
                 beforeEach(function(done) {
 
@@ -1968,16 +1972,7 @@ describe('#/api/groups', function() {
 
                 });
 
-                it('- returns 200', function(done) {
-
-                    request(app)
-                        .patch(parse('/api/groups/@groups:name:membershiptest:/permissions/1'))
-                        .send(newpermissions)
-                        .expect(200, done);
-
-                });
-
-                it('- verify updated permission', function (done) {
+                describe('- update permissions', function() {
 
                     var grouppermission = {
                         id: 1,
@@ -1988,27 +1983,40 @@ describe('#/api/groups', function() {
                         groupsetting: { id: 1, allowalltocreateshifts: 1, requireshiftconfirmation: 1 }
                     };
 
-                    request(app)
-                        .get(parse('/api/groups/@groups:name:membershiptest:/permissions'))
-                        .expect(200)
-                        .end(function(err, res) {
-                            if (err) {
-                                done(err);
-                                return;
-                            }
-                            try {
-                                var data = JSON.parse(res.text);
-                                data.should.be.a('array');
+                    beforeEach(function(done) {
 
-                                if (!_.isEqual(data[0], grouppermission)) {
-                                    throw new Error('data does not match');
+                        request(app)
+                            .patch(parse('/api/groups/@groups:name:membershiptest:/permissions/1'))
+                            .send(grouppermission)
+                            .expect(200, done);
+
+                    });
+
+                    it('- verify updated data', function(done) {
+
+                        request(app)
+                            .get(parse('/api/groups/@groups:name:membershiptest:/permissions'))
+                            .expect(200)
+                            .end(function(err, res) {
+                                if (err) {
+                                    done(err);
+                                    return;
                                 }
+                                try {
+                                    var data = JSON.parse(res.text);
+                                    data.should.be.a('array');
 
-                                done();
-                            } catch (e) {
-                                done(e);
-                            }
-                        });
+                                    if (!_.isEqual(data[0], grouppermission)) {
+                                        throw new Error('data does not match');
+                                    }
+
+                                    done();
+                                } catch (e) {
+                                    done(e);
+                                }
+                            });
+
+                    });
 
                 });
 
