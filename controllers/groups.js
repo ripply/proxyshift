@@ -671,18 +671,20 @@ module.exports = {
                     q.select()
                         .from('grouppermissions')
                         .innerJoin('groups', function() {
-                            this.on('groups.groupsetting_id', '=', 'grouppermissions.groupsetting_id');
-                        })
-                        .where('groups.id', '=', req.params.group_id);
+                         this.on('groups.groupsetting_id', '=', 'grouppermissions.groupsetting_id');
+                         })
+                        .where('group_id', '=', req.params.group_id)
+                        .where('grouppermissions.id', '=', req.params.permission_id)
+                        .update(getPatchKeysWithoutBannedKeys(
+                            'GroupPermission',
+                            req.body,
+                            [
+                                'id',
+                                'groupsetting_id'
+                            ]
+                        ));
                 })
-                    .update(getPatchKeysWithoutBannedKeys(
-                        'GroupPermission',
-                        req.body,
-                        [
-                            'id',
-                            'groupsetting_id'
-                        ]
-                    ))
+                    .fetch()
                     .then(function(model) {
                         if (model) {
                             res.json({error: false, data: {message: 'Success'}});

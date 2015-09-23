@@ -1265,7 +1265,7 @@ describe('#/api/groups', function() {
                                 data.should.be.a('array');
 
                                 if (!_.isEqual(data[0], location)) {
-                                    throw 'data does not match';
+                                    throw new Error('data does not match');
                                 }
 
                                 done();
@@ -1365,7 +1365,7 @@ describe('#/api/groups', function() {
                                 console.log(data);
 
                                 if (!_.isEqual(data[0], area)) {
-                                    throw 'data does not match';
+                                    throw new Error('data does not match');
                                 }
 
                                 done();
@@ -1466,7 +1466,7 @@ describe('#/api/groups', function() {
                                 data.should.be.a('array');
 
                                 if (!_.isEqual(data[0], grouppermission)) {
-                                    throw 'data does not match';
+                                    throw new Error('data does not match');
                                 }
 
                                 done();
@@ -1943,10 +1943,65 @@ describe('#/api/groups', function() {
                             try {
                                 var data = JSON.parse(res.text);
                                 data.should.be.a('array');
-                                console.log(data);
 
                                 if (!_.isEqual(data[0], grouppermission)) {
-                                    throw 'data does not match';
+                                    throw new Error('data does not match');
+                                }
+
+                                done();
+                            } catch (e) {
+                                done(e);
+                            }
+                        });
+
+                });
+
+            });
+
+            describe('- group owner', function() {
+
+                beforeEach(function(done) {
+
+                    login('groupowner',
+                        'secret',
+                        done);
+
+                });
+
+                it('- returns 200', function(done) {
+
+                    request(app)
+                        .patch(parse('/api/groups/@groups:name:membershiptest:/permissions/1'))
+                        .send(newpermissions)
+                        .expect(200, done);
+
+                });
+
+                it('- verify updated permission', function (done) {
+
+                    var grouppermission = {
+                        id: 1,
+                        groupsetting_id: 1,
+                        description: 'updateddescription',
+                        permissionlevel: 100,
+                        group_id: 2,
+                        groupsetting: { id: 1, allowalltocreateshifts: 1, requireshiftconfirmation: 1 }
+                    };
+
+                    request(app)
+                        .get(parse('/api/groups/@groups:name:membershiptest:/permissions'))
+                        .expect(200)
+                        .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                                return;
+                            }
+                            try {
+                                var data = JSON.parse(res.text);
+                                data.should.be.a('array');
+
+                                if (!_.isEqual(data[0], grouppermission)) {
+                                    throw new Error('data does not match');
                                 }
 
                                 done();
