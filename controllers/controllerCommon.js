@@ -32,31 +32,32 @@ module.exports = {
         // TODO: Refactor all routes to use the same code paths for create/patch etc
         // TODO: Consolidate return messages into a function so everything is consistent
         // TODO: WARNING: UNSAFE: Submit pull request to bookshelf-validator to support {patch: true}
-        var sqlOptionsWithTransaction = sqlOptions;
-        models[modelName].forge(queryArgs)
-            .fetch(sqlOptionsWithTransaction)
-            .then(function (fetchedResult) {
-                if (!fetchedResult) {
-                    audit(req, "Couldn't find: " + modelName + ": " + JSON.stringify(queryArgs));
-                    res.sendStatus(403);
+        var tableName = models.getTableNameFromModel(modelName);
+        models[modelName].query(function(q) {
+            var query = q.select()
+                .from(tableName);
+            _.each(queryArgs, function(value, key) {
+                query = query.where(tableName + "." + key, '=', value);
+            });
+            query.update(getPatchKeysWithoutBannedKeys(
+                    modelName,
+                    req.body,
+                    defaultExcludes
+                )
+            )
+        })
+            .fetch()
+            .then(function(model) {
+                if (model) {
+                    if (successCallback !== undefined) {
+                        successCallback(model);
+                    }
+                    res.json({error: false, data: {message: 'Success'}});
                 } else {
-                    var updated = updateModel(modelName, fetchedResult, req.body, defaultExcludes);
-                    fetchedResult.save(
-                        updated,
-                        sqlOptionsWithTransaction
-                    )
-                        .then(function (model) {
-                            if (successCallback !== undefined) {
-                                successCallback(model);
-                            }
-                            res.json({error: false, data: {message: updateMessage}});
-                        })
-                        .catch(function (err) {
-                            error(req, res, err);
-                        });
+                    res.status(403);
                 }
             })
-            .catch(function (err) {
+            .catch(function(err) {
                 error(req, res, err);
             });
     },
