@@ -26,7 +26,8 @@ var Schema = {
             type: string,
             unique: true,
             nullable: false,
-            lowercase: true,
+            // FIXME: Enabling this overwrites our password encryption on save event
+            // lowercase: true,
             maxlen: 20
         },
         firstname: {
@@ -40,7 +41,7 @@ var Schema = {
         email: {
             type: string,
             unique: true,
-            lowercase: true,
+            // lowercase: true,
             nullable: false
         },
         password: {
