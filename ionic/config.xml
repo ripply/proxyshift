@@ -16,5 +16,6 @@
   <feature name="StatusBar">
     <param name="ios-package" value="CDVStatusBar" onload="true"/>
   </feature>
-  <allow-navigation href="*" />
+  <!-- https://github.com/apache/cordova-plugin-whitelist -->
+  <access origin="https://guarded-waters-3652.herokuapp.com" />
 </widget>
