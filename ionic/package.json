@@ -16,6 +16,7 @@
   },
   "cordovaPlugins": [
     "ionic-plugin-keyboard",
-    "cordova-plugin-whitelist"
+    "cordova-plugin-whitelist",
+    "phonegap-plugin-push"
   ]
 }
