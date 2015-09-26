@@ -9,6 +9,7 @@ var Schema = require('./schema').Schema,
     mkdirp = require('mkdirp'),
     path = require('path'),
     Promise = require('bluebird'),
+    config = require('config'),
     validations = require('../ionic/www/js/shared/Validation.js'),
     Validator = require('bookshelf-validator'),
     ValidationError = Validator.ValidationError,
@@ -18,10 +19,14 @@ var Schema = require('./schema').Schema,
     time = require('./time'),
     SALT_WORK_FACTOR = 10;
 
-var db_file = './data/database.db';
 var neverDropAllTables = false; // safety setting later for production
 function okToDropAllTables() {
     return global.okToDropTables || false;
+}
+
+var db_file = './data/database.db';
+if (config.has("dbConfig.file")) {
+    db_file = config.get("dbConfig.file");
 }
 
 mkdirp(path.dirname(db_file), function(err) {
@@ -32,52 +37,69 @@ mkdirp(path.dirname(db_file), function(err) {
     }
 });
 
-var database = global.db_file || db_file;
-
-console.log("Using database: " + database);
 if (global.okToDropTables) {
     console.log("WARNING: Dropping of tables ENABLED");
 }
 
 var dbConnection = {};
 
-if (global.db_dialect === undefined) {
-    if (process.env.DATABASE_URL !== undefined) {
-        // running in heroku?
-        var re = /([^:]):\/\/([^:]*):([^@]*)@([^:]*):(\d*)\/(.*)/;
-        var match;
+if (process.env.DATABASE_URL !== undefined ||
+    (config.has("dbConfig.url")
+    && config.get("dbConfig.url") !== null)
+    && config.get("dbConfig.url") != '') {
+    // running in heroku?
+    var re = /([^:]):\/\/([^:]*):([^@]*)@([^:]*):(\d*)\/(.*)/;
+    var match;
 
-        if ((match = re.exec(process.env.DATABASE_URL)) !== null) {
-            if (match.index === re.lastIndex) {
-                re.lastIndex++;
-            }
-            console.log("Seem to be running in heroku, trying to connect to database");
-
-            switch(match[1]) {
-                case 'postgres':
-                    global.db_dialect = 'pg';
-                    break;
-                case 'mysql':
-                    global.db_dialect = 'mysql';
-                    break;
-                default:
-                    console.log("Unknown database type: " + match[1]);
-                    global.db_dialect = 'pg';
-            }
-            global.db_user = match[2];
-            global.db_password = match[3];
-            global.db_host = match[4];
-            global.db_port = match[5];
-            global.db_database = match[6];
-            global.db_ssl = true;
-        } else {
-            console.log("WARNING: DATABASE_URL is of the INCORRECT FORMAT");
-        }
+    var url = process.env.DATABASE_URL;
+    if (url === undefined) {
+        url = config.get("dbConfig.url");
     }
+
+    if ((match = re.exec(url)) !== null) {
+        if (match.index === re.lastIndex) {
+            re.lastIndex++;
+        }
+        console.log("Seem to be running in heroku, trying to connect to database");
+
+        switch(match[1]) {
+            case 'postgres':
+                global.db_dialect = 'pg';
+                break;
+            case 'mysql':
+                global.db_dialect = 'mysql';
+                break;
+            default:
+                console.log("Unknown database type: " + match[1]);
+                global.db_dialect = 'pg';
+        }
+        global.db_user = match[2];
+        global.db_password = match[3];
+        global.db_host = match[4];
+        global.db_port = match[5];
+        global.db_database = match[6];
+        global.db_ssl = true;
+    } else {
+        console.log("WARNING: DATABASE_URL is of the INCORRECT FORMAT");
+    }
+} else {
+    _.each({
+        db_dialect: "dbConfig.dialect",
+        db_host: "dbConfig.host",
+        db_port: "dbConfig.port",
+        db_user: "dbConfig.user",
+        db_password: "dbConfig.password",
+        db_database: "dbConfig.database",
+        db_ssl: "dbConfig.ssl"
+    }, function(configName, globalName) {
+        if (config.has(configName)) {
+            global[globalName] = config.get(configName);
+        }
+    });
 }
 
 if ((global.db_dialect || 'sqlite3') == 'sqlite3') {
-    dbConnection.filename = database;
+    dbConnection.filename = db_file;
 } else {
     dbConnection.host = global.db_host;
     dbConnection.user = global.db_user;
@@ -90,6 +112,8 @@ if ((global.db_dialect || 'sqlite3') == 'sqlite3') {
         dbConnection.ssl = global.db_ssl;
     }
 }
+
+console.log(dbConnection);
 
 var knex = require('knex')( {
     dialect: global.db_dialect || 'sqlite3',

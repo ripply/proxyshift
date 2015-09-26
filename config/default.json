@@ -1,0 +1,33 @@
+/*
+Loaded first when loading config files
+Loading order: https://github.com/lorenwest/node-config/wiki/Configuration-Files#file-load-order
+default.EXT
+default-{instance}.EXT
+{deployment}.EXT
+{deployment}-{instance}.EXT
+{short_hostname}.EXT
+{short_hostname}-{instance}.EXT
+{short_hostname}-{deployment}.EXT
+{short_hostname}-{deployment}-{instance}.EXT
+{full_hostname}.EXT
+{full_hostname}-{instance}.EXT
+{full_hostname}-{deployment}.EXT
+{full_hostname}-{deployment}-{instance}.EXT
+local.EXT
+local-{instance}.EXT
+local-{deployment}.EXT
+local-{deployment}-{instance}.EXT
+*/
+{
+    "dbConfig": {
+        "dialect": "sqlite3",
+        "file": "./data/database.db"
+        //"user": "",
+        //"password": "",
+        //"host": "localhost",
+        //"port": "",
+        //"database": "",
+        //"url": "" // for running in heroku
+        //ssl: true
+    }
+}
