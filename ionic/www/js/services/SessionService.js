@@ -66,7 +66,7 @@ angular.module('scheduling-app.session', [
 
             this.isAuthenticated = isAuthenticated;
 
-            function fireAuthenticaionRequiredEvent(loggingOut) {
+            function fireAuthenticationRequiredEvent(loggingOut) {
                 setAuthenticated(false);
                 if (!loggingOut) {
                     $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.REQUIRED);
@@ -177,7 +177,7 @@ angular.module('scheduling-app.session', [
                             // set flag that forces this method to return false
                             // until the user is logged in
                             failedLogin = true;
-                            fireAuthenticaionRequiredEvent(loggingOut);
+                            fireAuthenticationRequiredEvent(loggingOut);
                             reject(deferred);
                         }
                     }
