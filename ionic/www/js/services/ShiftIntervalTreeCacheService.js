@@ -100,13 +100,16 @@ angular.module('scheduling-app.services')
                     }
                 }
 
-                for (var j = 0; j < shiftsArray.length; j++) {
-                    var replacementShift = shiftsArray[j];
-                    if (transform !== undefined) {
-                        replacementShift = transform(replacementShift);
-                    }
+                if (shiftsArray) {
+                    // undefined could be passed in if server responds with no shifts
+                    for (var j = 0; j < shiftsArray.length; j++) {
+                        var replacementShift = shiftsArray[j];
+                        if (transform !== undefined) {
+                            replacementShift = transform(replacementShift);
+                        }
 
-                    shifts.push(replacementShift);
+                        shifts.push(replacementShift);
+                    }
                 }
             }
 
