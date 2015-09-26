@@ -70,9 +70,16 @@ angular.module('scheduling-app.controllers')
             });
 
             $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.FAILED, function(e, status) {
-                var error = "Login failed.";
+                var error = "Login failed";
+                var statusType = Math.floor(status / 100);
                 if (status == 401) {
                     error = "Invalid Username or Password.";
+                } else if (status == 404) {
+                    error = "Issue contacting server"
+                } else if (statusType == 5) {
+                    error = "Internal Server Error"
+                } else {
+                    error = error + ": code " + status
                 }
                 $rootScope.message = error;
             });
