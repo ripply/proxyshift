@@ -143,6 +143,91 @@ describe('#/api/users', function(){
 
                 });
 
+                it('- username must be unique', function(done) {
+
+                    var username = 'username';
+                    request(app)
+                        .post('/api/users/')
+                        .send({
+                            username: username,
+                            password: password,
+                            firstname: 'firstname',
+                            lastname: 'lastname',
+                            email: 'email@example.com',
+                            squestion: 'squestion',
+                            sanswer: 'sanswer',
+                            phonehome: '12435',
+                            phonemobile: '12345',
+                            pagernumber: '12435'
+                        })
+                        .expect(201)
+                        .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                                return;
+                            }
+                            request(app)
+                                .post('/api/users/')
+                                .send({
+                                    username: username,
+                                    password: password,
+                                    firstname: 'asdffasd',
+                                    lastname: 'lastasdfname',
+                                    email: 'emaiasdfl@example.com',
+                                    squestion: 'squeasdfstion',
+                                    sanswer: 'sanswfdsaer',
+                                    phonehome: '124135',
+                                    phonemobile: '123245',
+                                    pagernumber: '132435'
+                                })
+                                .expect(500, done);
+                        });
+
+                });
+
+                it('- username is case insensitive', function(done) {
+
+                    var username = 'CASEinsensitive';
+                    request(app)
+                        .post('/api/users/')
+                        .send({
+                            username: username,
+                            password: password,
+                            firstname: 'firstname',
+                            lastname: 'lastname',
+                            email: 'email@example.com',
+                            squestion: 'squestion',
+                            sanswer: 'sanswer',
+                            phonehome: '12435',
+                            phonemobile: '12345',
+                            pagernumber: '12435'
+                        })
+                        .expect(201)
+                        .end(function(err, res) {
+                            if (err) {
+                                done(err);
+                                return;
+                            }
+                            var secondUsername = 'caseINSENSITIVE';
+                            request(app)
+                                .post('/api/users/')
+                                .send({
+                                    username: secondUsername,
+                                    password: password,
+                                    firstname: 'asdffasd',
+                                    lastname: 'lastasdfname',
+                                    email: 'emaiasdfl@example.com',
+                                    squestion: 'squeasdfstion',
+                                    sanswer: 'sanswfdsaer',
+                                    phonehome: '124135',
+                                    phonemobile: '123245',
+                                    pagernumber: '132435'
+                                })
+                                .expect(500, done);
+                        });
+
+                });
+
             });
 
             describe('- logged in user', function() {
