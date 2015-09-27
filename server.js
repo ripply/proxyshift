@@ -103,6 +103,7 @@ app.use(function (err, req, res, next) {
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(passport.authenticate('authentication-token'));
 app.use(passport.authenticate('remember-me'));
 
 //app.use(app.router);

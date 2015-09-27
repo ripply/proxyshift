@@ -1,6 +1,7 @@
 var passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy,
     RememberMeStrategy = require('passport-remember-me').Strategy,
+    AuthencationHeaderStrategy = require('./PassportAuthenticationHeader'),
     Utils = require('./utils'),
     bcrypt = require('bcrypt-nodejs');
     models = require('./models');
@@ -52,6 +53,24 @@ passport.use(new LocalStrategy(function(username, password, done) {
         });
     })
 );
+
+passport.use(new AuthencationHeaderStrategy(
+    function(token, done) {
+        models.consumeRememberMeToken(token, function(err, uid) {
+            if (err) { return done(err); }
+            if (!uid) { return done(null, false); }
+
+            return models.User.forge({id: uid})
+                .fetch({require: true})
+                .then(function(user) {
+                    return done(null, user);
+                })
+                .catch(function(err) {
+                    return done(err);
+                });
+        });
+    }
+));
 
 // https://github.com/jaredhanson/passport-remember-me/blob/master/examples/login/server.js
 // Remember Me cookie strategy

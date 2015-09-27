@@ -60,3 +60,8 @@
 .calendar .calendar-week .calendar-day-othermonth /*.p*/ {
     background: #2F4F4F;
 }
+
+/* DIV that shows when shifts are being fetched and no data can be shown to user */
+.calendar .calendar-loading {
+
+}

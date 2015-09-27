@@ -83,11 +83,14 @@ module.exports = function(app, settings){
                 // https://github.com/jaredhanson/passport-remember-me#setting-the-remember-me-cookie
                 // issue a remember me cookie if the option was checked
                 if (req.body.remember_me) {
-
                     models.issueToken(req.user, function(err, token) {
                         if (err) { return next(err); }
-                        res.cookie('remember_me', token, { path: '/', httpOnly: true, maxAge: 604800000 });
-                        res.send(authToken);
+                        var maxAgeInMs = 604800000;
+                        res.cookie('remember_me', token, { path: '/', httpOnly: true, maxAge: maxAgeInMs});
+                        res.send({
+                            token: token,
+                            expires: time.nowInUtc() + (maxAgeInMs / 1000)
+                        });
                     });
                 } else {
                     // send user information since user is found
