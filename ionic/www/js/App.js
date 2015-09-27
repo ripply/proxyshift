@@ -12,6 +12,7 @@ angular.module('scheduling-app', [
     'ngCookies',
     'gettext',
     'restangular',
+    'LocalStorageModule',
     'scheduling-app.controllers',
     'scheduling-app.authentication',
     'scheduling-app.models',
@@ -65,6 +66,7 @@ angular.module('scheduling-app', [
         '$injector',
         '$provide',
         'RestangularProvider',
+        'localStorageServiceProvider',
         'STATES',
         'GENERAL_CONFIG',
         'CORDOVA_SETTINGS',
@@ -74,6 +76,7 @@ angular.module('scheduling-app', [
                  $injector,
                  $provide,
                  RestangularProvider,
+                 localStorageServiceProvider,
                  STATES,
                  GENERAL_CONFIG,
                  CORDOVA_SETTINGS

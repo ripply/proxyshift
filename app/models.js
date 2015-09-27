@@ -797,7 +797,9 @@ function consumeRememberMeToken(token, next) {
         .fetch({require: true})
         .then(function(foundToken) {
             var user_id = foundToken.get('user_id');
+            return next(null, user_id);
             // Found a token, delete it
+            /*
             return foundToken.destroy()
                 .then(function() {
                     return next(null, user_id);
@@ -805,6 +807,7 @@ function consumeRememberMeToken(token, next) {
                 .catch(function(err) {
                     return next(null, null);
                 });
+                */
         })
         .catch(function(err) {
             console.log(err);

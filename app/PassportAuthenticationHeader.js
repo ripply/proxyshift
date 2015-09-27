@@ -33,12 +33,9 @@ Strategy.prototype.authenticate = function(req, options) {
     // The rememeber me cookie is only consumed if the request is not
     // authenticated.  This is in preference to the session, which is typically
     // established at the same time the remember me cookie is issued.
-    console.log("WUT");
     if (req.isAuthenticated()) { return this.pass(); }
-    console.log("HEY");
 
     var token = req.get("Authorization");
-    console.log("Testing auth header token:" + token);
 
     // Since the remember me cookie is primarily a convenience, the lack of one is
     // not a failure.  In this case, a response should be rendered indicating a
@@ -71,10 +68,8 @@ Strategy.prototype.authenticate = function(req, options) {
             //   http://stackoverflow.com/questions/549/the-definitive-guide-to-forms-based-website-authentication
 
             //res.clearCookie(self._key);
-            console.log("Faile dto auth user :(");
             return self.pass();
         } else {
-            console.log("Authed user!");
             return self.success(user, info);
         }
     }

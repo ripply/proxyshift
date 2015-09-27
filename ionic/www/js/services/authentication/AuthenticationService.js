@@ -1,16 +1,22 @@
 /**
  * AuthenticationService
  */
+
+var tokenKey = "token";
+var tokenExpiresKey = "tokenExpires";
+
 angular.module('scheduling-app.authentication', [
     'http-auth-interceptor',
     'scheduling-app.session',
-    'scheduling-app.config'
+    'scheduling-app.config',
+    'LocalStorageModule'
 ])
     .service('AuthenticationService', [
         '$rootScope',
         '$http',
         '$q',
         'authService',
+        'localStorageService',
         'CookiesService',
         'SessionService',
         'GENERAL_CONFIG',
@@ -19,11 +25,69 @@ angular.module('scheduling-app.authentication', [
                  $http,
                  $q,
                  authService,
+                 localStorageService,
                  CookiesService,
                  SessionService,
                  GENERAL_CONFIG,
                  GENERAL_EVENTS) {
             var loggingIn = false;
+            setupAngularHttpAuthentication(getToken());
+
+            function getStore() {
+                var service;
+                if (localStorageService.isSupported) {
+                    service = localStorageService;
+                } else if (localStorageService.cookie.isSupported) {
+                    service = localStorageService.cookie;
+                }
+                return service;
+            }
+
+            function storeToken(token, expires) {
+                var service = getStore();
+                if (service) {
+                    service.set(tokenKey, token);
+                    service.set(tokenExpiresKey, expires);
+                }
+                return service !== undefined && service !== null;
+            }
+
+            function getToken() {
+                var now = Math.round(new Date().getTime() / 1000);
+                var token;
+                var service = getStore();
+                if (service !== undefined) {
+                    token = service.get(tokenKey);
+                    var expires = service.get(tokenExpiresKey);
+                    if (expires) {
+                        if (now > expires) {
+                            console.log("Token issued by server expired, must sign in again");
+                            token = undefined;
+                            service.remove(tokenKey);
+                            service.remove(tokenExpiresKey);
+                        }
+                    }
+                }
+
+                return token;
+            }
+
+            function clearToken() {
+                var service = getStore();
+                if (service) {
+                    service.remove(tokenKey);
+                    service.remove(tokenExpiresKey);
+                }
+                setupAngularHttpAuthentication();
+            }
+
+            function setupAngularHttpAuthentication(token) {
+                if (token) {
+                    $http.defaults.headers.common.Authorization = token;
+                } else {
+                    $http.defaults.headers.common.Authorization = undefined;
+                }
+            }
 
             function resolveLogin(deferred, value) {
                 loggingIn = false;
@@ -57,7 +121,12 @@ angular.module('scheduling-app.authentication', [
                         timeout: GENERAL_CONFIG.LOGIN_TIMEOUT
                     })
                         .success(function (data, status, headers, config) {
-                            //$http.defaults.headers.common.Authorization = data.authorizationToken;  // Step 1
+                            if (data.hasOwnProperty('token')) {
+                                setupAngularHttpAuthentication(data.token);
+                                storeToken(data.token, data.expires);
+                            } else {
+                                console.log("Server did not issue an authentication token");
+                            }
 
                             // Need to inform the http-auth-interceptor that
                             // the user has logged in successfully.  To do this, we pass in a function that
@@ -122,6 +191,8 @@ angular.module('scheduling-app.authentication', [
                         }).
                             success(function(data, status, headers, config) {
                                 // ensure that rememberme token is gone
+                                clearToken();
+
                                 SessionService.setAuthenticated(false);
                                 var token = CookiesService.getCookie(GENERAL_CONFIG.APP_REMEMBER_ME_TOKEN);
                                 if (token === undefined ||
@@ -135,10 +206,12 @@ angular.module('scheduling-app.authentication', [
                                 }
                             })
                             .error(function(data, status, headers, config) {
+                                clearToken();
                                 fireLogoutFailedEvent(data);
                                 rejectLogout(deferred);
                             });
                     }, function() {
+                        clearToken();
                         resolveLogout(deferred);
                     });
 
