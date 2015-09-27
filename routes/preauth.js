@@ -79,24 +79,26 @@ module.exports = function(app, settings){
             req.login(user, function (err) {
                 if (err) { return next(err); }
 
-                var authToken = {'authorizationToken': '1234'};
-                // https://github.com/jaredhanson/passport-remember-me#setting-the-remember-me-cookie
-                // issue a remember me cookie if the option was checked
-                if (req.body.remember_me) {
-                    models.issueToken(req.user, function(err, token) {
-                        if (err) { return next(err); }
-                        var maxAgeInMs = 604800000;
-                        res.cookie('remember_me', token, { path: '/', httpOnly: true, maxAge: maxAgeInMs});
-                        res.send({
-                            token: token,
-                            expires: time.nowInUtc() + (maxAgeInMs / 1000)
+                models.registerDeviceIdForUser(req.user.id, req.deviceid, function(err) {
+                    if (err) {
+                        console.log("Failed to register user's device for push notifications: " + req.user.id + " => " + req.deviceid + "\n" + err);
+                    }
+                    // https://github.com/jaredhanson/passport-remember-me#setting-the-remember-me-cookie
+                    // issue a remember me cookie if the option was checked
+                    if (req.body.remember_me) {
+                        models.issueToken(req.user, function(err, token) {
+                            if (err) { return next(err); }
+                            var maxAgeInMs = 604800000;
+                            res.cookie('remember_me', token, { path: '/', httpOnly: true, maxAge: maxAgeInMs});
+                            res.send({
+                                token: token,
+                                expires: time.nowInUtc() + (maxAgeInMs / 1000)
+                            });
                         });
-                    });
-                } else {
-                    // send user information since user is found
-                    // *SHOULD NEVER CONTAIN SENSITIVE DATA*
-                    res.send(authToken);
-                }
+                    } else {
+                        res.send(200);
+                    }
+                });
             });
         })(req, res, next);
         next();

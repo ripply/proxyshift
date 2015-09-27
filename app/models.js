@@ -856,6 +856,44 @@ function saveRememberMeToken(token, uid, next) {
         })
 }
 
+function registerDeviceIdForUser(user_id, device_id, next) {
+    if (device_id === undefined || device_id === null) {
+        next();
+    } else {
+        Bookshelf.transaction(function (t) {
+            var tokenData = {
+                token: device_id,
+                user_id: user_id
+            };
+            return models.PushToken.forge(tokenData)
+                .fetch({
+                    transacting: t
+                })
+                .then(function(pushToken) {
+                    if (pushToken) {
+                        // pushToken exists
+                        next();
+                    } else {
+                        // pushToken does not exist
+                        return models.PushToken.forge(tokenData)
+                            .save({
+                                transacting: t
+                            })
+                            .then(function(savedPushToken) {
+                                next();
+                            })
+                            .catch(function(err) {
+                                next(err);
+                            });
+                    }
+                })
+                .catch(function(err) {
+                    next(err);
+                });
+        });
+    }
+}
+
 function issueToken(user, done) {
     var token = utils.randomString(64);
     return saveRememberMeToken(token, user.id, function(err) {
@@ -910,6 +948,7 @@ function combineArraysAndOmitDuplicates() {
 var exports = {
     Bookshelf: Bookshelf,
     consumeRememberMeToken: consumeRememberMeToken,
+    registerDeviceIdForUser: registerDeviceIdForUser,
     issueToken: issueToken,
     combineRelationResults: combineArraysAndOmitDuplicates,
     knex: knex,

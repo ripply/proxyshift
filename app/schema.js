@@ -427,6 +427,36 @@ var Schema = {
             nullable: false
         }
     },
+    PushToken: {
+        id: {
+            type: increments
+        },
+        user_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'users',
+            onDelete: cascade,
+            onUpdate: cascade,
+            nullable: false
+        },
+        token: {
+            type: string,
+            nullable: false,
+            unique: true
+        },
+        platform: {
+            type: integer,
+            nullable: false
+        },
+        date: {
+            type: date,
+            nullable: false
+        },
+        expiredate: {
+            type: date,
+            nullable: true
+        }
+    },
     // relates a user to a job type
     GroupUserClassToUser: {
         id: {

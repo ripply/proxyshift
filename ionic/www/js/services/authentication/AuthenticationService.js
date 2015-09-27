@@ -19,6 +19,7 @@ angular.module('scheduling-app.authentication', [
         'localStorageService',
         'CookiesService',
         'SessionService',
+        'PushProcessingService',
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
         function($rootScope,
@@ -28,6 +29,7 @@ angular.module('scheduling-app.authentication', [
                  localStorageService,
                  CookiesService,
                  SessionService,
+                 PushProcessingService,
                  GENERAL_CONFIG,
                  GENERAL_EVENTS) {
             var loggingIn = false;
@@ -116,36 +118,46 @@ angular.module('scheduling-app.authentication', [
                     rejectLogin(deferred);
                 } else {
                     var login_url = GENERAL_CONFIG.APP_URL + GENERAL_CONFIG.APP_URL_LOGIN;
-                    $http.post(login_url, user, {
-                        ignoreAuthModule: true,
-                        timeout: GENERAL_CONFIG.LOGIN_TIMEOUT
-                    })
-                        .success(function (data, status, headers, config) {
-                            if (data.hasOwnProperty('token')) {
-                                setupAngularHttpAuthentication(data.token);
-                                storeToken(data.token, data.expires);
-                            } else {
-                                console.log("Server did not issue an authentication token");
+                    PushProcessingService.getDeviceId()
+                        .then(function(deviceid) {
+                            if (deviceid) {
+                                user.deviceid = deviceid;
                             }
-
-                            // Need to inform the http-auth-interceptor that
-                            // the user has logged in successfully.  To do this, we pass in a function that
-                            // will configure the request headers with the authorization token so
-                            // previously failed requests(aka with status == 401) will be resent with the
-                            // authorization token placed in the header
-                            SessionService.setAuthenticated(true);
-                            resolveLogin(deferred);
-                            $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.CONFIRMED);
-                            console.log("Fired login confirmed event");
-                            authService.loginConfirmed(data, function (config) {  // Step 2 & 3
-                                //config.headers.Authorization = data.authorizationToken;
-                                //deferred.resolve(config);
-                                return config;
-                            });
                         })
-                        .error(function (data, status, headers, config) {
-                            rejectLogin(deferred);
-                            $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.FAILED, status);
+                        .catch(function(err) {
+                        })
+                        .finally(function() {
+                            $http.post(login_url, user, {
+                                ignoreAuthModule: true,
+                                timeout: GENERAL_CONFIG.LOGIN_TIMEOUT
+                            })
+                                .success(function (data, status, headers, config) {
+                                    if (data.hasOwnProperty('token')) {
+                                        setupAngularHttpAuthentication(data.token);
+                                        storeToken(data.token, data.expires);
+                                    } else {
+                                        console.log("Server did not issue an authentication token");
+                                    }
+
+                                    // Need to inform the http-auth-interceptor that
+                                    // the user has logged in successfully.  To do this, we pass in a function that
+                                    // will configure the request headers with the authorization token so
+                                    // previously failed requests(aka with status == 401) will be resent with the
+                                    // authorization token placed in the header
+                                    SessionService.setAuthenticated(true);
+                                    resolveLogin(deferred);
+                                    $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.CONFIRMED);
+                                    console.log("Fired login confirmed event");
+                                    authService.loginConfirmed(data, function (config) {  // Step 2 & 3
+                                        //config.headers.Authorization = data.authorizationToken;
+                                        //deferred.resolve(config);
+                                        return config;
+                                    });
+                                })
+                                .error(function (data, status, headers, config) {
+                                    rejectLogin(deferred);
+                                    $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.FAILED, status);
+                                });
                         });
                 }
 

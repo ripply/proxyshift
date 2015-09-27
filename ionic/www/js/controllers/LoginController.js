@@ -6,11 +6,13 @@ angular.module('scheduling-app.controllers')
         '$rootScope',
         '$state',
         'SessionService',
+        'PushProcessingService',
         'GENERAL_EVENTS',
         'STATES',
         function($rootScope,
                  $state,
                  SessionService,
+                 PushProcessingSerivce,
                  GENERAL_EVENTS,
                  STATES) {
             console.log("LoginControllerService INIT");
