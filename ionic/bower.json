@@ -12,7 +12,8 @@
     "momentjs": "~2.10.3",
     "jquery": "~2.1.4",
     "validator-js": "~4.0.2",
-    "angular-gettext": "~2.1.0"
+    "angular-gettext": "~2.1.0",
+    "angular-local-storage": "~0.2.2"
   },
   "resolutions": {
     "angular": ">= 1.0.8"
