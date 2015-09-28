@@ -221,7 +221,8 @@ module.exports = function(grunt) {
                     'expect',
                     'sinon',
                     'models',
-                    'sess'
+                    'sess',
+                    'issue' // TODO: Where is this global coming from?
                 ],
                 timeout: 3000,
                 ignoreLeaks: false,
