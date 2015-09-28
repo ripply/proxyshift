@@ -881,7 +881,10 @@ function registerDeviceIdForUser(user_id, device_id, expires, next) {
                             return models.PushToken.forge({
                                 token: device_id
                             })
-                                .update(tokenData)
+                                .update(tokenData,
+                                {
+                                    transacting: t
+                                })
                                 .then(function(pushToken) {
                                     next(true);
                                 })
@@ -894,7 +897,8 @@ function registerDeviceIdForUser(user_id, device_id, expires, next) {
                     } else {
                         // pushToken does not exist
                         return models.PushToken.forge(tokenData)
-                            .save({
+                            .save(null,
+                            {
                                 transacting: t
                             })
                             .then(function(savedPushToken) {
