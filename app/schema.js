@@ -425,10 +425,6 @@ var Schema = {
         date: {
             type: date,
             nullable: false
-        },
-        expires: {
-            type: date,
-            nullable: false
         }
     },
     PushToken: {
@@ -456,9 +452,9 @@ var Schema = {
             type: date,
             nullable: false
         },
-        expiredate: {
+        expires: {
             type: date,
-            nullable: true
+            nullable: false
         }
     },
     // relates a user to a job type

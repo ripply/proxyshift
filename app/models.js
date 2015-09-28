@@ -864,6 +864,7 @@ function registerDeviceIdForUser(user_id, device_id, expires, next) {
             var tokenData = {
                 token: device_id,
                 user_id: user_id,
+                platform: 0,
                 date: time.nowInUtc(),
                 expires: expires
             };
