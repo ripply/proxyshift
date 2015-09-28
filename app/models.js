@@ -868,12 +868,27 @@ function registerDeviceIdForUser(user_id, device_id, expires, next) {
                 date: time.nowInUtc(),
                 expires: expires
             };
-            return models.PushToken.forge(tokenData)
+            return models.PushToken.forge({
+                token: device_id
+            })
                 .fetch({
                     transacting: t
                 })
                 .then(function(pushToken) {
                     if (pushToken) {
+                        if (pushToken.get('user_id') != user_id) {
+                            // TODO: Destroy the row first then create it so create at timestamps are accurate maybe?
+                            return models.PushToken.forge({
+                                token: device_id
+                            })
+                                .update(tokenData)
+                                .then(function(pushToken) {
+                                    next();
+                                })
+                                .catch(function(err) {
+                                    next(err);
+                                })
+                        }
                         // pushToken exists
                         next();
                     } else {
