@@ -858,8 +858,7 @@ function saveRememberMeToken(token, uid, next) {
 
 function registerDeviceIdForUser(user_id, device_id, expires, next) {
     if (device_id === undefined || device_id === null) {
-        console.log("Deviceid is empty");
-        next();
+        next(false);
     } else {
         Bookshelf.transaction(function (t) {
             var tokenData = {
@@ -883,14 +882,14 @@ function registerDeviceIdForUser(user_id, device_id, expires, next) {
                             })
                                 .update(tokenData)
                                 .then(function(pushToken) {
-                                    next();
+                                    next(true);
                                 })
                                 .catch(function(err) {
-                                    next(err);
+                                    next(false, err);
                                 })
                         }
                         // pushToken exists
-                        next();
+                        next(true);
                     } else {
                         // pushToken does not exist
                         return models.PushToken.forge(tokenData)
@@ -898,15 +897,15 @@ function registerDeviceIdForUser(user_id, device_id, expires, next) {
                                 transacting: t
                             })
                             .then(function(savedPushToken) {
-                                next();
+                                next(true);
                             })
                             .catch(function(err) {
-                                next(err);
+                                next(false, err);
                             });
                     }
                 })
                 .catch(function(err) {
-                    next(err);
+                    next(false, err);
                 });
         });
     }

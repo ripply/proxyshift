@@ -140,6 +140,11 @@ angular.module('scheduling-app.authentication', [
                                         console.log("Server did not issue an authentication token");
                                     }
 
+                                    if (data.hasOwnProperty('registeredForPush')) {
+                                        var registeredForPush = data.registeredForPush;
+                                        // TODO: Prompt user if this is false or something?
+                                    }
+
                                     // Need to inform the http-auth-interceptor that
                                     // the user has logged in successfully.  To do this, we pass in a function that
                                     // will configure the request headers with the authorization token so

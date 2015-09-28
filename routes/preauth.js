@@ -81,7 +81,7 @@ module.exports = function(app, settings){
 
                 var maxAgeInMs = 604800000;
                 var expires = time.nowInUtc() + (maxAgeInMs / 1000);
-                models.registerDeviceIdForUser(req.user.id, req.body.deviceid, expires, function(err) {
+                models.registerDeviceIdForUser(req.user.id, req.body.deviceid, expires, function(deviceIdRegistered, err) {
                     if (err) {
                         console.log("Failed to register user's device for push notifications: " + req.user.id + " => " + req.deviceid + "\n" + err);
                     }
@@ -93,11 +93,14 @@ module.exports = function(app, settings){
                             res.cookie('remember_me', token, { path: '/', httpOnly: true, maxAge: maxAgeInMs});
                             res.send({
                                 token: token,
-                                expires: expires
+                                expires: expires,
+                                registeredForPush: deviceIdRegistered
                             });
                         });
                     } else {
-                        res.send(200);
+                        res.send({
+                            registeredForPush: deviceIdRegistered
+                        });
                     }
                 });
             });
