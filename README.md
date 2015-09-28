@@ -1,5 +1,15 @@
 # Scheduling app
 
+# Live dev server
+https://guarded-waters-3652.herokuapp.com
+
+Use any credentials in fixtures
+
+```
+groupmember/secret
+groupowner/secret
+```
+
 ## Installing libraries
 
 ### Linux
