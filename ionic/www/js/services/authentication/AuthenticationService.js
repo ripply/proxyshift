@@ -125,6 +125,7 @@ angular.module('scheduling-app.authentication', [
                             }
                         })
                         .catch(function(err) {
+                            // most likely not using cordova or issue with push service
                         })
                         .finally(function() {
                             $http.post(login_url, user, {

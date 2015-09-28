@@ -425,6 +425,10 @@ var Schema = {
         date: {
             type: date,
             nullable: false
+        },
+        expires: {
+            type: date,
+            nullable: false
         }
     },
     PushToken: {

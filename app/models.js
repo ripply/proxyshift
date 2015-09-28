@@ -856,14 +856,17 @@ function saveRememberMeToken(token, uid, next) {
         })
 }
 
-function registerDeviceIdForUser(user_id, device_id, next) {
+function registerDeviceIdForUser(user_id, device_id, expires, next) {
     if (device_id === undefined || device_id === null) {
+        console.log("Deviceid is empty");
         next();
     } else {
         Bookshelf.transaction(function (t) {
             var tokenData = {
                 token: device_id,
-                user_id: user_id
+                user_id: user_id,
+                date: time.nowInUtc(),
+                expires: expires
             };
             return models.PushToken.forge(tokenData)
                 .fetch({
