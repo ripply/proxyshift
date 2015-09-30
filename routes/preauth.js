@@ -74,6 +74,8 @@ module.exports = function(app, settings){
     app.post('/session/login', requireJson, function(req, res, next) {
         passport.authenticate('local', {session: true}, function (err, user, info) {
             if (err) { return next(err); }
+            console.log("login request:");
+            console.log(req.body);
             // authentication failed, send 401 unauthorized
             if (!user) { return res.sendStatus(401); }
             req.login(user, function (err) {
@@ -83,7 +85,7 @@ module.exports = function(app, settings){
                 var expires = time.nowInUtc() + (maxAgeInMs / 1000);
                 models.registerDeviceIdForUser(req.user.id, req.body.deviceid, expires, function(deviceIdRegistered, err) {
                     if (err) {
-                        console.log("Failed to register user's device for push notifications: " + req.user.id + " => " + req.deviceid + "\n" + err);
+                        console.log("Failed to register user's device for push notifications - userid: " + req.user.id + " deviceid:" + req.deviceid + "\n" + err);
                     }
                     // https://github.com/jaredhanson/passport-remember-me#setting-the-remember-me-cookie
                     // issue a remember me cookie if the option was checked
