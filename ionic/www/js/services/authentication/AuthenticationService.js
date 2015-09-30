@@ -122,6 +122,7 @@ angular.module('scheduling-app.authentication', [
                         .then(function(deviceid) {
                             if (deviceid) {
                                 user.deviceid = deviceid;
+                                user.platform = PushProcessingService.platformToSendToServerForPush();
                             }
                         })
                         .catch(function(err) {

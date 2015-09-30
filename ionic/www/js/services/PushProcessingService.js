@@ -1,19 +1,36 @@
 //factory for processing push notifications.
 angular.module('scheduling-app.push', [
-
+    'scheduling-app.config'
 ])
     .service('PushProcessingService', [
         '$q',
+        'CORDOVA_SETTINGS',
         function(
-            $q
+            $q,
+            CORDOVA_SETTINGS
         ) {
             var self = this;
             var deferred = $q.defer();
             var promise = deferred.promise;
             var deviceId;
 
-            if (!window.cordova) {
-                deferred.reject("Cordova missing");
+            function supported() {
+                return window.cordova &&
+                    (CORDOVA_SETTINGS.isIOS ||
+                     CORDOVA_SETTINGS.isAndroid ||
+                     CORDOVA_SETTINGS.isWindowsPhone);
+            }
+
+            this.supported = supported;
+
+            function platformToSendToServerForPush() {
+                return CORDOVA_SETTINGS.currentPlatform;
+            }
+
+            this.platformToSendToServerForPush = platformToSendToServerForPush;
+
+            if (!supported()) {
+                deferred.reject("Platform not supported");
             }
 
             this.getDeviceId = function() {
@@ -21,7 +38,7 @@ angular.module('scheduling-app.push', [
             };
 
             function onDeviceReady() {
-                if (window.cordova) {
+                if (supported()) {
                     try {
                         self.push = PushNotification.init({
                             android: {
@@ -38,7 +55,7 @@ angular.module('scheduling-app.push', [
                             console.log("REGISTRATION: " + JSON.stringify(data));
                         });
                     } catch (err) {
-                        console.log(err);
+                        // push notification plugin was most likely not included with build
                         deferred.reject(err);
                         // page wont load properly if this service errors
                         // we can live without it
