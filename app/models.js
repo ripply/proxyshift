@@ -856,15 +856,38 @@ function saveRememberMeToken(token, uid, next) {
         })
 }
 
-function registerDeviceIdForUser(user_id, device_id, expires, next) {
+// https://cordova.apache.org/docs/en/3.0.0/cordova_device_device.md.html#device.platform
+var platformMap = {
+    'android': 1,
+    'ios': 2,
+    'wince': 3,
+    'blackberry': 4,
+    'tizen': 5
+};
+
+function registerDeviceIdForUser(user_id, device_id, platformstr, expires, next) {
     if (device_id === undefined || device_id === null) {
         next(false);
     } else {
+        var platform_id = 0; // 0 = browser
+        if (platformstr) {
+            platformstr = platformstr.toLowerCase();
+            var platformType = _.keys(platformMap);
+            for (var i = 0; i < platformType.length; i++) {
+                if (platformType == platformstr) {
+                    platform_id = platformMap[platformType];
+                    break;
+                }
+            }
+            if (platform_id === 0) {
+                console.log("Unknown platform type received: " + platformstr);
+            }
+        }
         Bookshelf.transaction(function (t) {
             var tokenData = {
                 token: device_id,
                 user_id: user_id,
-                platform: 0,
+                platform: platform_id,
                 date: time.nowInUtc(),
                 expires: expires
             };
