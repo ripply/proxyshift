@@ -878,9 +878,7 @@ function registerDeviceIdForUser(user_id, device_id, expires, next) {
                     if (pushToken) {
                         if (pushToken.get('user_id') != user_id) {
                             // TODO: Destroy the row first then create it so create at timestamps are accurate maybe?
-                            return models.PushToken.forge({
-                                token: device_id
-                            })
+                            pushToken
                                 .update(tokenData,
                                 {
                                     transacting: t
@@ -889,6 +887,7 @@ function registerDeviceIdForUser(user_id, device_id, expires, next) {
                                     next(true);
                                 })
                                 .catch(function(err) {
+                                    console.log(err);
                                     next(false, err);
                                 })
                         }
@@ -905,11 +904,13 @@ function registerDeviceIdForUser(user_id, device_id, expires, next) {
                                 next(true);
                             })
                             .catch(function(err) {
+                                console.log(err);
                                 next(false, err);
                             });
                     }
                 })
                 .catch(function(err) {
+                    console.log(err);
                     next(false, err);
                 });
         });
