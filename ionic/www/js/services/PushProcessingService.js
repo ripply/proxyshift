@@ -13,6 +13,7 @@ angular.module('scheduling-app.push', [
             var deferred = $q.defer();
             var promise = deferred.promise;
             var deviceId;
+            var timedout = false;
 
             function supported() {
                 return window.cordova &&
@@ -39,22 +40,67 @@ angular.module('scheduling-app.push', [
 
             function onDeviceReady() {
                 if (supported()) {
+                    var errorOccured = false;
+                    var finished = false;
                     try {
                         self.push = PushNotification.init({
                             android: {
-                                senderID: window.PushAppIds.gcm
+                                senderID: window.PushAppIds.gcm,
+                                icon: 'img/ionic.png'
+                            },
+                            ios: {
+                                alert: true,
+                                badge: true,
+                                sound: true
                             }
                         });
                         self.push.on('registration', function (data) {
+                            finished = true;
+                            if (timedout) {
+                                timedout = false;
+                                deferred = $q.defer();
+                                promise = deferred.promise;
+                            }
                             if (data.registrationId) {
                                 deviceId = data.registrationId;
+                                //navigator.notification.alert(deviceId, function(i) {}, "Success!", ['ok']);
                                 deferred.resolve(deviceId);
                             } else {
+                                //navigator.notification.alert("Failed to get push id", function(i) {}, "Failure", ['ok']);
                                 deferred.reject(data);
                             }
                             console.log("REGISTRATION: " + JSON.stringify(data));
                         });
+                        self.push.on('error', function(e) {
+                            finished = true;
+                            timedout = false;
+                            if (!timedout) {
+                                deferred.reject(e);
+                            }
+                        });
+                        self.push.on('notification', function(data) {
+                            alert(data.message);
+                            //navigator.notification.alert(data.message, function(i) {}, data.title, ['hey', 'sup']);
+                            console.log("RECEIVED NOTIFICATION:" + JSON.stringify(data));
+                        });
+                        // if push notifications are never initialized user wont be able to login
+                        // this happens on ios when user disables push notifications
+                        setTimeout(
+                            function() {
+                                if (!finished) {
+                                    timedout = true;
+                                    if (!errorOccured) {
+                                        deferred.reject("timed out");
+                                    }
+                                }
+                            },
+                            200
+                        );
                     } catch (err) {
+                        errorOccured = true;
+                        alert("Error");
+                        alert(err);
+                        console.log(err);
                         // push notification plugin was most likely not included with build
                         deferred.reject(err);
                         // page wont load properly if this service errors
