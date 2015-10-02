@@ -8,6 +8,7 @@ var Schema = require('./schema').Schema,
     fs = require('fs'),
     mkdirp = require('mkdirp'),
     path = require('path'),
+    platformMap = require('./notifications').platformMap,
     Promise = require('bluebird'),
     config = require('config'),
     validations = require('../ionic/www/js/shared/Validation.js'),
@@ -855,15 +856,6 @@ function saveRememberMeToken(token, uid, next) {
             return next(err);
         })
 }
-
-// https://cordova.apache.org/docs/en/3.0.0/cordova_device_device.md.html#device.platform
-var platformMap = {
-    'android': 1,
-    'ios': 2,
-    'wince': 3,
-    'blackberry': 4,
-    'tizen': 5
-};
 
 function registerDeviceIdForUser(user_id, device_id, platformstr, expires, next) {
     if (device_id === undefined || device_id === null) {
