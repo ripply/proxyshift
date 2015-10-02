@@ -874,8 +874,8 @@ function registerDeviceIdForUser(user_id, device_id, platformstr, expires, next)
             platformstr = platformstr.toLowerCase();
             var platformType = _.keys(platformMap);
             for (var i = 0; i < platformType.length; i++) {
-                if (platformType == platformstr) {
-                    platform_id = platformMap[platformType];
+                if (platformType[i] == platformstr) {
+                    platform_id = platformMap[platformType[i]];
                     break;
                 }
             }
