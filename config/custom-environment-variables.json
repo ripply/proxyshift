@@ -2,14 +2,14 @@
     "push": {
         "gcm": {
             // contains actual api key
-            "serverapikey": "PUSH_GCM_APIKEY"
+            "serverapikey": "PUSH_GCM_KEY"
         },
         "apn": {
             // contains actual certificate or path to it
-            // defaults to cert.cer
+            // defaults to cert.pem
             "cert": "PUSH_APN_CERT",
             // contains actual key or path to is
-            // defaults to key.cer
+            // defaults to key.pem
             "key": "PUSH_APN_KEY"
         }
     }
