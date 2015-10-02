@@ -19,6 +19,14 @@
                         {
                             "xml": "<feature name=\"PushNotification\"><param name=\"android-package\" value=\"com.adobe.phonegap.push.PushPlugin\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Notification\"><param name=\"android-package\" value=\"org.apache.cordova.dialogs.Notification\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Vibration\"><param name=\"android-package\" value=\"org.apache.cordova.vibration.Vibration\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -40,7 +48,7 @@
                         },
                         {
                             "xml": "<uses-permission android:name=\"android.permission.VIBRATE\" />",
-                            "count": 1
+                            "count": 2
                         },
                         {
                             "xml": "<uses-permission android:name=\"com.google.android.c2dm.permission.RECEIVE\" />",
@@ -81,6 +89,12 @@
             "PACKAGE_NAME": "com.proxyshift.scheduling"
         },
         "phonegap-plugin-push": {
+            "PACKAGE_NAME": "com.proxyshift.scheduling"
+        },
+        "org.apache.cordova.dialogs": {
+            "PACKAGE_NAME": "com.proxyshift.scheduling"
+        },
+        "org.apache.cordova.vibration": {
             "PACKAGE_NAME": "com.proxyshift.scheduling"
         }
     },
