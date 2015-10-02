@@ -899,7 +899,8 @@ function registerDeviceIdForUser(user_id, device_id, platformstr, expires, next)
                 })
                 .then(function(pushToken) {
                     if (pushToken) {
-                        if (pushToken.get('user_id') != user_id) {
+                        if (pushToken.get('user_id') != user_id ||
+                            pushToken.get('platform') != platform_id) {
                             // TODO: Destroy the row first then create it so create at timestamps are accurate maybe?
                             models.PushToken.forge({
                                 token: device_id
