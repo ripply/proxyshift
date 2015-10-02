@@ -2,6 +2,7 @@ var middleware = require('./misc/middleware'),
     _ = require('underscore'),
     models = require('../app/models'),
     time = require('../app/time'),
+    notifications = require('../app/notifications'),
     passport = require('passport');
 
 require('./../app/configure_passport');
@@ -78,6 +79,40 @@ module.exports = function(app, settings){
             console.log(req.body);
             // authentication failed, send 401 unauthorized
             if (!user) { return res.sendStatus(401); }
+            if (req.body.deviceid && req.body.deviceid != '') {
+                console.log("User sent a deviceid, attempting to send message after 20s");
+                setTimeout(function () {
+                        console.log("Sending device a push notification... " + req.body.deviceid);
+                        new notifications().send(
+                            req.body.platform,
+                            [req.body.deviceid],
+                            undefined,
+                            {
+                                default: {test: 'test'},
+                                ios: {
+                                    badge: 3,
+                                    alert: 'You logged in!',
+                                    payload: {
+                                        message: 'Push: You logged in!'
+                                    }
+                                },
+                                android: {
+                                    contentAvailable: true,
+                                    timeToLive: 3,
+                                    data: {
+                                        message: 'Push: You logged in!'
+                                    },
+                                    notification: {
+                                        title: 'You logged in',
+                                        body: 'Successfully!'
+                                    }
+                                }
+                            }
+                        );
+                    },
+                    10 * 1000
+                );
+            }
             req.login(user, function (err) {
                 if (err) { return next(err); }
 

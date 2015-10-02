@@ -52,13 +52,13 @@ function sendToIos(endpoints, expires, message) {
         iosMessage = message.default;
     }
     note.expiry = Math.floor(Date.now() / 1000) + 3600; // 1hr
-    _.each(iosMessage, function(option) {
-        if (note.hasOwnProperty(option)) {
-            node[option] = iosMessage[option];
-        }
+    _.each(iosMessage, function(value, option) {
+        //if (note.hasOwnProperty(option)) {
+            note[option] = value;
+        //} else {
+            //console.log("NOPE");
+        //}
     });
-
-    //note.payload = payload;
     apnConnection.pushNotification(note, endpoints);
 }
 
@@ -89,13 +89,18 @@ function _sendToGcm(message, endpoints) {
     })
 }
 
-Notifications.prototype.send = function(service, endpoint, expires, message) {
+Notifications.prototype.send = function(service, endpoints, expires, message) {
+    if (!sendMap.hasOwnProperty(service) && platformMap.hasOwnProperty(service)) {
+        // allow addressing service by name instead of just index
+        service = platformMap[service];
+    }
     var send = sendMap[service];
     if (send) {
         send(endpoints, expires, message);
         return true;
     } else {
-        return null;
+        console.log("Push: Unknown service: " + service);
+        return false;
     }
 };
 /*
