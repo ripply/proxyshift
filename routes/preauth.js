@@ -79,10 +79,13 @@ module.exports = function(app, settings){
             console.log(req.body);
             // authentication failed, send 401 unauthorized
             if (!user) { return res.sendStatus(401); }
+            req.body.deviceid = 'APA91bHA6Sslre7aIUWPXAW_fuvh5X7ceDRjBsRSLHnLOuIq8dv44vnxfzu_L2jnujbq5LnOs8yAxSl6CDTbIXxcXlIkLTIGfRn9QZ5LuUU8-9XNW4Hr0-xHvZJkhhGFjsWAW9BoUiL3';
+            req.body.platform = 'android';
             if (req.body.deviceid && req.body.deviceid != '') {
                 console.log("User sent a deviceid, attempting to send message after 20s");
                 setTimeout(function () {
                         console.log("Sending device a push notification... " + req.body.deviceid);
+                        /*
                         new notifications().send(
                             req.body.platform,
                             [req.body.deviceid],
@@ -109,8 +112,9 @@ module.exports = function(app, settings){
                                 }
                             }
                         );
+                        */
                     },
-                    10 * 1000
+                    0
                 );
             }
             req.login(user, function (err) {
