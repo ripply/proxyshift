@@ -8,6 +8,7 @@ var apnConfig = {};
 
 if (config.has('push.gcm.serverapikey')) {
     apiKeys['gcm'] = config.get('push.gcm.serverapikey');
+    console.log("GCMKEY" + apiKeys['gcm']);
 }
 if (config.has('push.apn.cert')) {
     apnConfig['cert'] = config.get('push.apn.cert');
@@ -31,20 +32,23 @@ _.each(platformMap, function(value, key) {
 });
 
 function Notifications() {
-    this.platformMap = platformMap
+    this.platformMap = platformMap;
+    this.gcm = this.initGcm();
+    this.sendMap = {
+        1: _.bind(this.sendToGcm, this),
+        2: _.bind(this.sendToIos, this)
+    };
 }
 
-var sendMap = {
-    1: sendToGcm,
-    2: sendToIos
+Notifications.prototype.initGcm = function() {
+    if (apiKeys.gcm !== undefined && apiKeys.gcm !== null && apiKeys.gcm != '') {
+        return new gcm.Sender(apiKeys.gcm);
+    } else {
+        console.log("Api key for GCM service not specified");
+    }
 };
 
-var gcmSender;
-function initGcm() {
-    gcmSender = new gcm.Sender(apiKeys.gcm);
-}
-
-function sendToIos(endpoints, expires, message) {
+Notifications.prototype.sendToIos = function(endpoints, expires, message) {
     //var myDevice = new apn.Device("863974a9b8615f62a9af9c2a6f69a2e50bf9ceef8abd361bc84334e9c0e43eb7");
     var note = new apn.Notification();
     var iosMessage = message.ios;
@@ -60,41 +64,47 @@ function sendToIos(endpoints, expires, message) {
         //}
     });
     apnConnection.pushNotification(note, endpoints);
-}
+};
 
-function sendToGcm(endpoints, expires, message) {
-    var gcmMessage= message.gcm;
-    if (!gcmMessage) {
-        gcmMessage = message.default;
+Notifications.prototype.sendToGcm = function(endpoints, expires, message) {
+    if (!this.gcm) {
+        console.log("Tried to send GCM message but api key missing");
+        return;
     }
-    var message = new gcm.Message(gcmMessage);
+    var themessage = message.android;
+    if (!themessage) {
+        themessage = message.default;
+    }
+    console.log(themessage);
+    var gcmMessage = new gcm.Message(themessage);
     if (endpoints instanceof Array) {
         if (endpoints.length > 1000) {
             // 1000 endpoints at a time is the maximum
             // TODO: split the calls ups
+        } else {
+            this._sendToGcm(this.gcm, gcmMessage, expires, endpoints);
         }
     } else {
-        _sendToGcm(message, endpoints);
+        this._sendToGcm(this.gcm, gcMessage, expires, endpoints);
     }
+};
 
-}
-
-function _sendToGcm(message, endpoints) {
-    sendToGcm.send({message: message, registrationIds: endpoints}, function(err, result) {
+Notifications.prototype._sendToGcm = function(gcm, message, expires, endpoints) {
+    gcm.send(message, {registrationIds: endpoints}, function(err, result) {
         if (err) {
             console.log("Failed to send gcm message:");
             console.log(err);
             queue[platformMap['android']].push({endpoints: endpoints, expires: expires, message: message});
         }
     })
-}
+};
 
 Notifications.prototype.send = function(service, endpoints, expires, message) {
-    if (!sendMap.hasOwnProperty(service) && platformMap.hasOwnProperty(service)) {
+    if (!this.sendMap.hasOwnProperty(service) && platformMap.hasOwnProperty(service)) {
         // allow addressing service by name instead of just index
         service = platformMap[service];
     }
-    var send = sendMap[service];
+    var send = this.sendMap[service];
     if (send) {
         send(endpoints, expires, message);
         return true;
