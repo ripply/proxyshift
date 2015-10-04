@@ -52,6 +52,9 @@ angular.module('scheduling-app.push', [
                                 alert: true,
                                 badge: true,
                                 sound: true
+                            },
+                            windows: {
+
                             }
                         });
                         self.push.on('registration', function (data) {
