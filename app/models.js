@@ -891,12 +891,14 @@ function registerDeviceIdForUser(user_id, device_id, platformstr, expires, sessi
                 token: device_id
             })
                 .fetch({
+                    withRelated: 'tokens',
                     transacting: t
                 })
                 .then(function(pushToken) {
                     if (pushToken) {
-                        if (pushToken.get('user_id') != user_id ||
-                            pushToken.get('platform') != platform_id) {
+                        if (pushToken.related('tokens').get('user_id') != user_id ||
+                            pushToken.get('platform') != platform_id ||
+                            pushToken.get('token_id') != sessionToken) {
                             // TODO: Destroy the row first then create it so create at timestamps are accurate maybe?
                             return pushToken.save(tokenData,
                                 {
