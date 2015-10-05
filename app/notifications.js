@@ -177,4 +177,7 @@ sender.sendNoRetry(message, { topic: '/topics/global' }, function (err, result) 
     else    console.log(result);
 });
 */
-module.exports = Notifications;
+module.exports = {
+    platformMap: platformMap,
+    Notifications: Notifications
+};

@@ -8,6 +8,7 @@ var Schema = require('./schema').Schema,
     fs = require('fs'),
     mkdirp = require('mkdirp'),
     path = require('path'),
+    Notifications = require('./notifications').Notifications(),
     platformMap = require('./notifications').platformMap,
     Promise = require('bluebird'),
     config = require('config'),
@@ -981,6 +982,51 @@ function combineArraysAndOmitDuplicates() {
     return result;
 }
 
+function sendNotificationToUsers(users_id, expires, message) {
+    return new Promise(function(resolve, reject) {
+        if (users_id instanceof Array) {
+            users_id = [users_id];
+        }
+        if (users_id === undefined || users_id === nul || users_id.length == 0) {
+            reject();
+            return;
+        }
+        var promises = [];
+        _.each(users_id, function(user_id) {
+            promises.push(new Promise(function(innerResolve, innerReject) {
+                models.PushToken.forge({
+                    user_id: user_id
+                })
+                    .fetchAll()
+                    .then(function(pushTokens) {
+                        if (pushTokens) {
+                            var tokens = {};
+                            _.each(pushTokens, function(pushToken) {
+                                var platform = pushToken.get('platform');
+                                var token = pushToken.get('token');
+                                if (!tokens.hasOwnProperty(platform)) {
+                                    tokens[platform] = [];
+                                }
+                                tokens[platform].push(token);
+                            });
+                            _.each(tokens, function(tokensArray, platform) {
+                                Notifications.send(platform, tokensArray, expires, message);
+                            });
+                            innerResolve();
+                        } else {
+                            // success there was no tokens for the user
+                            innerResolve();
+                        }
+                    })
+                    .catch(function(err) {
+                        innerResolve(user_id, err);
+                    });
+            }));
+        });
+        return Promise.all(promises);
+    });
+}
+
 var exports = {
     Bookshelf: Bookshelf,
     consumeRememberMeToken: consumeRememberMeToken,
@@ -990,7 +1036,9 @@ var exports = {
     knex: knex,
     initDb: initDb,
     onDatabaseReady: onDatabaseReady,
-    databaseReadyMiddleware: databaseReadyMiddleware
+    databaseReadyMiddleware: databaseReadyMiddleware,
+    sendNotificationToUsers: sendNotificationToUsers,
+    Notifications: Notifications
 };
 
 exports = _.extend(exports, models);
