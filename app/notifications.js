@@ -2,13 +2,14 @@
 var config = require('config'),
     gcm = require('node-gcm'),
     apn = require('apn'),
+    wns = require('wns'),
     _ = require('underscore');
 var apiKeys = {};
 var apnConfig = {};
+var wnsConfig = {};
 
 if (config.has('push.gcm.serverapikey')) {
     apiKeys['gcm'] = config.get('push.gcm.serverapikey');
-    console.log("GCMKEY" + apiKeys['gcm']);
 }
 if (config.has('push.apn.cert')) {
     apnConfig['cert'] = config.get('push.apn.cert');
@@ -16,15 +17,34 @@ if (config.has('push.apn.cert')) {
 if (config.has('push.apn.key')) {
     apnConfig['key'] = config.get('push.apn.key');
 }
+if (config.has('push.wns.id')) {
+    if (!apiKeys['wns']) {
+        apiKeys['wns'] = {};
+    }
+    apiKeys['wns']['id'] = config.get('push.wns.id');
+    wnsConfig['client_id'] = apiKeys['wns']['id'];
+}
+if (config.has('push.wns.secret')) {
+    if (!apiKeys['wns']) {
+        apiKeys['wns'] = {};
+    }
+    apiKeys['wns']['secret'] = config.get('push.wns.secret');
+    wnsConfig['client_secret'] = apiKeys['wns']['secret'];
+}
 
 var apnConnection = new apn.Connection(apnConfig);
 // https://cordova.apache.org/docs/en/3.0.0/cordova_device_device.md.html#device.platform
 var platformMap = {
     'android': 1,
     'ios': 2,
-    'wince': 3,
+    'windowsphone': 3,
     'blackberry': 4,
     'tizen': 5
+};
+var platformMethodMap = {
+    'android': 'sendToGcm',
+    'ios': 'sendToIos',
+    'windowsphone': 'sendToWns'
 };
 var queue = [];
 _.each(platformMap, function(value, key) {
@@ -34,10 +54,11 @@ _.each(platformMap, function(value, key) {
 function Notifications() {
     this.platformMap = platformMap;
     this.gcm = this.initGcm();
-    this.sendMap = {
-        1: _.bind(this.sendToGcm, this),
-        2: _.bind(this.sendToIos, this)
-    };
+    this.sendMap = {};
+    var self = this;
+    _.each(platformMethodMap, function(method, serviceName) {
+        self.sendMap[platformMap[serviceName]] = _.bind(self[method], self);
+    });
 }
 
 Notifications.prototype.initGcm = function() {
@@ -82,14 +103,14 @@ Notifications.prototype.sendToGcm = function(endpoints, expires, message) {
             // 1000 endpoints at a time is the maximum
             // TODO: split the calls ups
         } else {
-            this._sendToGcm(this.gcm, gcmMessage, expires, endpoints);
+            this._sendToGcm(this.gcm, expires, gcmMessage, endpoints);
         }
     } else {
-        this._sendToGcm(this.gcm, gcMessage, expires, endpoints);
+        this._sendToGcm(this.gcm, expires, gcMessage, endpoints);
     }
 };
 
-Notifications.prototype._sendToGcm = function(gcm, message, expires, endpoints) {
+Notifications.prototype._sendToGcm = function(gcm, expires, message, endpoints) {
     gcm.send(message, {registrationIds: endpoints}, function(err, result) {
         if (err) {
             console.log("Failed to send gcm message:");
@@ -99,6 +120,32 @@ Notifications.prototype._sendToGcm = function(gcm, message, expires, endpoints) 
     })
 };
 
+Notifications.prototype.sendToWns = function(endpoints, expires, message) {
+    if (apiKeys.hasOwnProperty('wns')) {
+        if (endpoints instanceof Array) {
+            var self = this;
+            _.each(endpoints, function(endpoint) {
+                self._sendToWns(expires, message, endpoint);
+            });
+        } else {
+            this._sendToWns(expires, message, endpoints);
+        }
+    } else {
+        console.log("Failed to send wns message: not configured");
+        return null;
+    }
+};
+
+Notifications.prototype._sendToWns = function(expires, message, endpoint) {
+    wns.sendTileSquareBlock(endpoint, 'Yes!', 'It worked!', wnsConfig, function(err, result) {
+        if (err) {
+            console.log("Failed to send wns message:");
+            console.log(err);
+            queue[platformMap['windowsphone']].push({endpoints: endpoint, expires: expires, message: message});
+        }
+    });
+};
+
 Notifications.prototype.send = function(service, endpoints, expires, message) {
     if (!this.sendMap.hasOwnProperty(service) && platformMap.hasOwnProperty(service)) {
         // allow addressing service by name instead of just index
@@ -106,6 +153,7 @@ Notifications.prototype.send = function(service, endpoints, expires, message) {
     }
     var send = this.sendMap[service];
     if (send) {
+        console.log("Trying to send...");
         send(endpoints, expires, message);
         return true;
     } else {

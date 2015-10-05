@@ -11,6 +11,12 @@
             // contains actual key or path to is
             // defaults to key.pem
             "key": "PUSH_APN_KEY"
+        },
+        "wns": {
+            // contains actual client id
+            "id": "PUSH_WNS_ID",
+            // contains actual client secret
+            "secret": "PUSH_WNS_SECRET"
         }
     }
 }

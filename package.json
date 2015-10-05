@@ -52,7 +52,8 @@
     "sql-fixtures": "^0.11.0",
     "sqlite3": "~3.0.8",
     "uid2": "0.0.3",
-    "underscore": "~1.7.0"
+    "underscore": "~1.7.0",
+    "wns": "^0.5.3"
   },
   "devDependencies": {
     "bower": "~1.2.8",
