@@ -145,7 +145,12 @@ Notifications.prototype._sendToWns = function(expires, message, endpoint) {
         if (err) {
             console.log("Failed to send wns message:");
             console.log(err);
-            queue[platformMap['windowsphone']].push({endpoints: endpoint, expires: expires, message: message});
+            if (err.headers.statusCode == 403) {
+                // url endpoint is not associated with our app
+                // TODO: Remove the endpoint from DB
+            } else {
+                queue[platformMap['windowsphone']].push({endpoints: endpoint, expires: expires, message: message});
+            }
         }
     });
 };
