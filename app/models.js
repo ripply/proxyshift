@@ -990,7 +990,7 @@ function combineArraysAndOmitDuplicates() {
 
 function sendNotificationToUsers(users_id, expires, message) {
     return new Promise(function(resolve, reject) {
-        if (users_id instanceof Array) {
+        if (!users_id instanceof Array) {
             users_id = [users_id];
         }
         if (users_id === undefined || users_id === null || users_id.length == 0) {
