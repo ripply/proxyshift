@@ -800,9 +800,8 @@ function consumeRememberMeToken(token, next) {
         .fetch({require: true})
         .then(function(foundToken) {
             var user_id = foundToken.get('user_id');
-            return next(null, user_id);
+            //return next(null, user_id);
             // Found a token, delete it
-            /*
             return foundToken.destroy()
                 .then(function() {
                     return next(null, user_id);
@@ -810,7 +809,6 @@ function consumeRememberMeToken(token, next) {
                 .catch(function(err) {
                     return next(null, null);
                 });
-                */
         })
         .catch(function(err) {
             console.log(err);
@@ -851,15 +849,19 @@ function saveRememberMeToken(token, uid, next) {
                 date: expires
             });
 
-            newToken.save();
-            return next();
-            })
+            newToken
+                .save()
+                .then(function(savedToken) {
+                    var token_id = savedToken.get('id');
+                    next(undefined, token_id);
+                });
+        })
         .catch(function(err) {
             return next(err);
         })
 }
 
-function registerDeviceIdForUser(user_id, device_id, platformstr, expires, next) {
+function registerDeviceIdForUser(user_id, device_id, platformstr, expires, sessionToken, next) {
     if (device_id === undefined || device_id === null) {
         next(false);
     } else {
@@ -880,7 +882,7 @@ function registerDeviceIdForUser(user_id, device_id, platformstr, expires, next)
         Bookshelf.transaction(function (t) {
             var tokenData = {
                 token: device_id,
-                user_id: user_id,
+                token_id: sessionToken,
                 platform: platform_id,
                 date: time.nowInUtc(),
                 expires: expires
@@ -934,9 +936,10 @@ function registerDeviceIdForUser(user_id, device_id, platformstr, expires, next)
 
 function issueToken(user, done) {
     var token = utils.randomString(64);
-    return saveRememberMeToken(token, user.id, function(err) {
+    return saveRememberMeToken(token, user.id, function(err, tokenid) {
         if (err) { return done(err); }
-        return done(null, token);
+        user.token = token;
+        return done(null, token, tokenid);
     });
 }
 
@@ -992,39 +995,38 @@ function sendNotificationToUsers(users_id, expires, message) {
             reject();
             return;
         }
-        var promises = [];
-        _.each(users_id, function(user_id) {
-            promises.push(new Promise(function(innerResolve, innerReject) {
-                models.PushToken.forge({
-                    user_id: user_id
+        models.PushToken.query(function(q) {
+            q.select()
+                .from('pushtokens')
+                .innerJoin('tokens', function() {
+                    this.on('tokens.id', '=', 'pushtokens.token_id');
                 })
-                    .fetchAll()
-                    .then(function(pushTokens) {
-                        if (pushTokens) {
-                            var tokens = {};
-                            _.each(pushTokens.toJSON(), function(pushToken) {
-                                var platform = pushToken.platform;
-                                var token = pushToken.token;
-                                if (!tokens.hasOwnProperty(platform)) {
-                                    tokens[platform] = [];
-                                }
-                                tokens[platform].push(token);
-                            });
-                            _.each(tokens, function(tokensArray, platform) {
-                                Notifications.send(platform, tokensArray, expires, message);
-                            });
-                            innerResolve();
-                        } else {
-                            // success there was no tokens for the user
-                            innerResolve();
+                .whereIn('tokens.user_id', users_id);
+        })
+            .fetchAll()
+            .then(function(pushTokens) {
+                if (pushTokens) {
+                    var tokens = {};
+                    _.each(pushTokens.toJSON(), function(pushToken) {
+                        var platform = pushToken.platform;
+                        var token = pushToken.token;
+                        if (!tokens.hasOwnProperty(platform)) {
+                            tokens[platform] = [];
                         }
-                    })
-                    .catch(function(err) {
-                        innerResolve(user_id, err);
+                        tokens[platform].push(token);
                     });
-            }));
-        });
-        return Promise.all(promises);
+                    _.each(tokens, function(tokensArray, platform) {
+                        Notifications.send(platform, tokensArray, expires, message);
+                    });
+                    resolve();
+                } else {
+                    // success there was no tokens for the user
+                    resolve();
+                }
+            })
+            .catch(function(err) {
+                resolve(user_id, err);
+            });
     });
 }
 

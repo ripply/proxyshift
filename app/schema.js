@@ -431,10 +431,10 @@ var Schema = {
         id: {
             type: increments
         },
-        user_id: {
+        token_id: {
             type: integer,
             references: 'id',
-            inTable: 'users',
+            inTable: 'tokens',
             onDelete: cascade,
             onUpdate: cascade,
             nullable: false
