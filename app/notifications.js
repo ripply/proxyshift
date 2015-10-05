@@ -84,6 +84,7 @@ Notifications.prototype.sendToIos = function(endpoints, expires, message) {
             //console.log("NOPE");
         //}
     });
+    console.log("Sending notification to iOS");
     apnConnection.pushNotification(note, endpoints);
 };
 
@@ -111,6 +112,7 @@ Notifications.prototype.sendToGcm = function(endpoints, expires, message) {
 };
 
 Notifications.prototype._sendToGcm = function(gcm, expires, message, endpoints) {
+    console.log("Sending notification to GCM");
     gcm.send(message, {registrationIds: endpoints}, function(err, result) {
         if (err) {
             console.log("Failed to send gcm message:");
@@ -137,6 +139,7 @@ Notifications.prototype.sendToWns = function(endpoints, expires, message) {
 };
 
 Notifications.prototype._sendToWns = function(expires, message, endpoint) {
+    console.log("Sending notification to WNS");
     wns.sendTileSquareBlock(endpoint, 'Yes!', 'It worked!', wnsConfig, function(err, result) {
         var accessToken = err ? err.newAccessToken : result.newAccessToken;
         if (accessToken) {

@@ -3,7 +3,6 @@ var middleware = require('./misc/middleware'),
     models = require('../app/models'),
     Notifications = models.Notifications,
     time = require('../app/time'),
-    notifications = require('../app/notifications'),
     passport = require('passport');
 
 require('./../app/configure_passport');
@@ -115,7 +114,7 @@ module.exports = function(app, settings){
                         );
                         */
                     },
-                    0
+                    10 * 1000
                 );
             }
             req.login(user, function (err) {

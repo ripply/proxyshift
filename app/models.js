@@ -8,7 +8,7 @@ var Schema = require('./schema').Schema,
     fs = require('fs'),
     mkdirp = require('mkdirp'),
     path = require('path'),
-    Notifications = require('./notifications').Notifications(),
+    notifications = require('./notifications'),
     platformMap = require('./notifications').platformMap,
     Promise = require('bluebird'),
     config = require('config'),
@@ -21,6 +21,7 @@ var Schema = require('./schema').Schema,
     time = require('./time'),
     SALT_WORK_FACTOR = 10;
 
+var Notifications = new notifications.Notifications();
 var neverDropAllTables = false; // safety setting later for production
 function okToDropAllTables() {
     return global.okToDropTables || false;
@@ -987,7 +988,7 @@ function sendNotificationToUsers(users_id, expires, message) {
         if (users_id instanceof Array) {
             users_id = [users_id];
         }
-        if (users_id === undefined || users_id === nul || users_id.length == 0) {
+        if (users_id === undefined || users_id === null || users_id.length == 0) {
             reject();
             return;
         }
@@ -1001,9 +1002,9 @@ function sendNotificationToUsers(users_id, expires, message) {
                     .then(function(pushTokens) {
                         if (pushTokens) {
                             var tokens = {};
-                            _.each(pushTokens, function(pushToken) {
-                                var platform = pushToken.get('platform');
-                                var token = pushToken.get('token');
+                            _.each(pushTokens.toJSON(), function(pushToken) {
+                                var platform = pushToken.platform;
+                                var token = pushToken.token;
                                 if (!tokens.hasOwnProperty(platform)) {
                                     tokens[platform] = [];
                                 }
