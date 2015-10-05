@@ -138,7 +138,10 @@ Notifications.prototype.sendToWns = function(endpoints, expires, message) {
 
 Notifications.prototype._sendToWns = function(expires, message, endpoint) {
     wns.sendTileSquareBlock(endpoint, 'Yes!', 'It worked!', wnsConfig, function(err, result) {
-        wnsConfig.accessToken = err ? err.newAccessToken : result.newAccessToken;
+        var accessToken = err ? err.newAccessToken : result.newAccessToken;
+        if (accessToken) {
+            wnsConfig.accessToken = accessToken;
+        }
         if (err) {
             console.log("Failed to send wns message:");
             console.log(err);
