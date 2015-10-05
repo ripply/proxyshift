@@ -1,6 +1,7 @@
 var middleware = require('./misc/middleware'),
     _ = require('underscore'),
     models = require('../app/models'),
+    Notifications = models.Notifications,
     time = require('../app/time'),
     notifications = require('../app/notifications'),
     passport = require('passport');
@@ -83,34 +84,38 @@ module.exports = function(app, settings){
                 console.log("User sent a deviceid, attempting to send message after 20s");
                 setTimeout(function () {
                         console.log("Sending device a push notification... " + req.body.deviceid);
+                        var message = {
+                            default: {test: 'test'},
+                            ios: {
+                                badge: 3,
+                                    alert: 'You logged in!',
+                                    payload: {
+                                    message: 'Push: You logged in!'
+                                }
+                            },
+                            android: {
+                                contentAvailable: true,
+                                    timeToLive: 3,
+                                    data: {
+                                    message: 'Push: You logged in!'
+                                },
+                                notification: {
+                                    title: 'You logged in',
+                                        body: 'Successfully!'
+                                }
+                            }
+                        };
+                        models.sendNotificationToUsers([req.user.id], undefined, message);
+                        /*
                         new notifications().send(
                             req.body.platform,
                             [req.body.deviceid],
                             undefined,
-                            {
-                                default: {test: 'test'},
-                                ios: {
-                                    badge: 3,
-                                    alert: 'You logged in!',
-                                    payload: {
-                                        message: 'Push: You logged in!'
-                                    }
-                                },
-                                android: {
-                                    contentAvailable: true,
-                                    timeToLive: 3,
-                                    data: {
-                                        message: 'Push: You logged in!'
-                                    },
-                                    notification: {
-                                        title: 'You logged in',
-                                        body: 'Successfully!'
-                                    }
-                                }
-                            }
+                            message
                         );
+                        */
                     },
-                    10 * 1000
+                    0
                 );
             }
             req.login(user, function (err) {
