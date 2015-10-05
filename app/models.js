@@ -867,7 +867,7 @@ function registerDeviceIdForUser(user_id, device_id, platformstr, expires, sessi
     } else {
         var platform_id = 0; // 0 = browser
         if (platformstr) {
-            platformstr = platformstr.toLowerCase();
+            platformstr = ('' + platformstr).toLowerCase();
             var platformType = _.keys(platformMap);
             for (var i = 0; i < platformType.length; i++) {
                 if (platformType[i] == platformstr) {
@@ -891,12 +891,12 @@ function registerDeviceIdForUser(user_id, device_id, platformstr, expires, sessi
                 token: device_id
             })
                 .fetch({
-                    withRelated: 'tokens',
+                    withRelated: 'token',
                     transacting: t
                 })
                 .then(function(pushToken) {
                     if (pushToken) {
-                        if (pushToken.related('tokens').get('user_id') != user_id ||
+                        if (pushToken.related('token').get('user_id') != user_id ||
                             pushToken.get('platform') != platform_id ||
                             pushToken.get('token_id') != sessionToken) {
                             // TODO: Destroy the row first then create it so create at timestamps are accurate maybe?
@@ -1027,7 +1027,7 @@ function sendNotificationToUsers(users_id, expires, message) {
                 }
             })
             .catch(function(err) {
-                resolve(user_id, err);
+                resolve(users_id, err);
             });
     });
 }
