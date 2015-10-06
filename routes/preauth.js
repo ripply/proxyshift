@@ -3,6 +3,8 @@ var middleware = require('./misc/middleware'),
     models = require('../app/models'),
     Notifications = models.Notifications,
     time = require('../app/time'),
+    users = require('../controllers/users'),
+    error = require('../controllers/controllerCommon').error,
     passport = require('passport');
 
 require('./../app/configure_passport');
@@ -124,26 +126,36 @@ module.exports = function(app, settings){
                 var expires = time.nowInUtc() + (maxAgeInMs / 1000);
                 // https://github.com/jaredhanson/passport-remember-me#setting-the-remember-me-cookie
                 // issue a remember me cookie if the option was checked
-                if (req.body.remember_me) {
-                    models.issueToken(req.user, function(err, token, tokenid) {
-                        if (err) { return next(err); }
-                        models.registerDeviceIdForUser(req.user.id, req.body.deviceid, req.body.platform, expires, tokenid, function(deviceIdRegistered, err) {
-                            if (err) {
-                                console.log("Failed to register user's device for push notifications - userid: " + req.user.id + " deviceid:" + req.body.deviceid + "\n" + err);
-                            }
-                            res.cookie('remember_me', token, {path: '/', httpOnly: true, maxAge: maxAgeInMs});
+                users.getUserInfo(req.user.id, function(err, userJson) {
+                    if (err) {
+                        // FIXME: This would still let user login temporary session 
+                        error(req, res, err);
+                    } else {
+                        if (req.body.remember_me) {
+                            models.issueToken(req.user, function (err, token, tokenid) {
+                                if (err) {
+                                    return next(err);
+                                }
+                                models.registerDeviceIdForUser(req.user.id, req.body.deviceid, req.body.platform, expires, tokenid, function (deviceIdRegistered, err) {
+                                    if (err) {
+                                        console.log("Failed to register user's device for push notifications - userid: " + req.user.id + " deviceid:" + req.body.deviceid + "\n" + err);
+                                    }
+                                    res.cookie('remember_me', token, {path: '/', httpOnly: true, maxAge: maxAgeInMs});
+                                    res.send({
+                                        token: token,
+                                        expires: expires,
+                                        registeredForPush: deviceIdRegistered,
+                                        userinfo: userJson
+                                    });
+                                });
+                            });
+                        } else {
                             res.send({
-                                token: token,
-                                expires: expires,
                                 registeredForPush: deviceIdRegistered
                             });
-                        });
-                    });
-                } else {
-                    res.send({
-                        registeredForPush: deviceIdRegistered
-                    });
-                }
+                        }
+                    }
+                });
             });
         })(req, res, next);
         next();
