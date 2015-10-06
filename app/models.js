@@ -988,6 +988,23 @@ function combineArraysAndOmitDuplicates() {
     return result;
 }
 
+function isDeviceRegistered(deviceid, next) {
+    if (!deviceid) {
+        next(false);
+    } else {
+        models.PushToken.forge({
+            token: deviceid
+        })
+            .fetch({require: true})
+            .then(function (pushtoken) {
+                next(true);
+            })
+            .catch(function (err) {
+                next(false);
+            });
+    }
+}
+
 function sendNotificationToUsers(users_id, expires, message) {
     return new Promise(function(resolve, reject) {
         if (!users_id instanceof Array) {
@@ -1036,6 +1053,7 @@ var exports = {
     Bookshelf: Bookshelf,
     consumeRememberMeToken: consumeRememberMeToken,
     registerDeviceIdForUser: registerDeviceIdForUser,
+    isDeviceRegistered: isDeviceRegistered,
     issueToken: issueToken,
     combineRelationResults: combineArraysAndOmitDuplicates,
     knex: knex,

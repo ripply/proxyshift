@@ -128,7 +128,7 @@ module.exports = function(app, settings){
                 // issue a remember me cookie if the option was checked
                 users.getUserInfo(req.user.id, function(err, userJson) {
                     if (err) {
-                        // FIXME: This would still let user login temporary session 
+                        // FIXME: This would still let user login temporary session
                         error(req, res, err);
                     } else {
                         if (req.body.remember_me) {
@@ -150,8 +150,11 @@ module.exports = function(app, settings){
                                 });
                             });
                         } else {
-                            res.send({
-                                registeredForPush: deviceIdRegistered
+                            models.isDeviceRegistered(req.body.deviceid, function(deviceIdRegistered) {
+                                res.send({
+                                    registeredForPush: deviceIdRegistered,
+                                    userinfo: userJson
+                                });
                             });
                         }
                     }
