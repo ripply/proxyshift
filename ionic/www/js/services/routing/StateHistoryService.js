@@ -3,8 +3,12 @@ angular.module('scheduling-app.services.routing.statehistory', [
     .service('StateHistoryService', [
         '$rootScope',
         '$state',
+        'STATES',
         function($rootScope,
-                 $state) {
+                 $state,
+                 STATES
+        ) {
+            $rootScope.states = STATES;
             $rootScope.$on('$stateChangeSuccess', function(ev, to, toParams, from, fromParams) {
                 $rootScope.previousState = from.name;
                 $rootScope.previousStateParams = fromParams;

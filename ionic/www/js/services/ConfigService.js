@@ -71,6 +71,7 @@ var config_data = {
     'STATES': {
         'LOADING': 'loading',
         'HOME': 'app.openshifts',
+        'SETTINGS': 'app.setting',
         'LOGIN': 'login'
     },
     'CORDOVA_SETTINGS': {
