@@ -146,6 +146,10 @@ angular.module('scheduling-app.authentication', [
                                         // TODO: Prompt user if this is false or something?
                                     }
 
+                                    if (data.hasOwnProperty('userinfo')) {
+                                        $rootScope.$broadcast(GENERAL_EVENTS.UPDATES.USERINFO.FETCHED, data.userinfo);
+                                    }
+
                                     // Need to inform the http-auth-interceptor that
                                     // the user has logged in successfully.  To do this, we pass in a function that
                                     // will configure the request headers with the authorization token so

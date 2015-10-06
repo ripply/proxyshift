@@ -42,7 +42,8 @@ var config_data = {
             'USERINFO': {
                 'UPDATENEEDED': 'events:updates:userinfo:updateneeded',
                 'FAILED': 'events:updates:userinfo:failed',
-                'SUCCESS': 'events:updates:userinfo:success'
+                'SUCCESS': 'events:updates:userinfo:success',
+                'FETCHED': 'events:updates:userinfo:fetched'
             },
             'RESOURCE': 'events:updates:resource'
         },

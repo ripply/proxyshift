@@ -92,6 +92,10 @@ angular.module('scheduling-app.session', [
                 updateUserInfo($rootScope);
             });
 
+            $rootScope.$on(GENERAL_EVENTS.UPDATES.USERINFO.FETCHED, function(scope, data) {
+                angular.extend(userinfo, data);
+            });
+
             function updateUserInfo($scope, success, error) {
                 $http.get(GENERAL_CONFIG.APP_URL + GENERAL_CONFIG.APP_URL_API + "/users/userinfo", {
                     timeout: GENERAL_CONFIG.LOGIN_TIMEOUT
