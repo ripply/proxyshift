@@ -70,9 +70,10 @@ var config_data = {
     },
     'STATES': {
         'LOADING': 'loading',
-        'HOME': 'app.openshifts',
-        'SETTINGS': 'app.setting',
-        'LOGIN': 'login'
+        'HOME': 'app.tabs.openshifts',
+        'SETTINGS': 'app.tabs.settings',
+        'LOGIN': 'login',
+        'LOGOUT': 'logout'
     },
     'CORDOVA_SETTINGS': {
         // settings are set by app

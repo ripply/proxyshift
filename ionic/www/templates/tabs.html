@@ -1,6 +1,6 @@
 <div id="app-header-tab" class="tabs-striped tabs-top tabs-background-dark tabs-color-light">
     <div class="tabs">
-        <a class="tab-item active" href="#" ng-class="{'active': currentState == states.HOME}">
+        <a class="tab-item active" href="#{{states.HOME_URL}}" ng-class="{'active': currentState == states.HOME}">
             <i class="icon ion-home"></i>
             Home
         </a>
@@ -8,7 +8,7 @@
             <i class="icon ion-star"></i>
             Favorites
         </a>
-        <a class="tab-item" href="#"
+        <a class="tab-item" href="#{{states.SETTINGS_URL}}"
            ng-class="{'active': currentState == states.SETTINGS}"
            ng-if="userinfo.ownedGroups.length > 0 || userinfo.privilegedMemberOfGroups.length > 0 || userinfo.privilegedMemberOfLocations.length > 0">
             <i class="icon ion-gear-a"></i>
@@ -16,3 +16,4 @@
         </a>
     </div>
 </div>
+<ion-nav-view name="tabContent"></ion-nav-view>

@@ -9,6 +9,10 @@ angular.module('scheduling-app.services.routing.statehistory', [
                  STATES
         ) {
             $rootScope.states = STATES;
+            angular.forEach(STATES, function(value, key) {
+                STATES[key + "_URL"] = value.replace(/\./g, "/");
+            });
+            console.log(STATES);
             $rootScope.$on('$stateChangeSuccess', function(ev, to, toParams, from, fromParams) {
                 $rootScope.previousState = from.name;
                 $rootScope.previousStateParams = fromParams;

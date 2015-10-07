@@ -221,12 +221,13 @@ angular.module('scheduling-app', [
                     }
                 })
 
-                .state('app.openshifts', {
-                    url: "/openshifts",
-                    controller: 'OpenShiftsController',
+                .state('app.tabs', {
+                    url: "/tabs",
+                    abstract: true,
+                    controller: 'AppCtrl',
                     views: {
                         'menuContent': {
-                            templateUrl: "templates/openshifts.html",
+                            templateUrl: "templates/tabs.html"
                         },
                         'menu': {
                             templateUrl: "templates/menuimpl.html",
@@ -234,12 +235,25 @@ angular.module('scheduling-app', [
                     }
                 })
 
-                .state('app.browse', {
-                    url: "/browse",
+                .state('app.tabs.openshifts', {
+                    url: "/openshifts",
+                    controller: 'OpenShiftsController',
                     views: {
-                        'menuContent': {
-                            templateUrl: "templates/browse.html"
+                        'tabContent': {
+                            templateUrl: "templates/openshifts.html",
                         }
+                    }
+                })
+
+                .state('app.tabs.settings', {
+                    url: "/settings",
+                    views: {
+                        'tabContent': {
+                            templateUrl: "templates/settings.html"
+                        }
+                    },
+                    resolve: {
+                        //TODO: Check /userinfo
                     }
                 })
 

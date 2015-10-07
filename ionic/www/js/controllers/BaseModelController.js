@@ -39,7 +39,7 @@ angular.module('scheduling-app.controllers')
                     var object = objectMap.object;
 
                     if (!objectMap.pendingFetch ||
-                        (objectMap.pendingFetch && !objectMap.pendingFetch.isPending())) {
+                        (objectMap.pendingFetch && objectMap.pendingFetch.isPending && !objectMap.pendingFetch.isPending())) {
                         // object is currently not pending or the pending fetch is finished
                         setPending(objectName);
                         objectMap.pendingFetch = subRouteFunction(object);
