@@ -241,7 +241,11 @@ angular.module('scheduling-app.controllers')
                 }
 
                 for (var i = 0; i < data.length; i++) {
-                    var transformed = transform(data[i]);
+                    var transformed = data[i];
+                    if (transform) {
+                        transformed = transform(transformed);
+                    }
+
                     var start = transformed.start;
                     var end = transformed.end;
 
