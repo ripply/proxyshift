@@ -411,7 +411,6 @@ module.exports = {
     },
     '/:shift_id/unignore': {
         'post': {
-            auth: ['user can apply for shift'],
             route: function(req, res) {
                 var ignoreShiftData = {
                     shift_id: req.params.shift_id,
@@ -719,6 +718,14 @@ function createNewShift(req, res) {
     }
 }
 
+function applyIgnoringOfShifts(query, user_id) {
+    return query.innerJoin('ignoreshifts', function() {
+        this.on('ignoreshifts.id', '=', 'shifts.id')
+            .andOn('ignoreshifts.user_id', '=', user_id)
+            .andOn('ignoreshifts.id', '=', 'null');
+    });
+}
+
 /**
  * Should be called with
  * 'mark if user is a group owner or privileged location member for this shift'
@@ -762,6 +769,7 @@ function getShifts(req, res) {
                 // we will allow it since the prerequisites have already been checked
                 var query = q.select('shifts.*')
                     .from('shifts');
+                query = applyIgnoringOfShifts(query, req.user.id);
                 applySearchConstraintsOnShiftsTable(query)
                     .innerJoin('locations', function () {
                         this.on('shifts.location_id', '=', 'locations.id');
@@ -802,6 +810,7 @@ function getShifts(req, res) {
 
                 var query = q.select('shifts.*')
                     .from('shifts');
+                query = applyIgnoringOfShifts(query, req.user.id);
                 applySearchConstraintsOnShiftsTable(query)
                     //.where('shifts.id', '=', req.params.shift_id)
                     .innerJoin('locations', function () {
