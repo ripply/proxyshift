@@ -366,10 +366,117 @@ module.exports = {
             }
         }
     },
+    '/:shift_id/ignore': {
+        'post': {
+            auth: ['user can apply for shift'],
+            route: function(req, res) {
+                var ignoreShiftData = {
+                    shift_id: req.params.shift_id,
+                    user_id: req.user.id
+                };
+                return Bookshelf.transaction(function(t) {
+                    return models.IgnoreShift.forge(ignoreShiftData)
+                        .fetch({
+                            transacting: t
+                        })
+                        .then(function(ignoreShift) {
+                            if (ignoreShift) {
+                                // already ignored
+                                res.send(200);
+                            } else {
+                                return models.IgnoreShift.forge(ignoreShiftData)
+                                    .save(null, {
+                                        transacting: t
+                                    })
+                                    .then(function(ignoredShift) {
+                                        res.send(201)
+                                    })
+                                    .catch(function(err) {
+                                        error(req, res, err);
+                                    });
+
+                            }
+                        })
+                        .catch(function(err) {
+                            error(req, res, err);
+                        });
+                });
+            }
+        },
+        'get': {
+            route: function(req, res) {
+                fetchIgnoredShifts(req, res);
+            }
+        }
+    },
+    '/:shift_id/unignore': {
+        'post': {
+            auth: ['user can apply for shift'],
+            route: function(req, res) {
+                var ignoreShiftData = {
+                    shift_id: req.params.shift_id,
+                    user_id: req.user.id
+                };
+                return Bookshelf.transaction(function(t) {
+                    return models.IgnoreShift.forge(ignoreShiftData)
+                        .fetchAll({
+                            transacting: t
+                        })
+                        .then(function(ignoreShifts) {
+                            if (ignoreShifts) {
+                                // already ignored
+                                ignoreShifts.destroy({
+                                    transacting: t
+                                })
+                                    .then(function(destroyed) {
+                                        res.send(200);
+                                    })
+                                    .catch(function(err) {
+                                        error(req, res, err);
+                                    });
+                            } else {
+                                res.send(200);
+                            }
+                        })
+                        .catch(function(err) {
+                            error(req, res, err);
+                        });
+                });
+            }
+        }
+    },
     createNewShift: createNewShift,
     getShiftsYouAreManaging: getShiftsYouAreManaging
 
 };
+
+function fetchIgnoredShifts(req, res, from, to) {
+    models.IgnoreShift.query(function(q) {
+        var query = q.select()
+            .from('ignoreshifts')
+            .where('ignoreshifts.user_id', '=', req.user.id)
+            .innerJoin('shifts', function() {
+                this.on('shifts.id', '=', 'ignoreshifts.shift_id');
+            });
+        if (from) {
+            query = query.where('ignoreshifts.date', '>=', from);
+        }
+        if (to) {
+            query = query.where('ignoreshifts.date', '<=', to);
+        }
+    })
+        .fetchAll()
+        .then(function(ignoredShifts) {
+            if (ignoredShifts) {
+                res.json(ignoredShifts.toJSON());
+            } else {
+                res.json([]);
+            }
+        })
+        .catch(function(err) {
+            err(req, res, err);
+        });
+}
 
 function triggerShiftApplicationNotification(shift_id) {
     // TODO: NO-OP for now

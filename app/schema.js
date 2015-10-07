@@ -344,6 +344,23 @@ var Schema = {
             nullable: false
         }
     },
+    IgnoreShift: {
+        id: {
+            type: increments
+        },
+        shift_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'shifts',
+            onDelete: cascade
+        },
+        user_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'users',
+            onDelete: cascade
+        }
+    },
     // groups can have different permissions
     // eg: unprivileged, privileged etc
     // here they can customize the name of their permission levels
