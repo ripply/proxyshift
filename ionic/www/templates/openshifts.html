@@ -1,5 +1,9 @@
 <ion-view view-title="Open shifts">
     <ion-content class="has-tabs">
+        <ion-refresher
+            pulling-text="Pull to refresh..."
+            on-refresh="fetch()">
+        </ion-refresher>
         <shift-calendar value="AllShifts"></shift-calendar>
         <div open-shifts></div>
     </ion-content>

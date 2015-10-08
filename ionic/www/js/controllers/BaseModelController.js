@@ -31,6 +31,12 @@ angular.module('scheduling-app.controllers')
             if ($scope.unregister === undefined) {
                 $scope.unregister = unregister;
             }
+            if ($scope.fetchComplete === undefined) {
+                $scope.fetchComplete = ionicRefreshComplete;
+            }
+            if ($scope.ionicRefreshComplete === undefined) {
+                $scope.ionicRefreshComplete = ionicRefreshComplete;
+            }
 
             $scope.fetch = function () {
                 angular.forEach($scope._models, function(objectMap, objectName) {
@@ -88,6 +94,10 @@ angular.module('scheduling-app.controllers')
                     }
                 });
             };
+
+            function ionicRefreshComplete(result, oldValue) {
+                $scope.$broadcast('scroll.refreshComplete');
+            }
 
             function needsInitialization() {
                 return $scope._needsInitialization;

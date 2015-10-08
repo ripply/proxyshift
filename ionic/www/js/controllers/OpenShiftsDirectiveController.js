@@ -19,9 +19,13 @@ angular.module('scheduling-app.controllers')
                 AllShiftsModel,
                 undefined
             );
+            var superFetchComplete = $scope.fetchComplete;
             $scope.fetchComplete = function(result, oldValue) {
                 var range = getDefaultShiftRange();
                 $rootScope.$broadcast(GENERAL_EVENTS.CALENDAR.UPDATE.RANGE, result, range[0], range[1]);
+                if (superFetchComplete) {
+                    superFetchComplete(result, oldValue);
+                }
             };
             // TODO: Remove and figurout why $ionivView.afterEnter does not trigger in super class
             $scope.fetch();

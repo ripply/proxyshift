@@ -72,6 +72,7 @@ var config_data = {
         'LOADING': 'loading',
         'HOME': 'app.tabs.openshifts',
         'SETTINGS': 'app.tabs.settings',
+        'NEWSHIFT': 'app.tabs.newshift',
         'LOGIN': 'login',
         'LOGOUT': 'logout'
     },
