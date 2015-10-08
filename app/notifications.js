@@ -7,16 +7,27 @@ var config = require('config'),
 var apiKeys = {};
 var apnConfig = {};
 var wnsConfig = {};
+var apnFeedbackOptions = {};
 
 if (config.has('push.gcm.serverapikey')) {
     apiKeys['gcm'] = config.get('push.gcm.serverapikey');
 }
+
 if (config.has('push.apn.cert')) {
     apnConfig['cert'] = config.get('push.apn.cert');
 }
+
 if (config.has('push.apn.key')) {
     apnConfig['key'] = config.get('push.apn.key');
 }
+apnConfig['batchfeedback'] = true;
+
+if (config.has('push.apn.feedback.interval')) {
+    apnConfig['interval'] = config.get('push.apn.feedback.interval');
+} else {
+    apnConfig['interval'] = 300;
+}
+
 if (config.has('push.wns.id')) {
     if (!apiKeys['wns']) {
         apiKeys['wns'] = {};
@@ -24,6 +35,7 @@ if (config.has('push.wns.id')) {
     apiKeys['wns']['id'] = config.get('push.wns.id');
     wnsConfig['client_id'] = apiKeys['wns']['id'];
 }
+
 if (config.has('push.wns.secret')) {
     if (!apiKeys['wns']) {
         apiKeys['wns'] = {};
@@ -55,6 +67,18 @@ function Notifications() {
     this.platformMap = platformMap;
     this.gcm = this.initGcm();
     this.sendMap = {};
+    // https://github.com/argon/node-apn#setting-up-the-feedback-service
+    this.feedback = new apn.Feedback(apnConfig);
+    this.feedback.on('feedback', function(devices) {
+        _.forEach(devices, function(item) {
+            console.log("APN Feedback");
+            console.log(item);
+            // Buffer object containing device token
+            // item.device
+            //
+            // item.time
+        });
+    });
     var self = this;
     _.each(platformMethodMap, function(method, serviceName) {
         self.sendMap[platformMap[serviceName]] = _.bind(self[method], self);
