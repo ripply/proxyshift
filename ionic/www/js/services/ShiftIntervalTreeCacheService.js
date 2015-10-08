@@ -16,14 +16,18 @@ angular.module('scheduling-app.services')
 
             this.add = function(shift) {
                 // TODO: INTERVAL TREE
-                var shifts = getShifts();
-                for (var i = 0; i < shifts.length; i++) {
-                    if (shifts.id === shift.id) {
-                        return;
+                if (shift) {
+                    var shifts = getShifts();
+                    for (var i = 0; i < shifts.length; i++) {
+                        var existingShift = shifts[i];
+                        if (existingShift) {
+                            if (existingShift.id === shift.id) {
+                                return;
+                            }
+                        }
                     }
+                    $rootScope.push(shift);
                 }
-
-                $rootScope.push(shift);
             };
 
             function getShifts() {
@@ -71,11 +75,13 @@ angular.module('scheduling-app.services')
                 // TODO: SETUP AN INTERVAL TREE HERE
                 for (var i = 0; i < shifts.length; i++) {
                     var shift = shifts[i];
-                    if (transform !== undefined) {
-                        shift = transform(shift);
-                    }
-                    if (shiftInRange(shift, start, end)) {
-                        results.push(shift);
+                    if (shift) {
+                        if (transform !== undefined) {
+                            shift = transform(shift);
+                        }
+                        if (shiftInRange(shift, start, end)) {
+                            results.push(shift);
+                        }
                     }
                 }
 
@@ -90,13 +96,15 @@ angular.module('scheduling-app.services')
                 var shifts = getShifts();
                 for (var i = 0; i < shifts.length; i++) {
                     var shift = shifts[i];
-                    if (transform !== undefined) {
-                        shift = transform(shift);
-                    }
+                    if (shift) {
+                        if (transform !== undefined) {
+                            shift = transform(shift);
+                        }
 
-                    if (shiftInRange(shift, start, end)) {
-                        delete shifts[i];
-                        --i;
+                        if (shiftInRange(shift, start, end)) {
+                            delete shifts[i];
+                            --i;
+                        }
                     }
                 }
 
