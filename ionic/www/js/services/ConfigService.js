@@ -70,11 +70,17 @@ var config_data = {
     },
     'STATES': {
         'LOADING': 'loading',
-        'HOME': 'app.tabs.openshifts',
-        'SETTINGS': 'app.tabs.settings',
+        // TODO DEPRECATE
+        'HOME': 'app.tabs.shifts',
+        'SHIFTS': 'app.tabs.shifts',
+        'OPENSHIFTS': 'app.tab.openshifts',
+        'SETTINGS': 'app.settings',
         'NEWSHIFT': 'app.tabs.newshift',
         'LOGIN': 'login',
-        'LOGOUT': 'logout'
+        'LOGOUT': 'logout',
+        'PRIVACY_POLICY': 'app.privacypolicy',
+        'LEGAL': 'app.legal',
+        'CONTACT_US': 'app.contactus'
     },
     'CORDOVA_SETTINGS': {
         // settings are set by app

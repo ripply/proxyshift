@@ -215,7 +215,7 @@ angular.module('scheduling-app', [
                     url: "/app",
                     abstract: true,
                     templateUrl: "templates/menu.html",
-                    controller: 'AppCtrl',
+                    controller: 'MenuController',
                     resolve: {
                         authenticated: requireSessionOrGoLogin
                     }
@@ -235,8 +235,8 @@ angular.module('scheduling-app', [
                     }
                 })
 
-                .state('app.tabs.openshifts', {
-                    url: "/openshifts",
+                .state('app.tabs.shifts', {
+                    url: "/shifts",
                     controller: 'OpenShiftsController',
                     views: {
                         'tabContent': {
@@ -244,29 +244,15 @@ angular.module('scheduling-app', [
                         }
                     }
                 })
-
-                .state('app.tabs.settings', {
+/*
+                .state('settings', {
                     url: "/settings",
-                    views: {
-                        'tabContent': {
-                            templateUrl: "templates/settings.html"
-                        }
-                    },
+                    templateUrl: "templates/settings.html",
                     resolve: {
                         //TODO: Check /userinfo
                     }
                 })
-
-                /*.state(STATES.HOME, {
-                    url: "/playlists",
-                    views: {
-                        'menuContent': {
-                            templateUrl: "templates/playlists.html",
-                            controller: 'PlaylistsCtrl'
-                        }
-                    }
-                })*/
-
+*/
                 .state('app.single', {
                     url: "/playlists/:playlistId",
                     views: {

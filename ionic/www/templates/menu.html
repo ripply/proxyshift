@@ -1,20 +1,23 @@
 <ion-side-menus enable-menu-with-back-views="false">
-  <ion-pane ion-side-menu-content drag-content="true">
-    <ion-nav-bar class="bar-stable">
-      <ion-nav-back-button>
-      </ion-nav-back-button>
+    <ion-pane ion-side-menu-content drag-content="true">
+        <ion-nav-bar class="bar-stable">
+            <ion-nav-back-button>
+            </ion-nav-back-button>
 
-      <ion-nav-buttons side="left">
-        <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
-        </button>
-      </ion-nav-buttons>
-    </ion-nav-bar>
-      <ion-view>
-          <ion-nav-view name="menuContent"></ion-nav-view>
-      </ion-view>
-  </ion-pane>
+            <ion-nav-buttons side="left">
+                <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
+                </button>
+            </ion-nav-buttons>
+            <ion-nav-buttons side="right">
+                <button ng-click="openSettings()" class="button button-icon button-clear ion-gear-a"></button>
+            </ion-nav-buttons>
+        </ion-nav-bar>
+        <ion-view>
+            <ion-nav-view name="menuContent"></ion-nav-view>
+        </ion-view>
+    </ion-pane>
 
-  <ion-side-menu side="left">
-      <ion-nav-view name="menu"></ion-nav-view>
-  </ion-side-menu>
+    <ion-side-menu side="left">
+        <ion-nav-view name="menu"></ion-nav-view>
+    </ion-side-menu>
 </ion-side-menus>
