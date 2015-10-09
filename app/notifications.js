@@ -3,6 +3,8 @@ var config = require('config'),
     gcm = require('node-gcm'),
     apn = require('apn'),
     wns = require('wns'),
+    fs = require('fs'),
+    Promise = require('bluebird'),
     _ = require('underscore');
 var apiKeys = {};
 var apnConfig = {};
@@ -20,6 +22,45 @@ if (config.has('push.apn.cert')) {
 if (config.has('push.apn.key')) {
     apnConfig['key'] = config.get('push.apn.key');
 }
+
+var cert = apnConfig['cert'];
+if (!cert) {
+    cert = 'cert.pem'
+}
+var key = apnConfig['key'];
+if (!key) {
+    key = 'key.pem'
+}
+
+var apnCertExists = false;
+var apnKeyExists = false;
+var filesExistPromises = [];
+var minimumLengthToAssumeItIsAPemFile = 256;
+filesExistPromises.push(new Promise(function(resolve) {
+    if (cert.length > minimumLengthToAssumeItIsAPemFile) {
+        // assume cert contains cert
+        apnCertExists = true;
+        resolve();
+    } else {
+        fs.exists(cert, function(exists) {
+            apnCertExists = exists;
+            resolve();
+        });
+    }
+}));
+filesExistPromises.push(new Promise(function(resolve) {
+    if (key.length > minimumLengthToAssumeItIsAPemFile) {
+        apnKeyExists = true;
+        resolve();
+    } else {
+        fs.exists(key, function(exists) {
+            apnKeyExists = exists;
+            resolve();
+        });
+    }
+}));
+var filesExistFinished = Promise.all(filesExistPromises);
+
 apnConfig['batchfeedback'] = true;
 
 if (config.has('push.apn.feedback.interval')) {
@@ -63,23 +104,37 @@ _.each(platformMap, function(value, key) {
     queue.push([]);
 });
 
+function doApnCertsExist() {
+    return apnCertExists && apnKeyExists;
+}
+
 function Notifications() {
     this.platformMap = platformMap;
     this.gcm = this.initGcm();
     this.sendMap = {};
     // https://github.com/argon/node-apn#setting-up-the-feedback-service
-    this.feedback = new apn.Feedback(apnConfig);
-    this.feedback.on('feedback', function(devices) {
-        _.forEach(devices, function(item) {
-            console.log("APN Feedback");
-            console.log(item);
-            // Buffer object containing device token
-            // item.device
-            //
-            // item.time
-        });
-    });
+    this.apnCertsExist = filesExistFinished;
     var self = this;
+    this.apnCertsExist.then(function() {
+        if (doApnCertsExist()) {
+            self.apnCertsExist = true;
+
+            self.feedback = new apn.Feedback(apnConfig);
+            self.feedback.on('feedback', function(devices) {
+                _.forEach(devices, function(item) {
+                    console.log("APN Feedback");
+                    console.log(item);
+                    // Buffer object containing device token
+                    // item.device
+                    //
+                    // item.time
+                });
+            });
+        } else {
+            self.apnCertsExist = false;
+            console.log("Not initializing APN feedback servicec as certificates are not setup properly");
+        }
+    });
     _.each(platformMethodMap, function(method, serviceName) {
         self.sendMap[platformMap[serviceName]] = _.bind(self[method], self);
     });
@@ -95,6 +150,16 @@ Notifications.prototype.initGcm = function() {
 
 Notifications.prototype.sendToIos = function(endpoints, expires, message) {
     //var myDevice = new apn.Device("863974a9b8615f62a9af9c2a6f69a2e50bf9ceef8abd361bc84334e9c0e43eb7");
+    var self = this;
+    if (this.apnCertsExist === false) {
+        console.log("APN Certs not setup correctly, not sending message to " + JSON.stringify(endpoints));
+        return false;
+    } else if (this.apnCertsExist !== true) {
+        this.apnCertsExist.then(function() {
+            self.apnCertsExist = doApnCertsExist();
+            self.sendToIos(endpoints, expires, message);
+        });
+    }
     var note = new apn.Notification();
     var iosMessage = message.ios;
     if (!iosMessage) {
