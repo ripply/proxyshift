@@ -1,8 +1,8 @@
 <div class="calendarWrapper">
     <div ng-show="calendarData" class="calendar" ng-class="{'calendar-loading': calendarData.loading}">
-        <a ng-click="previousMonth()" href="#" class="calendarback ion-arrow-left-a"></a>
-        <a ng-click="currentMonth()" href="#" class="calendarnow icon ion-home"></a>
-        <a ng-click="nextMonth()" href="#" class="calendarnext ion-arrow-right-a"></a>
+        <a ng-click="previousMonth()" class="calendarback ion-arrow-left-a"></a>
+        <a ng-click="currentMonth()" class="calendarnow icon ion-home"></a>
+        <a ng-click="nextMonth()" class="calendarnext ion-arrow-right-a"></a>
         <div class="calendar-month-name">
             {{monthData.name}} - {{monthData.year}}
         </div>
