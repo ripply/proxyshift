@@ -38,9 +38,9 @@ function ensureCsrf(err, req, res, next) {
 
 function logout(req, res) {
     if ('remember_me' in req.cookies) {
-        models.consumeRememberMeToken(req.cookies.remember_me, function(err, next) {
+        models.checkRememberMeToken(req.cookies.remember_me, true, function(err, next) {
             if (req.headers.Authentication && req.cookies.remember_me != req.headers.Authentication) {
-                models.consumeRememberMeToken(req.headers.Authentication, function(err, next) {
+                models.checkRememberMeToken(req.headers.Authentication, true, function(err, next) {
                     console.log("User logged out: Purged token");
                 });
             } else {
