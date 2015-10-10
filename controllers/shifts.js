@@ -407,30 +407,19 @@ module.exports = {
         },
         'delete': {
             route: function(req, res) {
-                var ignoreShiftData = {
-                    shift_id: req.params.shift_id,
-                    user_id: req.user.id
-                };
                 return Bookshelf.transaction(function(t) {
-                    return models.IgnoreShift.forge(ignoreShiftData)
+                    return models.IgnoreShift.query(function(q) {
+                        q.select()
+                            .from('ignoreshifts')
+                            .where('shift_id', '=', req.params.shift_id)
+                            .where('user_id', '=', req.user.id)
+                            .delete();
+                    })
                         .fetchAll({
                             transacting: t
                         })
                         .then(function(ignoreShifts) {
-                            if (ignoreShifts) {
-                                // already ignored
-                                ignoreShifts.destroy({
-                                    transacting: t
-                                })
-                                    .then(function(destroyed) {
-                                        res.send(200);
-                                    })
-                                    .catch(function(err) {
-                                        error(req, res, err);
-                                    });
-                            } else {
-                                res.send(200);
-                            }
+                            res.send(200);
                         })
                         .catch(function(err) {
                             error(req, res, err);
