@@ -65,6 +65,7 @@ angular.module('scheduling-app', [
         '$urlRouterProvider',
         '$injector',
         '$provide',
+        '$ionicConfigProvider',
         'RestangularProvider',
         'localStorageServiceProvider',
         'STATES',
@@ -75,6 +76,7 @@ angular.module('scheduling-app', [
                  $urlRouterProvider,
                  $injector,
                  $provide,
+                 $ionicConfigProvider,
                  RestangularProvider,
                  localStorageServiceProvider,
                  STATES,
@@ -85,6 +87,8 @@ angular.module('scheduling-app', [
                  // of the previous and current state
                  //StateHistoryService
         ) {
+            // enables caching of calendar which takes 1-2 seconds to render initially
+            $ionicConfigProvider.views.forwardCache(true);
             CORDOVA_SETTINGS.isWebView = ionic.Platform.isWebView();
             CORDOVA_SETTINGS.isIPad = ionic.Platform.isIPad();
             CORDOVA_SETTINGS.isIOS = ionic.Platform.isIOS();
@@ -224,20 +228,21 @@ angular.module('scheduling-app', [
                 .state('app.tabs', {
                     url: "/tabs",
                     abstract: true,
-                    controller: 'AppCtrl',
                     views: {
                         'menuContent': {
-                            templateUrl: "templates/tabs.html"
+                            templateUrl: "templates/tabs.html",
+                            controller: 'AppCtrl',
                         },
                         'menu': {
                             templateUrl: "templates/menuimpl.html",
+                            controller: 'AppCtrl',
                         }
                     }
                 })
 
                 .state('app.tabs.shifts', {
                     url: "/shifts",
-                    controller: 'OpenShiftsController',
+                    controller: 'ShiftCalendarController',
                     views: {
                         'tabContent': {
                             templateUrl: "templates/shifts.html",
@@ -247,10 +252,10 @@ angular.module('scheduling-app', [
 
                 .state('app.tabs.openshifts', {
                     url: "/openshifts",
-                    controller: 'OpenShiftsController',
                     views: {
                         'tabContent': {
                             templateUrl: "templates/openshifts.html",
+                            controller: 'ShiftCalendarController',
                         }
                     }
                 })
@@ -287,7 +292,7 @@ angular.module('scheduling-app', [
                 .state('settings', {
                     url: "/settings",
                     templateUrl: "templates/settings.html",
-                    controller: 'SettingsController',
+                    controller: 'ShiftCalendarController',
                     resolve: {
                         //TODO: Check /userinfo
                     }
