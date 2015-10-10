@@ -56,7 +56,7 @@ passport.use(new LocalStrategy(function(username, password, done) {
 
 passport.use(new AuthencationHeaderStrategy(
     function(token, done) {
-        models.consumeRememberMeToken(token, function(err, uid) {
+        models.checkRememberMeToken(token, false, function(err, uid) {
             if (err) { return done(err); }
             if (!uid) { return done(null, false); }
 
@@ -81,7 +81,7 @@ passport.use(new AuthencationHeaderStrategy(
 passport.use(new RememberMeStrategy(
     function(token, done) {
         console.log("Remember me consume!????");
-        models.consumeRememberMeToken(token, function(err, uid) {
+        models.checkRememberMeToken(token, true, function(err, uid) {
             if (err) { return done(err); }
             if (!uid) { return done(null, false); }
 

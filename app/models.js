@@ -788,7 +788,7 @@ function getValidationOptionsForModelName(modelName) {
     return undefined;
 }
 
-function consumeRememberMeToken(token, next) {
+function checkRememberMeToken(token, consume, next) {
     return models.Token.query(function(q) {
         q.select('tokens.*')
             .innerJoin('users', function () {
@@ -802,13 +802,17 @@ function consumeRememberMeToken(token, next) {
             var user_id = foundToken.get('user_id');
             //return next(null, user_id);
             // Found a token, delete it
-            return foundToken.destroy()
-                .then(function() {
-                    return next(null, user_id);
-                })
-                .catch(function(err) {
-                    return next(null, null);
-                });
+            if (consume) {
+                return foundToken.destroy()
+                    .then(function () {
+                        return next(null, user_id);
+                    })
+                    .catch(function (err) {
+                        return next(null, null);
+                    });
+            } else {
+                return next(null, user_id);
+            }
         })
         .catch(function(err) {
             console.log(err);
@@ -1051,7 +1055,7 @@ function sendNotificationToUsers(users_id, expires, message) {
 
 var exports = {
     Bookshelf: Bookshelf,
-    consumeRememberMeToken: consumeRememberMeToken,
+    checkRememberMeToken: checkRememberMeToken,
     registerDeviceIdForUser: registerDeviceIdForUser,
     isDeviceRegistered: isDeviceRegistered,
     issueToken: issueToken,
