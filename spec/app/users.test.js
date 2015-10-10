@@ -1091,7 +1091,7 @@ describe('#/api/users', function(){
 
                     });
 
-                    describe('- can update email', function() {
+                    describe.only('- can update email', function() {
 
                         beforeEach(function(done) {
 

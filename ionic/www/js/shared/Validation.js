@@ -14,6 +14,92 @@ var maximumStringLength = 20;
 
 var Validations = {
     User: {
+        username: [{
+            rule: 'required',
+            message: 'Username is required.',
+            label: 'Username'
+        }, {
+            rule: 'minLength:' + minimumStringLength,
+            message: 'Username must have at least ' + minimumStringLength + ' characters.'
+        }, {
+            rule: 'maxLength:' + maximumStringLength,
+            message: 'Username must have at most ' + maximumStringLength + ' characters.'
+        }],
+        firstname: [{
+            rule: 'required',
+            message: 'First name is required.',
+            label: 'Firstname'
+        }, {
+            rule: 'minLength:' + minimumStringLength,
+            message: 'Firstname must have at least ' + minimumStringLength + ' characters.'
+        }, {
+            rule: 'maxLength:' + maximumStringLength,
+            message: 'Firstname must have at most ' + maximumStringLength + ' characters.'
+        }],
+        lastname: [{
+            rule: 'required',
+            message: 'Last name is required.',
+            label: 'Lastname'
+        }, {
+            rule: 'minLength:' + minimumStringLength,
+            message: 'Last name must have at least ' + minimumStringLength + ' characters.'
+        }, {
+            rule: 'maxLength:' + maximumStringLength,
+            message: 'Last name must have at most ' + maximumStringLength + ' characters.'
+        }],
+        email: [{
+            rule: 'required',
+            message: 'Email is required.',
+            label: 'Email'
+        }, {
+            rule: 'email',
+            message: 'Must use a proper email.'
+        }],
+        password: [{
+            rule: 'required',
+            message: 'Password is required.',
+            label: 'Password'
+        }, {
+            rule: 'minLength:' + minimumStringLength,
+            message: 'Password must have at least ' + minimumStringLength + ' characters.'
+        }, {
+            rule: 'maxLength:' + maximumStringLength,
+            message: 'Password must have at most ' + maximumStringLength + ' characters.'
+        }],
+        squestion: [{
+            rule: 'required',
+            message: 'Secret Question is required.',
+            label: 'Squestion'
+        }],
+        sanswer: [{
+            rule: 'required',
+            message: 'Secret Answer is required.',
+            label: 'Sanswer'
+        }],
+        phonehome: [{
+            rule: 'integer',
+            message: 'Phone number must be a number.',
+            label: 'Phonehome'
+        }],
+        phonemobile: [{
+            rule: 'integer',
+            message: 'Phone number must be a number.',
+            label: 'Phonemobile'
+        }],
+        pagernumber: [{
+            rule: 'integer',
+            message: 'Pager number must be a number.',
+            label: 'Pagernumber'
+        }]
+    }
+};
+
+/*
+var minimumStringLength = 4;
+var maximumStringLength = 20;
+
+var Validations = {
+    User: {
         username: [
             { validator: 'notEmpty', message: 'Username is required.' },
             { validator: 'isLength', args: [minimumStringLength, maximumStringLength],
@@ -90,13 +176,13 @@ var Validations = {
                 message: 'URL must be within ' + minimumStringLength + ' and ' +
                 maximumStringLength},
             //TODO: { validator: 'url' ...
-                */
+                *//*
         ],
         contactemail: [
             { validator: 'notEmpty', message: 'Email must be present' },
             /*{ validator: 'isLength', args: [minimumStringLength, maximumStringLength],
                 message: 'email must be within ' + minimumStringLength + ' and ' +
-                maximumStringLength}*/
+                maximumStringLength}*//*
             //TODO: { validator: 'isEmail'}
         ],
         contactphone: [
@@ -116,7 +202,7 @@ var Validations = {
     }
 
 };
-
+*/
 // Set validations to global variables client side
 if (typeof window == 'undefined') {
     module.exports = Validations;

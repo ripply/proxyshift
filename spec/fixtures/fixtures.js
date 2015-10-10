@@ -46,10 +46,7 @@ module.exports = {
                 lastname: 'password',
                 email: 'test_password@example.com',
                 squestion: 'test password',
-                sanswer: encrypt(password),
-                phonehome: '12345',
-                phonemobile: '12345',
-                pagernumber: '12345'
+                sanswer: encrypt(password)
             },
             {
                 // simple user account with an empty password

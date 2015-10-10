@@ -160,6 +160,7 @@ module.exports = {
         'patch': { // update an account
             // auth: // your account or admin
             route: function(req, res) {
+                console.log(models.User);
                 var currentId = parseInt(req.user.id);
                 var user_id = parseInt(req.params.user_id);
 

@@ -4,7 +4,7 @@ global.silent = true;
 // sqlite3
 if (true) {
     global.db_dialect = 'sqlite3';
-    global.db_file = ':memory:';
+    global.db_file = './data/data.db';
 } else {
     // sql servers
 
@@ -12,7 +12,7 @@ if (true) {
     //global.db_dialect = 'mysql';
     global.db_host = 'localhost';
     global.db_user = 'postgres';
-    global.db_password = 'postgres';
+    global.db_password = 'test';
     global.db_database = 'postgres';
 }
 
