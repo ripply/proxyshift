@@ -45,6 +45,7 @@ var config_data = {
                 'SUCCESS': 'events:updates:userinfo:success',
                 'FETCHED': 'events:updates:userinfo:fetched'
             },
+            'FAILURE': 'events:updates:failure',
             'RESOURCE': 'events:updates:resource'
         },
         'CALENDAR': {

@@ -3,18 +3,40 @@
     show-delete="false"
     show-reorder="false"
     can-swipe="false">
+    <div class="item item-divider"
+         ng-show="unIgnorableShiftsExist()">
+        Open Shifts
+    </div>
     <ion-item
+        class="item item-icon-right"
         ng-show="AllShifts"
-        class="item item-icon-right" ng-repeat="shift in AllShifts">
+        ng-repeat="shift in AllShifts"
+        ng-hide="ignoredShift(shift)">
         <h2>{{getReadableShiftTime(shift)}}</h2>
         <p>{{shift.title}}</p>
         <p>{{shift.location_id}}</p>
         <p>{{shift.description}}</p>
-        <i class="icon ion-close"></i>
+        <i class="icon ion-close" ng-click="ignoreShift({{shift.id}})"></i>
     </ion-item>
     <ion-item
         ng-hide="AllShifts"
         class="item item-icon-right">
         There are currently no open shifts
     </ion-item>
+    <div class="item item-divider"
+        ng-show="ignorableShiftsExist()">
+        Declined Shifts
+    </div>
+    <ion-item
+        class="item item-icon-right"
+        ng-repeat="shift in AllShifts"
+        ng-hide="!ignoredShift(shift)">
+        <h2>{{getReadableShiftTime(shift)}}</h2>
+        <p>{{shift.title}}</p>
+        <p>{{shift.location_id}}</p>
+        <p>{{shift.description}}</p>
+        <div ng-show="isIgnoredShift(shift)">wut</div>
+        <i class="icon ion-close" ng-click="unIgnoreShift({{shift.id}})"></i>
+    </ion-item>
+
 </ion-list>

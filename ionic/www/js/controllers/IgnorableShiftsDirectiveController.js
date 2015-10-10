@@ -5,13 +5,17 @@ angular.module('scheduling-app.controllers')
         '$controller',
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
+        'Restangular',
         'AllShiftsModel',
+        'ShiftsModel',
         function($rootScope,
                  $scope,
                  $controller,
                  GENERAL_CONFIG,
                  GENERAL_EVENTS,
-                 AllShiftsModel
+                 Restangular,
+                 AllShiftsModel,
+                 ShiftsModel
         ) {
             $controller('BaseModelController', {$scope: $scope});
             $scope.register(
@@ -29,6 +33,143 @@ angular.module('scheduling-app.controllers')
             };
             // TODO: Remove and figurout why $ionivView.afterEnter does not trigger in super class
             $scope.fetch();
+
+            $scope.ignoreShift = function(id) {
+                var shift = getShift(id);
+                if (shift) {
+                    if (shift.busy === true) {
+                        return;
+                    }
+                    shift.busy = true;
+                } else {
+                    // doesn't exist? server might have it...
+                }
+                Restangular.one('shifts', id).all('ignore').post().then(function(result) {
+                    console.log(result);
+                    var ignoredShift = addShiftToIgnoredShifts(id);
+                    if (ignoredShift) {
+                        ignoredShift.busy = false;
+                        ignoredShift.failed = false;
+                    } else {
+                        // we dont have copy of this shift, update
+                        $scope.fetch();
+                    }
+                }, function(response) {
+                    // failure
+                    var failedShift = getShift(id);
+                    if (failedShift) {
+                        failedShift.busy = false;
+                        failedShift.failed = true;
+                    }
+                    $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);
+                });
+            };
+
+            $scope.unIgnoreShift = function(id) {
+                var shift = getShift(id);
+                if (shift) {
+                    if (shift.busy === true) {
+                        return;
+                    }
+                    shift.busy = true;
+                } else {
+                    // doesn't exist? server might have it...
+                }
+                Restangular.one('shifts', id).all('ignore').remove().then(function(result) {
+                    console.log(result);
+                    var unIgnoredShift = removeShiftFromIgnoredShifts(id);
+                    if (unIgnoredShift) {
+                        unIgnoredShift.busy = false;
+                        unIgnoredShift.failed = false;
+                    } else {
+                        // we dont have copy of this shift, update
+                        $scope.fetch();
+                    }
+                }, function(response) {
+                    // failure
+                    var failedShift = getShift(id);
+                    if (failedShift) {
+                        failedShift.busy = false;
+                        failedShift.failed = true;
+                    }
+                    $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);
+                });
+            };
+
+            function getShift(id) {
+                var allShifts = $rootScope.AllShifts;
+                if (allShifts) {
+                    for (var i = 0; i < allShifts.length; i++) {
+                        var shift = allShifts[i];
+                        if (shift && shift.id == id) {
+                            return shift;
+                        }
+                    }
+                }
+            }
+
+            function addShiftToIgnoredShifts(id) {
+                var shift = getShift(id);
+                if (shift) {
+                    if (!shift.ignoreshifts) {
+                        shift.ignoreshifts = [];
+                    }
+                    shift.ignoreshifts.push({});
+                }
+                return shift;
+            }
+
+            function removeShiftFromIgnoredShifts(id) {
+                var shift = getShift(id);
+                if (shift) {
+                    shift.ignoreshifts = [];
+                }
+                return shift;
+            }
+
+            $scope.ignorableShiftsExist = function() {
+                var allShifts = $rootScope.AllShifts;
+                if (allShifts && allShifts.length > 0) {
+                    for (var i = 0; i < allShifts.length; i++) {
+                        var ignoreshifts = allShifts[i].ignoreshifts;
+                        if (ignoreshifts) {
+                            if (ignoreshifts instanceof Array) {
+                                if (ignoreshifts.length > 0) {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                    return false;
+                }
+            };
+
+            $scope.unIgnorableShiftsExist = function() {
+                var allShifts = $rootScope.AllShifts;
+                if (allShifts && allShifts.length > 0) {
+                    for (var i = 0; i < allShifts.length; i++) {
+                        var ignoreshifts = allShifts[i].ignoreshifts;
+                        if (ignoreshifts) {
+                            if (ignoreshifts instanceof Array) {
+                                if (ignoreshifts.length === 0) {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                    return false;
+                }
+            };
+
+            $scope.ignoredShift = function(shift) {
+                if (shift === undefined) {
+                    return true;
+                }
+                if (shift.ignoreshifts === undefined) {
+                    return false;
+                }
+                return shift.ignoreshifts.length > 0;
+            };
 
             function getDefaultShiftRange() {
                 return window.ShiftShared.grabNormalShiftRange();

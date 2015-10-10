@@ -4,7 +4,7 @@
 module = angular.module('scheduling-app.models');
 angular.forEach({
     'Users': 'Users',
-    'Shifts': 'Shifts',
+    'Shifts': 'shifts',
     'AllShifts': {
         'Shifts': '/all'
     },
@@ -15,6 +15,7 @@ angular.forEach({
 
 module
     .service(modelName + 'Model', ['Restangular', function(Restangular) {
+        window.Restangular = Restangular;
         var baseRoute = definition;
         var nestedRoutes;
         if (typeof definition === 'object') {
