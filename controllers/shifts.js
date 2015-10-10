@@ -93,7 +93,9 @@ module.exports = {
                                 .whereIn('sublocations.location_id', relatedLocationsSubQuery);
                         });
                 })
-                    .fetchAll()
+                    .fetchAll({
+                        withRelated: 'ignoreshifts'
+                    })
                     .then(function(shifts) {
                         if (shifts) {
                             // TODO: Fetch related group user class information
