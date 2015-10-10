@@ -111,14 +111,44 @@ angular.module('scheduling-app.controllers')
                 !needsInitialization();
             }
 
-            $scope.$on('$ionicView.afterEnter', function() {
+            $scope.$on('$ionicView.beforeEnter', function() {
                 if (!isInitialized()) {
                     $scope.fetch();
+                }
+                if ($scope.beforeEnter !== undefined) {
+                    $scope.beforeEnter();
+                }
+            });
+
+            $scope.$on('$ionicView.afterEnter', function() {
+                if ($scope.afterEnter !== undefined) {
+                    $scope.afterEnter();
+                }
+            });
+
+            $scope.$on('$ionicView.enter', function() {
+                if ($scope.enter !== undefined) {
+                    $scope.enter();
+                }
+            });
+
+            $scope.$on('$ionicView.beforeLeave', function() {
+                if ($scope.beforeLeave !== undefined) {
+                    $scope.beforeLeave();
                 }
             });
 
             $scope.$on('$ionicView.afterLeave', function() {
                 setNeedsInitialization(true);
+                if ($scope.afterLeave !== undefined) {
+                    $scope.afterLeave();
+                }
+            });
+
+            $scope.$on('$ionicView.leave', function() {
+                if ($scope.leave !== undefined) {
+                    $scope.leave();
+                }
             });
 
             function register(modelName, modelObject, addFunction, subRouteFetchFunction) {

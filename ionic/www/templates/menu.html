@@ -1,14 +1,14 @@
-<ion-side-menus enable-menu-with-back-views="false">
+<ion-side-menus enable-menu-with-back-views="true">
     <ion-pane ion-side-menu-content drag-content="true">
         <ion-nav-bar class="bar-positive">
             <ion-nav-back-button>
             </ion-nav-back-button>
 
-            <ion-nav-buttons side="left">
+            <ion-nav-buttons side="primary">
                 <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
                 </button>
             </ion-nav-buttons>
-            <ion-nav-buttons side="right">
+            <ion-nav-buttons side="secondary">
                 <a href="#{{states.SETTINGS_URL}}" ng-click="openSettings()" class="button button-icon button-clear ion-gear-a"></a>
             </ion-nav-buttons>
         </ion-nav-bar>

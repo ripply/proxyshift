@@ -242,10 +242,10 @@ angular.module('scheduling-app', [
 
                 .state('app.tabs.shifts', {
                     url: "/shifts",
-                    controller: 'ShiftCalendarController',
                     views: {
                         'tabContent': {
                             templateUrl: "templates/shifts.html",
+                            controller: 'OpenShiftsController',
                         }
                     }
                 })
@@ -255,27 +255,17 @@ angular.module('scheduling-app', [
                     views: {
                         'tabContent': {
                             templateUrl: "templates/openshifts.html",
-                            controller: 'ShiftCalendarController',
+                            controller: 'OpenShiftsController',
                         }
                     }
                 })
 
                 .state('app.tabs.manage', {
                     url: "/manage",
-                    //controller: 'ManageController',
                     views: {
                         'tabContent': {
                             templateUrl: "templates/manage.html",
-                        }
-                    }
-                })
-
-                .state('app.tabs.wut', {
-                    url: "/wut",
-                    controller: 'OpenShiftsController',
-                    views: {
-                        'tabContent': {
-                            templateUrl: "templates/settings.html",
+                            controller: 'ManageController',
                         }
                     }
                 })
@@ -292,7 +282,7 @@ angular.module('scheduling-app', [
                 .state('settings', {
                     url: "/settings",
                     templateUrl: "templates/settings.html",
-                    controller: 'ShiftCalendarController',
+                    controller: 'SettingsController',
                     resolve: {
                         //TODO: Check /userinfo
                     }
@@ -367,5 +357,5 @@ angular.module('scheduling-app', [
 
             //StateHistoryService.setDefaultState('app.playlists');
             // if none of the above states are matched, use this as the fallback
-            $urlRouterProvider.otherwise(STATES.LOADING);
+            $urlRouterProvider.otherwise(STATES.LOGIN);
         }]);
