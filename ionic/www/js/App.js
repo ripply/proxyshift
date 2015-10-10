@@ -264,6 +264,33 @@ angular.module('scheduling-app', [
                     }
                 })
 
+                .state('app.privacypolicy', {
+                    url: "/privacypolicy",
+                    views: {
+                        'menuContent': {
+                            templateUrl: "templates/privacypolicy.html"
+                        }
+                    }
+                })
+
+                .state('app.legal', {
+                    url: "/legal",
+                    views: {
+                        'menuContent': {
+                            templateUrl: "templates/legal.html"
+                        }
+                    }
+                })
+
+                .state('app.contactus', {
+                    url: "/contactus",
+                    views: {
+                        'menuContent': {
+                            templateUrl: "templates/contactus.html"
+                        }
+                    }
+                })
+
                 .state('app.single', {
                     url: "/playlists/:playlistId",
                     views: {
