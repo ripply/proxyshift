@@ -9,7 +9,8 @@ angular.module('scheduling-app.controllers')
                  STATES
         ) {
             $scope.openSettings = function() {
-                StateHistoryService.goto(STATES.SETTINGS);
+                StateHistoryService.addToGotoHistory();
+                //StateHistoryService.goto(STATES.SETTINGS);
             };
         }
     ]);

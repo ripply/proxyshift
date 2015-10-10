@@ -57,6 +57,10 @@ angular.module('scheduling-app.services.routing.statehistory', [
 
             var gotoHistory = [];
 
+            this.addToGotoHistory = function() {
+                gotoHistory.push(this.currentState());
+            };
+
             this.goto = function(state) {
                 gotoHistory.push(this.currentState());
                 $state.go(state, {}, {reload: true});
