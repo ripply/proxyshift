@@ -73,9 +73,11 @@ var config_data = {
         // TODO DEPRECATE
         'HOME': 'app.tabs.shifts',
         'SHIFTS': 'app.tabs.shifts',
-        'OPENSHIFTS': 'app.tab.openshifts',
+        'OPENSHIFTS': 'app.tabs.openshifts',
         'SETTINGS': 'settings',
+        'REQUESTSHIFT': 'requestshift',
         'NEWSHIFT': 'app.tabs.newshift',
+        'MANAGE': 'app.tabs.manage',
         'LOGIN': 'login',
         'LOGOUT': 'logout',
         'PRIVACY_POLICY': 'app.privacypolicy',

@@ -1,29 +1,27 @@
-<div>
-    <div class="list card has-header">
-        <div ng-show="calendarData" class="calendar" ng-class="{'calendar-loading': calendarData.loading}">
-            <a ng-click="previousMonth()" href="#" class="calendarback ion-arrow-left-a"></a>
-            <a ng-click="currentMonth()" href="#" class="calendarnow icon ion-home"></a>
-            <a ng-click="nextMonth()" href="#" class="calendarnext ion-arrow-right-a"></a>
-            <div class="calendar-month-name">
-                {{monthData.name}} - {{monthData.year}}
-            </div>
-            <table class="calendar calendar-month">
-                <tr calss="calendar-header">
-                    <th class="calendar-header-day" ng-repeat="day in weekData">{{day}}</th>
-                </tr>
-                <tr class="calendar-week" ng-repeat="week in calendarData">
-                    <td class="calendar-day" ng-repeat="day in week" ng-class="{'calendar-day-currentmonth': day.thisMonth, 'calendar-day-othermonth': !day.thisMonth}">
-                        <p ng-show="day.shifts" class="shift">({{day.number}})</p>
-                        <p ng-hide="day.shifts" class="noshift">{{day.number}}</p>
-                    </td>
-                </tr>
-            </table>
+<div class="calendarWrapper">
+    <div ng-show="calendarData" class="calendar" ng-class="{'calendar-loading': calendarData.loading}">
+        <a ng-click="previousMonth()" href="#" class="calendarback ion-arrow-left-a"></a>
+        <a ng-click="currentMonth()" href="#" class="calendarnow icon ion-home"></a>
+        <a ng-click="nextMonth()" href="#" class="calendarnext ion-arrow-right-a"></a>
+        <div class="calendar-month-name">
+            {{monthData.name}} - {{monthData.year}}
         </div>
-        <div ng-hide="calendarData">
-            <div class="calendar">
-                <div class="calendar-loading">
-                    Calendar loading...
-                </div>
+        <table class="calendar calendar-month">
+            <tr calss="calendar-header">
+                <th class="calendar-header-day" ng-repeat="day in weekData">{{day}}</th>
+            </tr>
+            <tr class="calendar-week" ng-repeat="week in calendarData">
+                <td class="calendar-day" ng-repeat="day in week" ng-class="{'calendar-day-currentmonth': day.thisMonth, 'calendar-day-othermonth': !day.thisMonth}">
+                    <p ng-show="day.shifts" class="shift">({{day.number}})</p>
+                    <p ng-hide="day.shifts" class="noshift">{{day.number}}</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div ng-hide="calendarData">
+        <div class="calendar">
+            <div class="calendar-loading">
+                Calendar loading...
             </div>
         </div>
     </div>

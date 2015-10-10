@@ -1,18 +1,15 @@
 <div id="app-header-tab" class="tabs-striped tabs-top tabs-background-positive tabs-color-light">
     <div class="tabs">
-        <a class="tab-item active" href="#{{states.HOME_URL}}" ng-class="{'active': currentState == states.HOME}">
-            <i class="icon ion-home"></i>
-            Home
+        <a class="tab-item active" href="#{{states.SHIFTS_URL}}" ng-class="{'active': currentState == states.SHIFTS}">
+            Shifts
         </a>
-        <a class="tab-item" href="#/app/tabs/wut">
-            <i class="icon ion-star"></i>
-            Favorites
+        <a class="tab-item" href="#{{states.OPENSHIFTS_URL}}" ng-class="{'active': currentState == states.OPENSHIFTS}">
+            Open shifts
         </a>
-        <a class="tab-item" href="#{{states.NEWSHIFT_URL}}"
-           ng-class="{'active': currentState == states.NEWSHIFT}"
+        <a class="tab-item" href="#{{states.MANAGE_URL}}"
+           ng-class="{'active': currentState == states.MANAGE}"
            ng-if="userinfo.ownedGroups.length > 0 || userinfo.privilegedMemberOfGroups.length > 0 || userinfo.privilegedMemberOfLocations.length > 0">
-            <i class="icon ion-gear-a"></i>
-            Settings
+            Manage
         </a>
     </div>
 </div>

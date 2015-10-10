@@ -1,0 +1,12 @@
+<ion-view view-title="Shifts">
+    <ion-content class="has-tabs-top has-footer">
+        <ion-refresher
+            pulling-text="Pull to refresh..."
+            on-refresh="fetch()">
+        </ion-refresher>
+        <div ignorable-shifts></div>
+    </ion-content>
+    <ion-footer-bar class="bar-assertive tabs">
+        <a href="#{{states.REQUESTSHIFT_URL}}" ng-click="requestShift()">Request Shift</a>
+    </ion-footer-bar>
+</ion-view>

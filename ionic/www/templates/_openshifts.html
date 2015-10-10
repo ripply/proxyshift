@@ -1,23 +1,14 @@
-<div ng-show="AllShifts">
-    <div class="list card has-header" ng-repeat="shift in AllShifts">
-        <div class="item">
-            <h2>{{shift.start}} - {{shift.end}}</h2>
-            <p>{{shift.title}}</p>
-            <p>Location: {{shift.location_id}}</p>
-            <p>{{shift.description}}</p>
-        </div>
-
-        <div class="item tabs tabs-secondary">
-            <a id="button-decline" class="tab-item light" href="#">
-                Cancel Shift
-            </a>
-        </div>
-    </div>
-</div>
-<div ng-hide="AllShifts">
-    <div class="list card has-header">
-        <div class="item">
-            There are currently no open shifts
-        </div>
-    </div>
-</div>
+<ion-item
+    ng-show="AllShifts"
+    class="item item-icon-right" ng-repeat="shift in AllShifts">
+    <h2>{{getReadableShiftTime(shift)}}</h2>
+    <p>{{shift.title}}</p>
+    <p>{{shift.location_id}}</p>
+    <p>{{shift.description}}</p>
+    <i class="icon ion-close"></i>
+</ion-item>
+<ion-item
+    ng-hide="AllShifts"
+    class="item item-icon-right">
+    There are currently no open shifts
+</ion-item>

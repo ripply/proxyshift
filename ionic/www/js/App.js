@@ -240,7 +240,27 @@ angular.module('scheduling-app', [
                     controller: 'OpenShiftsController',
                     views: {
                         'tabContent': {
+                            templateUrl: "templates/shifts.html",
+                        }
+                    }
+                })
+
+                .state('app.tabs.openshifts', {
+                    url: "/openshifts",
+                    controller: 'OpenShiftsController',
+                    views: {
+                        'tabContent': {
                             templateUrl: "templates/openshifts.html",
+                        }
+                    }
+                })
+
+                .state('app.tabs.manage', {
+                    url: "/manage",
+                    //controller: 'ManageController',
+                    views: {
+                        'tabContent': {
+                            templateUrl: "templates/manage.html",
                         }
                     }
                 })
@@ -252,6 +272,15 @@ angular.module('scheduling-app', [
                         'tabContent': {
                             templateUrl: "templates/settings.html",
                         }
+                    }
+                })
+
+                .state('requestshift', {
+                    url: "/requestshift",
+                    templateUrl: "templates/requestshift.html",
+                    controller: 'RequestShiftController',
+                    resolve: {
+                        //TODO: Check /userinfo
                     }
                 })
 

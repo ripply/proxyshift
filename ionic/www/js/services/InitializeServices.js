@@ -10,12 +10,14 @@ angular.module('scheduling-app.services.initialize', [
         'ShiftIntervalTreeCacheService',
         'AuthenticationService',
         'PushProcessingService',
+        'ShiftProcessingService',
         function(
             LoginControllerService,
             ResourceUpdateAggregatorService,
             ShiftIntervalTreeCacheService,
             AuthenticationService,
-            PushProcessingService
+            PushProcessingService,
+            ShiftProcessingService
         ) {
             // Services should be initialized
         }
