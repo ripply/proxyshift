@@ -53,6 +53,22 @@ angular.module('scheduling-app.services.routing.statehistory', [
                 } else {
                     $state.go(prevState, this.previousStateParams(), {reload: false})
                 }
-            }
+            };
+
+            var gotoHistory = [];
+
+            this.goto = function(state) {
+                gotoHistory.push(this.currentState());
+                $state.go(state, {}, {reload: true});
+            };
+
+            this.returnTo = function(defaultIfHistoryEmpty) {
+                // TODO: Fix navigation history
+                var returningTo = gotoHistory.pop();
+                if (!returningTo) {
+                    returningTo = defaultIfHistoryEmpty;
+                }
+                $state.go(returningTo, {}, {reload: true});
+            };
         }
     ]);

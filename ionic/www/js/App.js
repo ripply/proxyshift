@@ -244,15 +244,26 @@ angular.module('scheduling-app', [
                         }
                     }
                 })
-/*
+
+                .state('app.tabs.wut', {
+                    url: "/wut",
+                    controller: 'OpenShiftsController',
+                    views: {
+                        'tabContent': {
+                            templateUrl: "templates/settings.html",
+                        }
+                    }
+                })
+
                 .state('settings', {
                     url: "/settings",
                     templateUrl: "templates/settings.html",
+                    controller: 'SettingsController',
                     resolve: {
                         //TODO: Check /userinfo
                     }
                 })
-*/
+
                 .state('app.single', {
                     url: "/playlists/:playlistId",
                     views: {

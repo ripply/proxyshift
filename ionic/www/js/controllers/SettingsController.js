@@ -1,6 +1,6 @@
 angular.module('scheduling-app.controllers')
 
-    .controller('MenuController', [
+    .controller('SettingsController', [
         '$scope',
         'StateHistoryService',
         'STATES',
@@ -8,8 +8,8 @@ angular.module('scheduling-app.controllers')
                  StateHistoryService,
                  STATES
         ) {
-            $scope.openSettings = function() {
-                StateHistoryService.goto(STATES.SETTINGS);
+            $scope.close = function() {
+                StateHistoryService.returnTo(STATES.SHIFTS);
             };
         }
     ]);

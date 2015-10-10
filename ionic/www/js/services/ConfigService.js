@@ -74,7 +74,7 @@ var config_data = {
         'HOME': 'app.tabs.shifts',
         'SHIFTS': 'app.tabs.shifts',
         'OPENSHIFTS': 'app.tab.openshifts',
-        'SETTINGS': 'app.settings',
+        'SETTINGS': 'settings',
         'NEWSHIFT': 'app.tabs.newshift',
         'LOGIN': 'login',
         'LOGOUT': 'logout',
