@@ -1,3 +1,0 @@
-[submodule "ionic/www/lib/interval-tree-1d"]
-	path = ionic/www/lib/interval-tree-1d
-	url = git://github.com/mikolalysenko/interval-tree-1d
