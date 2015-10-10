@@ -403,14 +403,7 @@ module.exports = {
                 });
             }
         },
-        'get': {
-            route: function(req, res) {
-                fetchIgnoredShifts(req, res);
-            }
-        }
-    },
-    '/:shift_id/unignore': {
-        'post': {
+        'delete': {
             route: function(req, res) {
                 var ignoreShiftData = {
                     shift_id: req.params.shift_id,
@@ -441,6 +434,11 @@ module.exports = {
                             error(req, res, err);
                         });
                 });
+            }
+        },
+        'get': {
+            route: function(req, res) {
+                fetchIgnoredShifts(req, res);
             }
         }
     },

@@ -19,9 +19,9 @@ var password = 'secret';
 // TODO:
 // GET /api/shifts/:shift_id/ignore
 // POST /api/shifts/:shift_id/ignore
-// POST /api/shifts/:shift_id/unignore
 // PATCH /api/shifts/:shift_id
 // DELETE /api/shifts/:shift_id
+// DELETE /api/shifts/:shift_id/ignore
 
 describe("#/shifts", function() {
 
