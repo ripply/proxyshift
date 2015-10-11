@@ -12,7 +12,7 @@
   },
   "scripts": {
     "start": "node server/server.js",
-    "test": "grunt jenkins"
+    "test": "./node_modules/.bin/mocha -R xunit --recursive spec/spechelper.js \"spec/**/*.test.js\" | awk 'BEGIN{found=0} /testsuite/{found=1} {if (found) print}' > test-reports.xml"
   },
   "dependencies": {
     "MD5": "~1.2.0",
