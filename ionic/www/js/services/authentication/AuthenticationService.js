@@ -8,6 +8,7 @@ var tokenExpiresKey = "tokenExpires";
 angular.module('scheduling-app.authentication', [
     'http-auth-interceptor',
     'scheduling-app.session',
+    'scheduling-app.settings',
     'scheduling-app.config',
     'LocalStorageModule'
 ])
@@ -16,7 +17,7 @@ angular.module('scheduling-app.authentication', [
         '$http',
         '$q',
         'authService',
-        'localStorageService',
+        'UserSettingService',
         'CookiesService',
         'SessionService',
         'PushProcessingService',
@@ -26,7 +27,7 @@ angular.module('scheduling-app.authentication', [
                  $http,
                  $q,
                  authService,
-                 localStorageService,
+                 UserSettingService,
                  CookiesService,
                  SessionService,
                  PushProcessingService,
@@ -35,51 +36,26 @@ angular.module('scheduling-app.authentication', [
             var loggingIn = false;
             setupAngularHttpAuthentication(getToken());
 
-            function getStore() {
-                var service;
-                if (localStorageService.isSupported) {
-                    service = localStorageService;
-                } else if (localStorageService.cookie.isSupported) {
-                    service = localStorageService.cookie;
-                }
-                return service;
-            }
-
             function storeToken(token, expires) {
-                var service = getStore();
-                if (service) {
-                    service.set(tokenKey, token);
-                    service.set(tokenExpiresKey, expires);
-                }
-                return service !== undefined && service !== null;
+                return UserSettingService.save(false, tokenKey, token) &&
+                    UserSettingService.save(false, tokenExpiresKey, expires);
             }
 
             function getToken() {
                 var now = Math.round(new Date().getTime() / 1000);
-                var token;
-                var service = getStore();
-                if (service !== undefined) {
-                    token = service.get(tokenKey);
-                    var expires = service.get(tokenExpiresKey);
-                    if (expires) {
-                        if (now > expires) {
-                            console.log("Token issued by server expired, must sign in again");
-                            token = undefined;
-                            service.remove(tokenKey);
-                            service.remove(tokenExpiresKey);
-                        }
+                var token = UserSettingService.get(tokenKey);
+                var expires = UserSettingService.get(expires);
+                if (expires) {
+                    if (now > expires) {
+                        console.log("Token issued by server expired, must sign in again");
+                        UserSettingService.clear(tokenKey, tokenExpiresKey);
                     }
                 }
-
                 return token;
             }
 
             function clearToken() {
-                var service = getStore();
-                if (service) {
-                    service.remove(tokenKey);
-                    service.remove(tokenExpiresKey);
-                }
+                UserSettingService.clear(tokenKey, tokenExpiresKey);
                 setupAngularHttpAuthentication();
             }
 
