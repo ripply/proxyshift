@@ -46,6 +46,8 @@ describe('#/api/groups', function() {
 
                 it('- return 401', function (done) {
 
+                    done(1);
+
                     request(app)
                         .post('/api/groups')
                         .send({
