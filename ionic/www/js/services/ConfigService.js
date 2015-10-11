@@ -19,6 +19,13 @@ var config_data = {
         },
         'LOGIN_TIMEOUT': 15 * 1000 // milliseconds
     },
+    'GENERAL_SETTINGS': {
+        'NOTIFICATIONS': {
+            'REQUESTSHIFT': {
+                'DONTSHOW': 'notify.requestshift.hide'
+            }
+        }
+    },
     'GENERAL_EVENTS': {
         // TODO: NONE OF THESE EVENT NAMES FOLLOW A CONSISTENT PATTERN
         'AUTHENTICATION': {
@@ -55,6 +62,12 @@ var config_data = {
             },
             'FAILURE': 'events:updates:failure',
             'RESOURCE': 'events:updates:resource'
+        },
+        'POPOVER': {
+            'REQUESTED': 'events:popover:requested'
+        },
+        'POPUP': {
+            'REQUESTED': 'events:popup:requested'
         },
         'CALENDAR': {
             // events for controlling calendar from outside calendar scope

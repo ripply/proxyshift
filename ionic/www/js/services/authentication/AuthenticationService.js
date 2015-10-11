@@ -37,14 +37,14 @@ angular.module('scheduling-app.authentication', [
             setupAngularHttpAuthentication(getToken());
 
             function storeToken(token, expires) {
-                return UserSettingService.save(false, tokenKey, token) &&
-                    UserSettingService.save(false, tokenExpiresKey, expires);
+                return UserSettingService.put(tokenKey, token, false) &&
+                    UserSettingService.put(tokenExpiresKey, expires, false);
             }
 
             function getToken() {
                 var now = Math.round(new Date().getTime() / 1000);
                 var token = UserSettingService.get(tokenKey);
-                var expires = UserSettingService.get(expires);
+                var expires = UserSettingService.get(tokenExpiresKey);
                 if (expires) {
                     if (now > expires) {
                         console.log("Token issued by server expired, must sign in again");

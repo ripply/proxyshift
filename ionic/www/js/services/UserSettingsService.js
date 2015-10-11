@@ -9,7 +9,7 @@ angular.module('scheduling-app.settings', [
         ) {
             this.getStore = getStore;
             this.getStores = getStores;
-            this.save = save;
+            this.put = put;
             this.get = get;
             this.clear = clear;
 
@@ -40,7 +40,7 @@ angular.module('scheduling-app.settings', [
                 return stores;
             }
 
-            function save(preferCookies, key, value) {
+            function put(key, value, preferCookies) {
                 var store = getStore(preferCookies);
                 if (store === undefined) {
                     return false;
@@ -51,12 +51,14 @@ angular.module('scheduling-app.settings', [
             }
 
             function get(key) {
-                angular.forEach(getStores(true), function(store) {
+                var stores = getStores(true);
+                for (var i = 0; i < stores.length; i++) {
+                    var store = stores[i];
                     var value = store.get(key);
                     if (value) {
                         return value
                     }
-                });
+                }
             }
 
             function clear() {

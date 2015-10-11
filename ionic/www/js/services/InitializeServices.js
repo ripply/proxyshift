@@ -12,7 +12,7 @@ angular.module('scheduling-app.services.initialize', [
         'AuthenticationService',
         'PushProcessingService',
         'ShiftProcessingService',
-        'IonicLoadingService',
+        'IonicService',
         function(
             LoginControllerService,
             ResourceUpdateAggregatorService,
@@ -20,7 +20,7 @@ angular.module('scheduling-app.services.initialize', [
             AuthenticationService,
             PushProcessingService,
             ShiftProcessingService,
-            IonicLoadingService
+            IonicService
         ) {
             // Services should be initialized
         }
