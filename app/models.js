@@ -1061,6 +1061,7 @@ var exports = {
     issueToken: issueToken,
     combineRelationResults: combineArraysAndOmitDuplicates,
     knex: knex,
+    getTableNameFromModel: lowercaseAndPluralizeModelName,
     initDb: initDb,
     onDatabaseReady: onDatabaseReady,
     databaseReadyMiddleware: databaseReadyMiddleware,
