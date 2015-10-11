@@ -13,6 +13,10 @@ var config_data = {
             value: 30,
             interval: 'm'
         },
+        'LOADING': {
+            'NOBACKDROP': false,
+            'DELAY': 500 // ms
+        },
         'LOGIN_TIMEOUT': 15 * 1000 // milliseconds
     },
     'GENERAL_EVENTS': {
@@ -36,6 +40,10 @@ var config_data = {
             'COMPLETE': 'event:auth-logout-complete',
             'FAILED': 'event:auth-logout-failed',
             'REQUESTED': 'event:auth-logout-requested'
+        },
+        'LOADING': {
+            'SHOW': 'event:loading:show',
+            'HIDE': 'event:loading:hide'
         },
         'SLOW_REQUEST': 'events:slow-request',
         'UPDATES': {

@@ -8,7 +8,4 @@ angular.module('scheduling-app.controllers')
                  GENERAL_CONFIG
         ) {
             $controller('BaseModelController', {$scope: $scope});
-            $scope.requestShift = function() {
-                StateHistoryService.addToGotoHistory();
-            };
         }]);

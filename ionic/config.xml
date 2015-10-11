@@ -17,14 +17,15 @@
     <preference name="webviewbounce" value="false"/>
     <preference name="UIWebViewBounce" value="false"/>
     <preference name="DisallowOverscroll" value="true"/>
-    <preference name="SplashScreen" value="splash" />
     <preference name="BackupWebStorage" value="none"/>
     <preference name="AutoHideSplashScreen" value="true" />
+    <preference name="SplashScreenDelay" value="3000" />
     <preference name="deployment-target" value="5.0" />
     <feature name="StatusBar">
         <param name="ios-package" value="CDVStatusBar" onload="true"/>
     </feature>
     <platform name="ios">
+        <preference name="SplashScreen" value="splash" />
         <icon src="resources/ios/icon/icon.png" width="57" height="57"/>
         <icon src="resources/ios/icon/icon@2x.png" width="114" height="114"/>
         <icon src="resources/ios/icon/icon-40.png" width="40" height="40"/>
@@ -53,7 +54,8 @@
         <splash src="resources/ios/splash/Default~iphone.png" height="480" width="320"/>
     </platform>
     <platform name="android">
-        <preference name="SplashMaintainAspectRatio" value="true|false" />
+        <preference name="SplashScreen" value="splash" />
+        <preference name="SplashMaintainAspectRatio" value="true" />
 
         <splash src="resources/android/splash/drawable-land-ldpi-screen.png" density="land-ldpi" />
         <splash src="resources/android/splash/drawable-land-mdpi-screen.png" density="land-mdpi" />
@@ -68,6 +70,11 @@
         <splash src="resources/android/splash/drawable-port-xhdpi-screen.png" density="port-xhdpi" />
         <splash src="resources/android/splash/drawable-port-xxhdpi-screen.png" density="port-xxhdpi" />
         <splash src="resources/android/splash/drawable-port-xxxhdpi-screen.png" density="port-xxxhdpi" />
+    </platform>
+    <platform name="windows">
+        <preference name="SplashScreen" value="splash" />
+        <!-- images are determined by width and height. The following are supported -->
+        <splash src="resources/windows/splash/splashscreen.png" width="620" height="300"/>
     </platform>
     <gap:plugin name="cordova-plugin-splashscreen" source="npm" />
     <gap:plugin name="phonegap-plugin-push" source="npm" />

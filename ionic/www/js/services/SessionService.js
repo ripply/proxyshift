@@ -81,7 +81,13 @@ angular.module('scheduling-app.session', [
             }
 
             function fireAuthenticationPendingEvent() {
+                showLoadingScreen(true);
                 $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.PENDING);
+            }
+
+            function showLoadingScreen(show) {
+                $rootScope.$emit(show ?
+                    GENERAL_EVENTS.LOADING.SHOW : GENERAL_EVENTS.LOADING.HIDE);
             }
 
             $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.CONFIRMED, function() {
@@ -118,12 +124,14 @@ angular.module('scheduling-app.session', [
             var checkingAuthenticationPromise = false;
 
             function resolve(deferred, value) {
+                showLoadingScreen(false);
                 checkingAuthenticationPromise = false;
                 console.log("checkAuthentication returning TRUE");
                 deferred.resolve(value);
             }
 
             function reject(deferred, value) {
+                showLoadingScreen(false);
                 checkingAuthenticationPromise = false;
                 console.log("checkAuthentication returning FALSE");
                 deferred.reject(value);
