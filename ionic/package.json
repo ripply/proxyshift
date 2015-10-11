@@ -19,7 +19,8 @@
     "cordova-plugin-whitelist",
     "phonegap-plugin-push",
     "org.apache.cordova.dialogs",
-    "org.apache.cordova.vibration"
+    "org.apache.cordova.vibration",
+    "cordova-plugin-splashscreen"
   ],
   "cordovaPlatforms": [
     "ios"
