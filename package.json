@@ -12,7 +12,7 @@
   },
   "scripts": {
     "start": "node server/server.js",
-    "test": "grunt test"
+    "test": "grunt jenkins"
   },
   "dependencies": {
     "MD5": "~1.2.0",

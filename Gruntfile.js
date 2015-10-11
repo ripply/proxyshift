@@ -214,6 +214,30 @@ module.exports = function(grunt) {
             }
         },
 
+        jenkins: {
+            options: {
+                globals: [
+                    'expect',
+                    'sinon',
+                    'models',
+                    'sess',
+                    'issue' // TODO: Where is this global coming from?
+                ],
+                timeout: 3000,
+                ignoreLeaks: false,
+                ui: 'bdd',
+                reporter: 'xunit'
+            },
+
+            server: {
+                src: ['spec/spechelper.js', 'spec/**/*.test.js']
+                //src: ['spec/spechelper.js', 'spec/app/groups.test.js']
+                //src: ['spec/spechelper.js', 'spec/app/session.test.js']
+                //src: ['spec/spechelper.js', 'spec/app/shifts.test.js']
+                //src: ['spec/spechelper.js', 'spec/app/users.test.js']
+            }
+        },
+
         // server tests
         simplemocha: {
             options: {
@@ -296,6 +320,7 @@ module.exports = function(grunt) {
     //grunt.registerTask('server', ['build:dev', 'concurrent:dev']);
     grunt.registerTask('server', ['concurrent:dev']);
     grunt.registerTask('test:server', ['simplemocha:server']);
+    grunt.registerTask('jenkins', ['simplemocha']);
 
     grunt.registerTask('test:client', ['karma:test']);
     grunt.registerTask('tdd', ['karma:watcher:start', 'concurrent:test']);
