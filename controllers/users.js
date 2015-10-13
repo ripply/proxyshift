@@ -294,26 +294,35 @@ function getUserInfo(user_id, next) {
                                         userJson.memberOfGroups,
                                         userJson.privilegedMemberOfGroups
                                     ], function(groups) {
-                                        console.log("SEARCHING: ");
-                                        console.log(groups);
                                         _.each(groups, function(group) {
                                             group_ids.push(group.id);
                                         });
                                     });
-                                    console.log("SEARCHING FIOR GROUPS");
-                                    console.log(group_ids);
-                                    return models.Area.query(function(q) {
+
+                                    // now fetch AreaLocation
+                                    var location_ids = [];
+                                    _.each([
+                                        userJson.memberOfLocations,
+                                        userJson.privilegedMemberOfLocations
+                                    ], function(locations) {
+                                        _.each(locations, function(location) {
+                                            location_ids.push(location.id);
+                                        });
+                                    });
+
+                                    return models.AreaLocation.query(function(q) {
                                         q.select()
-                                            .from('areas')
-                                            .whereIn('areas.group_id', group_ids);
+                                            .from('arealocations')
+                                            .whereIn('arealocations.location_id', location_ids)
                                     })
-                                        .fetchAll()
-                                        .then(function(areas) {
-                                            console.log("FOUND AREAS???");
-                                            console.log(areas);
-                                            if (areas) {
-                                                userJson.areas = areas.toJSON();
+                                        .fetchAll({
+                                            withRelated: 'area'
+                                        })
+                                        .then(function(arealocations) {
+                                            if (arealocations) {
+                                                userJson.arealocations = arealocations.toJSON();
                                             }
+
                                             next(undefined, userJson);
                                         })
                                         .catch(function(err) {
