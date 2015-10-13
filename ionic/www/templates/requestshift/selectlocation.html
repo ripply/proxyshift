@@ -14,9 +14,15 @@
             <div class="item item-divider">
                 {{group.name}}
             </div>
-            <div class="item item-icon-right" ng-repeat="(location_id, location) in group.locations">
-                {{location.address}}
-                <i class="icon ion-chevron-right"></i>
+            <div ng-repeat="(location_id, location) in group.locations">
+                <div class="item item-icon-right">
+                    {{location.address}}
+                    <i class="icon ion-chevron-right"></i>
+                </div>
+                <div class="item item-icon-right" ng-repeat="sublocation in location.sublocations">
+                    {{sublocation.title}}
+                    <i class="icon ion-chevron-right"></i>
+                </div>
             </div>
         </div>
     </div>
