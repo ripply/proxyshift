@@ -23,6 +23,10 @@ angular.module('scheduling-app.services')
                 privilegedMemberOfLocations: PRIVILEGED
             };
 
+            var areaTypes = {
+                areas: MEMBER
+            };
+
             this.getLocationList = function() {
                 return locations;
             };
@@ -33,14 +37,16 @@ angular.module('scheduling-app.services')
 
             var groups = {};
             var locations = {};
+            var areas = {};
 
             this.updateUserInfo = function() {
                 var userinfo = $rootScope.userinfo;
 
-                // empty groups/locations maps
+                // empty groups/locations/areas maps
                 angular.forEach([
                     groups,
-                    locations
+                    locations,
+                    areas
                 ], function(object) {
                     for (var key in object) {
                         delete object[key];
@@ -58,6 +64,10 @@ angular.module('scheduling-app.services')
                         {
                             source: locationTypes,
                             dest: locations
+                        },
+                        {
+                            source: areaTypes,
+                            dest: areas
                         }
                     ], function(sourceDest) {
                         var dest = sourceDest.dest;
@@ -80,17 +90,30 @@ angular.module('scheduling-app.services')
                     });
                     // now we have locations and groups in their own maps
                     // add all locations to their respective groups
-                    angular.forEach(locations, function(location, location_id) {
-                        var group_id = location.group_id;
-                        if (group_id && groups.hasOwnProperty(group_id)) {
-                            var group = groups[group_id];
-                            if (!group.hasOwnProperty('locations')) {
-                                group.locations = {};
-                            }
-                            if (!group.locations.hasOwnProperty(location_id)) {
-                                group.locations[location_id] = location;
-                            }
+                    angular.forEach([
+                        {
+                            source: locations,
+                            attribute: 'locations'
+                        },
+                        {
+                            source: areas,
+                            attribute: 'areas'
                         }
+                    ], function(sourceAttribute) {
+                        var source = sourceAttribute.source;
+                        var attribute = sourceAttribute.attribute;
+                        angular.forEach(source, function(place, source_id) {
+                            var group_id = place.group_id;
+                            if (group_id && groups.hasOwnProperty(group_id)) {
+                                var group = groups[group_id];
+                                if (!group.hasOwnProperty(attribute)) {
+                                    group[attribute] = {};
+                                }
+                                if (!group[attribute].hasOwnProperty(source_id)) {
+                                    group[attribute][source_id] = place;
+                                }
+                            }
+                        });
                     });
                     // now we have a map of group_id => groups.locations => location_id => location
                 }
