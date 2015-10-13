@@ -179,6 +179,7 @@ angular.module('scheduling-app.controllers')
                 var calendarStart = calendarBounds.start;
                 var calendarEnd = calendarBounds.end;
                 var now = calendarBounds.now;
+                var actualNow = moment();
                 $scope.monthData = {
                     name: now.format("MMMM"),
                     month: month,
@@ -227,6 +228,7 @@ angular.module('scheduling-app.controllers')
                     }
                     today.number = countingDays.date();
                     today.thisMonth = countingDays.month() === month;
+                    today.today = countingDays.isSame(actualNow, 'day');
 
                     calendarDateMap[countingDays.startOf("day").unix()] = today;
                     countingDays = countingDays.add(1, 'day');

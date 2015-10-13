@@ -51,6 +51,14 @@
 
 }
 
+.calendar .calendar-week .calendar-day-today .noshift {
+    background: #42F36D;
+}
+
+.calendar .calendar-week .calendar-day-today .shift {
+    background: #DDDDDD;
+}
+
 /* TD Day is of the currently visible month */
 .calendar .calendar-week .calendar-day-currentmonth /*.p*/ {
 

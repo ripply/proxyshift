@@ -11,7 +11,7 @@
                 <th class="calendar-header-day" ng-repeat="day in weekData">{{day}}</th>
             </tr>
             <tr class="calendar-week" ng-repeat="week in calendarData">
-                <td class="calendar-day" ng-repeat="day in week" ng-class="{'calendar-day-currentmonth': day.thisMonth, 'calendar-day-othermonth': !day.thisMonth}">
+                <td class="calendar-day" ng-repeat="day in week" ng-class="{'calendar-day-currentmonth': day.thisMonth, 'calendar-day-othermonth': !day.thisMonth, 'calendar-day-today': day.today}">
                     <p ng-show="day.shifts" class="shift">({{day.number}})</p>
                     <p ng-hide="day.shifts" class="noshift">{{day.number}}</p>
                 </td>
