@@ -1,6 +1,7 @@
 var models = require('../app/models'),
     logout = require('../routes/misc/middleware').logout,
     updateModel = require('./controllerCommon').updateModel,
+    _ = require('underscore'),
     encryptKey = require('./encryption/encryption').encryptKey,
     simpleGetSingleModel = require('./controllerCommon').simpleGetSingleModel,
     simpleGetListModel = require('./controllerCommon').simpleGetListModel,
@@ -287,8 +288,37 @@ function getUserInfo(user_id, next) {
                                     } else {
                                         userJson.privilegedMemberOfLocations = [];
                                     }
-
-                                    next(undefined, userJson);
+                                    var group_ids = [];
+                                    _.each([
+                                        userJson.ownedGroups,
+                                        userJson.memberOfGroups,
+                                        userJson.privilegedMemberOfGroups
+                                    ], function(groups) {
+                                        console.log("SEARCHING: ");
+                                        console.log(groups);
+                                        _.each(groups, function(group) {
+                                            group_ids.push(group.id);
+                                        });
+                                    });
+                                    console.log("SEARCHING FIOR GROUPS");
+                                    console.log(group_ids);
+                                    return models.Area.query(function(q) {
+                                        q.select()
+                                            .from('areas')
+                                            .whereIn('areas.group_id', group_ids);
+                                    })
+                                        .fetchAll()
+                                        .then(function(areas) {
+                                            console.log("FOUND AREAS???");
+                                            console.log(areas);
+                                            if (areas) {
+                                                userJson.areas = areas.toJSON();
+                                            }
+                                            next(undefined, userJson);
+                                        })
+                                        .catch(function(err) {
+                                            next(err);
+                                        });
                                 })
                                 .catch(function(err) {
                                     next(err);
