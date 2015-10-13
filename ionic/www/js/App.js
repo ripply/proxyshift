@@ -293,6 +293,19 @@ angular.module('scheduling-app', [
                     }
                 })
 
+                .state('requestshift.selected', {
+                    url: "/selected/:location_id",
+                    resolve: {
+                        //TODO: Check /userinfo
+                    },
+                    views: {
+                        'content': {
+                            templateUrl: "templates/requestshift/createshift.html",
+                            controller: 'RequestShiftCreateShiftController'
+                        }
+                    }
+                })
+
                 .state('settings', {
                     url: "/settings",
                     templateUrl: "templates/settings.html",

@@ -35,6 +35,12 @@ angular.module('scheduling-app.services')
                 return groups;
             };
 
+            this.getLocation = function(id) {
+                if (locations.hasOwnProperty(id)) {
+                    return locations[id];
+                }
+            };
+
             var groups = {};
             var locations = {};
             var areas = {};

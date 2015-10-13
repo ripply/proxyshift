@@ -1,9 +1,4 @@
-<ion-header-bar>
-    <h1 class="title">Where is your shift at?</h1>
-    <div class="buttons">
-        <button class="button button-icon ion-close" ng-click="close()"></button>
-    </div>
-</ion-header-bar>
+
 <ion-content id="request-shift-select-location" class="has-header">
     <div class="list">
         <div class="">
@@ -19,10 +14,10 @@
                     {{location.address}}
                     <i class="icon ion-chevron-right"></i>
                 </div>
-                <div class="item item-icon-right" ng-repeat="sublocation in location.sublocations">
+                <a href="#{{states.REQUESTSHIFT_LOCATION_SELECTED_URL}}/{{location_id}}" class="item item-icon-right" ng-repeat="sublocation in location.sublocations">
                     {{sublocation.title}}
                     <i class="icon ion-chevron-right"></i>
-                </div>
+                </a>
             </div>
         </div>
     </div>

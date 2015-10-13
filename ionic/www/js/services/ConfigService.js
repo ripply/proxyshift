@@ -98,6 +98,7 @@ var config_data = {
         'OPENSHIFTS': 'app.tabs.openshifts',
         'SETTINGS': 'settings',
         'REQUESTSHIFT': 'requestshift.locations',
+        'REQUESTSHIFT_LOCATION_SELECTED': 'requestshift.selected',
         'NEWSHIFT': 'app.tabs.newshift',
         'MANAGE': 'app.tabs.manage',
         'LOGIN': 'login',
