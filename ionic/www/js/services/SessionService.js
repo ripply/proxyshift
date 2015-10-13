@@ -9,6 +9,7 @@
 angular.module('scheduling-app.session', [
     'scheduling-app.config',
     'scheduling-app.cookies',
+    'scheduling-app.services',
     'ngCookies',
     'scheduling-app.services.routing.statehistory'
 ])
@@ -18,6 +19,7 @@ angular.module('scheduling-app.session', [
         '$rootScope',
         '$state',
         'StateHistoryService',
+        'UserInfoService',
         'CookiesService',
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
@@ -27,6 +29,7 @@ angular.module('scheduling-app.session', [
                  $rootScope,
                  $state,
                  StateHistoryService,
+                 UserInfoService,
                  CookiesService,
                  GENERAL_CONFIG,
                  GENERAL_EVENTS,
@@ -54,13 +57,13 @@ angular.module('scheduling-app.session', [
                     keys.push(key);
                 }
 
-                var accessedRestricedResourceRecently =
+                var accessedRestrictedResourceRecently =
                     (accessedRestrictedResource && moment() < accessedRestrictedResourceExpires);
 
-                if (!accessedRestricedResourceRecently && keys.length === 0) {
+                if (!accessedRestrictedResourceRecently && keys.length === 0) {
                     return false;
                 } else {
-                    return accessedRestricedResourceRecently;
+                    return accessedRestrictedResourceRecently;
                 }
             }
 
@@ -100,6 +103,7 @@ angular.module('scheduling-app.session', [
 
             $rootScope.$on(GENERAL_EVENTS.UPDATES.USERINFO.FETCHED, function(scope, data) {
                 angular.extend(userinfo, data);
+                UserInfoService.updateUserInfo();
             });
 
             function updateUserInfo($scope, success, error) {
@@ -108,6 +112,7 @@ angular.module('scheduling-app.session', [
                 })
                     .success(function (data, status, headers, config) {
                         angular.extend(userinfo, data);
+                        UserInfoService.updateUserInfo();
                         $scope.$emit(GENERAL_EVENTS.UPDATES.USERINFO.SUCCESS);
                         if (success) {
                             success();

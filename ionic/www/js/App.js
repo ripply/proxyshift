@@ -272,10 +272,24 @@ angular.module('scheduling-app', [
 
                 .state('requestshift', {
                     url: "/requestshift",
+                    abstract: true,
                     templateUrl: "templates/requestshift.html",
                     controller: 'RequestShiftController',
                     resolve: {
                         //TODO: Check /userinfo
+                    }
+                })
+
+                .state('requestshift.locations', {
+                    url: "/locations",
+                    resolve: {
+                        //TODO: Check /userinfo
+                    },
+                    views: {
+                        'content': {
+                            templateUrl: "templates/requestshift/selectlocation.html",
+                            controller: 'RequestShiftSelectLocationController'
+                        }
                     }
                 })
 

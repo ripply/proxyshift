@@ -1,0 +1,23 @@
+<ion-header-bar>
+    <h1 class="title">Request shift</h1>
+    <div class="buttons">
+        <button class="button button-icon ion-close" ng-click="close()"></button>
+    </div>
+</ion-header-bar>
+<ion-content id="request-shift-select-location" class="has-header">
+    <div class="list">
+        <div class="">
+            Use this page to request your shift be filled...<br>
+            Where do you need to have your shift filled at?
+        </div>
+        <div ng-repeat="(group_id, group) in groups">
+            <div class="item item-divider">
+                {{group.name}}
+            </div>
+            <div class="item item-icon-right" ng-repeat="(location_id, location) in group.locations">
+                {{location.address}}
+                <i class="icon ion-chevron-right"></i>
+            </div>
+        </div>
+    </div>
+</ion-content>

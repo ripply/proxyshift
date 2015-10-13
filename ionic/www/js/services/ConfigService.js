@@ -97,7 +97,7 @@ var config_data = {
         'SHIFTS': 'app.tabs.shifts',
         'OPENSHIFTS': 'app.tabs.openshifts',
         'SETTINGS': 'settings',
-        'REQUESTSHIFT': 'requestshift',
+        'REQUESTSHIFT': 'requestshift.locations',
         'NEWSHIFT': 'app.tabs.newshift',
         'MANAGE': 'app.tabs.manage',
         'LOGIN': 'login',
