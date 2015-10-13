@@ -249,7 +249,11 @@ function getUserInfo(user_id, next) {
                             })
                             .where('grouppermissions.permissionlevel', '>=', variables.managingLocationMember);
                     })
-                        .fetchAll()
+                        .fetchAll({
+                            withRelated: [
+                                'sublocation'
+                            ]
+                        })
                         .then(function(locationsAPrivilegedMemeberOf) {
                             return models.User.query(function(q) {
                                 q.select(
@@ -265,8 +269,7 @@ function getUserInfo(user_id, next) {
                                 .fetch({
                                     require: true,
                                     withRelated: [
-                                        'memberOfGroups',
-                                        'memberOfLocations'
+                                        'memberOfGroups'
                                     ]
                                 })
                                 .then(function(user) {
@@ -291,7 +294,7 @@ function getUserInfo(user_id, next) {
                                     var group_ids = [];
                                     _.each([
                                         userJson.ownedGroups,
-                                        userJson.memberOfGroups,
+                                        //userJson.memberOfGroups,
                                         userJson.privilegedMemberOfGroups
                                     ], function(groups) {
                                         _.each(groups, function(group) {
@@ -310,20 +313,44 @@ function getUserInfo(user_id, next) {
                                         });
                                     });
 
-                                    return models.AreaLocation.query(function(q) {
+                                    return models.Location.query(function(q) {
                                         q.select()
-                                            .from('arealocations')
-                                            .whereIn('arealocations.location_id', location_ids)
+                                            .from('locations')
+                                            .innerJoin('userpermissions', function() {
+                                                this.on('userpermissions.location_id', '=', 'locations.id');
+                                            })
+                                            .where('userpermissions.user_id', '=', user_id);
                                     })
                                         .fetchAll({
-                                            withRelated: 'area'
+                                            withRelated: [
+                                                'sublocations'
+                                            ]
                                         })
-                                        .then(function(arealocations) {
-                                            if (arealocations) {
-                                                userJson.arealocations = arealocations.toJSON();
+                                        .then(function(locationsAndSublocations) {
+                                            if (locationsAndSublocations) {
+                                                userJson.memberOfLocations = locationsAndSublocations.toJSON();
                                             }
 
-                                            next(undefined, userJson);
+                                            return models.AreaLocation.query(function(q) {
+                                                q.select()
+                                                    .from('arealocations')
+                                                    .whereIn('arealocations.location_id', location_ids)
+                                            })
+                                                .fetchAll({
+                                                    withRelated: [
+                                                        'area'
+                                                    ]
+                                                })
+                                                .then(function(arealocations) {
+                                                    if (arealocations) {
+                                                        userJson.arealocations = arealocations.toJSON();
+                                                    }
+
+                                                    next(undefined, userJson);
+                                                })
+                                                .catch(function(err) {
+                                                    next(err);
+                                                });
                                         })
                                         .catch(function(err) {
                                             next(err);
