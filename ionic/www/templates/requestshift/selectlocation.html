@@ -1,24 +1,25 @@
-
-<ion-content id="request-shift-select-location" class="has-header">
-    <div class="list">
-        <div class="">
-            Use this page to request your shift be filled...<br>
-            Where do you need to have your shift filled at?
-        </div>
-        <div ng-repeat="(group_id, group) in groups">
-            <div class="item item-divider">
-                {{group.name}}
+<ion-view view-title="Where is your shift at?" hide-back-button="true">
+    <ion-content id="request-shift-select-location" class="has-header">
+        <div class="list">
+            <div class="">
+                Use this page to request your shift be filled...<br>
+                Where do you need to have your shift filled at?
             </div>
-            <div ng-repeat="(location_id, location) in group.locations">
-                <div class="item item-icon-right">
-                    {{location.address}}
-                    <i class="icon ion-chevron-right"></i>
+            <div ng-repeat="(group_id, group) in groups">
+                <div class="item item-divider">
+                    {{group.name}}
                 </div>
-                <a href="#{{states.REQUESTSHIFT_LOCATION_SELECTED_URL}}/{{location_id}}" class="item item-icon-right" ng-repeat="sublocation in location.sublocations">
-                    {{sublocation.title}}
-                    <i class="icon ion-chevron-right"></i>
-                </a>
+                <div ng-repeat="(location_id, location) in group.locations">
+                    <div class="item item-icon-right">
+                        {{location.address}}
+                        <i class="icon ion-chevron-right"></i>
+                    </div>
+                    <a href="#{{states.REQUESTSHIFT_LOCATION_SELECTED_URL}}/{{location_id}}" class="item item-icon-right" ng-repeat="sublocation in location.sublocations">
+                        {{sublocation.title}}
+                        <i class="icon ion-chevron-right"></i>
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
-</ion-content>
+    </ion-content>
+</ion-view>

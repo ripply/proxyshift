@@ -1,10 +1,12 @@
-<ion-content id="request-shift-create-shift" class="has-header" hide-back-button="false">
-    <div class="list">
-        <div class="">
-            Title: {{location.title}}
+<ion-view view-title="Filling in your shift details">
+    <ion-content id="request-shift-create-shift" class="has-header" hide-back-button="false">
+        <div class="list">
+            <div class="">
+                Title: {{location.title}}
+            </div>
+            <div class="item">
+                locationid: {{location_id}}
+            </div>
         </div>
-        <div class="item">
-            locationid: {{location_id}}
-        </div>
-    </div>
-</ion-content>
+    </ion-content>
+</ion-view>
