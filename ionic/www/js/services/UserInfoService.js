@@ -27,6 +27,10 @@ angular.module('scheduling-app.services')
                 areas: MEMBER
             };
 
+            var userClassTypes = {
+                userClasses: MEMBER
+            };
+
             this.getLocationList = function() {
                 return locations;
             };
@@ -35,15 +39,46 @@ angular.module('scheduling-app.services')
                 return groups;
             };
 
-            this.getLocation = function(id) {
-                if (locations.hasOwnProperty(id)) {
-                    return locations[id];
+            this.getLocation = function(location_id) {
+                if (locations.hasOwnProperty(location_id)) {
+                    return locations[location_id];
+                }
+            };
+
+            this.getSublocation = function(sublocation_id) {
+                var location_ids = Object.keys(locations);
+                for (var i = 0; i < location_ids.length; i++) {
+                    var location = locations[location_ids[i]];
+                    if (location && location.sublocations) {
+                        for (var j = 0; j < location.sublocations.length; j++) {
+                            var sublocation = location.sublocations[j];
+                            if (sublocation && sublocation.id == sublocation_id) {
+                                return sublocation;
+                            }
+                        }
+                    }
+                }
+            };
+
+            this.getLocationForSublocation = function(sublocation_id) {
+                var location_ids = Object.keys(locations);
+                for (var i = 0; i < location_ids.length; i++) {
+                    var location = locations[location_ids[i]];
+                    if (location && location.sublocations) {
+                        for (var j = 0; j < location.sublocations.length; j++) {
+                            var sublocation = location.sublocations[j];
+                            if (sublocation && sublocation.id == sublocation_id) {
+                                return location;
+                            }
+                        }
+                    }
                 }
             };
 
             var groups = {};
             var locations = {};
             var areas = {};
+            var userclasses = {};
 
             this.updateUserInfo = function() {
                 var userinfo = $rootScope.userinfo;
@@ -52,7 +87,8 @@ angular.module('scheduling-app.services')
                 angular.forEach([
                     groups,
                     locations,
-                    areas
+                    areas,
+                    userclasses
                 ], function(object) {
                     for (var key in object) {
                         delete object[key];
@@ -74,6 +110,10 @@ angular.module('scheduling-app.services')
                         {
                             source: areaTypes,
                             dest: areas
+                        },
+                        {
+                            source: userClassTypes,
+                            dest: userclasses
                         }
                     ], function(sourceDest) {
                         var dest = sourceDest.dest;
@@ -104,6 +144,10 @@ angular.module('scheduling-app.services')
                         {
                             source: areas,
                             attribute: 'areas'
+                        },
+                        {
+                            source: userclasses,
+                            attribute: 'userclasses'
                         }
                     ], function(sourceAttribute) {
                         var source = sourceAttribute.source;
