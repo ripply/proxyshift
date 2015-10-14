@@ -10,11 +10,11 @@
                     {{group.name}}
                 </div>
                 <div ng-repeat="(location_id, location) in group.locations">
-                    <div class="item item-icon-right">
+                    <a href="#{{states.REQUESTSHIFT_LOCATION_SELECTED_URL}}/{{location_id}}" class="item item-icon-right">
                         {{location.address}}
                         <i class="icon ion-chevron-right"></i>
-                    </div>
-                    <a href="#{{states.REQUESTSHIFT_LOCATION_SELECTED_URL}}/{{location_id}}" class="item item-icon-right" ng-repeat="sublocation in location.sublocations">
+                    </a>
+                    <a href="#{{states.REQUESTSHIFT_SUBLOCATION_SELECTED_URL}}/{{sublocation.id}}" class="item item-icon-right" ng-repeat="sublocation in location.sublocations">
                         {{sublocation.title}}
                         <i class="icon ion-chevron-right"></i>
                     </a>

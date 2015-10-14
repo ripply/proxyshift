@@ -1,18 +1,31 @@
 "use strict";
 angular.module('scheduling-app.controllers')
-    .controller('RequestShiftCreateShiftController', [
+    .controller('RequestShiftSelectUserClassController', [
         '$scope',
-        '$stateParams',
         '$controller',
+        '$stateParams',
         'UserInfoService',
         'GENERAL_EVENTS',
+        'STATES',
         function($scope,
-                 $stateParams,
                  $controller,
+                 $stateParams,
                  UserInfoService,
-                 GENERAL_EVENTS
+                 GENERAL_EVENTS,
+                 STATES
         ) {
             $controller('BaseModelController', {$scope: $scope});
+
+            $scope.groups = UserInfoService.getGroupList();
+            $scope.locations = UserInfoService.getLocationList();
+
+            $scope.getBaseUrl = function() {
+                if ($scope.sublocation_id) {
+                    return '/requestshift/sublocation/' + $stateParams.sublocation_id + '/job'
+                } else {
+                    return '/requestshift/location/' + $stateParams.location_id + '/job'
+                }
+            };
 
             $scope.beforeEnter = function() {
                 init();
@@ -27,6 +40,7 @@ angular.module('scheduling-app.controllers')
                 $scope.sublocation_id = $stateParams.sublocation_id;
                 if ($scope.location_id) {
                     $scope.location = UserInfoService.getLocation($scope.location_id);
+                    $scope.group_id = $scope.location.group_id;
                     $scope.sublocation = undefined;
                 }
                 if ($scope.sublocation_id) {
@@ -34,10 +48,20 @@ angular.module('scheduling-app.controllers')
                     if ($scope.sublocation) {
                         $scope.location = UserInfoService.getLocationForSublocation($scope.sublocation_id);
                         $scope.location_id = $scope.location.id;
+                        $scope.group_id = $scope.location.group_id;
                     } else {
                         $scope.location = undefined;
                         $scope.location_id = undefined;
+                        $scope.group_id = undefined;
                     }
+                }
+                if ($scope.groups && $scope.group_id) {
+                    var group = $scope.groups[$scope.group_id];
+                    if (group) {
+                        $scope.userclasses = group.userclasses;
+                    }
+                } else {
+                    $scope.userclasses = undefined;
                 }
             }
         }

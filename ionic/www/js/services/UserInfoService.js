@@ -167,6 +167,7 @@ angular.module('scheduling-app.services')
                     });
                     // now we have a map of group_id => groups.locations => location_id => location
                 }
+                $rootScope.$emit(GENERAL_EVENTS.UPDATES.USERINFO.PROCESSED, userinfo);
             };
         }
     ]);

@@ -58,7 +58,8 @@ var config_data = {
                 'UPDATENEEDED': 'events:updates:userinfo:updateneeded',
                 'FAILED': 'events:updates:userinfo:failed',
                 'SUCCESS': 'events:updates:userinfo:success',
-                'FETCHED': 'events:updates:userinfo:fetched'
+                'FETCHED': 'events:updates:userinfo:fetched',
+                'PROCESSED': 'events:updates:userinfo:processed'
             },
             'FAILURE': 'events:updates:failure',
             'RESOURCE': 'events:updates:resource'
@@ -98,7 +99,10 @@ var config_data = {
         'OPENSHIFTS': 'app.tabs.openshifts',
         'SETTINGS': 'settings',
         'REQUESTSHIFT': 'requestshift.locations',
-        'REQUESTSHIFT_LOCATION_SELECTED': 'requestshift.selected',
+        'REQUESTSHIFT_LOCATION_SELECTED': 'requestshift.location',
+        'REQUESTSHIFT_LOCATION_AND_JOB_SELECTED': 'requestshift.locationjob',
+        'REQUESTSHIFT_SUBLOCATION_SELECTED': 'requestshift.sublocation',
+        'REQUESTSHIFT_SUBLOCATION_AND_JOB_SELECTED': 'requestshift.sublocationjob',
         'NEWSHIFT': 'app.tabs.newshift',
         'MANAGE': 'app.tabs.manage',
         'LOGIN': 'login',

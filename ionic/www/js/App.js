@@ -293,8 +293,47 @@ angular.module('scheduling-app', [
                     }
                 })
 
-                .state('requestshift.selected', {
-                    url: "/selected/:location_id",
+                .state('requestshift.sublocation', {
+                    url: "/sublocation/:sublocation_id",
+                    resolve: {
+                        //TODO: Check /userinfo
+                    },
+                    views: {
+                        'content': {
+                            templateUrl: "templates/requestshift/selectjob.html",
+                            controller: 'RequestShiftSelectUserClassController'
+                        }
+                    }
+                })
+
+                .state('requestshift.sublocationjob', {
+                    url: "/sublocation/:location_id/job/:userclass_id",
+                    resolve: {
+                        //TODO: Check /userinfo
+                    },
+                    views: {
+                        'content': {
+                            templateUrl: "templates/requestshift/createshift.html",
+                            controller: 'RequestShiftCreateShiftController'
+                        }
+                    }
+                })
+
+                .state('requestshift.location', {
+                    url: "/location/:location_id",
+                    resolve: {
+                        //TODO: Check /userinfo
+                    },
+                    views: {
+                        'content': {
+                            templateUrl: "templates/requestshift/selectjob.html",
+                            controller: 'RequestShiftSelectUserClassController'
+                        }
+                    }
+                })
+
+                .state('requestshift.locationjob', {
+                    url: "/location/:location_id/job/:userclass_id",
                     resolve: {
                         //TODO: Check /userinfo
                     },

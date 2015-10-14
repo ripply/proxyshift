@@ -2,7 +2,12 @@
     <ion-content id="request-shift-create-shift" class="has-header" hide-back-button="false">
         <div class="list">
             <div class="">
-                Title: {{location.title}}
+                <div ng-if="!sublocation">
+                    {{location.address}}
+                </div>
+                <div ng-if="sublocation">
+                    {{location.address}} - {{sublocation.title}}
+                </div>
             </div>
             <div class="item">
                 locationid: {{location_id}}

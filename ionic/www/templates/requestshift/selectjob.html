@@ -1,0 +1,13 @@
+<ion-view view-title="What position">
+    <ion-content id="request-shift-create-shift" class="has-header" hide-back-button="false">
+        <div class="list">
+            <div class="item">
+                locationid: {{location_id}}
+            </div>
+            <a href="#{{getBaseUrl()}}/{{userclass.id}}" class="item item-icon-right" ng-repeat="(userclass_id, userclass) in userclasses">
+                {{userclass.title}} - {{userclass.description}}
+                <i class="icon ion-chevron-right"></i>
+            </a>
+        </div>
+    </ion-content>
+</ion-view>
