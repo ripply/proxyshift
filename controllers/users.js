@@ -269,7 +269,8 @@ function getUserInfo(user_id, next) {
                                 .fetch({
                                     require: true,
                                     withRelated: [
-                                        'memberOfGroups'
+                                        'memberOfGroups',
+                                        'userClasses'
                                     ]
                                 })
                                 .then(function(user) {
