@@ -39,6 +39,63 @@ angular.module('scheduling-app.services')
                 return groups;
             };
 
+            this.getUserclassesFromLocation = function(location_id) {
+                return getUserclassesFromLocationOrSublocation(location_id, undefined);
+            };
+
+            this.getUserclassesFromSublocation = function(sublocation_id) {
+                return getUserclassesFromLocationOrSublocation(undefined, sublocation_id);
+            };
+
+            this.getUserclassesFromLocationOrSublocation = getUserclassesFromLocationOrSublocation;
+
+            function getUserclassesFromLocationOrSublocation(location_id, sublocation_id) {
+                var group_id = getGroupIdForLocation(location_id, sublocation_id);
+                if (group_id !== undefined) {
+                    return groups[group_id].userclasses;
+                }
+            }
+
+            function getGroupIdForLocation(locationid, sublocationid) {
+                var group_ids = Object.keys(groups);
+                for (var i = 0; i < group_ids.length; i++) {
+                    var group_id = group_ids[i];
+                    var group = groups[group_id];
+                    if (group.hasOwnProperty('locations')) {
+                        var locations = group.locations;
+                        if (locationid !== undefined) {
+                            // check for location id
+                            if (locations.hasOwnProperty(locationid)) {
+                                return group_id;
+                            }
+                        } else {
+                            // check sublocations
+                            var location_ids = Object.keys(locations);
+                            for (var j = 0; j < location_ids.length; j++) {
+                                var location_id = location_ids[j];
+                                var location = locations[location_id];
+                                if (location.hasOwnProperty('sublocations')) {
+                                    var sublocations = location.sublocations;
+                                    if (sublocations instanceof Array) {
+                                        // sublocations are sent by server so not indexed by id
+                                        for (var k = 0; k < sublocations.length; k++) {
+                                            var sublocation = sublocations[k];
+                                            if (sublocation.id == sublocationid) {
+                                                return group_id;
+                                            }
+                                        }
+                                    } else {
+                                        if (sublocations.hasOwnProperty(sublocationid)) {
+                                            return group_id;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             this.getLocation = function(location_id) {
                 if (locations.hasOwnProperty(location_id)) {
                     return locations[location_id];

@@ -3,13 +3,17 @@ angular.module('scheduling-app.controllers')
     .controller('RequestShiftSelectUserClassController', [
         '$scope',
         '$controller',
+        '$state',
         '$stateParams',
+        '$location',
         'UserInfoService',
         'GENERAL_EVENTS',
         'STATES',
         function($scope,
                  $controller,
+                 $state,
                  $stateParams,
+                 $location,
                  UserInfoService,
                  GENERAL_EVENTS,
                  STATES
@@ -29,7 +33,32 @@ angular.module('scheduling-app.controllers')
 
             $scope.beforeEnter = function() {
                 init();
+                gotoNextPageIfUserOnlyHasOneJobType();
             };
+
+            //$scope.development = true;
+            $location.replace();
+
+            function gotoNextPageIfUserOnlyHasOneJobType() {
+                if (!$scope.development
+                    && $scope.userclasses
+                    && Object.keys($scope.userclasses).length === 1) {
+                    var state;
+                    var params;
+                    if ($scope.sublocation_id) {
+                        state = STATES.REQUESTSHIFT_SUBLOCATION_AND_JOB_SELECTED;
+                        params = {
+                            'sublocation_id': $scope.sublocation_id
+                        };
+                    } else {
+                        state = STATES.REQUESTSHIFT_LOCATION_AND_JOB_SELECTED;
+                        params = {
+                            'location_id': $scope.location_id
+                        };
+                    }
+                    $state.go(state, params, {reload: false})
+                }
+            }
 
             $scope.$on(GENERAL_EVENTS.UPDATES.USERINFO.PROCESSED, function(env, userinfo) {
                 init();
