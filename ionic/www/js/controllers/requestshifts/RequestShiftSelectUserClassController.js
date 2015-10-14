@@ -22,6 +22,7 @@ angular.module('scheduling-app.controllers')
 
             $scope.groups = UserInfoService.getGroupList();
             $scope.locations = UserInfoService.getLocationList();
+            $scope.development = true;
 
             $scope.getBaseUrl = function() {
                 if ($scope.sublocation_id) {
@@ -35,9 +36,6 @@ angular.module('scheduling-app.controllers')
                 init();
                 gotoNextPageIfUserOnlyHasOneJobType();
             };
-
-            //$scope.development = true;
-            $location.replace();
 
             function gotoNextPageIfUserOnlyHasOneJobType() {
                 if (!$scope.development

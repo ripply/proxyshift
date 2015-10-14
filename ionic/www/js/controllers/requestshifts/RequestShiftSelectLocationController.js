@@ -14,6 +14,7 @@ angular.module('scheduling-app.controllers')
         ) {
             $scope.groups = UserInfoService.getGroupList();
             $scope.locations = UserInfoService.getLocationList();
+            $scope.development = true;
 
             init();
 
