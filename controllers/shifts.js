@@ -680,7 +680,7 @@ function createNewShift(req, res) {
         // that way we can send error messages to the client
         // but since we have to do math on these before that
         // we gotta check
-        res.send(400);
+        clientError(req, res, 400, 'Invalid numbers');
         return;
     }
 
@@ -709,7 +709,7 @@ function createNewShift(req, res) {
         Bookshelf.transaction(function(t) {
             // get location.utcoffset
             // then convert shift to location's timezone
-            models.Location.query(function(q) {
+            return models.Location.query(function(q) {
                 var query = q.select('utcoffset')
                     .from('locations');
                 if (req.params.location_id) {
@@ -721,7 +721,9 @@ function createNewShift(req, res) {
                         .where('sublocations.id', '=', req.params.sublocation_id);
                 }
             })
-                .fetch()
+                .fetch({
+                    transacting: t
+                })
                 .then(function(location) {
                     if (location) {
                         // this is offset from utc in minutes
@@ -739,7 +741,7 @@ function createNewShift(req, res) {
                         otherArgs.start += utcoffsetDiffSeconds;
                         otherArgs.end += utcoffsetDiffSeconds;
 
-                        postModel(
+                        return postModel(
                             'Shift',
                             otherArgs,
                             req,

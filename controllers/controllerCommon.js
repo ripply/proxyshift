@@ -90,8 +90,8 @@ module.exports = {
         var keysToSave = _.pick(req.body, _.keys(modelKeys));
 
         var fullArgs = _.extend(keysToSave, otherArgs);
-        models[modelName].forge(fullArgs)
-            .save(sqlOptions)
+        return models[modelName].forge(fullArgs)
+            .save(undefined, sqlOptions)
             .then(function (saved) {
                 res.status(201).json({id: saved.get('id')});
             })

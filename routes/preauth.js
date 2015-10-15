@@ -130,6 +130,7 @@ module.exports = function(app, settings){
                     if (err) {
                         // FIXME: This would still let user login temporary session
                         error(req, res, err);
+                        next(err);
                     } else {
                         if (req.body.remember_me) {
                             models.issueToken(req.user, function (err, token, tokenid) {
@@ -147,6 +148,7 @@ module.exports = function(app, settings){
                                         registeredForPush: deviceIdRegistered,
                                         userinfo: userJson
                                     });
+                                    next();
                                 });
                             });
                         } else {
@@ -155,15 +157,13 @@ module.exports = function(app, settings){
                                     registeredForPush: deviceIdRegistered,
                                     userinfo: userJson
                                 });
+                                next();
                             });
                         }
                     }
                 });
             });
         })(req, res, next);
-        next();
-    }, function(req, res, next) {
-
     });
 
     app.post('/session/logout', ensureCsrf, ensureAuthenticated, function(req, res, next) {

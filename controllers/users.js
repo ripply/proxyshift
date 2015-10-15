@@ -251,7 +251,7 @@ function getUserInfo(user_id, next) {
                     })
                         .fetchAll({
                             withRelated: [
-                                'sublocation'
+                                'sublocations'
                             ]
                         })
                         .then(function(locationsAPrivilegedMemeberOf) {
