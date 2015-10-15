@@ -239,10 +239,20 @@ function error(req, res, err, message) {
         if (message === undefined) {
             message = err.message;
         }
-        res.status(500).json({error: true, data: {message: message}});
+        if (res.headersSent) {
+            console.log("ERROR: CANNOT SEND CLIENT AN ERROR DUE TO HEADERS ALREADY BEING SENT");
+            console.log(message);
+        } else {
+            res.status(500).json({error: true, data: {message: message}});
+        }
     }
 }
 
 function clientError(req, res, status, message) {
-    res.status(status).json({error: true, data: {message: message}});
+    if (res.headersSent) {
+        console.log("ERROR: CANNOT SEND CLIENT AN ERROR DUE TO HEADERS ALREADY BEING SENT");
+        console.log(message);
+    } else {
+        res.status(status).json({error: true, data: {message: message}});
+    }
 }
