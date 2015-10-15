@@ -145,6 +145,10 @@ var Schema = {
             onUpdate: cascade,
             nullable: false
         },
+        utcoffset: {
+            type: integer,
+            nullable: false
+        },
         state: {
             type: string,
             nullable: false

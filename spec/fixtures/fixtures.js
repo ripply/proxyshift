@@ -8,6 +8,8 @@ function formatDateForDb(date) {
     return date;
 }
 
+var utcoffset = new Date().getTimezoneOffset();
+
 module.exports = {
     base: {
         users: [
@@ -270,6 +272,7 @@ module.exports = {
         locations: [
             {
                 group_id: '@groups:name:test_password_group',
+                utcoffset: utcoffset,
                 state: 'test_state',
                 city: 'test_city',
                 address: 'test_address',
@@ -278,6 +281,7 @@ module.exports = {
             },
             {
                 group_id: '@groups:name:membershiptest',
+                utcoffset: utcoffset,
                 state: 'membershiptest',
                 city: 'test_city2',
                 address: 'test_address2',

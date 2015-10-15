@@ -667,6 +667,22 @@ function createNewShift(req, res) {
     // a shift needs a location or sublocation
     var location_id = req.params.location_id;
     var sublocation_id = req.params.sublocation_id;
+    // a shift must also include the client's utc offst as unix time does not store timezones
+    var utcoffset = undefined;
+    if (req.params.utcoffset !== undefined) {
+        utcoffset = parseFloat(req.params.utcoffset);
+    }
+    // make sure that start/end are integers
+    if ((utcoffset !== undefined && isNaN(utcoffset)) ||
+        isNaN(parseFloat(req.params.start)) ||
+        isNaN(parseFloat(req.params.end))) {
+        // normally we would just let the validation library do this
+        // that way we can send error messages to the client
+        // but since we have to do math on these before that
+        // we gotta check
+        res.send(400);
+        return;
+    }
 
     var otherArgs = {};
     if (sublocation_id) {
@@ -681,29 +697,74 @@ function createNewShift(req, res) {
         throw new Error("When creating a shift, a location or sublocation is required");
     }
 
-    otherArgs = _.extend(otherArgs, {
-        start: req.params.start,
-        end: req.params.end,
-        groupuserclass_id: req.params.groupuserclass_id
-    });
-
     if (req.body.start > req.body.end) {
         clientError(req, res, 400, 'Invalid date range');
     } else {
-        postModel(
-            'Shift',
-            otherArgs,
-            req,
-            res,
-            [
-                'id',
-                'user_id',
-                'location_id',
-                'sublocation_id',
-                'groupuserclass_id',
-                'notify'
-            ]
-        );
+        otherArgs = _.extend(otherArgs, {
+            start: req.params.start,
+            end: req.params.end,
+            groupuserclass_id: req.params.groupuserclass_id
+        });
+
+        Bookshelf.transaction(function(t) {
+            // get location.utcoffset
+            // then convert shift to location's timezone
+            models.Location.query(function(q) {
+                var query = q.select('utcoffset')
+                    .from('locations');
+                if (req.params.location_id) {
+                    query = query.where('locations.id', '=', req.params.location_id);
+                } else if (req.params.sublocation_id) {
+                    query = query.innerJoin('sublocations', function() {
+                        this.on('sublocations.location_id', '=', 'locations.id');
+                    })
+                        .where('sublocations.id', '=', req.params.sublocation_id);
+                }
+            })
+                .fetch()
+                .then(function(location) {
+                    if (location) {
+                        // this is offset from utc in minutes
+                        var locations_utcoffset_minutes = location.toJSON().utcoffset;
+                        // modify incoming shift time to use the location's offset
+                        if (utcoffset === undefined) {
+                            // client did not provide offset
+                            // assume location's timezone
+                            utcoffset = locations_utcoffset_minutes;
+                        }
+                        var utcoffsetDiffMinutes = locations_utcoffset_minutes - utcoffset;
+                        // convert uctoffsetDiff to seconds
+                        var utcoffsetDiffSeconds = utcoffsetDiffMinutes * 60;
+                        // offset incoming times to be in our timezone
+                        otherArgs.start += utcoffsetDiffSeconds;
+                        otherArgs.end += utcoffsetDiffSeconds;
+
+                        postModel(
+                            'Shift',
+                            otherArgs,
+                            req,
+                            res,
+                            [
+                                'id',
+                                'user_id',
+                                'location_id',
+                                'sublocation_id',
+                                'groupuserclass_id',
+                                'notify'
+                            ],
+                            {
+                                transacting: t
+                            }
+                        );
+                    } else {
+                        // unknown sub/location_id
+                        req.send(403);
+                    }
+                })
+                .catch(function(err) {
+                    error(req, res, err);
+                });
+        });
     }
 }
 

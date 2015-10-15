@@ -23,6 +23,11 @@ var password = 'secret';
 // DELETE /api/shifts/:shift_id
 // DELETE /api/shifts/:shift_id/ignore
 
+// MODIFY:
+// Creation of shifts has new field: utcoffset
+//  - that field is the number of minutes the client is offset from utc
+//  - if the client does not send this, then it assumes the location's timezone
+
 describe("#/shifts", function() {
 
     before(function (done) {
