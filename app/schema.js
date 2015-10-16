@@ -132,6 +132,16 @@ var Schema = {
             nullable: false
         }
     },
+    // timezones for linking
+    Timezone: {
+        id: {
+            type: increments
+        },
+        name: {
+            type: string,
+            unique: true
+        }
+    },
     // physical store where things happen
     Location: {
         id: {
@@ -145,8 +155,12 @@ var Schema = {
             onUpdate: cascade,
             nullable: false
         },
-        utcoffset: {
+        timezone_id: {
             type: integer,
+            references: 'id',
+            inTable: 'timezones',
+            onDelete: restrict,
+            onUpdate: cascade,
             nullable: false
         },
         state: {
@@ -294,8 +308,12 @@ var Schema = {
             type: date,
             nullable: false
         },
-        utcoffset: {
+        timezone_id: {
             type: integer,
+            references: 'id',
+            inTable: 'timezones',
+            onDelete: restrict,
+            onUpdate: cascade,
             nullable: false
         },
         groupuserclass_id: {
