@@ -11,6 +11,12 @@ function formatDateForDb(date) {
 
 // use index for database id
 timezones = moment.tz.names();
+var timezoneFixtures = [];
+for (var i = 0; i < timezones.length; i++) {
+    timezoneFixtures.push({
+        name: timezones[i]
+    });
+}
 function getTimezoneId(name) {
     for (var i = 0; i < timezones.length; i++) {
         if (timezones[i] == name) {
@@ -23,7 +29,7 @@ function getTimezoneId(name) {
 var timezone = "America/Chicago";
 
 function defaultTimezone() {
-    getTimezoneId(timezone);
+    return getTimezoneId(timezone);
 }
 
 module.exports = {
