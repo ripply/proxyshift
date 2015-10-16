@@ -740,6 +740,7 @@ function createNewShift(req, res) {
                         // offset incoming times to be in our timezone
                         otherArgs.start += utcoffsetDiffSeconds;
                         otherArgs.end += utcoffsetDiffSeconds;
+                        otherArgs.utcoffset = utcoffset;
 
                         return postModel(
                             'Shift',

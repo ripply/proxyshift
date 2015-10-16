@@ -294,6 +294,10 @@ var Schema = {
             type: date,
             nullable: false
         },
+        utcoffset: {
+            type: integer,
+            nullable: false
+        },
         groupuserclass_id: {
             type: integer,
             references: 'id',
