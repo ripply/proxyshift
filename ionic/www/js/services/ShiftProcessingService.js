@@ -4,8 +4,8 @@ angular.module('scheduling-app.services')
         function($rootScope
         ) {
             $rootScope.getReadableShiftTime = function(shift) {
-                var startMoment = moment.utc(shift.start * 1000);
-                var endMoment = moment.utc(shift.end * 1000);
+                var startMoment = moment(shift.start * 1000);
+                var endMoment = moment(shift.end * 1000);
                 var diffHours = endMoment.diff(startMoment, 'minutes');
                 return getDisplayableFormat(startMoment)
                     + " - "
