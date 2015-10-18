@@ -16,6 +16,7 @@ var Schema = require('./schema').Schema,
     Validator = require('bookshelf-validator'),
     ValidationError = Validator.ValidationError,
     moment = require('moment'),
+    momentTimezone = require('moment-timezone'),
 // TODO: move encryption file to this folder if encrypting with bookshelf events turns out to work well
     encryptKey = require('../controllers/encryption/encryption').encryptKey,
     time = require('./time'),
@@ -147,6 +148,11 @@ function pluaralizeString(string) {
             case 'sh':
             case 'ch':
                 plural = 'es';
+                break;
+            case 'es':
+                // already plural
+                // script will break if we try to pluralize an already pluralized table name
+                return null;
         }
     }
 
@@ -177,6 +183,9 @@ var relations = {};
 _.each(Schema, function(tableSchema, modelName) {
     // normalize name so that it can go into the database
     var normalizedTableName = lowercaseAndPluralizeModelName(modelName);
+    if (normalizedTableName === null) {
+        throw new Error("Table named defined in schema must be of singular form (" + modelName + ")");
+    }
     // save normalized name for creating models after this loop
     modelNames[modelName] = normalizedTableName;
     tableNameToModelName[normalizedTableName] = modelName;
@@ -327,111 +336,177 @@ function initDb(dropAllTables) {
 
     firstInitialization = false;
 
-    var transactionCompletedPromise = new Promise(function(resolve) {
-        if (!dropAllTables) {
-            // apparently we cannot do hasTable() calls within a transaction
-            // so.. since this method should only have one copy of it running
-            // we can query which tables dont exist BEFORE the transaction
-            return getListOfNonExistingTables(knex, function(nonExistingTables) {
-                return createTablesInATransaction(nonExistingTables, nonExistingTables);
-            });
-        } else {
-            // create all the tables because we will be dropping them all
-            return getListOfNonExistingTables(knex, function(nonExistingTables) {
-                return createTablesInATransaction(Schema, nonExistingTables);
-            });
-        }
-        function createTablesInATransaction(Schema, nonExistingTables) {
-            knex.transaction(function (trx) {
-                var current = trx.schema;
-                if (dropAllTables) {
-                    // drop all tables and keep chaining the commands
-                    var tablesToDropInReversedOrder = [];
-                    // drop tables in reverse order
-                    // in postgres (and mysql maybe) ordering of table creation matters
-                    // so does deletion
-                    // we cannot delete a table if there are other tables depending on it
-                    // so, delete them in reverse order which should work.
-                    _.each(Schema, function (tableSchema, modelName) {
-                        tablesToDropInReversedOrder.unshift(modelName);
-                    });
-                    _.each(tablesToDropInReversedOrder, function (modelName) {
-                        var tableSchema = Schema[modelName];
-                        var tableName = lowercaseAndPluralizeModelName(modelName);
-                        if (!nonExistingTables.hasOwnProperty(modelName)) {
-                            current = current.dropTable(tableName);
-                        }
-                    });
-                    return current.then(function () {
-                        // now create all the tables that they have been dropped successfully
-                        // we are using the same transaction but have executed the sql
-                        current = trx.schema;
+    var tablesPopulatedPromise = new Promise(function(tablesPopulatedResolve) {
+        var transactionCompletedPromise = new Promise(function (resolve) {
+            if (!dropAllTables) {
+                // apparently we cannot do hasTable() calls within a transaction
+                // so.. since this method should only have one copy of it running
+                // we can query which tables dont exist BEFORE the transaction
+                return getListOfNonExistingTables(knex, function (nonExistingTables) {
+                    return createTablesInATransaction(nonExistingTables, nonExistingTables);
+                });
+            } else {
+                // create all the tables because we will be dropping them all
+                return getListOfNonExistingTables(knex, function (nonExistingTables) {
+                    return createTablesInATransaction(Schema, nonExistingTables);
+                });
+            }
+            function createTablesInATransaction(Schema, nonExistingTables) {
+                return knex.transaction(function (trx) {
+                    var current = trx.schema;
+                    if (dropAllTables) {
+                        // drop all tables and keep chaining the commands
+                        var tablesToDropInReversedOrder = [];
+                        // drop tables in reverse order
+                        // in postgres (and mysql maybe) ordering of table creation matters
+                        // so does deletion
+                        // we cannot delete a table if there are other tables depending on it
+                        // so, delete them in reverse order which should work.
+                        _.each(Schema, function (tableSchema, modelName) {
+                            tablesToDropInReversedOrder.unshift(modelName);
+                        });
+                        _.each(tablesToDropInReversedOrder, function (modelName) {
+                            var tableSchema = Schema[modelName];
+                            var tableName = lowercaseAndPluralizeModelName(modelName);
+                            if (!nonExistingTables.hasOwnProperty(modelName)) {
+                                current = current.dropTable(tableName);
+                            }
+                        });
+                        return current.then(function () {
+                            // now create all the tables that they have been dropped successfully
+                            // we are using the same transaction but have executed the sql
+                            current = trx.schema;
+                            return createTables(Schema);
+                        })
+                    } else {
+                        // no tables to drop, just create them
                         return createTables(Schema);
-                    })
-                } else {
-                    // no tables to drop, just create them
-                    return createTables(Schema);
-                }
+                    }
 
-                function createTables(tables) {
-                    _.each(tables, function (tableSchema, modelName) {
-                        // normalize name so that it can go into the database
-                        var normalizedTableName = lowercaseAndPluralizeModelName(modelName);
-                        // save normalized name for creating models after this loop
-                        modelNames[modelName] = normalizedTableName;
-                        tableNameToModelName[normalizedTableName] = modelName;
-                        current = current.createTable(normalizedTableName, function (table) {
-                            _.each(tableSchema, function (columnSchema, columnName) {
-                                var column;
-                                // check each type of method that requires special behavior
-                                // then do that special behavior
-                                if (columnSchema.hasOwnProperty('type')) {
-                                    // string requires maxlen arg
-                                    if (columnSchema.type == "string" && columnSchema.hasOwnProperty("maxlen")) {
-                                        column = table.string(columnName, columnSchema.maxlen);
+                    function createTables(tables) {
+                        var createTablePromises = [];
+                        _.each(tables, function (tableSchema, modelName) {
+                            // normalize name so that it can go into the database
+                            var normalizedTableName = lowercaseAndPluralizeModelName(modelName);
+                            // save normalized name for creating models after this loop
+                            modelNames[modelName] = normalizedTableName;
+                            tableNameToModelName[normalizedTableName] = modelName;
+                            current = current.createTable(normalizedTableName, function (table) {
+                                _.each(tableSchema, function (columnSchema, columnName) {
+                                    var column;
+                                    // check each type of method that requires special behavior
+                                    // then do that special behavior
+                                    if (columnSchema.hasOwnProperty('type')) {
+                                        // string requires maxlen arg
+                                        if (columnSchema.type == "string" && columnSchema.hasOwnProperty("maxlen")) {
+                                            column = table.string(columnName, columnSchema.maxlen);
+                                        } else {
+                                            column = table[columnSchema.type](columnName);
+                                        }
                                     } else {
-                                        column = table[columnSchema.type](columnName);
+                                        throw "Table " + normalizedTableName + "'s column " + columnName + " needs a type attribute";
                                     }
-                                } else {
-                                    throw "Table " + normalizedTableName + "'s column " + columnName + " needs a type attribute";
-                                }
-                                if (columnSchema.hasOwnProperty('nullable')) {
-                                    var nullable = columnSchema.nullable;
-                                    if (!nullable) {
-                                        column = column.notNullable();
+                                    if (columnSchema.hasOwnProperty('nullable')) {
+                                        var nullable = columnSchema.nullable;
+                                        if (!nullable) {
+                                            column = column.notNullable();
+                                        }
                                     }
-                                }
-                                if (columnSchema.hasOwnProperty('unique')) {
-                                    if (columnSchema.unique) {
-                                        column = column.unique();
+                                    if (columnSchema.hasOwnProperty('unique')) {
+                                        if (columnSchema.unique) {
+                                            column = column.unique();
+                                        }
                                     }
-                                }
-                                if (columnSchema.hasOwnProperty('references')) {
-                                    column = column.references(columnSchema['references']);
-                                }
-                                if (columnSchema.hasOwnProperty('inTable')) {
-                                    var foreignTable = columnSchema['inTable'];
-                                    column = column.inTable(foreignTable);
-                                }
-                                if (columnSchema.hasOwnProperty('onDelete')) {
-                                    column = column.onDelete(columnSchema['onDelete']);
-                                }
+                                    if (columnSchema.hasOwnProperty('references')) {
+                                        column = column.references(columnSchema['references']);
+                                    }
+                                    if (columnSchema.hasOwnProperty('inTable')) {
+                                        var foreignTable = columnSchema['inTable'];
+                                        column = column.inTable(foreignTable);
+                                    }
+                                    if (columnSchema.hasOwnProperty('onDelete')) {
+                                        column = column.onDelete(columnSchema['onDelete']);
+                                    }
+                                });
                             });
                         });
-                    });
-                    resolve();
-                    return current;
-                }
+                        resolve();
+                        return current;
+                    }
+                });
+            }
+        });
+        return transactionCompletedPromise.then(function() {
+            return Bookshelf.transaction(function(trx) {
+                return populateTables(trx, function(err) {
+                    if (err) {
+                        console.log("***Error populating tables***");
+                    }
+                    tablesPopulatedResolve();
+                });
             });
-        }
+        });
     });
 
-    initDbPromise = transactionCompletedPromise;
+    initDbPromise = tablesPopulatedPromise;
     initDbPromise.tap(function() {
         initDbPromise = null;
     });
 
-    return transactionCompletedPromise;
+    return tablesPopulatedPromise;
+}
+
+function populateTables(t, next) {
+    // specifically populate timezone table
+    var timezones = _.clone(moment.tz.names());
+    return models.Timezone.query(function(q) {
+        q.select()
+            .from('timezones');
+    })
+        .fetchAll({
+            transacting: t
+        })
+        .then(function(existingTimezones) {
+            if (existingTimezones) {
+                var existingTimezonesJson = existingTimezones.toJSON();
+                for (var i = 0; i < existingTimezonesJson.length; i++) {
+                    var index = timezones.indexOf(existingTimezonesJson[i].name);
+                    if (index >= 0) {
+                        delete timezones[index];
+                    }
+                }
+            }
+            // remove null items in timezone array
+            var remainingTimezones = _.filter(timezones, function(timezone) {
+                return timezone != null;
+            });
+
+            if (remainingTimezones.length > 0) {
+                var newTimezones = new models.Timezones();
+                for (var i = 0; i < remainingTimezones.length; i++) {
+                    newTimezones.add({
+                        name: remainingTimezones[i]
+                    });
+                }
+                return newTimezones.invokeThen('save', null, {
+                    transacting: t
+                })
+                    .then(function() {
+                        next();
+                    })
+                    .catch(function(err) {
+                        console.log("Failed to create timezones");
+                        console.log(err);
+                        next(err);
+                    });
+            } else {
+                next();
+            }
+        })
+        .catch(function(err) {
+            console.log(err);
+            next(err);
+        });
 }
 
 if (firstInitialization) {

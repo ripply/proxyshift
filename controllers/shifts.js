@@ -94,7 +94,10 @@ module.exports = {
                         });
                 })
                     .fetchAll({
-                        withRelated: 'ignoreshifts'
+                        withRelated: [
+                            'ignoreshifts',
+                            'timezone'
+                        ],
                     })
                     .then(function(shifts) {
                         if (shifts) {
@@ -667,14 +670,8 @@ function createNewShift(req, res) {
     // a shift needs a location or sublocation
     var location_id = req.params.location_id;
     var sublocation_id = req.params.sublocation_id;
-    // a shift must also include the client's utc offst as unix time does not store timezones
-    var utcoffset = undefined;
-    if (req.params.utcoffset !== undefined) {
-        utcoffset = parseFloat(req.params.utcoffset);
-    }
     // make sure that start/end are integers
-    if ((utcoffset !== undefined && isNaN(utcoffset)) ||
-        isNaN(parseFloat(req.params.start)) ||
+    if (isNaN(parseFloat(req.params.start)) ||
         isNaN(parseFloat(req.params.end))) {
         // normally we would just let the validation library do this
         // that way we can send error messages to the client
@@ -709,9 +706,12 @@ function createNewShift(req, res) {
         Bookshelf.transaction(function(t) {
             // get location.utcoffset
             // then convert shift to location's timezone
-            return models.Location.query(function(q) {
-                var query = q.select('utcoffset')
-                    .from('locations');
+            return models.Timezone.query(function(q) {
+                var query = q.select('name')
+                    .from('timezone')
+                    .innerJoin('locations', function() {
+                        this.on('locations.timezone_id', '=', 'timezone.id');
+                    });
                 if (req.params.location_id) {
                     query = query.where('locations.id', '=', req.params.location_id);
                 } else if (req.params.sublocation_id) {
@@ -726,21 +726,9 @@ function createNewShift(req, res) {
                 })
                 .then(function(location) {
                     if (location) {
-                        // this is offset from utc in minutes
-                        var locations_utcoffset_minutes = location.toJSON().utcoffset;
-                        // modify incoming shift time to use the location's offset
-                        if (utcoffset === undefined) {
-                            // client did not provide offset
-                            // assume location's timezone
-                            utcoffset = locations_utcoffset_minutes;
-                        }
-                        var utcoffsetDiffMinutes = locations_utcoffset_minutes - utcoffset;
-                        // convert uctoffsetDiff to seconds
-                        var utcoffsetDiffSeconds = utcoffsetDiffMinutes * 60;
-                        // offset incoming times to be in our timezone
-                        otherArgs.start += utcoffsetDiffSeconds;
-                        otherArgs.end += utcoffsetDiffSeconds;
-                        otherArgs.utcoffset = utcoffset;
+                        // get shift timezone from location.timezone_id
+                        var locationJson = location.toJSON();
+                        otherArgs.timezone_id = locationJson.timezone_id;
 
                         return postModel(
                             'Shift',
@@ -897,7 +885,10 @@ function getShifts(req, res) {
 
         return query
             .fetch(withRelatedOptions, {
-                withRelated: 'ignoreshifts'
+                withRelated: [
+                    'ignoreshifts',
+                    'timezones'
+                ]
             })
             .tap(function (shift) {
                 if (!shift) {

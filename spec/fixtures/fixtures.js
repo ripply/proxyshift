@@ -1,5 +1,6 @@
 var encrypt = require('../../controllers/encryption/encryption').encryptKey;
 moment = require('moment');
+momentTimezone = require('moment-timezone');
 
 var password = 'secret';
 
@@ -8,7 +9,31 @@ function formatDateForDb(date) {
     return date;
 }
 
-var utcoffset = new Date().getTimezoneOffset();
+// use index for database id
+timezones = moment.tz.names();
+var timezoneFixtures = [];
+for (var i = 0; i < timezones.length; i++) {
+    timezoneFixtures.push({
+        name: timezones[i]
+    });
+}
+function getTimezoneId(name) {
+    for (var i = 0; i < timezones.length; i++) {
+        if (timezones[i] == name) {
+            // hack to get sqlite ids to align properly with zone name
+            return i - 2;
+            // postgres is fine without hack
+            //return i;
+        }
+    }
+    return -1;
+}
+
+var timezone = "America/Chicago";
+
+function defaultTimezone() {
+    return getTimezoneId(timezone);
+}
 
 module.exports = {
     base: {
@@ -272,7 +297,7 @@ module.exports = {
         locations: [
             {
                 group_id: '@groups:name:test_password_group',
-                utcoffset: utcoffset,
+                timezone_id: defaultTimezone(),
                 state: 'test_state',
                 city: 'test_city',
                 address: 'test_address',
@@ -281,7 +306,7 @@ module.exports = {
             },
             {
                 group_id: '@groups:name:membershiptest',
-                utcoffset: utcoffset,
+                timezone_id: defaultTimezone(),
                 state: 'membershiptest',
                 city: 'test_city2',
                 address: 'test_address2',
@@ -358,7 +383,7 @@ module.exports = {
                 description: 'month long shift ending now',
                 start: formatDateForDb(moment(new Date()).subtract('1', 'month').unix()),
                 end: formatDateForDb(moment(new Date()).unix()),
-                utcoffset: utcoffset,
+                timezone_id: defaultTimezone(),
                 location_id: '@locations:state:membershiptest',
                 //sublocation_id: null,
                 user_id: '@users:username:groupmember',
@@ -369,7 +394,7 @@ module.exports = {
                 description: 'shift that starts in the future',
                 start: formatDateForDb(moment(new Date()).add('1', 'hour').unix()),
                 end: formatDateForDb(moment(new Date()).add('3', 'hour').unix()),
-                utcoffset: utcoffset,
+                timezone_id: defaultTimezone(),
                 location_id: '@locations:state:membershiptest',
                 //sublocation_id: null,
                 user_id: '@users:username:groupmember',
@@ -381,7 +406,7 @@ module.exports = {
                 description: 'shift in another location',
                 start: formatDateForDb(moment(new Date()).add('1', 'hour').unix()),
                 end: formatDateForDb(moment(new Date()).add('3', 'hour').unix()),
-                utcoffset: utcoffset,
+                timezone_id: defaultTimezone(),
                 location_id: '@locations:state:test_state',
                 //sublocation_id: '@sublocations:description:membershiptest floor 1',
                 user_id: '@users:username:groupmember',
@@ -392,7 +417,7 @@ module.exports = {
                 description: 'shift in sublocation',
                 start: formatDateForDb(moment(new Date()).add('1', 'hour').unix()),
                 end: formatDateForDb(moment(new Date()).add('3', 'hour').unix()),
-                utcoffset: utcoffset,
+                timezone_id: defaultTimezone(),
                 //location_id: null,
                 sublocation_id: '@sublocations:description:membershiptest floor 1',
                 //user_id: null,
@@ -403,7 +428,7 @@ module.exports = {
                 description: 'shift in sublocation',
                 start: formatDateForDb(moment(new Date()).add('1', 'hour').unix()),
                 end: formatDateForDb(moment(new Date()).add('3', 'hour').unix()),
-                utcoffset: utcoffset,
+                timezone_id: defaultTimezone(),
                 //location_id: null,
                 sublocation_id: '@sublocations:description:membershiptest floor 1',
                 user_id: '@users:username:groupmember',
@@ -414,7 +439,7 @@ module.exports = {
                 description: 'shift in sublocation',
                 start: formatDateForDb(moment(new Date()).add('1', 'hour').unix()),
                 end: formatDateForDb(moment(new Date()).add('3', 'hour').unix()),
-                utcoffset: utcoffset,
+                timezone_id: defaultTimezone(),
                 //location_id: null,
                 sublocation_id: '@sublocations:description:membershiptest floor 1',
                 //user_id: null,
