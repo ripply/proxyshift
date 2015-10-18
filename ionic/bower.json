@@ -14,7 +14,8 @@
     "validator-js": "~4.0.2",
     "angular-gettext": "~2.1.0",
     "angular-local-storage": "~0.2.2",
-    "moment-timezone": "~0.4.1"
+    "moment-timezone": "~0.4.1",
+    "jstz": "*"
   },
   "resolutions": {
     "angular": ">= 1.0.8"

@@ -20,7 +20,10 @@ for (var i = 0; i < timezones.length; i++) {
 function getTimezoneId(name) {
     for (var i = 0; i < timezones.length; i++) {
         if (timezones[i] == name) {
-            return i;
+            // hack to get sqlite ids to align properly with zone name
+            return i - 2;
+            // postgres is fine without hack
+            //return i;
         }
     }
     return -1;
