@@ -8,7 +8,7 @@ angular.module('scheduling-app.services')
                 var startLocal = moment(startMoment).local();
                 var startDisplayable = getDisplayableFormat(startMoment);
                 var startDisplayableLocal = getDisplayableFormat(startLocal);
-                
+
                 if (startMoment.format("Z") != startLocal.format("Z")) {
                     startDisplayable = startDisplayable + "(" + startDisplayableLocal + " local)";
                 }
@@ -32,5 +32,13 @@ angular.module('scheduling-app.services')
             function getDisplayableFormat(time) {
                 return time.format("h:mma");
             }
+
+            this.getStartOfShift = function(shift) {
+                return moment.tz(shift.start * 1000, shift.timezone.name);
+            };
+
+            this.getEndOfShift = function(shift) {
+                return moment.tz(shift.end * 1000, shift.timezone.name);
+            };
         }
     ]);

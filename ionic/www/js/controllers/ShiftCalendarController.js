@@ -4,12 +4,14 @@ angular.module('scheduling-app.controllers')
         '$rootScope',
         '$controller',
         'ShiftIntervalTreeCacheService',
+        'ShiftProcessingService',
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
         function($scope,
                  $rootScope,
                  $controller,
                  ShiftIntervalTreeCacheService,
+                 ShiftProcessingService,
                  GENERAL_CONFIG,
                  GENERAL_EVENTS
         ) {
@@ -251,8 +253,8 @@ angular.module('scheduling-app.controllers')
                     var start = transformed.start;
                     var end = transformed.end;
 
-                    var startMoment = moment(start, 'X');
-                    var endMoment = moment(end, 'X');
+                    var startMoment = ShiftProcessingService.getStartOfShift(transformed);
+                    var endMoment = ShiftProcessingService.getEndOfShift(transformed);
 
                     if (startMoment.isAfter(calendarStart) || endMoment.isBefore(calendarEnd)) {
                         // edge case: determine if the shift perhaps takes an entire month
