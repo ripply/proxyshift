@@ -97,12 +97,18 @@ angular.module('scheduling-app.services')
             }
 
             this.getLocation = function(location_id) {
+                if (location_id === undefined || location_id === null) {
+                    return undefined;
+                }
                 if (locations.hasOwnProperty(location_id)) {
                     return locations[location_id];
                 }
             };
 
             this.getSublocation = function(sublocation_id) {
+                if (sublocation_id === undefined || sublocation_id === null) {
+                    return undefined;
+                }
                 var location_ids = Object.keys(locations);
                 for (var i = 0; i < location_ids.length; i++) {
                     var location = locations[location_ids[i]];
@@ -118,6 +124,9 @@ angular.module('scheduling-app.services')
             };
 
             this.getLocationForSublocation = function(sublocation_id) {
+                if (sublocation_id === undefined || sublocation_id === null) {
+                    return undefined;
+                }
                 var location_ids = Object.keys(locations);
                 for (var i = 0; i < location_ids.length; i++) {
                     var location = locations[location_ids[i]];
