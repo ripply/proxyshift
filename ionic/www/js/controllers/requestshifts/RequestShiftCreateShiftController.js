@@ -14,6 +14,8 @@ angular.module('scheduling-app.controllers')
         ) {
             $controller('BaseModelController', {$scope: $scope});
 
+            $scope.shift = {};
+
             $scope.timePickerObject = {
                 inputEpochTime: ((new Date()).getHours() * 60 * 60),  //Optional
                 step: 15,  //Optional

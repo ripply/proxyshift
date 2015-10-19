@@ -12,16 +12,26 @@
             <div class="item item-divider">
                 Date
             </div>
-            <div class="item">
+            <div class="item item-button-right">
                 <ionic-datepicker input-obj="datepickerObject">
                     <button class="button button-block button-positive"> {{datepickerObject.inputDate | date:'dd - MMMM - yyyy'}}</button>
                 </ionic-datepicker>
+            </div>
+            <div class="item item-divider">
+                Shift starts at
+            </div>
+            <div class="item">
                 <ionic-timepicker input-obj="timePickerObject">
                     <button class="button button-block button-positive overflowShow">
                         <standard-time-meridian etime='timePickerObject.inputEpochTime'></standard-time-meridian>
+                        {{timePickerObject.inputEpochTime}}
                     </button>
                 </ionic-timepicker>
             </div>
+            <label class="item item-input">
+                <span class="input-label">Shift length</span>
+                <input type="text" ng-model="shift.length">
+            </label>
         </div>
     </ion-content>
 </ion-view>
