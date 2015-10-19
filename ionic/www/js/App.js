@@ -307,7 +307,7 @@ angular.module('scheduling-app', [
                 })
 
                 .state('requestshift.sublocationjob', {
-                    url: "/sublocation/:location_id/job/:userclass_id",
+                    url: "/sublocation/:sublocation_id/job/:userclass_id",
                     resolve: {
                         //TODO: Check /userinfo
                     },

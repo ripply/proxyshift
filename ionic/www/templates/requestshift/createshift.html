@@ -1,7 +1,7 @@
-<ion-view view-title="Filling in your shift details">
+<ion-view view-title="When">
     <ion-content id="request-shift-create-shift" class="has-header" hide-back-button="false">
         <div class="list">
-            <div class="">
+            <div class="item">
                 <div ng-if="!sublocation">
                     {{location.address}}
                 </div>
@@ -9,8 +9,18 @@
                     {{location.address}} - {{sublocation.title}}
                 </div>
             </div>
+            <div class="item item-divider">
+                Date
+            </div>
             <div class="item">
-                locationid: {{location_id}}
+                <ionic-datepicker input-obj="datepickerObject">
+                    <button class="button button-block button-positive"> {{datepickerObject.inputDate | date:'dd - MMMM - yyyy'}}</button>
+                </ionic-datepicker>
+                <ionic-timepicker input-obj="timePickerObject">
+                    <button class="button button-block button-positive overflowShow">
+                        <standard-time-meridian etime='timePickerObject.inputEpochTime'></standard-time-meridian>
+                    </button>
+                </ionic-timepicker>
             </div>
         </div>
     </ion-content>

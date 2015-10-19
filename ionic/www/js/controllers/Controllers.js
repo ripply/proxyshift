@@ -2,7 +2,9 @@ angular.module('scheduling-app.controllers', [
   'scheduling-app.models',
   'scheduling-app.config',
   'scheduling-app.validation',
-  'scheduling-app.push'
+  'scheduling-app.push',
+  'ionic-timepicker',
+  'ionic-datepicker'
 ])
 
     .controller('PlaylistsCtrl', [
