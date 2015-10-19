@@ -2,12 +2,33 @@
 angular.module('scheduling-app.services')
     .service('ShiftProcessingService', [
         '$rootScope',
+        'Restangular',
         'UserInfoService',
         function(
             $rootScope,
+            Restangular,
             UserInfoService
         ) {
             $rootScope.userIsInDifferentTimeZone = userIsInDifferentTimeZone;
+
+            this.createShift = function(misc, start, end, groupuserclass_id, location_id, sublocation_id) {
+                var resource = Restangular.one("locations", location_id)
+                if (sublocation_id) {
+                    resource = resource.one("sublocations", sublocation_id);
+                }
+                resource.all("shifts")
+                    .one("groupuserclass", groupuserclass_id)
+                    .one("start", start)
+                    .one("end", end)
+                    .post()
+                    .then(function(result) {
+                        // success
+                        console.log(result);
+                    }, function(response) {
+                        // fail
+                        console.log(response);
+                    });
+            };
 
             function userIsInDifferentTimeZone(shift) {
                 var startLocal = getStartOfShift(shift);

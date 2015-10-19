@@ -4,11 +4,13 @@ angular.module('scheduling-app.controllers')
         '$scope',
         '$stateParams',
         '$controller',
+        'ShiftProcessingService',
         'UserInfoService',
         'GENERAL_EVENTS',
         function($scope,
                  $stateParams,
                  $controller,
+                 ShiftProcessingService,
                  UserInfoService,
                  GENERAL_EVENTS
         ) {
@@ -35,6 +37,7 @@ angular.module('scheduling-app.controllers')
                     console.log('Time not selected');
                 } else {
                     var selectedTime = new Date(val * 1000);
+                    $scope.shiftStart = val;
                     console.log('Selected epoch is : ', val, 'and the time is ', selectedTime.getUTCHours(), ':', selectedTime.getUTCMinutes(), 'in UTC');
                 }
             }
@@ -71,6 +74,28 @@ angular.module('scheduling-app.controllers')
                 }
             };
 
+            $scope.createShift = function() {
+                ShiftProcessingService.createShift({
+
+                    },
+                    getStartOfShift(),
+                    getEndOfShift(),
+                    $scope.userclass_id,
+                    $scope.location_id,
+                    $scope.sublocation_id
+                );
+            };
+
+            function getStartOfShift() {
+                return moment($scope.datepickerObject.inputDate).startOf("day")
+                    .add($scope.shiftStart, "minutes")
+                    .unix();
+            }
+
+            function getEndOfShift() {
+                return getStartOfShift() + parseInt($scope.shift.length);
+            }
+
             $scope.beforeEnter = function() {
                 init();
             };
@@ -82,6 +107,7 @@ angular.module('scheduling-app.controllers')
             function init() {
                 $scope.location_id = $stateParams.location_id;
                 $scope.sublocation_id = $stateParams.sublocation_id;
+                $scope.userclass_id = $stateParams.userclass_id;
                 if ($scope.location_id) {
                     $scope.location = UserInfoService.getLocation($scope.location_id);
                     $scope.sublocation = undefined;

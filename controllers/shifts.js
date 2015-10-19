@@ -708,9 +708,9 @@ function createNewShift(req, res) {
             // then convert shift to location's timezone
             return models.Timezone.query(function(q) {
                 var query = q.select('name')
-                    .from('timezone')
+                    .from('timezones')
                     .innerJoin('locations', function() {
-                        this.on('locations.timezone_id', '=', 'timezone.id');
+                        this.on('locations.timezone_id', '=', 'timezones.id');
                     });
                 if (req.params.location_id) {
                     query = query.where('locations.id', '=', req.params.location_id);
