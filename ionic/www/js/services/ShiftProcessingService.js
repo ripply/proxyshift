@@ -20,7 +20,7 @@ angular.module('scheduling-app.services')
                     .one("groupuserclass", groupuserclass_id)
                     .one("start", start)
                     .one("end", end)
-                    .post()
+                    .customPOST(misc)
                     .then(function(result) {
                         // success
                         console.log(result);

@@ -75,9 +75,8 @@ angular.module('scheduling-app.controllers')
             };
 
             $scope.createShift = function() {
-                ShiftProcessingService.createShift({
-
-                    },
+                ShiftProcessingService.createShift(
+                    $scope.shift,
                     getStartOfShift(),
                     getEndOfShift(),
                     $scope.userclass_id,

@@ -707,7 +707,7 @@ function createNewShift(req, res) {
             // get location.utcoffset
             // then convert shift to location's timezone
             return models.Timezone.query(function(q) {
-                var query = q.select('name')
+                var query = q.select()
                     .from('timezones')
                     .innerJoin('locations', function() {
                         this.on('locations.timezone_id', '=', 'timezones.id');
@@ -728,28 +728,34 @@ function createNewShift(req, res) {
                     if (location) {
                         // get shift timezone from location.timezone_id
                         var locationJson = location.toJSON();
-                        otherArgs.timezone_id = locationJson.timezone_id;
-
-                        return postModel(
-                            'Shift',
-                            otherArgs,
-                            req,
-                            res,
-                            [
-                                'id',
-                                'user_id',
-                                'location_id',
-                                'sublocation_id',
-                                'groupuserclass_id',
-                                'notify'
-                            ],
-                            {
-                                transacting: t
-                            }
-                        );
+                        console.log(locationJson);
+                        otherArgs.timezone_id = locationJson.id;
+                        otherArgs.user_id = req.user.id;
+                        if (!otherArgs.timezone_id) {
+                            clientError(req, res, 400, 'No timezone sent and no timezone found for location');
+                        } else {
+                            return postModel(
+                                'Shift',
+                                otherArgs,
+                                req,
+                                res,
+                                [
+                                    'id',
+                                    'user_id',
+                                    'location_id',
+                                    'sublocation_id',
+                                    'groupuserclass_id',
+                                    'timezone_id',
+                                    'notify'
+                                ],
+                                {
+                                    transacting: t
+                                }
+                            );
+                        }
                     } else {
                         // unknown sub/location_id
-                        req.send(403);
+                        res.send(403);
                     }
                 })
                 .catch(function(err) {
