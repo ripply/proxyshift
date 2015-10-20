@@ -22,6 +22,7 @@ var password = 'secret';
 // PATCH /api/shifts/:shift_id
 // DELETE /api/shifts/:shift_id
 // DELETE /api/shifts/:shift_id/ignore
+// GET /api/shifts/mine
 
 // MODIFY:
 // Creation of shifts has new field: utcoffset

@@ -436,6 +436,29 @@ module.exports = {
             }
         }
     },
+    'mine': {
+        'get': {
+            route: function(req, res) {
+                var columns = createSelectQueryForAllColumns('Shift', 'shifts');
+                models.Shift.query(function(q) {
+                    q.select(columns)
+                        .from('shifts')
+                        .where('shifts.user_id', '=', req.user.id);
+                })
+                    .fetchAll()
+                    .then(function(shifts) {
+                        if (shifts) {
+                            res.send(shifts.toJSON());e
+                        } else {
+                            res.send(204); // no content
+                        }
+                    })
+                    .catch(function(err) {
+                        error(req, res, err);
+                    });
+            }
+        }
+    },
     createNewShift: createNewShift,
     getShiftsYouAreManaging: getShiftsYouAreManaging
 
