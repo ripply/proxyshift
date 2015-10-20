@@ -1,28 +1,34 @@
 angular.module('scheduling-app.controllers')
-    .controller('IgnorableShiftsDirectiveController', [
+    .controller('BaseShiftListDirectiveController', [
         '$rootScope',
         '$scope',
         '$controller',
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
         'Restangular',
-        'AllShiftsModel',
-        'ShiftsModel',
+        'ShiftProcessingService',
+        'ModelVariableName',
+        'Model',
         function($rootScope,
                  $scope,
                  $controller,
                  GENERAL_CONFIG,
                  GENERAL_EVENTS,
                  Restangular,
-                 AllShiftsModel,
-                 ShiftsModel
+                 ShiftProcessingService,
+                 ModelVariableName,
+                 Model
         ) {
             $controller('BaseModelController', {$scope: $scope});
             $scope.register(
-                'AllShifts',
-                AllShiftsModel,
+                ModelVariableName,
+                Model,
                 undefined
             );
+            $scope.Model = $rootScope[ModelVariableName];
+            $rootScope.$watch(ModelVariableName, function(newValue, oldValue) {
+                $scope.Model = newValue;
+            });
             var superFetchComplete = $scope.fetchComplete;
             $scope.fetchComplete = function(result, oldValue) {
                 var range = getDefaultShiftRange();
@@ -174,4 +180,13 @@ angular.module('scheduling-app.controllers')
             function getDefaultShiftRange() {
                 return window.ShiftShared.grabNormalShiftRange();
             }
+
+            $scope.getReadableLocalShiftStartTime = ShiftProcessingService.getReadableLocalShiftStartTime;
+            $scope.getReadableLocalShiftEndTime = ShiftProcessingService.getReadableLocalShiftEndTime;
+            $scope.getReadableLocalShiftDiffTime = ShiftProcessingService.getReadableLocalShiftDiffTime;
+            $scope.getReadableUsersShiftTime = ShiftProcessingService.getReadableUsersShiftTime;
+            $scope.getReadableUsersShiftStartTime = ShiftProcessingService.getReadableUsersShiftStartTime;
+            $scope.getReadableUsersShiftEndTime = ShiftProcessingService.getReadableUsersShiftEndTime;
+            $scope.getShiftsLocation = ShiftProcessingService.getShiftsLocation;
+            $scope.getShiftsSublocation = ShiftProcessingService.getShiftsSublocation;
         }]);

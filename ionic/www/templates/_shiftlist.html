@@ -9,8 +9,8 @@
     </div>
     <ion-item
         class="item item-icon-right"
-        ng-show="AllShifts"
-        ng-repeat="shift in AllShifts"
+        ng-show="Model"
+        ng-repeat="shift in Model"
         ng-hide="ignoredShift(shift)">
         <h2>{{getReadableLocalShiftStartTime(shift)}} - {{getReadableLocalShiftEndTime(shift)}} - {{getReadableLocalShiftDiffTime(shift)}}</h2>
         <h2 ng-show="{{userIsInDifferentTimeZone(shift)}}">{{getReadableUsersShiftStartTime(shift)}} - {{getReadableUsersShiftEndTime(shift)}} (your time)</h2>
@@ -18,10 +18,10 @@
         <p class="shift-description">{{shift.description}}</p>
         <p class="location-address" ng-show="{{!shift.sublocation_id}}">{{getShiftsLocation(shift).address}}</p>
         <p class="location-address" ng-show="{{shift.sublocation_id}}">{{getShiftsLocation(shift).address}} - {{getShiftsSublocation(shift).title}}</p>
-        <i class="icon ion-close" ng-click="ignoreShift({{shift.id}})"></i>
+        <i class="icon ion-close" ng-if="dismissable" ng-click="ignoreShift({{shift.id}})"></i>
     </ion-item>
     <ion-item
-        ng-hide="AllShifts"
+        ng-hide="Model"
         class="item item-icon-right">
         There are currently no open shifts
     </ion-item>
@@ -31,7 +31,7 @@
     </div>
     <ion-item
         class="item item-icon-right"
-        ng-repeat="shift in AllShifts"
+        ng-repeat="shift in Model"
         ng-hide="!ignoredShift(shift)">
         <h2>{{getReadableLocalShiftStartTime(shift)}} - {{getReadableLocalShiftEndTime(shift)}} - {{getReadableLocalShiftDiffTime(shift)}}</h2>
         <h2 ng-show="{{userIsInDifferentTimeZone(shift)}}">{{getReadableUsersShiftStartTime(shift)}} - {{getReadableUsersShiftEndTime(shift)}} (your time)</h2>

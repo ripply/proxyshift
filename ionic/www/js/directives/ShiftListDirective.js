@@ -1,10 +1,13 @@
 angular.module('scheduling-app.directives')
-    .directive('ignorableShifts', function() {
+    .directive('shiftList', function() {
         return ({
-            controller: 'IgnorableShiftsDirectiveController',
+            controller: 'OpenShiftsDirectiveController',
             link: link,
-            restrict: 'A',
-            templateUrl: 'templates/_ignorableshifts.html'
+            restrict: 'E',
+            templateUrl: 'templates/_shiftlist.html',
+            scope: {
+                dismissable: '=dismissable'
+            }
         });
 
         function link(scope, element, attributes) {

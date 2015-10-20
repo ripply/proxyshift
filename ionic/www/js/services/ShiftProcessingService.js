@@ -11,7 +11,7 @@ angular.module('scheduling-app.services')
         ) {
             $rootScope.userIsInDifferentTimeZone = userIsInDifferentTimeZone;
 
-            this.createShift = function(misc, start, end, groupuserclass_id, location_id, sublocation_id) {
+            this.createShift = function(body, start, end, groupuserclass_id, location_id, sublocation_id) {
                 var resource = Restangular.one("locations", location_id)
                 if (sublocation_id) {
                     resource = resource.one("sublocations", sublocation_id);
@@ -20,7 +20,7 @@ angular.module('scheduling-app.services')
                     .one("groupuserclass", groupuserclass_id)
                     .one("start", start)
                     .one("end", end)
-                    .customPOST(misc)
+                    .customPOST(body)
                     .then(function(result) {
                         // success
                         console.log(result);
@@ -37,17 +37,17 @@ angular.module('scheduling-app.services')
                 return startLocal.format("Z") != startUsersTime.format("Z");
             }
 
-            $rootScope.getReadableLocalShiftStartTime = function(shift, format) {
+            this.getReadableLocalShiftStartTime = function(shift, format) {
                 var startLocal = getStartOfShift(shift);
                 return getDisplayableFormat(startLocal, format);
             };
 
-            $rootScope.getReadableLocalShiftEndTime = function(shift, format) {
+            this.getReadableLocalShiftEndTime = function(shift, format) {
                 var endLocal = getEndOfShift(shift);
                 return getDisplayableFormat(endLocal, format);
             };
 
-            $rootScope.getReadableLocalShiftDiffTime = function(shift) {
+            this.getReadableLocalShiftDiffTime = function(shift) {
                 // TODO: MAKE SURE THIS PROPERLY CONSIDERS DST
                 var startLocal = getStartOfShift(shift);
                 var endLocal = getEndOfShift(shift);
@@ -56,7 +56,7 @@ angular.module('scheduling-app.services')
                 return (diffHours / 60) + " hour shift";
             };
 
-            $rootScope.getReadableUsersShiftTime = function(shift, format) {
+            this.getReadableUsersShiftTime = function(shift, format) {
                 var userInDifferentTimeZone = false;
                 var startLocal = getStartOfShift(shift);
                 var startUsersTime = moment(startLocal).local();
@@ -83,19 +83,19 @@ angular.module('scheduling-app.services')
                 return result;
             };
 
-            $rootScope.getReadableUsersShiftStartTime = function(shift, format) {
+            this.getReadableUsersShiftStartTime = function(shift, format) {
                 var startLocal = getStartOfShift(shift);
                 var startUsersTime = moment(startLocal).local();
                 return getDisplayableFormat(startUsersTime, format);
             };
 
-            $rootScope.getReadableUsersShiftEndTime = function(shift, format) {
+            this.getReadableUsersShiftEndTime = function(shift, format) {
                 var endLocal = getEndOfShift(shift);
                 var endUsersTime = moment(endLocal).local();
                 return getDisplayableFormat(endUsersTime, format);
             };
 
-            $rootScope.getShiftsLocation = function(shift) {
+            this.getShiftsLocation = function(shift) {
                 var id = shift.location_id;
                 var method = 'getLocation';
 
@@ -107,7 +107,7 @@ angular.module('scheduling-app.services')
                 return UserInfoService[method](id);
             };
 
-            $rootScope.getShiftsSublocation = function(shift) {
+            this.getShiftsSublocation = function(shift) {
                 return UserInfoService.getSublocation(shift.sublocation_id);
             };
 

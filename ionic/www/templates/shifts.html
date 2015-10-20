@@ -4,7 +4,7 @@
             pulling-text="Pull to refresh..."
             on-refresh="fetch()">
         </ion-refresher>
-        <div ignorable-shifts></div>
+        <shift-list dismissable="true"></shift-list>
     </ion-content>
     <ion-footer-bar class="bar-assertive tabs">
         <a href="#{{states.REQUESTSHIFT_URL}}" ng-click="requestShift()">I can't make my shift!</a>
