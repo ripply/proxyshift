@@ -1,36 +1,38 @@
-<ion-modal-view>
-    <ion-header-bar>
-        <h1 class="title">Edit Company Settings</h1>
-    </ion-header-bar>
+<ion-nav-view>
+    <div class="item item-divider has-header">
+        Group Settings
+    </div>
+
+    <div class="list has-header">
+        <ion-toggle ng-repeat="setting in settingsList"
+                    ng-model="setting.checked"
+                    ng-checked="setting.checked"
+                    ng-disabled="true">
+            {{ setting.text }}
+        </ion-toggle>
+    </div>
+
     <ion-content>
-        <div ng-controller="EditGroupController">
-            <form ng-submit="doSave()">
-                <div class="list">
-                    <li class="item item-toggle">
-                        Allow Everyone To Create Shifts
-                        <label class="toggle toggle-positive">
-                            <input type="checkbox" ng-model="groupsettings.allowalltocreateshifts">
-                            <div class="track">
-                                <div class="handle"></div>
-                            </div>
-                        </label>
-                    </li>
-                    <li class="item item-toggle">
-                        Require Confirmation For Created Shifts
-                        <label class="toggle toggle-positive">
-                            <input type="checkbox" ng-model="groupsettings.requireshiftconfirmation">
-                            <div class="track">
-                                <div class="handle"></div>
-                            </div>
-                        </label>
-                    </li>
-                    <label class="item" ng-show="message != null">
-                        <span>{{message}}</span>
-                    </label>
-                    <button class="button button-block button-positive" type="submit">Save</button>
-                    </label>
-                </div>
-            </form>
+        <div class="item item-divider has header">
+            Locations
         </div>
+
+        <i class="icon ion-search placeholder-icon has header"></i>
+        <input type="text" ng-model="query" ng-style="{'width' : '100%'}"
+               placeholder="Search by address, city, state, zipcode or phone">
+
+        <div class="list">
+            <ion-toggle ng-repeat="location in locationList | filter:query"
+                        ng-model="location.checked"
+                        ng-checked="location.checked">
+                {{ location.address }}
+            </ion-toggle>
+        </div>
+
+        <div class="item">
+            <pre ng-bind="currentGroup | json"></pre>
+        </div>
+
+        <button class="button button-full button-positive">Save</button>
     </ion-content>
-</ion-modal-view>
+</ion-nav-view>

@@ -1,41 +1,32 @@
 <ion-nav-view>
-    <ion-header-bar>
-        <h1 class="title">Settings</h1>
-        <div class="buttons">
-            <button class="button button-icon ion-close" ng-click="close()"></button>
-        </div>
-    </ion-header-bar>
-    <ion-content>
-        <div class="list">
-            <div class="item">
-                Push notifications
+    <ion-nav-view name="content">
+        <ion-header-bar>
+            <h1 class="title">Settings</h1>
+            <div class="buttons">
+                <button class="button button-icon ion-close" ng-click="close()"></button>
             </div>
-            <div class="item">
-                Text notifications
+        </ion-header-bar>
+        <ion-content>
+            <div class="list">
+                <ion-toggle ng-repeat="item in settingsList"
+                            ng-model="item.checked"
+                            ng-checked="item.checked">
+                    {{ item.text }}
+                </ion-toggle>
+                <div class="item item-divider">
+                    Groups
+                </div>
+                <ion-list>
+                    <ion-item ng-repeat="group in groupsList"
+                              item="group"
+                              href="#/settings/groupsettings/{{group.id}}" ng-click="openGroupSettings()" class="item-remove-animate">
+                        {{ group.name }}
+                    </ion-item>
+                </ion-list>
             </div>
-            <div class="item">
-                Setting 3
-            </div>
-            <div class="item item-divider">
-                Groups
-            </div>
-            <a href="#/app/groupconfig" class="item">Evo Hospital</a>
-            <a href="#/app/groupconfig" class="item">Evo Hospital</a>
-            <div class="item item-divider">
-                Managing groups
-            </div>
-            <a href="#/app/groupconfig" class="item item-icon-right">
-                Evo Hospital
-                <span class="icon ion-gear-b"></span>
-            </a>
-            <a href="#/app/groupconfig" class="item item-icon-right">
-                Evo Hospital
-                <span class="icon ion-gear-b"></span>
-            </a>
-            <a href="#/app/groupconfig" class="item item-icon-right">
-                Evo Hospital
-                <span class="icon ion-gear-b"></span>
-            </a>
-        </div>
-    </ion-content>
+            <button class="button button-full button-positive">
+                Save
+            </button>
+        </ion-content>
+    </ion-nav-view>
 </ion-nav-view>

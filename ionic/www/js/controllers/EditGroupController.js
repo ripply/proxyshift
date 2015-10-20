@@ -4,43 +4,48 @@
 angular.module('scheduling-app.controllers')
     .controller('EditGroupController', [
         '$scope',
-        '$http',
-        '$state',
-        '$stateParams',
-        'Restangular',
-        'GroupSettingsModel',
-        function($scope, $http, $state, $stateParams, Restangular, GroupSettingsModel) {
+        '$rootScope',
+        'StateHistoryService',
+        'STATES',
+        'UserInfoService',
+        function($scope, $rootScope, StateHistoryService, STATES, UserInfoService) {
 
-            $scope.groupsettings = {
-                groupsid: null,
-                allowalltocreateshifts: null,
-                requireshiftconfirmation: null
+            var url = window.location.href;
+            var id = url.split('/').pop();
+
+            $scope.currentGroup = UserInfoService.getGroup(id);
+
+            $scope.settingsList = [
+                { text: "Everyone Can Create Shifts", checked: true},
+                { text: "Shifts Need Confirmation", checked: false}
+            ];
+
+            $scope.locationList = [
+                { address: "Location 1", city: "Helsingborg", checked: true },
+                { address: "Location 2", city: "Chesapeake", checked: false },
+                { address: "Location 3", city: "Chesapeake", checked: false },
+                { address: "Location 4", city: "Chicago", checked: false },
+                { address: "Location 5", city: "Helsingborg", checked: true },
+                { address: "Location 6", city: "Helsingborg", checked: true },
+                { address: "Location 7", city: "Chesapeake", checked: false },
+                { address: "Location 8", city: "Chesapeake", checked: false },
+                { address: "Location 9", city: "Helsingborg", checked: false },
+                { address: "Location 10", city: "Chicago", checked: false },
+                { address: "Location 11", city: "Chicago", checked: false },
+                { address: "Location 12", city: "Chesapeake", checked: false },
+                { address: "Location 13", city: "Stockholm", checked: false },
+                { address: "Location 14", city: "Stockholm", checked: false },
+                { address: "Location 15", city: "Helsingborg", checked: true },
+                { address: "Location 16", city: "Helsingborg", checked: false },
+                { address: "Location 17", city: "Chesapeake", checked: false },
+                { address: "Location 18", city: "Chicago", checked: false },
+                { address: "Location 19", city: "Chicago", checked: false },
+                { address: "Location 20", city: "Chicago", checked: true }
+            ];
+
+            $scope.close = function() {
+                StateHistoryService.returnTo(STATES.SETTINGS);
             };
-
-            $scope.doSave = function() {
-                $scope.groupsettings.groupsid = $stateParams.id;
-
-                Restangular.one('groups', $stateParams.id)
-                    .customPOST($scope.groupsettings, 'settings', null, null)
-                    //GroupSettingsModel.post($scope.groupsettings)
-
-                    .then(function() {
-                        $scope.groupsettings.groupsid = null;
-                        $scope.groupsettings.allowalltocreateshifts = null;
-                        $scope.groupsettings.requireshiftconfirmation = null;
-                        console.log("Successfully edited group?");
-                    }, function(response) {
-                        console.log("Failed to edit group with response: " + response.status);
-                    });
-            };
-
-            $scope.$on('event:editgroup-failed', function(e, message) {
-                $scope.message = message;
-            });
-
-            $scope.$on('event:editgroup-complete', function() {
-                $state.go('app.home', {}, {reload: true, inherit: false});
-            });
 
         }]
 );

@@ -105,6 +105,15 @@ angular.module('scheduling-app.services')
                 }
             };
 
+            this.getGroup = function(group_id) {
+                if (group_id === undefined || group_id === null) {
+                    return undefined;
+                }
+                if (groups.hasOwnProperty(group_id)) {
+                    return groups[group_id];
+                }
+            };
+
             this.getSublocation = function(sublocation_id) {
                 if (sublocation_id === undefined || sublocation_id === null) {
                     return undefined;

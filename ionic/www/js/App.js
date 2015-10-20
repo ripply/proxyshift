@@ -364,6 +364,19 @@ angular.module('scheduling-app', [
                     }
                 })
 
+                .state('settings.groupsettings', {
+                    url: "/groupsettings/:groupsetting_id",
+                    resolve: {
+                        //TODO: Check /userinfo
+                    },
+                    views: {
+                        'content': {
+                            templateUrl: "templates/editgroup.html",
+                            controller: 'EditGroupController'
+                        }
+                    }
+                })
+
                 .state('app.privacypolicy', {
                     url: "/privacypolicy",
                     views: {
@@ -417,16 +430,6 @@ angular.module('scheduling-app', [
                         'menuContent': {
                             templateUrl: "templates/creategroup.html",
                             controller: 'CreateGroupController'
-                        }
-                    }
-                })
-
-                .state('app.groupsettings', {
-                    url: "/groups/:id/settings",
-                    views: {
-                        'menuContent': {
-                            templateUrl: "templates/editgroup.html",
-                            controller: 'EditGroupController'
                         }
                     }
                 });

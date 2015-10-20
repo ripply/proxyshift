@@ -22,6 +22,15 @@ var Schema = {
             type: increments,
             nullable: false
         },
+        usersetting_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'usersettings',
+            onDelete: cascade,
+            onUpdate: cascade,
+            unique: true,
+            nullable: false
+        },
         username: {
             type: string,
             unique: true,
@@ -68,6 +77,24 @@ var Schema = {
         },
         pagernumber: {
             type: string
+        }
+    },
+    // Holds settings for users
+    UserSetting: {
+        id: {
+            type: increments
+        },
+        pushnotifications: {
+            type: boolean,
+            defaultTo: true
+        },
+        textnotifications: {
+            type: boolean,
+            defaultTo: false
+        },
+        emailnotifications: {
+            type: boolean,
+            defaultTo: false
         }
     },
     // Holds settings for groups
