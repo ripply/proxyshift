@@ -197,6 +197,33 @@ module.exports = {
         }
 
     },
+    '/mine': {
+        'get': {
+            route: function(req, res) {
+                var columns = createSelectQueryForAllColumns('Shift', 'shifts');
+                models.Shift.query(function(q) {
+                    q.select()
+                        .from('shifts')
+                        .where('shifts.user_id', '=', req.user.id);
+                })
+                    .fetchAll({
+                        withRelated: [
+                            'timezone'
+                        ]
+                    })
+                    .then(function(shifts) {
+                        if (shifts) {
+                            res.send(shifts.toJSON());
+                        } else {
+                            res.send(204); // no content
+                        }
+                    })
+                    .catch(function(err) {
+                        error(req, res, err);
+                    });
+            }
+        }
+    },
     '/:shift_id': {
         'get': { // get info about a shift
             auth: ['mark if user is a group owner or privileged location member for this shift'], // connected to shift (part of location) or managing the shift
@@ -433,29 +460,6 @@ module.exports = {
         'get': {
             route: function(req, res) {
                 fetchIgnoredShifts(req, res);
-            }
-        }
-    },
-    'mine': {
-        'get': {
-            route: function(req, res) {
-                var columns = createSelectQueryForAllColumns('Shift', 'shifts');
-                models.Shift.query(function(q) {
-                    q.select(columns)
-                        .from('shifts')
-                        .where('shifts.user_id', '=', req.user.id);
-                })
-                    .fetchAll()
-                    .then(function(shifts) {
-                        if (shifts) {
-                            res.send(shifts.toJSON());e
-                        } else {
-                            res.send(204); // no content
-                        }
-                    })
-                    .catch(function(err) {
-                        error(req, res, err);
-                    });
             }
         }
     },
@@ -916,7 +920,7 @@ function getShifts(req, res) {
             .fetch(withRelatedOptions, {
                 withRelated: [
                     'ignoreshifts',
-                    'timezones'
+                    'timezone'
                 ]
             })
             .tap(function (shift) {
