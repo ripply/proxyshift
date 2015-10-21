@@ -224,7 +224,7 @@ module.exports = function(grunt) {
                     'sess',
                     'issue' // TODO: Where is this global coming from?
                 ],
-                timeout: 3000,
+                timeout: 10000,
                 ignoreLeaks: false,
                 ui: 'bdd',
                 reporter: 'spec'
