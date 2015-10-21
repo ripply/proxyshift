@@ -265,7 +265,7 @@ angular.module('scheduling-app', [
                     views: {
                         'tabContent': {
                             templateUrl: "templates/myshifts.html",
-                            controller: 'OpenShiftsController',
+                            controller: 'MyShiftsController',
                         }
                     }
                 })
