@@ -8,6 +8,9 @@ angular.forEach({
     'AllShifts': {
         'Shifts': '/all'
     },
+    'MyShifts': {
+        'Shifts': '/mine'
+    },
     'Groups': 'Groups',
     'UserGroups': 'UserGroups',
     'GroupSettings': 'GroupSettings'
