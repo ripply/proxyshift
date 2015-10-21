@@ -3,9 +3,16 @@ angular.module('scheduling-app.controllers')
         '$scope',
         '$controller',
         'GENERAL_CONFIG',
+        'AllShiftsModel',
         function($scope,
                  $controller,
-                 GENERAL_CONFIG
+                 GENERAL_CONFIG,
+                 AllShiftsModel
         ) {
             $controller('BaseModelController', {$scope: $scope});
+            $scope.register(
+                'AllShifts',
+                AllShiftsModel,
+                undefined
+            );
         }]);

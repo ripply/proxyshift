@@ -1,11 +1,14 @@
 angular.module('scheduling-app.controllers')
     .controller('BaseModelController', [
+        '$rootScope',
         '$scope',
         '$injector',
         'GENERAL_EVENTS',
-        function($scope,
-                 $injector,
-                 GENERAL_EVENTS
+        function(
+            $rootScope,
+            $scope,
+            $injector,
+            GENERAL_EVENTS
         ) {
             if ($scope._models === undefined) {
                 $scope._models = {};
@@ -80,7 +83,7 @@ angular.module('scheduling-app.controllers')
                             delete objectMap.pendingFetch;
                             setSuccess(true);
 
-                            $scope.$emit(GENERAL_EVENTS.UPDATES.RESOURCE, objectName, result, oldValue);
+                            $rootScope.$emit(GENERAL_EVENTS.UPDATES.RESOURCE, objectName, result, oldValue, $scope);
                             if ($scope.fetchComplete !== undefined) {
                                 $scope.fetchComplete(result, oldValue);
                             }
@@ -173,6 +176,13 @@ angular.module('scheduling-app.controllers')
                     subRoute: subRouteFetchFunction,
                     object: modelObject
                 };
+                $scope.$on(GENERAL_EVENTS.UPDATES.RESOURCE, function(env, objectName, result, oldValue, otherScope) {
+                    if ($scope !== otherScope) {
+                        if ($scope.fetchComplete !== undefined) {
+                            $scope.fetchComplete(result, oldValue);
+                        }
+                    }
+                });
             }
 
             function unregister(modelName) {
