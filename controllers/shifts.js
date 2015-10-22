@@ -15,6 +15,7 @@ var postModel = controllerCommon.postModel;
 var patchModel = controllerCommon.patchModel;
 var deleteModel = controllerCommon.deleteModel;
 var updateModel = controllerCommon.updateModel;
+var getModelKeys = controllerCommon.getModelKeys;
 var error = controllerCommon.error;
 var clientError = controllerCommon.clientError;
 var getCurrentTimeForInsertionIntoDatabase = controllerCommon.getCurrentTimeForInsertionIntoDatabase;
@@ -395,6 +396,20 @@ module.exports = {
                     .catch(function(err) {
                         error(req, res, err);
                     });
+            }
+        }
+    },
+    '/:shift_id/cancel': {
+        'post': {
+            auth: ['user owns shift', 'or', 'managing shift'],
+            route: function(req, res) {
+                cancelShift(req, res, true);
+            }
+        },
+        'delete': {
+            auth: ['user owns shift', 'or', 'managing shift'],
+            route: function(req, res) {
+                cancelShift(req, res, false);
             }
         }
     },
@@ -965,4 +980,20 @@ function getShifts(req, res) {
         .catch(function (err) {
             error(req, res, err);
         });
+}
+
+function cancelShift(req, res, cancel) {
+    // get all shift keys
+    var allShiftKeys = getModelKeys('shift');
+    // then delete just the canceled one so that we can set it as canceled
+    delete allShiftKeys.canceled;
+    req.body.canceled = cancel
+    patchModel('shift', {
+            id: req.params.shift_id
+        },
+        req,
+        res,
+        'Success',
+        allShiftKeys
+    );
 }

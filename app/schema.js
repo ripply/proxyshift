@@ -344,6 +344,13 @@ var Schema = {
         notify: {
             type: date,
             nullable: true
+        },
+        // shift is canceled
+        // it doesn't make sense to just out right delete a shift that was made
+        // this provides no indication to any applicants or people interested that a shift has disappeared
+        canceled: {
+            type: boolean,
+            default: false
         }
     },
     // Application for a shift
