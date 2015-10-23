@@ -49,10 +49,17 @@ module.exports = {
             .fetch()
             .then(function(model) {
                 if (model) {
+                    var result;
                     if (successCallback !== undefined) {
-                        successCallback(model);
+                        result = successCallback(model);
                     }
-                    res.json({error: false, data: {message: 'Success'}});
+                    return Promise.resolve(result)
+                        .then(function() {
+                            res.json({error: false, data: {message: 'Success'}});
+                        })
+                        .catch(function(err) {
+                            error(req, res, err);
+                        })
                 } else {
                     res.status(403);
                 }

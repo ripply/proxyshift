@@ -1,7 +1,9 @@
 var models = require('../app/models');
 var Bookshelf = models.Bookshelf;
 var knex = models.knex;
+var Promise = require('bluebird');
 var moment = require('moment');
+var time = require('./time.js');
 var controllerCommon = require('./controllerCommon');
 var _ = require('underscore');
 var grabNormalShiftRange = controllerCommon.grabNormalShiftRange;
@@ -994,6 +996,33 @@ function cancelShift(req, res, cancel) {
         req,
         res,
         'Success',
-        allShiftKeys
+        allShiftKeys,
+        // TODO: USE TRANSACTION
+        undefined,
+        function() {
+            return Promise.new(function(resolve, reject) {
+                return models.ShiftCancelationReason.forge({
+                    user_id: req.user.id,
+                    shift_id: req.params.shift_id,
+                    reason: req.body.reason,
+                    date: time.nowInUtc()
+                })
+                    .save(undefined,
+                    {
+                        transacting:t
+                    }
+                )
+                    .then(function(shift) {
+                        resolve();
+                    })
+                    .catch(function(err) {
+                        // TODO: FIX THIS TO USE A TRANSACTION SO FAILURE HERE REVERTS CANCELATION OF SHIFT
+                        // The shift has already been canceled
+                        // the reason has just not been logged due to an error
+                        // since the patch code does not use a transaction
+                        resolve(err);
+                    });
+            });
+        }
     );
 }

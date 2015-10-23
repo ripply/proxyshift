@@ -353,6 +353,45 @@ var Schema = {
             default: false
         }
     },
+    // Keeps a record of reasons that a shift has been canceled
+    // each shift can have multiple reasons
+    // this prevents an employee of initially putting a valid reason
+    // then changing it after the fact
+    ShiftCancelationReason: {
+        id: {
+            type: increments
+        },
+        // reason for canceling a shift
+        reason: {
+            type: string,
+            nullable: false
+        },
+        // user who canceled a shift
+        user_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'users',
+            unique: false,
+            nullable: false,
+            onUpdate: cascade,
+            onDelete: cascade
+        },
+        // shift that was canceled
+        shift_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'shifts',
+            unique: false,
+            nullable: false,
+            onUpdate: cascade,
+            onDelete: cascade
+        },
+        // UTC second that shift was canceled
+        date: {
+            type: date,
+            nullable: false
+        }
+    },
     // Application for a shift
     ShiftApplication: {
         id: {
