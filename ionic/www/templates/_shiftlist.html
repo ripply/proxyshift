@@ -11,13 +11,14 @@
         class="item item-icon-right"
         ng-show="Model"
         ng-repeat="shift in Model"
-        ng-hide="ignoredShift(shift)">
+        ng-hide="shift.canceled || ignoredShift(shift)">
         <h2>{{getReadableLocalShiftStartTime(shift)}} - {{getReadableLocalShiftEndTime(shift)}} - {{getReadableLocalShiftDiffTime(shift)}}</h2>
         <h2 ng-show="{{userIsInDifferentTimeZone(shift)}}">{{getReadableUsersShiftStartTime(shift)}} - {{getReadableUsersShiftEndTime(shift)}} (your time)</h2>
         <p class="shift-title">{{shift.title}}</p>
         <p class="shift-description">{{shift.description}}</p>
         <p class="location-address" ng-show="{{!shift.sublocation_id}}">{{getShiftsLocation(shift).address}}</p>
         <p class="location-address" ng-show="{{shift.sublocation_id}}">{{getShiftsLocation(shift).address}} - {{getShiftsSublocation(shift).title}}</p>
+        <i class="icon ion-close" ng-if="cancelable" ng-click="cancelShift({{shift.id}})"></i>
         <i class="icon ion-close" ng-if="dismissable" ng-click="ignoreShift({{shift.id}})"></i>
     </ion-item>
     <ion-item
@@ -32,7 +33,7 @@
     <ion-item
         class="item item-icon-right"
         ng-repeat="shift in Model"
-        ng-hide="!ignoredShift(shift)">
+        ng-hide="shift.canceled || !ignoredShift(shift)">
         <h2>{{getReadableLocalShiftStartTime(shift)}} - {{getReadableLocalShiftEndTime(shift)}} - {{getReadableLocalShiftDiffTime(shift)}}</h2>
         <h2 ng-show="{{userIsInDifferentTimeZone(shift)}}">{{getReadableUsersShiftStartTime(shift)}} - {{getReadableUsersShiftEndTime(shift)}} (your time)</h2>
         <p class="shift-title">{{shift.title}}</p>
@@ -40,6 +41,7 @@
         <p class="location-address" ng-show="{{!shift.sublocation_id}}">{{getShiftsLocation(shift).address}}</p>
         <p class="location-address" ng-show="{{shift.sublocation_id}}">{{getShiftsLocation(shift).address}} - {{getShiftsSublocation(shift).title}}</p>
         <div ng-show="isIgnoredShift(shift)">wut</div>
+        <i class="icon ion-close" ng-if="cancelable" ng-click="cancelShift({{shift.id}})"></i>
         <i class="icon ion-close" ng-click="unIgnoreShift({{shift.id}})"></i>
     </ion-item>
 

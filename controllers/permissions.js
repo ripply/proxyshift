@@ -231,9 +231,29 @@ module.exports = {
         'mark if user is a group owner or privileged location member for this shift':
             markIfGroupOwnerOrPrivilegedMemberForShift,
 
+        'user owns shift': function(req, act) {
+            return models.Shift.query(function(q) {
+                q.select()
+                    .from('shifts')
+                    .where('shifts.id', '=', req.params.shift_id)
+                    .where('shift.user_id', '=', req.user.id);
+            })
+                .fetch()
+                .then(function(shift) {
+                    if (shift) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                })
+                .catch(function(err) {
+                    return false;
+                })
+        },
+
         'managing shift': function(req, act) {
             // TODO: Refactor this method to return true/false and make new method that has original behavior
-            return markIfGroupOwnerOrPrivilegedMemberForShift
+            return markIfGroupOwnerOrPrivilegedMemberForShift(req, act)
                 .then(function(result) {
                     var mark = getMark(req, 'privilegedshift', req.params.shift_id);
                     clearMarks(req);
@@ -460,7 +480,6 @@ function markIfGroupOwnerOrPrivilegedMemberForShift(req, act) {
                             }
 
                             req.params.location_id = old_location_id;
-
                             return true;
                         });
                 })
