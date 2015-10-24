@@ -53,7 +53,10 @@ angular.module('scheduling-app.controllers')
                         scope: $scope,
                         buttons: [
                             {
-                                text: 'Cancel'
+                                text: 'Cancel',
+                                onTap: function(e) {
+                                    delete $scope.data.reason;
+                                }
                             },
                             {
                                 text: 'OK',
@@ -70,7 +73,10 @@ angular.module('scheduling-app.controllers')
                     });
 
                     $scope.prompt.then(function(reason) {
-                        $scope.cancelShift(id, reason);
+                        delete $scope.data.reason;
+                        if (reason) {
+                            $scope.cancelShift(id, reason);
+                        }
                     });
                 });
             };
