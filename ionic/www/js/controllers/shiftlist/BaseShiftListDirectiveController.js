@@ -25,7 +25,10 @@ angular.module('scheduling-app.controllers')
                 Model,
                 undefined
             );
+            $scope.shifttitle = 'Open shifts';
+            $scope.declinedshifttitle = 'Declined shifts';
             $scope.Model = $rootScope[ModelVariableName];
+            $scope.data = {};
             $rootScope.$watch(ModelVariableName, function(newValue, oldValue) {
                 $scope.Model = newValue;
             });
@@ -40,7 +43,39 @@ angular.module('scheduling-app.controllers')
             // TODO: Remove and figurout why $ionivView.afterEnter does not trigger in super class
             $scope.fetch();
 
-            $scope.cancelShift = function(id) {
+            $scope.promptCancelShift = function(id) {
+                // TODO: Angular replacement for website
+                $rootScope.$emit(GENERAL_EVENTS.POPUP.REQUESTED, function($ionicPopup) {
+                    $scope.prompt = $ionicPopup.show({
+                        templateUrl: 'templates/notifications/cancelshiftreason.html',
+                        title: 'Provide a reason',
+                        subTitle: 'for canceling this shift',
+                        scope: $scope,
+                        buttons: [
+                            {
+                                text: 'Cancel'
+                            },
+                            {
+                                text: 'OK',
+                                type: 'button-positive',
+                                onTap: function(e) {
+                                    if (!$scope.data.reason || $scope.data.reason == '') {
+                                        e.preventDefault();
+                                    } else {
+                                        return $scope.data.reason;
+                                    }
+                                }
+                            }
+                        ]
+                    });
+
+                    $scope.prompt.then(function(reason) {
+                        $scope.cancelShift(id, reason);
+                    });
+                });
+            };
+
+            $scope.cancelShift = function(id, reason) {
                 var shift = getShift(id);
                 if (shift) {
                     if (shift.busy === true) {
@@ -50,7 +85,12 @@ angular.module('scheduling-app.controllers')
                 } else {
                     // doesn't exist? server might have it...
                 }
-                Restangular.one('shifts', id).all('cancel').post().then(function(result) {
+                Restangular.one('shifts', id)
+                    .all('cancel')
+                    .customPOST({
+                        reason: reason
+                    })
+                    .then(function(result) {
                     console.log(result);
                     var ignoredShift = addShiftToCanceledShifts(id);
                     if (ignoredShift) {
