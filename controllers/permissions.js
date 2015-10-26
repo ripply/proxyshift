@@ -236,7 +236,7 @@ module.exports = {
                 q.select()
                     .from('shifts')
                     .where('shifts.id', '=', req.params.shift_id)
-                    .where('shift.user_id', '=', req.user.id);
+                    .where('shifts.user_id', '=', req.user.id);
             })
                 .fetch()
                 .then(function(shift) {

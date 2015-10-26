@@ -986,11 +986,11 @@ function getShifts(req, res) {
 
 function cancelShift(req, res, cancel) {
     // get all shift keys
-    var allShiftKeys = getModelKeys('shift');
+    var allShiftKeys = getModelKeys('Shift');
     // then delete just the canceled one so that we can set it as canceled
     delete allShiftKeys.canceled;
-    req.body.canceled = cancel
-    patchModel('shift', {
+    req.body.canceled = cancel;
+    patchModel('Shift', {
             id: req.params.shift_id
         },
         req,
