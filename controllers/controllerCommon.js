@@ -1,5 +1,6 @@
 var schema = require('../app/schema').Schema,
     models = require('../app/models'),
+    Promise = require('bluebird'),
     moment = require('moment'),
     ShiftShared = require('../ionic/www/js/shared/ShiftShared'),
     _ = require('underscore');

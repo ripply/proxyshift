@@ -1000,7 +1000,7 @@ function cancelShift(req, res, cancel) {
         // TODO: USE TRANSACTION
         undefined,
         function() {
-            return Promise.new(function(resolve, reject) {
+            return new Promise(function(resolve, reject) {
                 return models.ShiftCancelationReason.forge({
                     user_id: req.user.id,
                     shift_id: req.params.shift_id,
@@ -1009,7 +1009,7 @@ function cancelShift(req, res, cancel) {
                 })
                     .save(undefined,
                     {
-                        transacting:t
+                        //transacting:t
                     }
                 )
                     .then(function(shift) {
