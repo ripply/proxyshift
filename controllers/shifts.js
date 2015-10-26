@@ -3,6 +3,7 @@ var Bookshelf = models.Bookshelf;
 var knex = models.knex;
 var Promise = require('bluebird');
 var moment = require('moment');
+var notifications = require('../app/notifications');
 var time = require('../app/time.js');
 var controllerCommon = require('./controllerCommon');
 var _ = require('underscore');
@@ -521,6 +522,51 @@ function triggerShiftSuccessfullyAppliedNotification(shift_id) {
     // TODO: NO-OP for now
 }
 
+// TODO: This probably won't scale to massive numbers of devices, it should do some kind of limit per db fetch and then keep hitting db until done
+function triggerShiftCanceledNotification(shift_id) {
+    // Query shift and send a notification to everyone who applied as well as to the owner of the shift (unless they canceled it)
+    return models.Shift.query(function(q) {
+        var query = q.select('shifts.canceled as canceled, shifts.user_id as owner_id, shiftapplications.user_id as applicant_id, pushtokens.token as token, pushtokens.platform as platform')
+            .from('shifts')
+            .where('shifts.id', '=', shift_id)
+            .innerJoin('shiftapplications', function() {
+                this.on('shiftapplications.shift_id', '=', 'shifts.id');
+            })
+            .innerJoin('tokens', function() {
+                this.on('tokens.user_id', '=', 'shiftapplications.user_id');
+            })
+            .innerJoin('pushtokens', function() {
+                this.on('pushtokens.token_id', '=', 'tokens.id');
+            });
+        query = notifications.filterExpiredPushTokens(query);
+    })
+        .fetchAll()
+        .then(function(shiftsInformation) {
+            // innerjoin and get tokens for each user_id
+            if (shiftsInformation) {
+                var information = shiftsInformation.toJSON();
+                var tokensByPlatform = {};
+                for (var i = 0; i < information.length; i++) {
+                    var platform = information.platform;
+                    if (!tokensByPlatform.hasOwnProperty(platform)) {
+                        tokensByPlatform[platform] = [];
+                    }
+                    tokensByPlatform[platform].push(information.token);
+                }
+                _.each(tokensByPlatform, function(tokens, service) {
+                    notifications.send(service, tokens, undefined, "Shift " + shift_id + " has been canceled");
+                });
+            } else {
+                // nothing to send
+                console.log("No clients interested that shift " + shift_id + "  was canceled");
+            }
+        })
+        .catch(function(err) {
+            console.log(err);
+            // TODO: Log error to console and notify last person who canceled shift
+        });
+}
+
 function notify(data) {
 
 }
@@ -990,39 +1036,62 @@ function cancelShift(req, res, cancel) {
     // then delete just the canceled one so that we can set it as canceled
     delete allShiftKeys.canceled;
     req.body.canceled = cancel;
-    patchModel('Shift', {
-            id: req.params.shift_id
-        },
-        req,
-        res,
-        'Success',
-        allShiftKeys,
-        // TODO: USE TRANSACTION
-        undefined,
-        function() {
-            return new Promise(function(resolve, reject) {
-                return models.ShiftCancelationReason.forge({
-                    user_id: req.user.id,
-                    shift_id: req.params.shift_id,
-                    reason: req.body.reason,
-                    date: time.nowInUtc()
-                })
-                    .save(undefined,
-                    {
-                        //transacting:t
-                    }
-                )
-                    .then(function(shift) {
-                        resolve();
-                    })
-                    .catch(function(err) {
-                        // TODO: FIX THIS TO USE A TRANSACTION SO FAILURE HERE REVERTS CANCELATION OF SHIFT
-                        // The shift has already been canceled
-                        // the reason has just not been logged due to an error
-                        // since the patch code does not use a transaction
-                        resolve(err);
-                    });
-            });
-        }
-    );
+    return models.Shift.query(function(q) {
+        q.select()
+            .from('shifts')
+            .where('shifts.id', '=', req.params.shift_id);
+    })
+        .fetch()
+        .then(function(shift) {
+            if (shift) {
+                var alreadyCanceled = shift.get('canceled');
+                if (!alreadyCanceled) {
+                    patchModel('Shift', {
+                            id: req.params.shift_id
+                        },
+                        req,
+                        res,
+                        'Success',
+                        allShiftKeys,
+                        // TODO: USE TRANSACTION
+                        undefined,
+                        function () {
+                            return new Promise(function (resolve, reject) {
+                                return models.ShiftCancelationReason.forge({
+                                    user_id: req.user.id,
+                                    shift_id: req.params.shift_id,
+                                    reason: req.body.reason,
+                                    date: time.nowInUtc()
+                                })
+                                    .save(undefined,
+                                    {
+                                        //transacting:t
+                                    }
+                                )
+                                    .then(function (shift) {
+                                        triggerShiftCanceledNotification(req.params.shift_id);
+                                        resolve();
+                                    })
+                                    .catch(function (err) {
+                                        // TODO: FIX THIS TO USE A TRANSACTION SO FAILURE HERE REVERTS CANCELATION OF SHIFT
+                                        // The shift has already been canceled
+                                        // the reason has just not been logged due to an error
+                                        // since the patch code does not use a transaction
+                                        resolve(err);
+                                    });
+                            });
+                        }
+                    );
+                } else {
+                    res.sendStatus(200);
+                }
+            } else {
+                // shouldn't really happen
+                // auth rules should ensure that this shift exists
+                res.sendStatus(403);
+            }
+        })
+        .catch(function(err) {
+            error(req, res, err);
+        });
 }

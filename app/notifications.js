@@ -4,6 +4,7 @@ var config = require('config'),
     apn = require('apn'),
     wns = require('wns'),
     fs = require('fs'),
+    time = require('./time'),
     Promise = require('bluebird'),
     _ = require('underscore');
 var apiKeys = {};
@@ -269,7 +270,13 @@ sender.sendNoRetry(message, { topic: '/topics/global' }, function (err, result) 
     else    console.log(result);
 });
 */
+
+function filterExpiredPushTokens(query) {
+    return query.where('pushtokens.expires', '<', time.nowInUtc());
+}
+
 module.exports = {
     platformMap: platformMap,
+    filterExpiredPushTokens: filterExpiredPushTokens,
     Notifications: Notifications
 };
