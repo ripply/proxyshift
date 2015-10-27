@@ -276,17 +276,23 @@ angular.module('scheduling-app.controllers')
                             // this is OK
                         }
 
-                        while (shiftStartMoment.isBefore(shiftEndMoment)) {
-                            var calendarDay = calendarDateMap[shiftStartMomentLocal.startOf("day").unix()];
-                            if (!calendarDay) {
-                                throw new Error("Error generating calendar for shift " + transformed);
-                            }
-                            if (calendarDay.shifts === undefined) {
-                                calendarDay.shifts = [];
-                            }
+                        while (shiftStartMomentLocal.isBefore(shiftEndMoment)) {
+                            if (shiftStartMomentLocal.isAfter(calendarStart)) {
+                                if (shiftStartMomentLocal.isBefore(calendarEnd)) {
+                                    var calendarDay = calendarDateMap[shiftStartMomentLocal.startOf("day").unix()];
+                                    if (!calendarDay) {
+                                        throw new Error("Error generating calendar for shift " + transformed);
+                                    }
+                                    if (calendarDay.shifts === undefined) {
+                                        calendarDay.shifts = [];
+                                    }
 
-                            calendarDay.shifts.push(transformed);
-                            shiftStartMoment = shiftStartMoment.add(1, "day");
+                                    calendarDay.shifts.push(transformed);
+                                } else {
+                                    break
+                                }
+                            }
+                            shiftStartMomentLocal = shiftStartMomentLocal.add(1, "day");
                         }
 
                     }
