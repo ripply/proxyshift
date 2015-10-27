@@ -266,6 +266,7 @@ angular.module('scheduling-app.controllers')
                             // shift starts after calendar starts
                             // this is OK
                         }
+                        var shiftStartMomentLocal = moment.unix(shiftStartMoment.unix());
 
                         var shiftEndMoment = moment(endMoment);
                         if (shiftEndMoment.isAfter(calendarEnd)) {
@@ -276,7 +277,7 @@ angular.module('scheduling-app.controllers')
                         }
 
                         while (shiftStartMoment.isBefore(shiftEndMoment)) {
-                            var calendarDay = calendarDateMap[shiftStartMoment.startOf("day").unix()];
+                            var calendarDay = calendarDateMap[shiftStartMomentLocal.startOf("day").unix()];
                             if (!calendarDay) {
                                 throw new Error("Error generating calendar for shift " + transformed);
                             }
