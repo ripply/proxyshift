@@ -24,6 +24,7 @@ var password = 'secret';
 // DELETE /api/shifts/:shift_id
 // DELETE /api/shifts/:shift_id/ignore
 // DELETE /api/shifts/:shift_id/cancel
+// DELETE /api/shifts/:shift_id/register
 // GET /api/shifts/mine
 
 // MODIFY:

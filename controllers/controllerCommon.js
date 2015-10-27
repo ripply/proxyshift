@@ -34,6 +34,10 @@ module.exports = {
         // TODO: Consolidate return messages into a function so everything is consistent
         // TODO: WARNING: UNSAFE: Submit pull request to bookshelf-validator to support {patch: true}
         var tableName = models.getTableNameFromModel(modelName);
+        var updateSource = req;
+        if (req.hasOwnProperty('body')) {
+            updateSource = req.body;
+        }
         models[modelName].query(function(q) {
             var query = q.select()
                 .from(tableName);
@@ -42,7 +46,7 @@ module.exports = {
             });
             query.update(getPatchKeysWithoutBannedKeys(
                     modelName,
-                    req.body,
+                    updateSource,
                     defaultExcludes
                 )
             )

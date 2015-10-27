@@ -414,6 +414,15 @@ var Schema = {
         date: {
             type: date,
             nullable: false
+        },
+        // application for shift has been recinded
+        recinded: {
+            type: boolean,
+            default: false
+        },
+        recindeddate: {
+            type: date,
+            nullable: true
         }
     },
     IgnoreShift: {
