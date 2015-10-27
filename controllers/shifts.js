@@ -523,25 +523,39 @@ function triggerShiftSuccessfullyAppliedNotification(shift_id) {
 }
 
 // TODO: This probably won't scale to massive numbers of devices, it should do some kind of limit per db fetch and then keep hitting db until done
-function triggerShiftCanceledNotification(shift_id) {
+function triggerShiftCanceledNotification(shift_id, next) {
     // Query shift and send a notification to everyone who applied as well as to the owner of the shift (unless they canceled it)
-    return models.Shift.query(function(q) {
-        var query = q.select('shifts.canceled as canceled, shifts.user_id as owner_id, shiftapplications.user_id as applicant_id, pushtokens.token as token, pushtokens.platform as platform')
-            .from('shifts')
-            .where('shifts.id', '=', shift_id)
-            .innerJoin('shiftapplications', function() {
-                this.on('shiftapplications.shift_id', '=', 'shifts.id');
-            })
+    return models.PushToken.query(function(q) {
+        var select = ['pushtokens.token as token', 'pushtokens.platform as platform'];
+        var query = q.select(select)
+            .from('pushtokens')
             .innerJoin('tokens', function() {
-                this.on('tokens.user_id', '=', 'shiftapplications.user_id');
+                this.on('tokens.id', '=', 'pushtokens.token_id');
             })
-            .innerJoin('pushtokens', function() {
-                this.on('pushtokens.token_id', '=', 'tokens.id');
+            .innerJoin('shiftapplications', function() {
+                this.on('shiftapplications.user_id', '=', 'tokens.user_id');
+            })
+            .innerJoin('shifts', function() {
+                this.on('shifts.user_id', '=', 'shiftapplications.user_id');
+            })
+            .where('shifts.id', '=', shift_id)
+            .union(function() {
+                // consider owner of shift an applicant so that we can use a union instead of two queries
+                this.select(select)
+                    .from('pushtokens')
+                    .innerJoin('tokens', function() {
+                        this.on('tokens.user_id', '=', 'pushtokens.token_id');
+                    })
+                    .innerJoin('shifts', function() {
+                        this.on('shifts.user_id', '=', 'tokens.user_id');
+                    })
+                    .where('shifts.id', '=', shift_id);
             });
         query = notifications.filterExpiredPushTokens(query);
     })
         .fetchAll()
         .then(function(shiftsInformation) {
+            next();
             // innerjoin and get tokens for each user_id
             if (shiftsInformation) {
                 var information = shiftsInformation.toJSON();
@@ -562,8 +576,8 @@ function triggerShiftCanceledNotification(shift_id) {
             }
         })
         .catch(function(err) {
-            console.log(err);
-            // TODO: Log error to console and notify last person who canceled shift
+            // TODO: Log error to console and notify last person who canceled shift since this is async
+            next(err);
         });
 }
 
@@ -1069,8 +1083,10 @@ function cancelShift(req, res, cancel) {
                                     }
                                 )
                                     .then(function (shift) {
-                                        triggerShiftCanceledNotification(req.params.shift_id);
-                                        resolve();
+                                        return triggerShiftCanceledNotification(req.params.shift_id, function(err) {
+                                            // TODO: USE TRANSACTION SO FAILURE HERE REVERTS CANCELATION OF SHIFT
+                                            resolve(err);
+                                        });
                                     })
                                     .catch(function (err) {
                                         // TODO: FIX THIS TO USE A TRANSACTION SO FAILURE HERE REVERTS CANCELATION OF SHIFT
