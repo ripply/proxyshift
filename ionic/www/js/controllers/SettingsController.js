@@ -17,10 +17,6 @@ angular.module('scheduling-app.controllers')
 
             $scope.groupsList = UserInfoService.getGroupList();
 
-            $scope.openGroupSettings = function() {
-                StateHistoryService.addToGotoHistory();
-            };
-
             $scope.close = function() {
                 StateHistoryService.returnTo(STATES.SHIFTS);
             };

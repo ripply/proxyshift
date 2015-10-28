@@ -1,0 +1,28 @@
+<ion-content>
+    <ion-item href="/#/groupsettings/{{currentGroup.id}}/members/current" class="item-remove-animate">
+        Members page
+    </ion-item>
+    <div class="item item-divider">
+        Subclass Details
+    </div>
+    <div>
+        <form name="subclassForm" ng-submit="createSubclass(subclassForm)">
+            <div class="list">
+                <label class="item item-input">
+                    <span class="input-label">Subclass Title</span>
+                    <input type="text" title="user">
+                </label>
+                <label class="item item-input">
+                    <span class="input-label">Subclass Description (optional)</span>
+                    <input type="text" name="description">
+                </label>
+                <ion-checkbox ng-repeat="permission in permissionList"
+                              ng-model="permission.checked"
+                              ng-checked="permission.checked">
+                    {{ permission.description }}
+                </ion-checkbox>
+                <button class="button button-block button-positive" type="submit">Create Subclass</button>
+            </div>
+        </form>
+    </div>
+</ion-content>

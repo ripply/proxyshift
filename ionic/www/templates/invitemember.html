@@ -1,0 +1,47 @@
+<ion-content>
+    <ion-item href="/#/groupsettings/{{currentGroup.id}}/members/current" class="item-remove-animate">
+        Members page
+    </ion-item>
+    <div class="item item-divider">
+        User Details
+    </div>
+    <div>
+        <form name="inviteForm" ng-submit="sendInvite(inviteForm)">
+            <div class="list">
+                <label class="item item-input">
+                    <span class="input-label">Usernames or Email</span>
+                    <input type="text"
+                           placeholder="Ex: john@gmail.com, bob@gmail.com, etc"
+                           name="user">
+                </label>
+                <label class="item item-input item-select">
+                    <div class="input-label">
+                        Userclass
+                    </div>
+                    <select>
+                        <option ng-repeat="class in userclassList"
+                                value="{{ class.description }}">
+                            {{ class.description }}
+                        </option>
+                    </select>
+                </label>
+                <label class="item item-input item-select">
+                    <div class="input-label">
+                        Permission
+                    </div>
+                    <select>
+                        <option ng-repeat="permission in permissionsList"
+                                value="{{ permission.description }}">
+                            {{ permission.description }}
+                        </option>
+                    </select>
+                </label>
+                <label class="item item-input">
+                    <span class="input-label">Invitation Message</span>
+                    <input type="text" name="message">
+                </label>
+                <button class="button button-block button-positive" type="submit">Invite User</button>
+            </div>
+        </form>
+    </div>
+</ion-content>

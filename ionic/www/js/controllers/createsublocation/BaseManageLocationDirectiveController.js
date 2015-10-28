@@ -1,24 +1,32 @@
-/**
- * EditGroupController
- */
 angular.module('scheduling-app.controllers')
-    .controller('EditGroupController', [
-        '$scope',
+    .controller('BaseManageLocationDirectiveController', [
         '$rootScope',
-        'StateHistoryService',
-        'STATES',
-        'UserInfoService',
-        function($scope, $rootScope, StateHistoryService, STATES, UserInfoService) {
-
-            var url = window.location.href;
-            var id = url.split('/').pop();
-
-            $scope.currentGroup = UserInfoService.getGroup(id);
-
-            $scope.settingsList = [
-                { text: "Everyone Can Create Shifts", checked: true},
-                { text: "Shifts Need Confirmation", checked: false}
-            ];
+        '$scope',
+        '$controller',
+        'GENERAL_CONFIG',
+        'GENERAL_EVENTS',
+        //'Restangular',
+        //'ModelVariableName',
+        //'Model',
+        function($rootScope,
+                 $scope,
+                 $controller,
+                 GENERAL_CONFIG,
+                 GENERAL_EVENTS
+                 //Restangular,
+                 //ModelVariableName,
+                 //Model
+        ) {
+            $controller('BaseModelController', {$scope: $scope});
+           /* $scope.register(
+                //ModelVariableName,
+                //Model,
+                //undefined
+            );*/
+            //$scope.Model = $rootScope[ModelVariableName];
+            /*$rootScope.$watch(ModelVariableName, function(newValue, oldValue) {
+                $scope.Model = newValue;
+            });*/
 
             $scope.locationList = [
                 { address: "Location 1", city: "Helsingborg", checked: true },
@@ -43,9 +51,19 @@ angular.module('scheduling-app.controllers')
                 { address: "Location 20", city: "Chicago", checked: true }
             ];
 
-            $scope.close = function() {
-                StateHistoryService.returnTo(STATES.SETTINGS);
-            };
+            function createSubLocation(sublocation) {
+                //Send email invitation
 
-        }]
-);
+                if(checkExistingSubLocation(sublocation)) {
+                    //Also send invitation to user in app
+                }
+            }
+
+            function checkExistingSubLocation(sublocation) {
+                if(sublocation) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }]);

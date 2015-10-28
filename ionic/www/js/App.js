@@ -357,22 +357,101 @@ angular.module('scheduling-app', [
 
                 .state('settings', {
                     url: "/settings",
-                    templateUrl: "templates/settings.html",
+                    templateUrl: "templates/usersettings.html",
                     controller: 'SettingsController',
                     resolve: {
                         //TODO: Check /userinfo
                     }
                 })
 
-                .state('settings.groupsettings', {
-                    url: "/groupsettings/:groupsetting_id",
+                .state('groupsettings', {
+                    url: "/groupsettings/:group_id",
+                    templateUrl: "templates/groupsettings.html",
+                    controller: 'EditGroupController',
+                    resolve: {
+                        //TODO: Check /userinfo
+                    }
+                })
+
+                .state('groupsettings.members', {
+                    url: "/members",
+                    abstract: true,
+                    templateUrl: "templates/groupmembers.html",
+                    resolve: {
+                        //TODO: Check /userinfo
+                    }
+                })
+
+                .state('groupsettings.members.current', {
+                    url: "/current",
                     resolve: {
                         //TODO: Check /userinfo
                     },
                     views: {
                         'content': {
-                            templateUrl: "templates/editgroup.html",
-                            controller: 'EditGroupController'
+                            templateUrl: "templates/currentgroupmembers.html",
+                            controller: 'GroupMembersController'
+                        }
+                    }
+                })
+
+                .state('groupsettings.members.invite', {
+                    url: "/invite",
+                    resolve: {
+                        //TODO: Check /userinfo
+                    },
+                    views: {
+                        'content': {
+                            templateUrl: "templates/invitemember.html",
+                            controller: 'BaseSendInviteDirectiveController'
+                        }
+                    }
+                })
+
+                .state('groupsettings.members.createsubclass', {
+                    url: "/createsubclass",
+                    resolve: {
+                        //TODO: Check /userinfo
+                    },
+                    views: {
+                        'content': {
+                            templateUrl: "templates/createsubclass.html",
+                            controller: 'BaseCreateSubclassDirectiveController'
+                        }
+                    }
+                })
+
+                .state('groupsettings.locations', {
+                    url: "/locations",
+                    abstract: true,
+                    templateUrl: "templates/locations.html",
+                    resolve: {
+                        //TODO: Check /userinfo
+                    }
+                })
+
+                .state('groupsettings.locations.current', {
+                    url: "/current",
+                    resolve: {
+                        //TODO: Check /userinfo
+                    },
+                    views: {
+                        'content': {
+                            templateUrl: "templates/currentlocations.html",
+                            controller: 'GroupLocationsController'
+                        }
+                    }
+                })
+
+                .state('groupsettings.locations.manage', {
+                    url: "/:location_id/manage",
+                    resolve: {
+                        //TODO: Check /userinfo
+                    },
+                    views: {
+                        'content': {
+                            templateUrl: "templates/managelocation.html",
+                            controller: 'BaseManageLocationDirectiveController'
                         }
                     }
                 })
