@@ -6,6 +6,7 @@ var schema = require('../app/schema').Schema,
     _ = require('underscore');
 
 var Bookshelf = models.Bookshelf;
+var getModelKeys = models.getModelKeys;
 
 // TODO: Hook this up to a generalized logging utility
 function audit(req, text) {
@@ -136,6 +137,7 @@ module.exports = {
     createSelectQueryForAllColumns: createSelectQueryForAllColumns
 };
 
+/*
 function getModelKeys(modelName, bannedKeys) {
     if (!bannedKeys) {
         bannedKeys = defaultBannedKeys;
@@ -147,6 +149,7 @@ function getModelKeys(modelName, bannedKeys) {
 
     return _.omit(modelKeys, bannedKeys);
 }
+*/
 
 function filterClientUpdateInput(modelName, updateData, bannedKeys) {
     if (!bannedKeys) {

@@ -853,10 +853,33 @@ _.each(modelNames, function(tableName, modelName) {
     models[modelName] = Bookshelf.Model.extend(modelOptions);
     // create the collection
     var pluralModelName = pluaralizeString(modelName);
-    models[pluralModelName] = Bookshelf.Collection.extend({
+    var bookshelfModel = Bookshelf.Collection.extend({
         model: models[modelName]
     });
+    models[pluralModelName] = bookshelfModel;
+
+    // attach key listing for select as queries
+    var keys = getModelKeys(modelName);
+    bookshelfModel.keys = keys;
+
+    var select = [];
+    _.each(keys, function(value, key) {
+        select.push(tableName + '.' + key + ' as ' + key);
+    });
+    bookshelfModel.selectkeys = select;
 });
+
+function getModelKeys(modelName, bannedKeys) {
+    if (!bannedKeys) {
+        bannedKeys = ['id'];
+    }
+    if (!Schema.hasOwnProperty(modelName)) {
+        throw new Error("Model: " + modelName + " does not exist in Schema");
+    }
+    var modelKeys = Schema[modelName];
+
+    return _.omit(modelKeys, bannedKeys);
+}
 
 function getValidationOptionsForModelName(modelName) {
     if (validations.hasOwnProperty(modelName)) {
@@ -1133,6 +1156,7 @@ function sendNotificationToUsers(users_id, expires, message) {
 
 var exports = {
     Bookshelf: Bookshelf,
+    getModelKeys: getModelKeys,
     checkRememberMeToken: checkRememberMeToken,
     registerDeviceIdForUser: registerDeviceIdForUser,
     isDeviceRegistered: isDeviceRegistered,

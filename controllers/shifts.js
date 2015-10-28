@@ -24,6 +24,10 @@ var clientError = controllerCommon.clientError;
 var getCurrentTimeForInsertionIntoDatabase = controllerCommon.getCurrentTimeForInsertionIntoDatabase;
 var createSelectQueryForAllColumns = controllerCommon.createSelectQueryForAllColumns;
 
+var shiftAndAppliedSelectKeys = _.clone(models.Shifts.selectkeys);
+// LEFT OUTER JOIN TO GET THIS WHERE RECINDED = FALSE
+shiftAndAppliedSelectKeys.push('shiftapplications.id as applied');
+
 module.exports = {
     route: '/api/shifts',
     '/after/:after/before/:before': {
@@ -72,7 +76,7 @@ module.exports = {
 
                     // grab all shifts at locations/sublocations that are one of your job types
 
-                    q.select('shifts.*')
+                    var query = q.select(shiftAndAppliedSelectKeys)
                         .from('shifts')
                         .innerJoin('locations', function() {
                             this.on('shifts.location_id', '=', 'locations.id');
@@ -82,9 +86,10 @@ module.exports = {
                                 .orWhere('shifts.end', '>=', after);
                         })
                         .whereIn('locations.id', relatedLocationsSubQuery)
-                        .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery)
+                        .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery);
+                    joinShiftApplications(query, req.user.id)
                         .union(function() {
-                            this.select('shifts.*')
+                            var query = this.select(shiftAndAppliedSelectKeys)
                                 .from('shifts')
                                 .innerJoin('sublocations', function() {
                                     this.on('shifts.sublocation_id', '=', 'sublocations.id');
@@ -95,6 +100,7 @@ module.exports = {
                                 })
                                 .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery)
                                 .whereIn('sublocations.location_id', relatedLocationsSubQuery);
+                            query = joinShiftApplications(query, req.user.id);
                         });
                 })
                     .fetchAll({
@@ -967,6 +973,20 @@ function createNewShift(req, res) {
 }
 
 /**
+ * Helper that does an outer join on the shiftapplications table
+ * @param query
+ * @returns {*}
+ */
+function joinShiftApplications(query, user_id) {
+    return query.leftOuterJoin('shiftapplications', function() {
+        this.on('shiftapplications.shift_id', '=', 'shifts.id')
+            .andOn('shiftapplications.user_id', '=', user_id);
+    })
+        //.where('shiftapplications.user_id', '=', user_id);
+        //.orderBy('shiftapplications.recindeddate');
+}
+
+/**
  * Should be called with
  * 'mark if user is a group owner or privileged location member for this shift'
  * @param req
@@ -993,7 +1013,6 @@ function getShifts(req, res) {
     }
 
     Bookshelf.transaction(function(t) {
-
         var query = null;
         if (privilegedshift) {
             // privileged user
@@ -1007,12 +1026,13 @@ function getShifts(req, res) {
                 // therefore, since privileged location members should be able to access any shift they want
                 // and they specifically accessed this one
                 // we will allow it since the prerequisites have already been checked
-                var query = q.select('shifts.*')
+                var query = q.select(shiftAndAppliedSelectKeys)
                     .from('shifts');
-                applySearchConstraintsOnShiftsTable(query)
+                query = applySearchConstraintsOnShiftsTable(query)
                     .innerJoin('locations', function () {
                         this.on('shifts.location_id', '=', 'locations.id');
                     });
+                query = joinShiftApplications(query, req.user.id);
             })
         } else {
             // unprivileged user
@@ -1047,9 +1067,9 @@ function getShifts(req, res) {
 
                 // grab all shifts at locations/sublocations that are one of your job types
 
-                var query = q.select('shifts.*')
+                var query = q.select(shiftAndAppliedSelectKeys)
                     .from('shifts');
-                applySearchConstraintsOnShiftsTable(query)
+                query = applySearchConstraintsOnShiftsTable(query)
                     //.where('shifts.id', '=', req.params.shift_id)
                     .innerJoin('locations', function () {
                         this.on('shifts.location_id', '=', 'locations.id');
@@ -1059,11 +1079,12 @@ function getShifts(req, res) {
                      .orWhere('shifts.end', '>=', after);
                      })*/
                     .whereIn('locations.id', relatedLocationsSubQuery)
-                    .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery)
+                    .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery);
+                joinShiftApplications(query, req.user.id)
                     .union(function () {
-                        var query = this.select('shifts.*')
+                        var query = this.select(shiftAndAppliedSelectKeys)
                             .from('shifts');
-                        applySearchConstraintsOnShiftsTable(query)
+                        query = applySearchConstraintsOnShiftsTable(query)
                             //.where('shifts.id', '=', req.params.shift_id)
                             .innerJoin('sublocations', function () {
                                 this.on('shifts.sublocation_id', '=', 'sublocations.id');
@@ -1074,6 +1095,7 @@ function getShifts(req, res) {
                              })*/
                             .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery)
                             .whereIn('sublocations.location_id', relatedLocationsSubQuery);
+                        joinShiftApplications(query, req.user.id);
                     });
             })
         }
