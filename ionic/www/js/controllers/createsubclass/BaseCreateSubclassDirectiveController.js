@@ -36,12 +36,12 @@ angular.module('scheduling-app.controllers')
             function createSubclass(subclass) {
                 //Send email invitation
 
-                if(checkExistingSubClass(subclass)) {
+                if(checkExistingSubclass(subclass)) {
                     //Also send invitation to user in app
                 }
             }
 
-            function checkExistingSubClass(subclass) {
+            function checkExistingSubclass(subclass) {
                 if(subclass) {
                     return true;
                 } else {
