@@ -26,6 +26,7 @@ var createSelectQueryForAllColumns = controllerCommon.createSelectQueryForAllCol
 
 var shiftAndAppliedSelectKeys = _.clone(models.Shifts.selectkeys);
 // LEFT OUTER JOIN TO GET THIS WHERE RECINDED = FALSE
+shiftAndAppliedSelectKeys.push('shifts.id as id');
 shiftAndAppliedSelectKeys.push('shiftapplications.id as applied');
 
 module.exports = {
