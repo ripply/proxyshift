@@ -456,13 +456,13 @@ module.exports = {
                         .from('shiftapplications')
                         .where('shiftapplications.user_id', '=', req.user.id)
                         .andWhere('shiftapplications.shift_id', '=', req.params.shift_id)
-                        .andWhere('shiftapplications.recinded', '=', false);
+                        .andWhere('shiftapplications.recinded', '!=', true);
                 })
                     .fetch({
                         //transacting: t
                     })
                     .then(function(shiftapplication) {
-                        var shiftApplicationKeys = getModelKeys('ShiftApplication');
+                        var shiftApplicationKeys = Object.keys(getModelKeys('ShiftApplication'));
                         if (shiftapplication) {
                             // user has registered for shift
                             // recind it
@@ -471,7 +471,7 @@ module.exports = {
                                 },
                                 {
                                     recinded: true,
-                                    recinddate: getCurrentTimeForInsertionIntoDatabase()
+                                    recindeddate: getCurrentTimeForInsertionIntoDatabase()
                                 },
                                 res,
                                 'Success',
@@ -480,7 +480,6 @@ module.exports = {
                                     //transacting: t
                                 },
                                 function() {
-                                    console.log("Successfully recinded shift application!");
                                     // shift has been recinded
                                     // send notifications
                                     return triggerShiftApplicationRecinsionNotification(shiftapplication.get('id'));

@@ -210,6 +210,74 @@ angular.module('scheduling-app.controllers')
                 });
             };
 
+            $scope.applyForShift = function(id) {
+                var shift = getShift(id);
+                if (shift) {
+                    if (shift.busy === true) {
+                        return;
+                    }
+                    shift.busy = true;
+                } else {
+                    // doesn't exist? server might have it...
+                }
+                Restangular.one('shifts', id).all('register').post().then(function(result) {
+                    console.log(result);
+                    /*
+                    var ignoredShift = addShiftToIgnoredShifts(id);
+                    if (ignoredShift) {
+                        ignoredShift.busy = false;
+                        ignoredShift.failed = false;
+                    } else {
+                        // we dont have copy of this shift, update
+                        $scope.fetch();
+                    }
+                    */
+                    $scope.fetch();
+                }, function(response) {
+                    // failure
+                    var failedShift = getShift(id);
+                    if (failedShift) {
+                        failedShift.busy = false;
+                        failedShift.failed = true;
+                    }
+                    $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);
+                });
+            };
+
+            $scope.recindApplicationForAShift = function(id) {
+                var shift = getShift(id);
+                if (shift) {
+                    if (shift.busy === true) {
+                        return;
+                    }
+                    shift.busy = true;
+                } else {
+                    // doesn't exist? server might have it...
+                }
+                Restangular.one('shifts', id).all('register').remove().then(function(result) {
+                    console.log(result);
+                    /*
+                    var unIgnoredShift = removeShiftFromIgnoredShifts(id);
+                    if (unIgnoredShift) {
+                        unIgnoredShift.busy = false;
+                        unIgnoredShift.failed = false;
+                    } else {
+                        // we dont have copy of this shift, update
+                        $scope.fetch();
+                    }
+                    */
+                    $scope.fetch();
+                }, function(response) {
+                    // failure
+                    var failedShift = getShift(id);
+                    if (failedShift) {
+                        failedShift.busy = false;
+                        failedShift.failed = true;
+                    }
+                    $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);
+                });
+            };
+
             function getShift(id) {
                 var allShifts = $rootScope.AllShifts;
                 if (allShifts) {

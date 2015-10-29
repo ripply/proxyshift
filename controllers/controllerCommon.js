@@ -30,6 +30,8 @@ module.exports = {
     patchModel: function(modelName, queryArgs, req, res, updateMessage, defaultExcludes, sqlOptions, successCallback) {
         if (defaultExcludes === undefined) {
             defaultExcludes = defaultBannedKeys;
+        } else if (!defaultExcludes instanceof Array) {
+            throw new Error("Excludes must be an array to have any effect: " + typeof defaultExcludes);
         }
         // TODO: Refactor all routes to use the same code paths for create/patch etc
         // TODO: Consolidate return messages into a function so everything is consistent
@@ -45,6 +47,8 @@ module.exports = {
             _.each(queryArgs, function(value, key) {
                 query = query.where(tableName + "." + key, '=', value);
             });
+            console.log("Updating with:");
+            console.log(updateSource);
             query.update(getPatchKeysWithoutBannedKeys(
                     modelName,
                     updateSource,
