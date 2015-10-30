@@ -10,7 +10,7 @@ angular.module('scheduling-app.controllers')
         function($scope, StateHistoryService, STATES, UserInfoService) {
 
             //Retreive following data from db that was stored when invitation was sent
-            $scope.informationList = [
+            $scope.groupDetails = [
                 { description: "Group Name", data: "Evolution"},
                 { description: "State", data: "Virginia"},
                 { description: "City", data: "Chesapeake"},
