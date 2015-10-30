@@ -40,6 +40,7 @@ angular.module('scheduling-app.controllers')
 
             function sendInvite(email) {
                 //Send email invitation
+                //Store invitation id/key in DB to use when user clicks URL to said invitation page?
 
                 if(checkExistingUser(email)) {
                     //Also send invitation to user in app

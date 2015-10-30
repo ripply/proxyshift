@@ -511,6 +511,15 @@ angular.module('scheduling-app', [
                             controller: 'CreateGroupController'
                         }
                     }
+                })
+
+                .state('groupinvite', {
+                    url: "/groupinvite/:invititation_id",
+                    templateUrl: "templates/groupinvite.html",
+                    controller: 'GroupInviteController',
+                    resolve: {
+                        //TODO: Check /userinfo
+                    }
                 });
 
             //StateHistoryService.setDefaultState('app.playlists');
