@@ -978,10 +978,13 @@ function createNewShift(req, res) {
  * @returns {*}
  */
 function joinShiftApplications(query, user_id) {
+    // TODO: Figure out how to use this query without recinded != true see:
+    // https://stackoverflow.com/questions/9592875/sql-server-left-outer-join-with-top-1-to-select-at-most-one-row
     return query.leftOuterJoin('shiftapplications', function() {
         this.on('shiftapplications.shift_id', '=', 'shifts.id')
-            .andOn('shiftapplications.user_id', '=', user_id);
-    })
+            .andOn('shiftapplications.user_id', '=', user_id)
+            .andOn('shiftapplications.recinded', '!=', true);
+    });
         //.where('shiftapplications.user_id', '=', user_id);
         //.orderBy('shiftapplications.recindeddate');
 }
