@@ -419,6 +419,32 @@ var Schema = {
             nullable: false
         }
     },
+    // Reason for recission of a shift application
+    ShiftRescissionReason: {
+        id: {
+            type: increments
+        },
+        shift_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'shifts',
+            onDelete: cascade
+        },
+        user_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'users',
+            onDelete: cascade
+        },
+        date: {
+            type: date,
+            nullable: false
+        },
+        reason: {
+            type: string,
+            nullable: false
+        }
+    },
     // Application for a shift
     ShiftApplication: {
         id: {

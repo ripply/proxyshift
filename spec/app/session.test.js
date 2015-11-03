@@ -37,7 +37,7 @@ describe("#/session", function() {
 
     describe('- supertest', function() {
 
-        it('- should set session details correctly', function(done) {
+        it.only('- should set session details correctly', function(done) {
             return login('test_password',
                 'secret',
                 function(err, res) {

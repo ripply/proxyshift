@@ -21,6 +21,7 @@ var updateModel = controllerCommon.updateModel;
 var getModelKeys = controllerCommon.getModelKeys;
 var error = controllerCommon.error;
 var clientError = controllerCommon.clientError;
+var clientCreate = controllerCommon.clientCreate;
 var getCurrentTimeForInsertionIntoDatabase = controllerCommon.getCurrentTimeForInsertionIntoDatabase;
 var createSelectQueryForAllColumns = controllerCommon.createSelectQueryForAllColumns;
 
@@ -245,7 +246,6 @@ module.exports = {
         'patch': { // update a shift
             auth: ['managing shift'], // must be managing the shift
             route: function(req, res) {
-                console.log(req.body);
                 if (getMark(req, 'privilegedshift', req.param.shift_id)) {
                     patchModel(
                         'Shift',
@@ -342,12 +342,29 @@ module.exports = {
                                 if (outstandingApplicationExists) {
                                     // not recinded
                                     // nothing to do as the user has already applied
+                                    clientCreate(req, res, 200, outstandingApplicationExists, shiftapplicationsJson.id);
                                     res.sendStatus(200);
                                     return;
                                 } else {
                                     // all shift applications have been recinded
                                     // fallthrough to creating a new one that is not recinded
                                 }
+                            }
+
+                            function createShiftApplication() {
+                                return models.ShiftApplication.forge({
+                                    shift_id: req.params.shift_id,
+                                    user_id: req.user.id,
+                                    date: getCurrentTimeForInsertionIntoDatabase()
+                                })
+                                    .save(null,
+                                    {
+                                        transacting: t
+                                    })
+                                    .tap(function (model) {
+                                        triggerShiftApplicationNotification(req.params.shift_id);
+                                        clientCreate(req, res, 201, model.get('id'));
+                                    });
                             }
 
                             if (requiremanagerapproval) {
@@ -364,22 +381,11 @@ module.exports = {
                                         if (existingShiftApplications) {
                                             // already exists
                                             // TODO: Maybe re-send notification to manager?
-                                            req.sendStatus(200);
+                                            clientCreate(req, res, 200, existingShiftApplications.get('id'));
                                         } else {
                                             // does not exist
                                             // create it!
-                                            return models.ShiftApplication.forge({
-                                                shift_id: req.params.shift_id,
-                                                user_id: req.user.id,
-                                                date: getCurrentTimeForInsertionIntoDatabase()
-                                            })
-                                                .save({
-                                                    transacting: t
-                                                })
-                                                .tap(function (model) {
-                                                    triggerShiftApplicationNotification(req.params.shift_id);
-                                                    res.sendStatus(201);
-                                                });
+                                            return createShiftApplication();
                                         }
                                     })
                             } else {
@@ -400,19 +406,7 @@ module.exports = {
                                         if (shift_user_id) {
                                             // someone already has been approved for the shift
                                             // register in queue
-                                            return models.ShiftApplication.forge({
-                                                shift_id: req.params.shift_id,
-                                                user_id: req.user.id,
-                                                date: getCurrentTimeForInsertionIntoDatabase()
-                                            })
-                                                .save(null,
-                                                {
-                                                    transacting: t
-                                                })
-                                                .tap(function (model) {
-                                                    triggerShiftApplicationNotification(req.params.shift_id);
-                                                    res.sendStatus(201);
-                                                });
+                                            return createShiftApplication();
                                         } else {
                                             // patch shift
                                             // TODO: Turn this into a patch
@@ -428,8 +422,7 @@ module.exports = {
                                                 }
                                             )
                                                 .tap(function(model) {
-                                                    triggerShiftSuccessfullyAppliedNotification(req.params.shift_id);
-                                                    res.sendStatus(201);
+                                                    return createShiftApplication();
                                                 })
                                         }
                                     })
@@ -447,6 +440,12 @@ module.exports = {
         'delete': {
             auth: ['mark groupuserclass options for shift', 'user can apply for shift'],
             route: function(req, res) {
+                var reason = req.body.reason;
+                // TODO: Check for empty spaces etc
+                if (!reason || reason == '') {
+                    clientError(req, res, 400, 'reason: required');
+                    return;
+                }
                 // make sure that the user is already registered
 
                 // Transaction does not work with patchModel I think...
@@ -456,7 +455,10 @@ module.exports = {
                         .from('shiftapplications')
                         .where('shiftapplications.user_id', '=', req.user.id)
                         .andWhere('shiftapplications.shift_id', '=', req.params.shift_id)
-                        .andWhere('shiftapplications.recinded', '!=', true);
+                        .andWhere(function() {
+                            this.where('shiftapplications.recinded', '!=', true)
+                                .orWhereNull('shiftapplications.recinded');
+                        });
                 })
                     .fetch({
                         //transacting: t
@@ -466,12 +468,13 @@ module.exports = {
                         if (shiftapplication) {
                             // user has registered for shift
                             // recind it
+                            var date = getCurrentTimeForInsertionIntoDatabase();
                             patchModel('ShiftApplication', {
                                     id: shiftapplication.get('id')
                                 },
                                 {
                                     recinded: true,
-                                    recindeddate: getCurrentTimeForInsertionIntoDatabase()
+                                    recindeddate: date
                                 },
                                 res,
                                 'Success',
@@ -480,9 +483,23 @@ module.exports = {
                                     //transacting: t
                                 },
                                 function() {
-                                    // shift has been recinded
-                                    // send notifications
-                                    return triggerShiftApplicationRecinsionNotification(shiftapplication.get('id'));
+                                    // TODO: Transaction
+                                    return models.ShiftRescissionReason.forge({
+                                        user_id: req.user.id,
+                                        shift_id: req.params.shift_id,
+                                        date: date,
+                                        reason: reason
+                                    })
+                                        .save()
+                                        .then(function(shiftrecissionreason) {
+                                            // shift has been recinded
+                                            // send notifications
+                                            return triggerShiftApplicationRecinsionNotification(shiftapplication.get('id'), shiftrecissionreason.get('id'));
+                                        })
+                                        .catch(function(err) {
+                                            // TODO: Transaction so can rollback on possible error
+                                            console.log(err);
+                                        })
                                 }
                             )
                         } else {
@@ -935,7 +952,6 @@ function createNewShift(req, res) {
                     if (location) {
                         // get shift timezone from location.timezone_id
                         var locationJson = location.toJSON();
-                        console.log(locationJson);
                         otherArgs.timezone_id = locationJson.id;
                         otherArgs.user_id = req.user.id;
                         if (!otherArgs.timezone_id) {

@@ -43,6 +43,44 @@ angular.module('scheduling-app.controllers')
             // TODO: Remove and figurout why $ionivView.afterEnter does not trigger in super class
             $scope.fetch();
 
+            $scope.promptRecindShift = function(id) {
+                // TODO: Angular replacement for website
+                $rootScope.$emit(GENERAL_EVENTS.POPUP.REQUESTED, function($ionicPopup) {
+                    $scope.prompt = $ionicPopup.show({
+                        templateUrl: 'templates/notifications/recindshiftreason.html',
+                        title: 'Provide a reason',
+                        subTitle: 'for recinding this shift application',
+                        scope: $scope,
+                        buttons: [
+                            {
+                                text: 'Cancel',
+                                onTap: function(e) {
+                                    delete $scope.data.reason;
+                                }
+                            },
+                            {
+                                text: 'OK',
+                                type: 'button-positive',
+                                onTap: function(e) {
+                                    if (!$scope.data.recindreason || $scope.data.recindreason == '') {
+                                        e.preventDefault();
+                                    } else {
+                                        return $scope.data.recindreason;
+                                    }
+                                }
+                            }
+                        ]
+                    });
+
+                    $scope.prompt.then(function(reason) {
+                        delete $scope.data.reason;
+                        if (reason) {
+                            $scope.recindApplicationForAShift(id, reason);
+                        }
+                    });
+                });
+            };
+
             $scope.promptCancelShift = function(id) {
                 // TODO: Angular replacement for website
                 $rootScope.$emit(GENERAL_EVENTS.POPUP.REQUESTED, function($ionicPopup) {
@@ -127,25 +165,28 @@ angular.module('scheduling-app.controllers')
                 } else {
                     // doesn't exist? server might have it...
                 }
-                Restangular.one('shifts', id).all('cancel').remove().then(function(result) {
-                    console.log(result);
-                    var unIgnoredShift = removeShiftFromCanceledShifts(id);
-                    if (unIgnoredShift) {
-                        unIgnoredShift.busy = false;
-                        unIgnoredShift.failed = false;
-                    } else {
-                        // we dont have copy of this shift, update
-                        $scope.fetch();
-                    }
-                }, function(response) {
-                    // failure
-                    var failedShift = getShift(id);
-                    if (failedShift) {
+                Restangular.one('shifts', id)
+                    .all('cancel')
+                    .remove()
+                    .then(function(result) {
+                        console.log(result);
+                        var unIgnoredShift = removeShiftFromCanceledShifts(id);
+                        if (unIgnoredShift) {
+                            unIgnoredShift.busy = false;
+                            unIgnoredShift.failed = false;
+                        } else {
+                            // we dont have copy of this shift, update
+                            $scope.fetch();
+                        }
+                    }, function(response) {
+                        // failure
+                        var failedShift = getShift(id);
+                        if (failedShift) {
                         failedShift.busy = false;
-                        failedShift.failed = true;
-                    }
-                    $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);
-                });
+                            failedShift.failed = true;
+                        }
+                        $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);
+                    });
             };
 
             $scope.ignoreShift = function(id) {
@@ -158,25 +199,28 @@ angular.module('scheduling-app.controllers')
                 } else {
                     // doesn't exist? server might have it...
                 }
-                Restangular.one('shifts', id).all('ignore').post().then(function(result) {
-                    console.log(result);
-                    var ignoredShift = addShiftToIgnoredShifts(id);
-                    if (ignoredShift) {
-                        ignoredShift.busy = false;
-                        ignoredShift.failed = false;
-                    } else {
-                        // we dont have copy of this shift, update
-                        $scope.fetch();
-                    }
-                }, function(response) {
-                    // failure
-                    var failedShift = getShift(id);
-                    if (failedShift) {
-                        failedShift.busy = false;
-                        failedShift.failed = true;
-                    }
-                    $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);
-                });
+                Restangular.one('shifts', id)
+                    .all('ignore')
+                    .post()
+                    .then(function(result) {
+                        console.log(result);
+                        var ignoredShift = addShiftToIgnoredShifts(id);
+                        if (ignoredShift) {
+                            ignoredShift.busy = false;
+                            ignoredShift.failed = false;
+                        } else {
+                            // we dont have copy of this shift, update
+                            $scope.fetch();
+                        }
+                    }, function(response) {
+                        // failure
+                        var failedShift = getShift(id);
+                        if (failedShift) {
+                            failedShift.busy = false;
+                            failedShift.failed = true;
+                        }
+                        $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);
+                    });
             };
 
             $scope.unIgnoreShift = function(id) {
@@ -189,30 +233,37 @@ angular.module('scheduling-app.controllers')
                 } else {
                     // doesn't exist? server might have it...
                 }
-                Restangular.one('shifts', id).all('ignore').remove().then(function(result) {
-                    console.log(result);
-                    var unIgnoredShift = removeShiftFromIgnoredShifts(id);
-                    if (unIgnoredShift) {
-                        unIgnoredShift.busy = false;
-                        unIgnoredShift.failed = false;
-                    } else {
-                        // we dont have copy of this shift, update
-                        $scope.fetch();
-                    }
-                }, function(response) {
-                    // failure
-                    var failedShift = getShift(id);
-                    if (failedShift) {
-                        failedShift.busy = false;
-                        failedShift.failed = true;
-                    }
-                    $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);
-                });
+                Restangular.one('shifts', id)
+                    .all('ignore')
+                    .remove()
+                    .then(function(result) {
+                        console.log(result);
+                        var unIgnoredShift = removeShiftFromIgnoredShifts(id);
+                        if (unIgnoredShift) {
+                            unIgnoredShift.busy = false;
+                            unIgnoredShift.failed = false;
+                        } else {
+                            // we dont have copy of this shift, update
+                            $scope.fetch();
+                        }
+                    }, function(response) {
+                        // failure
+                        var failedShift = getShift(id);
+                        if (failedShift) {
+                            failedShift.busy = false;
+                            failedShift.failed = true;
+                        }
+                        $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);
+                    });
             };
 
             $scope.applyForShift = function(id) {
                 var shift = getShift(id);
                 if (shift) {
+                    if (shift.applied !== undefined) {
+                        // already applied for shift
+                        return;
+                    }
                     if (shift.busy === true) {
                         return;
                     }
@@ -220,33 +271,37 @@ angular.module('scheduling-app.controllers')
                 } else {
                     // doesn't exist? server might have it...
                 }
-                Restangular.one('shifts', id).all('register').post().then(function(result) {
-                    console.log(result);
-                    /*
-                    var ignoredShift = addShiftToIgnoredShifts(id);
-                    if (ignoredShift) {
-                        ignoredShift.busy = false;
-                        ignoredShift.failed = false;
-                    } else {
-                        // we dont have copy of this shift, update
-                        $scope.fetch();
-                    }
-                    */
-                    $scope.fetch();
-                }, function(response) {
-                    // failure
-                    var failedShift = getShift(id);
-                    if (failedShift) {
-                        failedShift.busy = false;
-                        failedShift.failed = true;
-                    }
-                    $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);
+                Restangular.one('shifts', id)
+                    .all('register')
+                    .post()
+                    .then(function(result) {
+                        shift.busy = false;
+                        shift.failed = false;
+                        var registrationId = -1;
+                        if (result.hasOwnProperty('id')) {
+                            registrationId = result.id;
+                        } else {
+                            // server sent unexpected content
+                        }
+                        shift.applied = registrationId;
+                    }, function(response) {
+                        // failure
+                        var failedShift = getShift(id);
+                        if (failedShift) {
+                            failedShift.busy = false;
+                            failedShift.failed = true;
+                        }
+                        $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);
                 });
             };
 
-            $scope.recindApplicationForAShift = function(id) {
+            $scope.recindApplicationForAShift = function(id, reason) {
                 var shift = getShift(id);
                 if (shift) {
+                    if (shift.applied === undefined) {
+                        // not applied
+                        return;
+                    }
                     if (shift.busy === true) {
                         return;
                     }
@@ -254,28 +309,29 @@ angular.module('scheduling-app.controllers')
                 } else {
                     // doesn't exist? server might have it...
                 }
-                Restangular.one('shifts', id).all('register').remove().then(function(result) {
-                    console.log(result);
-                    /*
-                    var unIgnoredShift = removeShiftFromIgnoredShifts(id);
-                    if (unIgnoredShift) {
-                        unIgnoredShift.busy = false;
-                        unIgnoredShift.failed = false;
-                    } else {
-                        // we dont have copy of this shift, update
-                        $scope.fetch();
-                    }
-                    */
-                    $scope.fetch();
-                }, function(response) {
-                    // failure
-                    var failedShift = getShift(id);
-                    if (failedShift) {
-                        failedShift.busy = false;
-                        failedShift.failed = true;
-                    }
-                    $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);
-                });
+                // window.Restangular.one('shifts', 1).all('register').customOperation('remove', null, null, {'Content-Type': 'application/json'}, {reason: 'test'});
+                Restangular
+                    .one('shifts', id)
+                    .all('register')
+                    .customOperation('remove', null, null, {
+                        // content type must be set to json so that server will parse content, it is set to text without setting this
+                        'Content-Type': 'application/json'
+                    }, {
+                        reapson: reason
+                    })
+                    .then(function(result) {
+                        shift.busy = false;
+                        shift.failed = false;
+                        shift.applied = undefined;
+                    }, function(response) {
+                        // failure
+                        var failedShift = getShift(id);
+                        if (failedShift) {
+                            failedShift.busy = false;
+                            failedShift.failed = true;
+                        }
+                        $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);
+                    });
             };
 
             function getShift(id) {

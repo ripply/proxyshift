@@ -23,6 +23,7 @@ var defaultBannedKeys = ['id'];
 module.exports = {
     error: error,
     clientError: clientError,
+    clientCreate: clientCreate,
     getCurrentTimeForInsertionIntoDatabase: function() {
         return (new moment()).unix();
     },
@@ -110,7 +111,7 @@ module.exports = {
         return models[modelName].forge(fullArgs)
             .save(undefined, sqlOptions)
             .then(function (saved) {
-                res.status(201).json({id: saved.get('id')});
+                clientCreate(req, res, 201, saved.get('id'));
             })
             .catch(function (err) {
                 if (err.hasOwnProperty('errors')) {
@@ -275,4 +276,8 @@ function clientError(req, res, status, message) {
     } else {
         res.status(status).json({error: true, data: {message: message}});
     }
+}
+
+function clientCreate(req, res, status, id) {
+    res.status(status).json({id: id});
 }
