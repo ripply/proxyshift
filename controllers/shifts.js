@@ -875,7 +875,10 @@ function getShiftsYouAreManaging(req, res) {
         }
     })
         .fetchAll({
-            withRelated: 'shiftapplications'
+            withRelated: [
+                'shiftapplications',
+                'timezone'
+            ]
         })
         .then(function(shifts) {
             if (shifts) {

@@ -275,7 +275,7 @@ angular.module('scheduling-app', [
                     views: {
                         'tabContent': {
                             templateUrl: "templates/manage.html",
-                            controller: 'ManageController',
+                            controller: 'ManagerController',
                         }
                     }
                 })

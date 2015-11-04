@@ -11,6 +11,9 @@ angular.forEach({
     'MyShifts': {
         'Shifts': '/mine'
     },
+    'ManagingShifts': {
+        'Shifts': '/managing'
+    },
     'Groups': 'Groups',
     'UserGroups': 'UserGroups',
     'GroupSettings': 'GroupSettings'
