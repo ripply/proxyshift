@@ -1002,7 +1002,7 @@ function joinShiftApplications(query, user_id) {
     return query.leftOuterJoin('shiftapplications', function() {
         this.on('shiftapplications.shift_id', '=', 'shifts.id')
             .andOn('shiftapplications.user_id', '=', user_id)
-            .andOn('shiftapplications.recinded', '!=', true);
+            .andOn('shiftapplications.recinded', '!=', '1');
     });
         //.where('shiftapplications.user_id', '=', user_id);
         //.orderBy('shiftapplications.recindeddate');
