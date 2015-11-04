@@ -456,7 +456,7 @@ module.exports = {
                         .where('shiftapplications.user_id', '=', req.user.id)
                         .andWhere('shiftapplications.shift_id', '=', req.params.shift_id)
                         .andWhere(function() {
-                            this.where('shiftapplications.recinded', '!=', true)
+                            this.where('shiftapplications.recinded', '!=', '1')
                                 .orWhereNull('shiftapplications.recinded');
                         });
                 })
