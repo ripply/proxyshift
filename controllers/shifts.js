@@ -1001,11 +1001,12 @@ function joinShiftApplications(query, user_id) {
     // https://stackoverflow.com/questions/9592875/sql-server-left-outer-join-with-top-1-to-select-at-most-one-row
     return query.leftOuterJoin('shiftapplications', function() {
         this.on('shiftapplications.shift_id', '=', 'shifts.id')
-            .andOn('shiftapplications.user_id', '=', user_id)
-            .andOn('shiftapplications.recinded', '!=', '1');
-    });
-        //.where('shiftapplications.user_id', '=', user_id);
-        //.orderBy('shiftapplications.recindeddate');
+            .andOn('shiftapplications.user_id', '=', user_id);
+    })
+        .where(function() {
+            this.where('shiftapplications.recinded', '!=', '1')
+                .orWhereNull('shiftapplications.recinded');
+        });
 }
 
 /**
