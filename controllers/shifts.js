@@ -875,10 +875,9 @@ function getShiftsYouAreManaging(req, res) {
         }
     })
         .fetchAll({
-            withRelated: [
-                'shiftapplications',
+            withRelated: withRelatedShiftApplicationsAndUsers([
                 'timezone'
-            ]
+            ])
         })
         .then(function(shifts) {
             if (shifts) {
@@ -1130,7 +1129,7 @@ function getShifts(req, res) {
         if (privilegedshift) {
             // people who have privileged access to shifts (group owners/managers)
             // will also be sent who has applied for the shift
-            withRelatedOptions.withRelated = 'shiftapplications';
+            withRelatedOptions.withRelated = withRelatedShiftApplicationsAndUsers();
         }
 
         clearMarks(req);
@@ -1252,4 +1251,18 @@ function cancelShift(req, res, cancel) {
         .catch(function(err) {
             error(req, res, err);
         });
+}
+
+function withRelatedShiftApplicationsAndUsers(withRelated) {
+    if (!withRelated) {
+        withRelated = [];
+    }
+    withRelated.push('shiftapplications');
+    withRelated.push({
+        'shiftapplications.user': function(qb) {
+            qb.columns(['users.id','users.username']);
+        }
+    });
+
+    return withRelated;
 }
