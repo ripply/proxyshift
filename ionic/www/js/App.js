@@ -280,6 +280,16 @@ angular.module('scheduling-app', [
                     }
                 })
 
+                .state('app.tabs.manage_shift', {
+                    url: "/manageshift/:shift_id",
+                    views: {
+                        'tabContent': {
+                            templateUrl: "templates/manageshift.html",
+                            controller: 'ManageShiftController',
+                        }
+                    }
+                })
+
                 .state('requestshift', {
                     url: "/requestshift",
                     abstract: true,
