@@ -6,6 +6,15 @@
             show-reorder="false"
             can-swipe="false">
             List of people applying for shift {{shift_id}}
+            <ion-item class="item"
+                      ng-show="{{shift.shiftapplications.length != 0}}"
+                      ng-repeat="shiftapplication in shift.shiftapplications">
+                {{shiftapplication}}
+            </ion-item>
+            <ion-item class="item"
+                      ng-show="{{shift.shiftapplications.length == 0}}">
+                No applicants
+            </ion-item>
         </ion-list>
     </ion-content>
 </ion-view>
