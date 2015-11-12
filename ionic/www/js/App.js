@@ -377,7 +377,7 @@ angular.module('scheduling-app', [
                 .state('groupsettings', {
                     url: "/groupsettings/:group_id",
                     templateUrl: "templates/groupsettings.html",
-                    controller: 'EditGroupController',
+                    controller: 'GroupSettingsController',
                     resolve: {
                         //TODO: Check /userinfo
                     }
@@ -462,6 +462,19 @@ angular.module('scheduling-app', [
                         'content': {
                             templateUrl: "templates/managelocation.html",
                             controller: 'BaseManageLocationDirectiveController'
+                        }
+                    }
+                })
+
+                .state('groupsettings.locations.subscription', {
+                    url: "/subscription",
+                    resolve: {
+                        //TODO: Check /userinfo
+                    },
+                    views: {
+                        'content': {
+                            templateUrl: "templates/locationsubscriptions.html",
+                            controller: 'UserLocationsController'
                         }
                     }
                 })

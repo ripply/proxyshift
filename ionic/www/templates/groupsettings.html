@@ -7,6 +7,9 @@
     </ion-header-bar>
     <ion-content>
         <div class="list">
+            <div class="item item-divider">
+                Navigation
+            </div>
             <ion-item href="/#/groupsettings/{{currentGroup.id}}/members/current" class="item-remove-animate">
                 Members Page
             </ion-item>
@@ -17,7 +20,7 @@
                 Create Subclass
             </ion-item>
             <div class="item item-divider">
-                Settings
+                Group Settings
             </div>
             <ion-toggle ng-repeat="setting in settingsList"
                         ng-model="setting.checked"
@@ -26,19 +29,11 @@
                 {{ setting.text }}
             </ion-toggle>
             <div class="item item-divider">
-                Locations
+                Individual Settings
             </div>
-            <i class="icon ion-search placeholder-icon"></i>
-            <input type="text" ng-model="query" ng-style="{'width' : '100%'}"
-                   placeholder="Search by address, city, state, zipcode or phone">
-            <ion-toggle ng-repeat="location in locationList | filter:query"
-                        ng-model="location.checked"
-                        ng-checked="location.checked">
-                {{ location.address }}
-            </ion-toggle>
+            <ion-item href="/#/groupsettings/{{currentGroup.id}}/locations/subscription" class="item-remove-animate">
+                Locations Subscription Page
+            </ion-item>
         </div>
-        <button class="button button-full button-positive">
-            Save
-        </button>
     </ion-content>
 </ion-nav-view>
