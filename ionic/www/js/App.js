@@ -536,10 +536,19 @@ angular.module('scheduling-app', [
                     }
                 })
 
-                .state('groupinvite', {
-                    url: "/groupinvite/:invititation_id",
-                    templateUrl: "templates/groupinvite.html",
-                    controller: 'GroupInviteController',
+                .state('groupinvitation', {
+                    url: "/groupinvitation/:invititation_id",
+                    templateUrl: "templates/groupinvitation.html",
+                    controller: 'GroupInvitationController',
+                    resolve: {
+                        //TODO: Check /userinfo
+                    }
+                })
+
+                .state('invitation', {
+                    url: "/invitation/:invititation_id",
+                    templateUrl: "templates/invitation.html",
+                    controller: 'InvitationController',
                     resolve: {
                         //TODO: Check /userinfo
                     }

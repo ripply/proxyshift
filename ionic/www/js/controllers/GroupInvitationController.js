@@ -1,8 +1,8 @@
 /**
- * GroupInviteController
+ * GroupInvitationController
  */
 angular.module('scheduling-app.controllers')
-    .controller('GroupInviteController', [
+    .controller('GroupInvitationController', [
         '$scope',
         'StateHistoryService',
         'STATES',

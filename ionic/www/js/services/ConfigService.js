@@ -105,6 +105,7 @@ var config_data = {
         'CREATESUBCLASS': 'groupsettings.members.createsubclass',
         'CURRENTLOCATIONS': 'groupsettings.locations.current',
         'MANAGELOCATION': 'groupsettings.locations.manage',
+        'USERLOCATIONS': 'groupsettings.locations.subscription',
         'REQUESTSHIFT': 'requestshift.locations',
         'REQUESTSHIFT_LOCATION_SELECTED': 'requestshift.location',
         'REQUESTSHIFT_LOCATION_AND_JOB_SELECTED': 'requestshift.locationjob',
