@@ -23,9 +23,9 @@ angular.module('scheduling-app.controllers')
                 undefined
             );
             $scope.shift_id = $stateParams.shift_id;
+            $scope.data = {};
 
             $rootScope.$on(GENERAL_EVENTS.UPDATES.RESOURCE, function(env, resource, newValue, oldValue) {
-                console.log("WAT");
                 getShiftId($scope.shift_id);
             });
 
@@ -47,5 +47,83 @@ angular.module('scheduling-app.controllers')
                 }
 
                 // TODO: Go back, invalid shift
+            }
+
+            $scope.promptAcceptShiftApplication = promptAcceptShiftApplication;
+
+            function promptAcceptShiftApplication(shiftapplication_id) {
+                // TODO: Angular replacement for website
+                $rootScope.$emit(GENERAL_EVENTS.POPUP.REQUESTED, function($ionicPopup) {
+                    $scope.prompt = $ionicPopup.show({
+                        templateUrl: 'templates/notifications/acceptshiftapplication.html',
+                        title: 'Are you sure',
+                        subTitle: 'you want to accept this shift application?',
+                        scope: $scope,
+                        buttons: [
+                            {
+                                text: 'No'
+                            },
+                            {
+                                text: 'Yes',
+                                type: 'button-positive'
+                            }
+                        ]
+                    });
+
+                    $scope.prompt.then(function(reason) {
+                        delete $scope.data.reason;
+                        if (reason) {
+                            acceptShiftApplication(shiftapplication_id, reason);
+                        }
+                    });
+                });
+            }
+
+            function acceptShiftApplication(shiftapplication_id) {
+                // TODO
+            }
+
+            $scope.prompDeclineShiftApplication = promptDeclineShiftApplication;
+
+            function promptDeclineShiftApplication(shiftapplication_id) {
+                // TODO: Angular replacement for website
+                $rootScope.$emit(GENERAL_EVENTS.POPUP.REQUESTED, function($ionicPopup) {
+                    $scope.prompt = $ionicPopup.show({
+                        templateUrl: 'templates/notifications/declineshiftapplication.html',
+                        title: 'Provide a reason',
+                        subTitle: 'for declining this shift application',
+                        scope: $scope,
+                        buttons: [
+                            {
+                                text: 'Cancel',
+                                onTap: function(e) {
+                                    delete $scope.data.reason;
+                                }
+                            },
+                            {
+                                text: 'OK',
+                                type: 'button-positive',
+                                onTap: function(e) {
+                                    if (!$scope.data.declinereason || $scope.data.declinereason == '') {
+                                        e.preventDefault();
+                                    } else {
+                                        return $scope.data.declinereason;
+                                    }
+                                }
+                            }
+                        ]
+                    });
+
+                    $scope.prompt.then(function(reason) {
+                        delete $scope.data.reason;
+                        if (reason) {
+                            declineShiftApplication(shiftapplication_id, reason);
+                        }
+                    });
+                });
+            }
+
+            function declineShiftApplication(shiftapplication_id, reason) {
+                // TODO
             }
         }]);
