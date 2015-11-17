@@ -4,6 +4,7 @@ angular.module('scheduling-app.controllers')
         '$rootScope',
         '$controller',
         '$stateParams',
+        'Restangular',
         'GENERAL_EVENTS',
         'GENERAL_CONFIG',
         'ManagingShiftsModel',
@@ -11,6 +12,7 @@ angular.module('scheduling-app.controllers')
                  $rootScope,
                  $controller,
                  $stateParams,
+                 Restangular,
                  GENERAL_EVENTS,
                  GENERAL_CONFIG,
                  ManagingShiftsModel
@@ -80,7 +82,12 @@ angular.module('scheduling-app.controllers')
             }
 
             function acceptShiftApplication(shiftapplication_id) {
-                // TODO
+                Restangular.all('shifts')
+                    .one('application', shiftapplication_id)
+                    .post()
+                    .then(function(result) {
+                        console.log(result);
+                    });
             }
 
             $scope.prompDeclineShiftApplication = promptDeclineShiftApplication;
@@ -124,6 +131,16 @@ angular.module('scheduling-app.controllers')
             }
 
             function declineShiftApplication(shiftapplication_id, reason) {
-                // TODO
+                Restangular.all('shifts')
+                    .one('application', shiftapplication_id)
+                    .customOperation('remove', null, null, {
+                        // content type must be set to json so that server will parse content, it is set to text without setting this
+                        'Content-Type': 'application/json'
+                    }, {
+                        reason: reason
+                    })
+                    .then(function(result) {
+                        console.log(result);
+                    });
             }
         }]);

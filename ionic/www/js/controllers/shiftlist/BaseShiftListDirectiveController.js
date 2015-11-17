@@ -260,7 +260,7 @@ angular.module('scheduling-app.controllers')
             $scope.applyForShift = function(id) {
                 var shift = getShift(id);
                 if (shift) {
-                    if (shift.applied !== undefined) {
+                    if (shift.applied) {
                         // already applied for shift
                         return;
                     }
@@ -298,7 +298,7 @@ angular.module('scheduling-app.controllers')
             $scope.recindApplicationForAShift = function(id, reason) {
                 var shift = getShift(id);
                 if (shift) {
-                    if (shift.applied === undefined) {
+                    if (!shift.applied) {
                         // not applied
                         return;
                     }
@@ -317,7 +317,7 @@ angular.module('scheduling-app.controllers')
                         // content type must be set to json so that server will parse content, it is set to text without setting this
                         'Content-Type': 'application/json'
                     }, {
-                        reapson: reason
+                        reason: reason
                     })
                     .then(function(result) {
                         shift.busy = false;

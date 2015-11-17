@@ -1295,6 +1295,12 @@ function withRelatedShiftApplicationsAndUsers(withRelated) {
 }
 
 function acceptOrDeclineShiftApplication(req, res, accept) {
+    var reason = req.body.reason;
+    if (!accept) {
+        if (reason == null || reason.length == 0) {
+            clientError(req, res, 400, 'reason: required');
+        }
+    }
     return Bookshelf.transaction(function(t) {
         return models.ShiftApplicationAcceptDeclineReason.query(function(q) {
             q.select()
