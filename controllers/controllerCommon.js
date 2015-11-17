@@ -24,6 +24,7 @@ module.exports = {
     error: error,
     clientError: clientError,
     clientCreate: clientCreate,
+    clientStatus: clientStatus,
     getCurrentTimeForInsertionIntoDatabase: function() {
         return (new moment()).unix();
     },
@@ -278,6 +279,14 @@ function clientError(req, res, status, message) {
     }
 }
 
+function clientStatus(req, res, status) {
+    clientCreate(req, res, status, null);
+}
+
 function clientCreate(req, res, status, id) {
-    res.status(status).json({id: id});
+    if (id == null) {
+        res.sendStatus(status);
+    } else {
+        res.status(status).json({id: id});
+    }
 }

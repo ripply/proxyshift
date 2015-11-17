@@ -449,6 +449,10 @@ var Schema = {
         id: {
             type: increments
         },
+        accept: {
+            type: boolean,
+            nullable: false
+        },
         shiftapplication_id: {
             type: integer,
             references: 'id',

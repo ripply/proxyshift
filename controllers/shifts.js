@@ -23,6 +23,7 @@ var getModelKeys = controllerCommon.getModelKeys;
 var error = controllerCommon.error;
 var clientError = controllerCommon.clientError;
 var clientCreate = controllerCommon.clientCreate;
+var clientStatus = controllerCommon.clientStatus;
 var getCurrentTimeForInsertionIntoDatabase = controllerCommon.getCurrentTimeForInsertionIntoDatabase;
 var createSelectQueryForAllColumns = controllerCommon.createSelectQueryForAllColumns;
 
@@ -252,13 +253,13 @@ module.exports = {
         'post': { // approves a shift applicataion
             auth: ['managing shift'],
             route: function(req, res) {
-
+                return acceptOrDeclineShiftApplication(req, res, true);
             }
         },
         'delete': { // rejects a shift application
             auth: ['managing shift'],
             route: function(req, res) {
-
+                return acceptOrDeclineShiftApplication(req, res, false);
             }
         }
     },
@@ -1291,4 +1292,56 @@ function withRelatedShiftApplicationsAndUsers(withRelated) {
     });
 
     return withRelated;
+}
+
+function acceptOrDeclineShiftApplication(req, res, accept) {
+    return Bookshelf.transaction(function(t) {
+        return models.ShiftApplicationAcceptDeclineReason.query(function(q) {
+            q.select()
+                .from('shiftapplicationacceptdeclinereason')
+                .where('shiftapplicationacceptdeclinereason.shiftapplication_id', '=', req.params.shiftapplication_id)
+                .orderBy('date');
+        })
+            .fetch({
+                transacting: t
+            })
+            .tap(function(shiftapplicationacceptdeclinereason) {
+                var action = false;
+                if (shiftapplicationacceptdeclinereason) {
+                    // there should be only one accept decline reason
+                    action = shiftapplicationacceptdeclinereason.get('accept') != true;
+                    if (action != accept) {
+                        // has already been declined...
+                        // add a new one
+                        return takeAction();
+                    } else {
+                        action = false;
+                    }
+                } else {
+                    action = true
+                }
+
+                if (action) {
+                    return takeAction();
+                } else {
+                    clientStatus(req, res, 200);
+                }
+
+                function takeAction() {
+                    return models.ShiftApplicationAcceptDeclineReason.forge({
+                        shiftapplication_id: req.params.shiftapplication_id,
+                        accept: accept,
+                        user_id: req.user.id,
+                        date: getCurrentTimeForInsertionIntoDatabase(),
+                        reason: reason
+                    })
+                        .save({
+                            transacting: t
+                        })
+                        .tap(function(model) {
+                            clientStatus(req, res, 200);
+                        });
+                }
+            })
+    });
 }

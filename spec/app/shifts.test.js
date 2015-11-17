@@ -18,13 +18,16 @@ var password = 'secret';
 
 // TODO:
 // GET /api/shifts/:shift_id/ignore
+// GET /api/shifts/shiftapplication/:shiftapplication_id
 // POST /api/shifts/:shift_id/ignore
 // POST /api/shifts/:shift_id/cancel
+// POST /api/shifts/shiftapplication/:shiftapplication_id
 // PATCH /api/shifts/:shift_id
 // DELETE /api/shifts/:shift_id
 // DELETE /api/shifts/:shift_id/ignore
 // DELETE /api/shifts/:shift_id/cancel
 // DELETE /api/shifts/:shift_id/register
+// DELETE /api/shifts/shiftapplication/:shiftapplication_id
 // GET /api/shifts/mine
 
 // MODIFY:
