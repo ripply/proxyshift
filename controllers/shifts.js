@@ -14,6 +14,7 @@ var variables = require('./variables');
 
 var getMark = controllerCommon.getMark;
 var clearMarks = controllerCommon.clearMarks;
+var simpleGetSingleModel = controllerCommon.simpleGetSingleModel;
 var postModel = controllerCommon.postModel;
 var patchModel = controllerCommon.patchModel;
 var deleteModel = controllerCommon.deleteModel;
@@ -233,6 +234,31 @@ module.exports = {
                     .catch(function(err) {
                         error(req, res, err);
                     });
+            }
+        }
+    },
+    '/application/:shiftapplication_id': {
+        'get': { // gets a shift application
+            auth: ['managing shift'],
+            route: function(req, res) {
+                simpleGetSingleModel('ShiftApplication', {
+                        id: req.params.shiftapplication_id
+                    },
+                    req,
+                    res
+                );
+            }
+        },
+        'post': { // approves a shift applicataion
+            auth: ['managing shift'],
+            route: function(req, res) {
+
+            }
+        },
+        'delete': { // rejects a shift application
+            auth: ['managing shift'],
+            route: function(req, res) {
+
             }
         }
     },

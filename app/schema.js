@@ -445,6 +445,31 @@ var Schema = {
             nullable: false
         }
     },
+    ShiftApplicationAcceptDeclineReason: {
+        id: {
+            type: increments
+        },
+        shiftapplication_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'shiftapplications',
+            onDelete: cascade
+        },
+        user_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'users',
+            onDelete: cascade
+        },
+        date: {
+            type: date,
+            nullable: false
+        },
+        reason: {
+            type: string,
+            nullable: false
+        }
+    },
     // Application for a shift
     ShiftApplication: {
         id: {

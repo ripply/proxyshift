@@ -405,8 +405,9 @@ function checkLocationPermissionLevel(permissionLevel, req, act) {
 
 function markIfGroupOwnerOrPrivilegedMemberForShift(req, act) {
     var shift_id = req.params.shift_id;
+    var shiftapplication_id = req.params.shiftapplication_id;
 
-    if (shift_id === undefined) {
+    if (shift_id === undefined && shiftapplication_id === undefined) {
         throw new Error("Shift is not passed into route");
     }
 
@@ -416,10 +417,21 @@ function markIfGroupOwnerOrPrivilegedMemberForShift(req, act) {
                 .from('groups')
                 .where('groups.user_id', '=', req.user.id);
 
-        q.select('shifts.*')
-            .from('shifts')
-            .where('shifts.id', '=', shift_id)
-            .innerJoin('locations', function() {
+        var query = q.select('shifts.*')
+            .from('shifts');
+
+        if (shift_id) {
+            query = query.where('shifts.id', '=', shift_id);
+        } else if (shiftapplication_id) {
+            query = query.innerJoin('shiftapplications', function() {
+                this.on('shiftapplications.shift_id', '=', 'shifts.id')
+            })
+                .where('shiftapplications.id', '=', shiftapplication_id);
+        } else {
+            throw new Error("Unknown error occurred");
+        }
+
+            query.innerJoin('locations', function() {
                 this.on('locations.id', '=', 'shifts.location_id');
             })
             .whereIn('locations.group_id', ownedGroups)
