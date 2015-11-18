@@ -63,19 +63,24 @@ angular.module('scheduling-app.controllers')
                         scope: $scope,
                         buttons: [
                             {
-                                text: 'No'
+                                text: 'No',
+                                onTap: function(e) {
+                                    return false;
+                                }
                             },
                             {
                                 text: 'Yes',
-                                type: 'button-positive'
+                                type: 'button-positive',
+                                onTap: function(e) {
+                                    return true;
+                                }
                             }
                         ]
                     });
 
-                    $scope.prompt.then(function(reason) {
-                        delete $scope.data.reason;
-                        if (reason) {
-                            acceptShiftApplication(shiftapplication_id, reason);
+                    $scope.prompt.then(function(accepted) {
+                        if (accepted) {
+                            acceptShiftApplication(shiftapplication_id);
                         }
                     });
                 });
@@ -90,13 +95,13 @@ angular.module('scheduling-app.controllers')
                     });
             }
 
-            $scope.prompDeclineShiftApplication = promptDeclineShiftApplication;
+            $scope.promptDeclineShiftApplication = promptDeclineShiftApplication;
 
             function promptDeclineShiftApplication(shiftapplication_id) {
                 // TODO: Angular replacement for website
                 $rootScope.$emit(GENERAL_EVENTS.POPUP.REQUESTED, function($ionicPopup) {
                     $scope.prompt = $ionicPopup.show({
-                        templateUrl: 'templates/notifications/declineshiftapplication.html',
+                        templateUrl: 'templates/notifications/declineshiftapplicationreason.html',
                         title: 'Provide a reason',
                         subTitle: 'for declining this shift application',
                         scope: $scope,

@@ -350,7 +350,7 @@ module.exports = {
                             .from('shiftapplications')
                             .where('shiftapplications.shift_id', '=', req.params.shift_id)
                             .andWhere('shiftapplications.user_id', '=', req.user.id)
-                            .orderBy('date');
+                            .orderBy('date', 'desc'); // desc so that always compares against latest one
                     })
                         .fetchAll({
                             transacting: t
@@ -1304,9 +1304,9 @@ function acceptOrDeclineShiftApplication(req, res, accept) {
     return Bookshelf.transaction(function(t) {
         return models.ShiftApplicationAcceptDeclineReason.query(function(q) {
             q.select()
-                .from('shiftapplicationacceptdeclinereason')
-                .where('shiftapplicationacceptdeclinereason.shiftapplication_id', '=', req.params.shiftapplication_id)
-                .orderBy('date');
+                .from('shiftapplicationacceptdeclinereasons')
+                .where('shiftapplicationacceptdeclinereasons.shiftapplication_id', '=', req.params.shiftapplication_id)
+                .orderBy('date', 'desc'); // desc so that always compares against latest one
         })
             .fetch({
                 transacting: t
@@ -1315,7 +1315,8 @@ function acceptOrDeclineShiftApplication(req, res, accept) {
                 var action = false;
                 if (shiftapplicationacceptdeclinereason) {
                     // there should be only one accept decline reason
-                    action = shiftapplicationacceptdeclinereason.get('accept') != true;
+                    var shiftAccepted = shiftapplicationacceptdeclinereason.get('accept');
+                    action = (shiftAccepted == true || shiftAccepted == 1);
                     if (action != accept) {
                         // has already been declined...
                         // add a new one
@@ -1341,11 +1342,14 @@ function acceptOrDeclineShiftApplication(req, res, accept) {
                         date: getCurrentTimeForInsertionIntoDatabase(),
                         reason: reason
                     })
-                        .save({
+                        .save(null, {
                             transacting: t
                         })
-                        .tap(function(model) {
+                        .then(function(model) {
                             clientStatus(req, res, 200);
+                        })
+                        .catch(function(err) {
+                            error(req, res, err);
                         });
                 }
             })

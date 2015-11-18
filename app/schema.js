@@ -471,7 +471,7 @@ var Schema = {
         },
         reason: {
             type: string,
-            nullable: false
+            nullable: true
         }
     },
     // Application for a shift

@@ -90,6 +90,9 @@ angular.module('scheduling-app.controllers')
                         }, function(err) {
                             delete objectMap.pendingFetch;
                             setFailed(objectName, err);
+                            if ($scope.fetchComplete !== undefined) {
+                                $scope.fetchComplete(result, oldValue);
+                            }
                         });
                     } else {
                         // object is currently pending
