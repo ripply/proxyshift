@@ -1,0 +1,15 @@
+.button_accept {
+    position:absolute;
+    right: 75px;
+    top: 1px;
+    height: 99% !important;
+    width: 75px !important;
+}
+
+.button_reject {
+    position:absolute;
+    right: 0px;
+    top: 1px;
+    height: 99% !important;
+    width: 75px !important;
+}

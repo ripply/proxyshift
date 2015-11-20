@@ -15,4 +15,12 @@ angular.module('scheduling-app.controllers')
                 ManagingShiftsModel,
                 undefined
             );
+
+            $scope.acceptShift = function(id) {
+                //Accept the shift
+            };
+
+            $scope.rejectShift = function(id) {
+                //Reject the shift
+            };
         }]);

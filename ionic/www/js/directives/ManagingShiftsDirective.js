@@ -7,7 +7,8 @@ angular.module('scheduling-app.directives')
             templateUrl: 'templates/_shiftlist.html',
             scope: {
                 dismissable: '=dismissable',
-                cancelable: '=cancelable'
+                cancelable: '=cancelable',
+                manageable: '=manageable'
             }
         });
 

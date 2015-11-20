@@ -1,3 +1,4 @@
+<link href="../css/shifts.css" rel="stylesheet">
 <ion-list
     class="has-header"
     show-delete="false"
@@ -22,6 +23,8 @@
         <button class="button button-positive" ng-if="applyable">Cancel</button>
         <i class="icon ion-minus-circled" ng-if="cancelable" ng-click="applyForShift({{shift.id}})"></i>
         <i class="icon ion-close" ng-if="dismissable" ng-click="ignoreShift({{shift.id}})"></i>
+        <button class="button button-positive button_accept" ng-if="manageable" ng-click="acceptShift({{shift.id}})">Accept</button>
+        <button class="button button-assertive button_reject" ng-if="manageable" ng-click="rejectShift({{shift.id}})">Reject</button>
     </ion-item>
     <ion-item
         ng-hide="Model"
