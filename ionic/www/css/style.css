@@ -1,3 +1,45 @@
+/* Header Title */
+ion-header-bar.bar.bar-positive {
+    background-color: #038DBE;
+}
+
+/* Header Tabs */
+.tabs-striped.tabs-background-positive .tabs {
+    background-color: #038DBE;
+}
+
+/* Content */
+ion-content {
+    background-color: #FFFFFF;
+}
+
+ion-item.item {
+    background-color: #FFFFFF;
+    border-color: #DDE1EA;
+}
+
+.item-divider {
+    background-color: #DDE1EA;
+}
+
+.item-divider.p {
+    color: #000000;
+}
+
+.item p {
+    color: #000000;
+}
+
+.item h2 {
+    color: #000000;
+}
+
+/* Tabs Footer */
+ion-footer-bar.tabs.bar-footer {
+    background-color: #FFFFFF;
+    border-color: #FFFFFF;
+}
+
 /* A Previous button in calendar */
 .calendar .calendarback {
     font-size: 64px;
