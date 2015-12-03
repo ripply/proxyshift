@@ -54,9 +54,11 @@ angular.module('scheduling-app.settings', [
                 var stores = getStores(true);
                 for (var i = 0; i < stores.length; i++) {
                     var store = stores[i];
-                    var value = store.get(key);
-                    if (value) {
-                        return value
+                    if (store) { // guard for when cookies are disabled
+                        var value = store.get(key);
+                        if (value) {
+                            return value
+                        }
                     }
                 }
             }
