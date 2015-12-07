@@ -91,7 +91,7 @@ angular.module('scheduling-app.controllers')
                             delete objectMap.pendingFetch;
                             setFailed(objectName, err);
                             if ($scope.fetchComplete !== undefined) {
-                                $scope.fetchComplete(result, oldValue);
+                                $scope.fetchComplete(undefined, undefined);
                             }
                         });
                     } else {
