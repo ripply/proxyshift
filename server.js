@@ -20,6 +20,15 @@ var express = require('express'),
     app = express();
 
 if (cluster.isMaster) {
+    if (process.env.WORKERS) {
+        numCPUs = parseInt(process.env.WORKERS);
+    } else {
+        numCPUs = 1;
+    }
+}
+
+if (cluster.isMaster && numCPUs > 1) {
+    console.log("Forking " + numCPUs + " workers");
     // Fork workers.
     for (var i = 0; i < numCPUs; i++) {
         console.log("Forking worker #" + i);
@@ -30,8 +39,11 @@ if (cluster.isMaster) {
         console.log('worker ' + worker.process.pid + ' died');
     });
 } else {
-    process._debugPort = 5858 + cluster.worker.id;
-    console.log("Set debug port to " + process._debugPort);
+
+    if (!cluster.isMaster) {
+        process._debugPort = 5858 + cluster.worker.id;
+        console.log("Set debug port to " + process._debugPort);
+    }
     // Workers can share any TCP connection
     // In this case it is an HTTP server
     /*
