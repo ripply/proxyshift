@@ -115,6 +115,8 @@ function Notifications() {
         var self = this;
         Object.keys(cluster.workers).forEach(function iterateOverWorkers(id) {
             cluster.workers[id].on('sendNotification', function parseClusterMessage(message, args) {
+                console.log("Got sendNotification");
+                console.log(args);
                 self.send.apply(self, args);
             });
         });
@@ -274,6 +276,7 @@ Notifications.prototype.send = function send(service, endpoints, expires, messag
             return false;
         }
     } else {
+        console.log("sending sendNotification");
         process.send('sendNotification', [
             service,
             endpoints,
