@@ -1,4 +1,5 @@
 var Schema = require('./schema').Schema,
+    cluster = require('cluster'),
     ObjectId = Schema.ObjectId,
     bcrypt = require('bcrypt-nodejs'),
     passport = require('passport'),
@@ -117,7 +118,9 @@ if ((global.db_dialect || 'sqlite3') == 'sqlite3') {
     }
 }
 
-console.log(dbConnection);
+if (cluster.isMaster) {
+    console.log(dbConnection);
+}
 
 var knex = require('knex')( {
     dialect: global.db_dialect || 'sqlite3',
@@ -311,6 +314,10 @@ var specialFieldList = {
 };
 
 function initDb(dropAllTables) {
+
+    if (!cluster.isMaster) {
+        return Promise.resolve('slave');
+    }
 
     if (dropAllTables) {
         if (!okToDropAllTables()) {
@@ -787,7 +794,7 @@ _.each(modelNames, function(tableName, modelName) {
                         throw new Error("Cannot map foreign table to model: '" + foreignTableName + "'");
                     }
 
-                    if (global.silent !== true) {
+                    if (global.silent !== true && cluster.isMaster) {
                         console.log(modelName + "." + methodName + "() = " + modelName + "." + relationMethodName + "(" + foreignModelName + ")");
                     }
                     modelOptions[methodName] = function() {

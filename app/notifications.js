@@ -1,5 +1,6 @@
 "use strict";
 var config = require('config'),
+    cluster = require('cluster'),
     gcm = require('node-gcm'),
     apn = require('apn'),
     wns = require('wns'),
@@ -110,35 +111,44 @@ function doApnCertsExist() {
 }
 
 function Notifications() {
-    this.platformMap = platformMap;
-    this.gcm = this.initGcm();
-    this.sendMap = {};
-    // https://github.com/argon/node-apn#setting-up-the-feedback-service
-    this.apnCertsExist = filesExistFinished;
-    var self = this;
-    this.apnCertsExist.then(function() {
-        if (doApnCertsExist()) {
-            self.apnCertsExist = true;
-
-            self.feedback = new apn.Feedback(apnConfig);
-            self.feedback.on('feedback', function(devices) {
-                _.forEach(devices, function(item) {
-                    console.log("APN Feedback");
-                    console.log(item);
-                    // Buffer object containing device token
-                    // item.device
-                    //
-                    // item.time
-                });
+    if (cluster.isMaster) {
+        var self = this;
+        Object.keys(cluster.workers).forEach(function iterateOverWorkers(id) {
+            cluster.workers[id].on('sendNotification', function parseClusterMessage(message, args) {
+                self.send.apply(self, args);
             });
-        } else {
-            self.apnCertsExist = false;
-            console.log("Not initializing APN feedback servicec as certificates are not setup properly");
-        }
-    });
-    _.each(platformMethodMap, function(method, serviceName) {
-        self.sendMap[platformMap[serviceName]] = _.bind(self[method], self);
-    });
+        });
+        this.platformMap = platformMap;
+        this.gcm = this.initGcm();
+        this.sendMap = {};
+        // https://github.com/argon/node-apn#setting-up-the-feedback-service
+        this.apnCertsExist = filesExistFinished;
+        this.apnCertsExist.then(function setupAPNFeedbackService() {
+            if (doApnCertsExist()) {
+                self.apnCertsExist = true;
+
+                self.feedback = new apn.Feedback(apnConfig);
+                self.feedback.on('feedback', function handleApnFeedback(devices) {
+                    _.forEach(devices, function handlingApnFeedback(item) {
+                        console.log("APN Feedback");
+                        console.log(item);
+                        // Buffer object containing device token
+                        // item.device
+                        //
+                        // item.time
+                    });
+                });
+            } else {
+                self.apnCertsExist = false;
+                console.log("Not initializing APN feedback service as certificates are not setup properly");
+            }
+        });
+        _.each(platformMethodMap, function iterateOverPlatforms(method, serviceName) {
+            self.sendMap[platformMap[serviceName]] = _.bind(self[method], self);
+        });
+    } else {
+        // slave just will send messages to the master so that we only keep one connection open to notification services
+    }
 }
 
 Notifications.prototype.initGcm = function() {
@@ -248,19 +258,28 @@ Notifications.prototype._sendToWns = function(expires, message, endpoint) {
     });
 };
 
-Notifications.prototype.send = function(service, endpoints, expires, message) {
-    if (!this.sendMap.hasOwnProperty(service) && platformMap.hasOwnProperty(service)) {
-        // allow addressing service by name instead of just index
-        service = platformMap[service];
-    }
-    var send = this.sendMap[service];
-    if (send) {
-        console.log("Trying to send...");
-        send(endpoints, expires, message);
-        return true;
+Notifications.prototype.send = function send(service, endpoints, expires, message) {
+    if (cluster.isMaster) {
+        if (!this.sendMap.hasOwnProperty(service) && platformMap.hasOwnProperty(service)) {
+            // allow addressing service by name instead of just index
+            service = platformMap[service];
+        }
+        var send = this.sendMap[service];
+        if (send) {
+            console.log("Trying to send...");
+            send(endpoints, expires, message);
+            return true;
+        } else {
+            console.log("Push: Unknown service: " + service);
+            return false;
+        }
     } else {
-        console.log("Push: Unknown service: " + service);
-        return false;
+        process.send('sendNotification', [
+            service,
+            endpoints,
+            expires,
+            message
+        ]);
     }
 };
 /*

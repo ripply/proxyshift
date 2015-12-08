@@ -1,4 +1,5 @@
 var express = require('express'),
+    cluster = require('cluster'),
     http = require('http'),
     path = require('path'),
     routes = require('./app/routes'),
@@ -15,57 +16,80 @@ var express = require('express'),
     cookieParser = require('cookie-parser'),
     session = require('express-session'),
     errorHandler = require('errorhandler'),
+    numCPUs = require('os').cpus().length;
     app = express();
 
-app.set('port', process.env.PORT || 3300);
-app.set('views', __dirname + '/views');
-app.set('view cache', process.env.NODE_ENV !== 'development');
+if (cluster.isMaster) {
+    // Fork workers.
+    for (var i = 0; i < numCPUs; i++) {
+        console.log("Forking worker #" + i);
+        cluster.fork();
+    }
 
-/*
-var hbs = exphbs.create();
-
-app.engine('handlebars', exphbs({
-    defaultLayout: 'main',
-    layoutsDir: app.get('views') + '/layouts'
-}));
-app.set('view engine', 'handlebars');
-*/
-
-if (false) {
-    var appLog = log4js.getLogger();
-    var httpLog = morgan({
-        "format": "default",
-        "stream": {
-            write: function (str) {
-                appLog.debug(str);
-            }
-        }
+    cluster.on('exit', function(worker, code, signal) {
+        console.log('worker ' + worker.process.pid + ' died');
     });
-    app.use(httpLog);
 } else {
-    app.use(morgan('dev')); // log every request to the console
-}
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
-app.use(bodyParser.json());
+    process._debugPort = 5858 + cluster.worker.id;
+    console.log("Set debug port to " + process._debugPort);
+    // Workers can share any TCP connection
+    // In this case it is an HTTP server
+    /*
+     http.createServer(function(req, res) {
+     res.writeHead(200);
+     res.end("hello world\n");
+     }).listen(8000);
+     */
+
+    app.set('port', process.env.PORT || 3300);
+    app.set('views', __dirname + '/views');
+    app.set('view cache', process.env.NODE_ENV !== 'development');
+
+    /*
+     var hbs = exphbs.create();
+
+     app.engine('handlebars', exphbs({
+     defaultLayout: 'main',
+     layoutsDir: app.get('views') + '/layouts'
+     }));
+     app.set('view engine', 'handlebars');
+     */
+
+    if (false) {
+        var appLog = log4js.getLogger();
+        var httpLog = morgan({
+            "format": "default",
+            "stream": {
+                write: function (str) {
+                    appLog.debug(str);
+                }
+            }
+        });
+        app.use(httpLog);
+    } else {
+        app.use(morgan('dev')); // log every request to the console
+    }
+    app.use(bodyParser.urlencoded({
+        extended: true
+    }));
+    app.use(bodyParser.json());
 //app.use(methodOverride);
 // TODO: Autogenerate this secret and save it in the database
-app.use(cookieParser('some-secret-value-here'));
-app.use(session({ cookie: { maxAge: 60000 }}));
+    app.use(cookieParser('some-secret-value-here'));
+    app.use(session({cookie: {maxAge: 60000}}));
 
-app.use(compression());
+    app.use(compression());
 
-var csrfProtection = csrf({
-    cookie: true,
-    value: function(req) {
-        console.log(req.session);
-        console.log("Given secret: " + req.cookies['_csrf']);
-        return req.cookies['XSRF-TOKEN'];
-    }
-});
+    var csrfProtection = csrf({
+        cookie: true,
+        value: function (req) {
+            console.log(req.session);
+            console.log("Given secret: " + req.cookies['_csrf']);
+            return req.cookies['XSRF-TOKEN'];
+        }
+    });
 
-/**app.use(function(req, res, next) {
+    /**app.use(function(req, res, next) {
     // https://github.com/expressjs/csurf/issues/21
     // TODO: FIX, because csrf comes before routes, every POST request is checked for CSRF tokens, this means that cordova cannot send a POST request to a special route to get a CSRF token
 
@@ -77,48 +101,53 @@ var csrfProtection = csrf({
         return csrfProtection(req, res, next);
     }
 });
- */
+     */
 //app.use(csrfProtection);
 
 // error handler
-/*
-app.use(function (err, req, res, next) {
-    if (err.code !== 'EBADCSRFTOKEN') return next(err)
+    /*
+     app.use(function (err, req, res, next) {
+     if (err.code !== 'EBADCSRFTOKEN') return next(err)
 
-    // handle CSRF token errors here
-    console.log("INVALID CSRF TOKEN!?");
-    console.log(req.body);
-    res.status(403)
-    res.send('session has expired or form tampered with')
-});
-*/
+     // handle CSRF token errors here
+     console.log("INVALID CSRF TOKEN!?");
+     console.log(req.body);
+     res.status(403)
+     res.send('session has expired or form tampered with')
+     });
+     */
 // http://www.mircozeiss.com/using-csrf-with-express-and-angular/
-/*app.use(function(req, res, next) {
-    console.log("Creating session cookie...");
-    console.log(req.csrfToken());
-    res.cookie('XSRF-TOKEN', req.csrfToken());
-    console.log("Running next middleware");
-    next();
-});*/
+    /*app.use(function(req, res, next) {
+     console.log("Creating session cookie...");
+     console.log(req.csrfToken());
+     res.cookie('XSRF-TOKEN', req.csrfToken());
+     console.log("Running next middleware");
+     next();
+     });*/
 
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(passport.authenticate('authentication-token'));
-app.use(passport.authenticate('remember-me'));
+    app.use(passport.initialize());
+    app.use(passport.session());
+    app.use(passport.authenticate('authentication-token'));
+    app.use(passport.authenticate('remember-me'));
 
 //app.use(app.router);
 // serves clients our files in public
-app.use('/', express.static(path.join(__dirname, 'ionic/www')));
+    app.use('/', express.static(path.join(__dirname, 'ionic/www')));
 
 // development only
-if ('development' == app.get('env')) {
-    app.use(errorHandler());
-}
+    if ('development' == app.get('env')) {
+        app.use(errorHandler());
+    }
 
 //routes list:
-routes.initialize(app);
+    routes.initialize(app);
 
 //finally boot up the server:
-http.createServer(app).listen(app.get('port'), function() {
-    console.log('Server up: http://localhost:' + app.get('port'));
-});
+    http.createServer(app).listen(app.get('port'), function () {
+        if (cluster.isMaster) {
+            console.log('Server up: http://localhost:' + app.get('port'));
+        } else {
+            console.log('Worker up');
+        }
+    });
+}
