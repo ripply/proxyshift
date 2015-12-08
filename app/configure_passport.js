@@ -80,7 +80,9 @@ passport.use(new AuthencationHeaderStrategy(
 
 passport.use(new RememberMeStrategy(
     function(token, done) {
-        console.log("Remember me consume!????");
+        if (!token || token == '') {
+            return done(null, false);
+        }
         models.checkRememberMeToken(token, true, function(err, uid) {
             if (err) { return done(err); }
             if (!uid) { return done(null, false); }

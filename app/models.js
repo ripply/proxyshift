@@ -905,8 +905,11 @@ function checkRememberMeToken(token, consume, next) {
             .where('tokens.token', '=', token)
             .andWhere('tokens.date', '>', time.nowInUtc());
     })
-        .fetch({require: true})
+        .fetch()
         .then(function(foundToken) {
+            if (!foundToken) {
+                return next(null, null);
+            }
             var user_id = foundToken.get('user_id');
             //return next(null, user_id);
             // Found a token, delete it
@@ -923,7 +926,7 @@ function checkRememberMeToken(token, consume, next) {
             }
         })
         .catch(function(err) {
-            console.log(err);
+            console.log("Failed to fetch remember me token" + err);
             return next(null, null);
         });
 }

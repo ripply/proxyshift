@@ -140,7 +140,16 @@ if (cluster.isMaster && numCPUs > 1) {
     app.use(passport.initialize());
     app.use(passport.session());
     app.use(passport.authenticate('authentication-token'));
-    app.use(passport.authenticate('remember-me'));
+    if (cluster.isMaster) {
+        // this causes issues when using a cluster of nodes
+        // what happens is that when the user loads the site
+        // their client will fetch all the html files
+        // then the user will login.
+        // if the user reloads the page
+        // then a different process can end up serving at least one of the requests for static files
+        // and those requests will try to invalidate and issue a new token, simultaneously.
+        app.use(passport.authenticate('remember-me'));
+    }
 
 //app.use(app.router);
 // serves clients our files in public
