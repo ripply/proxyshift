@@ -88,7 +88,12 @@ if (cluster.isMaster && numCPUs > 1) {
 //app.use(methodOverride);
 // TODO: Autogenerate this secret and save it in the database
     app.use(cookieParser('some-secret-value-here'));
-    app.use(session({cookie: {maxAge: 60000}}));
+    app.use(session({
+        cookie: {maxAge: 60000},
+        secret: 'some-secret-value-here',
+        resave: true,
+        saveUninitialized: true
+    }));
 
     app.use(compression());
 
