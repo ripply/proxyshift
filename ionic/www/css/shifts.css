@@ -1,15 +1,19 @@
 .button_accept {
     position:absolute;
-    right: 75px;
-    top: 1px;
-    height: 99% !important;
-    width: 75px !important;
+    right: 10px;
+    top: 4%;
+    height: 45% !important;
+    width: 55px !important;
+    font-size: 35px;
+    color: steelblue;
 }
 
 .button_reject {
     position:absolute;
-    right: 0px;
-    top: 1px;
-    height: 99% !important;
-    width: 75px !important;
+    right: 10px;
+    top: 51%;
+    height: 45% !important;
+    width: 55px !important;
+    font-size: 35px;
+    color: indianred;
 }
