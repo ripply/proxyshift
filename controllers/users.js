@@ -8,6 +8,7 @@ var models = require('../app/models'),
     postModel = require('./controllerCommon').postModel,
     patchModel = require('./controllerCommon').patchModel,
     deleteModel = require('./controllerCommon').deleteModel,
+    getPatchKeysWithoutBannedKeys = require('./controllerCommon').getPatchKeysWithoutBannedKeys,
     createSelectQueryForAllColumns = require('./controllerCommon').createSelectQueryForAllColumns,
     error = require('./controllerCommon').error,
     variables = require('./variables'),
@@ -132,22 +133,54 @@ module.exports = {
     '/settings': {
         'get': {
             route: function userSettingsGet(req, res) {
-                return models.UserSetting.query(function(q) {
+                return models.UserSetting.query(function userSettinsGetQuery(q) {
                     q.select(
                         // do not send id to user
                         createSelectQueryForAllColumns('UserSetting', 'usersettings')
                     )
                         .from('usersettings')
                         .innerJoin('users', function() {
-                            this.on('users.usersetting_id', '=', req.user.id);
-                        });
+                            this.on('users.usersetting_id', '=', 'usersettings.id');
+                        })
+                        .where('users.id', '=', req.user.id);
                 })
                     .fetch()
-                    .then(function userSettingsGetFetch(userSettings) {
+                    .then(function userSettingsGetThen(userSettings) {
                         if (userSettings) {
                             res.json(userSettings.toJSON());
+                        } else {
+                            error(req, res, 'Internal error');
                         }
                     })
+                    .catch(function userSettingsGetError(err) {
+                        error(req, res, err);
+                    });
+            }
+        },
+        'post': {
+            route: function userSettingsPost(req, res) {
+                return models.UserSettings.query(function userSettingsPostQuery(q) {
+                    q.select(
+                        // do not send id to user
+                        createSelectQueryForAllColumns('UserSetting', 'usersettings')
+                    )
+                        .from('usersettings')
+                        .innerJoin('users', function() {
+                            this.on('users.usersetting_id', '=', 'usersettings.id');
+                        })
+                        .where('users.id', '=', req.user.id)
+                        .update(getPatchKeysWithoutBannedKeys(
+                            'UserSettings',
+                            req.body
+                        ));
+                })
+                    .fetch()
+                    .then(function userSettinsgPostThen(userSettings) {
+                        res.json(userSettings.toJSON());
+                    })
+                    .catch(function userSettingsPostError(err) {
+                        error(req, res, err);
+                    });
             }
         }
     },

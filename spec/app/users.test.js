@@ -16,6 +16,7 @@ var failToLogin = require('../common').failToLogin;
 
 // TODO:
 // GET /users/settings
+// POST /users/settings
 
 // TODO: NOOP this for now see if things work with bookshelf events
 encryptKey = function(key) {
