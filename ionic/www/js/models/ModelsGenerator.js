@@ -4,6 +4,9 @@
 module = angular.module('scheduling-app.models');
 angular.forEach({
     'Users': 'Users',
+    'UserSettings': {
+        'Users': '/settings'
+    },
     'Shifts': 'shifts',
     'AllShifts': {
         'Shifts': '/all'

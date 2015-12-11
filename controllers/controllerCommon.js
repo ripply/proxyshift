@@ -242,14 +242,18 @@ function clearMarks(req) {
     }
 }
 
-function createSelectQueryForAllColumns(modelName, tablename) {
+function createSelectQueryForAllColumns(modelName, tablename, bannedKeys) {
     if (!schema.hasOwnProperty(modelName)) {
         throw new Error("Unknown model name: " + modelName);
     }
 
     var columns = [];
     _.each(_.keys(schema[modelName]), function(columnName) {
-        columns.push(tablename + '.' + columnName + ' as ' + columnName);
+        if ((bannedKeys === null || bannedKeys === undefined) ||
+            ((bannedKeys !== null && bannedKeys !== undefined) &&
+              bannedKeys.indexOf(columnName) == -1)) {
+            columns.push(tablename + '.' + columnName + ' as ' + columnName);
+        }
     });
 
     return columns;

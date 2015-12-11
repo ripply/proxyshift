@@ -5,10 +5,25 @@ angular.module('scheduling-app.controllers')
     .controller('GroupSettingsController', [
         '$scope',
         '$rootScope',
+        '$controller',
         'StateHistoryService',
         'STATES',
+        'RemoteUserSettingsService',
         'UserInfoService',
-        function($scope, $rootScope, StateHistoryService, STATES, UserInfoService) {
+        function($scope,
+                 $rootScope,
+                 $controller,
+                 StateHistoryService,
+                 STATES,
+                 RemoteUserSettingsService,
+                 UserInfoService
+        ) {
+            $controller('BaseModelController', {$scope: $scope});
+            $scope.register(
+                'ManagingShifts',
+                ManagingShiftsModel,
+                undefined
+            );
 
             $scope.pageTitle = "Settings";
 
@@ -25,6 +40,8 @@ angular.module('scheduling-app.controllers')
             $scope.close = function() {
                 StateHistoryService.returnTo(STATES.SHIFTS);
             };
+
+            RemoteUserSettingsService.getSettings();
 
         }]
 );

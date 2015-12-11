@@ -7,10 +7,20 @@
     </ion-header-bar>
     <ion-content>
         <div class="list">
-            <ion-toggle ng-repeat="item in settingsList"
-                        ng-model="item.checked"
-                        ng-checked="item.checked">
-                {{ item.text }}
+            <ion-toggle ng-model="UserSettings.pushnotifications"
+                        ng-checked="UserSettings.pushnotifications"
+                        ng-click="commitSettings()">
+                Push Notifications
+            </ion-toggle>
+            <ion-toggle ng-model="UserSettings.emailnotifications"
+                        ng-checked="UserSettings.emailnotifications"
+                        ng-click="commitSettings()">
+                Email Notifications
+            </ion-toggle>
+            <ion-toggle ng-model="UserSettings.textnotifications"
+                        ng-checked="UserSettings.textnotifications"
+                        ng-click="commitSettings()">
+                Text Notifications
             </ion-toggle>
             <div class="item item-divider">
                 Groups

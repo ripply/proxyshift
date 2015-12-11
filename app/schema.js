@@ -47,7 +47,7 @@ var Schema = {
             onDelete: cascade,
             onUpdate: cascade,
             unique: true,
-            nullable: true
+            nullable: false
         },
         username: {
             type: string,

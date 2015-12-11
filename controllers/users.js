@@ -47,17 +47,30 @@ module.exports = {
         'post': { // create an account
             // auth: // anyone not logged in
             route: function(req, res) {
-                postModel(
-                    'User',
-                    {
-
-                    },
-                    req,
-                    res,
-                    [
-                        'id'
-                    ]
-                );
+                Bookshelf.transaction(function usersPostTransaction(t) {
+                    return models.UserSetting.forge({})
+                        .save(null, {transacting: t})
+                        .tap(function usersPostUserSettingsSaved(usersettins) {
+                            return postModel(
+                                'User',
+                                {
+                                    usersetting_id: usersettins.get('id')
+                                },
+                                req,
+                                res,
+                                [
+                                    'id',
+                                    'usersetting_id'
+                                ],
+                                {
+                                    transacting: t
+                                }
+                            );
+                        });
+                })
+                    .catch(function usersPostTransactionCatch(err) {
+                        error(req, res, err);
+                    })
             }
         },
         'patch': { // update your account
@@ -132,30 +145,7 @@ module.exports = {
     },
     '/settings': {
         'get': {
-            route: function userSettingsGet(req, res) {
-                return models.UserSetting.query(function userSettinsGetQuery(q) {
-                    q.select(
-                        // do not send id to user
-                        createSelectQueryForAllColumns('UserSetting', 'usersettings')
-                    )
-                        .from('usersettings')
-                        .innerJoin('users', function() {
-                            this.on('users.usersetting_id', '=', 'usersettings.id');
-                        })
-                        .where('users.id', '=', req.user.id);
-                })
-                    .fetch()
-                    .then(function userSettingsGetThen(userSettings) {
-                        if (userSettings) {
-                            res.json(userSettings.toJSON());
-                        } else {
-                            error(req, res, 'Internal error');
-                        }
-                    })
-                    .catch(function userSettingsGetError(err) {
-                        error(req, res, err);
-                    });
-            }
+            route: userSettingsGet
         },
         'post': {
             route: function userSettingsPost(req, res) {
@@ -166,17 +156,18 @@ module.exports = {
                     )
                         .from('usersettings')
                         .innerJoin('users', function() {
-                            this.on('users.usersetting_id', '=', 'usersettings.id');
+                            this.on('users.usersetting_id', '=', 'usersettings.id')
+                                .andOn('users.id', '=', req.user.id);
                         })
-                        .where('users.id', '=', req.user.id)
                         .update(getPatchKeysWithoutBannedKeys(
-                            'UserSettings',
+                            'UserSetting',
                             req.body
                         ));
                 })
                     .fetch()
-                    .then(function userSettinsgPostThen(userSettings) {
-                        res.json(userSettings.toJSON());
+                    .then(function userSettingsPostThen(userSettings) {
+                        return userSettingsGet(req, res);
+                        //res.json(userSettings.toJSON());
                     })
                     .catch(function userSettingsPostError(err) {
                         error(req, res, err);
@@ -428,5 +419,31 @@ function getUserInfo(user_id, next) {
         })
         .catch(function(err) {
             next(err);
+        });
+}
+
+function userSettingsGet(req, res) {
+    return models.UserSetting.query(function userSettinsGetQuery(q) {
+        q.select(
+            // do not send id to user
+            createSelectQueryForAllColumns('UserSetting', 'usersettings', ['id'])
+        )
+            .from('usersettings')
+            .innerJoin('users', function() {
+                this.on('users.usersetting_id', '=', 'usersettings.id');
+            })
+            .where('users.id', '=', req.user.id);
+    })
+        .fetch()
+        .then(function userSettingsGetThen(userSettings) {
+            if (userSettings) {
+                res.json(userSettings.toJSON());
+            } else {
+                console.log("WARNING: USER " + req.user.id + " has no usersettings_id field");
+                res.status(204).json({});
+            }
+        })
+        .catch(function userSettingsGetError(err) {
+            error(req, res, err);
         });
 }

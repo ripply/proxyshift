@@ -37,6 +37,68 @@ function defaultTimezone() {
 
 module.exports = {
     base: {
+        usersettings: [
+            {
+                pushnotifications: true,
+                textnotifications: true,
+                emailnotifications: true
+            },
+            {
+                pushnotifications: true,
+                textnotifications: true,
+                emailnotifications: true
+            },
+            {
+                pushnotifications: true,
+                textnotifications: true,
+                emailnotifications: true
+            },
+            {
+                pushnotifications: true,
+                textnotifications: true,
+                emailnotifications: true
+            },
+            {
+                pushnotifications: true,
+                textnotifications: true,
+                emailnotifications: true
+            },
+            {
+                pushnotifications: true,
+                textnotifications: true,
+                emailnotifications: true
+            },
+            {
+                pushnotifications: true,
+                textnotifications: true,
+                emailnotifications: true
+            },
+            {
+                pushnotifications: true,
+                textnotifications: true,
+                emailnotifications: true
+            },
+            {
+                pushnotifications: true,
+                textnotifications: true,
+                emailnotifications: true
+            },
+            {
+                pushnotifications: true,
+                textnotifications: true,
+                emailnotifications: true
+            },
+            {
+                pushnotifications: true,
+                textnotifications: true,
+                emailnotifications: true
+            },
+            {
+                pushnotifications: true,
+                textnotifications: true,
+                emailnotifications: true
+            }
+        ],
         users: [
             {
                 // user with a password used for testing login
@@ -49,7 +111,8 @@ module.exports = {
                 sanswer: encrypt(password),
                 phonehome: '12345',
                 phonemobile: '12345',
-                pagernumber: '12345'
+                pagernumber: '12345',
+                usersetting_id: 'usersettings:0'
             },
             {
                 // simple user account with an empty password
@@ -63,7 +126,8 @@ module.exports = {
                 sanswer: '',
                 phonehome: '12345',
                 phonemobile: '12345',
-                pagernumber: '12345'
+                pagernumber: '12345',
+                usersetting_id: 'usersettings:1'
             },
             {
                 username: 'test_member_of_group',
@@ -75,7 +139,8 @@ module.exports = {
                 sanswer: encrypt(password),
                 phonehome: '12345',
                 phonemobile: '12345',
-                pagernumber: '12345'
+                pagernumber: '12345',
+                usersetting_id: 'usersettings:2'
             },
             {
                 username: 'groupmember',
@@ -87,7 +152,8 @@ module.exports = {
                 sanswer: encrypt(password),
                 phonehome: '12345',
                 phonemobile: '12345',
-                pagernumber: '12345'
+                pagernumber: '12345',
+                usersetting_id: 'usersettings:3'
             },
             {
                 username: 'groupowner',
@@ -99,7 +165,8 @@ module.exports = {
                 sanswer: encrypt(password),
                 phonehome: '12345',
                 phonemobile: '12345',
-                pagernumber: '12345'
+                pagernumber: '12345',
+                usersetting_id: 'usersettings:4'
             },
             {
                 username: 'nongroupmember',
@@ -111,7 +178,8 @@ module.exports = {
                 sanswer: encrypt(password),
                 phonehome: '12345',
                 phonemobile: '12345',
-                pagernumber: '12345'
+                pagernumber: '12345',
+                usersetting_id: 'usersettings:5'
             },
             {
                 username: 'privledgedmember',
@@ -123,7 +191,8 @@ module.exports = {
                 sanswer: encrypt(password),
                 phonehome: '12345',
                 phonemobile: '12345',
-                pagernumber: '12345'
+                pagernumber: '12345',
+                usersetting_id: 'usersettings:6'
             },
             {
                 username: 'locationmember',
@@ -135,7 +204,8 @@ module.exports = {
                 sanswer: encrypt(password),
                 phonehome: '12345',
                 phonemobile: '12345',
-                pagernumber: '12345'
+                pagernumber: '12345',
+                usersetting_id: 'usersettings:7'
             },
             {
                 username: 'veryprivileged',
@@ -147,7 +217,8 @@ module.exports = {
                 sanswer: encrypt(password),
                 phonehome: '12345',
                 phonemobile: '12345',
-                pagernumber: '12345'
+                pagernumber: '12345',
+                usersetting_id: 'usersettings:8'
             },
             {
                 username: 'manager',
@@ -159,7 +230,8 @@ module.exports = {
                 sanswer: encrypt(password),
                 phonehome: '12345',
                 phonemobile: '12345',
-                pagernumber: '12345'
+                pagernumber: '12345',
+                usersetting_id: 'usersettings:9'
             },
             {
                 username: 'nonlocationmem',
@@ -171,7 +243,8 @@ module.exports = {
                 sanswer: encrypt(password),
                 phonehome: '12345',
                 phonemobile: '12345',
-                pagernumber: '12345'
+                pagernumber: '12345',
+                usersetting_id: 'usersettings:10'
             },
             {
                 username: 'shiftapplied',
@@ -183,7 +256,8 @@ module.exports = {
                 sanswer: encrypt(password),
                 phonehome: '12345',
                 phonemobile: '12345',
-                pagernumber: '12345'
+                pagernumber: '12345',
+                usersetting_id: 'usersettings:11'
             }
         ],
         groupsettings: [

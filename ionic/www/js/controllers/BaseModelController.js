@@ -53,6 +53,7 @@ angular.module('scheduling-app.controllers')
                         setPending(objectName);
                         objectMap.pendingFetch = subRouteFunction(object);
                         objectMap.pendingFetch.then(function(result) {
+                            result = result.plain();
                             // check if result is an empty array or empty object
                             // if it is, then delete the variable from scope
                             // this makes it easy to ng-show in templates
@@ -63,8 +64,6 @@ angular.module('scheduling-app.controllers')
                                     if (result.length === 0) {
                                         result = undefined;
                                     }
-                                } else if (typeof result === 'object') {
-                                    result = undefined;
                                 }
                             }
 
@@ -171,7 +170,11 @@ angular.module('scheduling-app.controllers')
                 }
                 if (subRouteFetchFunction === undefined) {
                     subRouteFetchFunction = function(model) {
-                        return model.getList();
+                        if ($scope.hasOwnProperty('isList') && $scope.isList == false) {
+                            return model.one().get();
+                        } else {
+                            return model.getList();
+                        }
                     }
                 }
                 $scope._models[modelName] = {
