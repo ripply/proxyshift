@@ -598,6 +598,33 @@ module.exports = {
                         error(req, res, err);
                     });
             }
+        },
+        'post': {
+            auth: ['group owner', 'or', 'privileged group member'],
+            route: function groupSettingsPost(req, res) {
+                return models.GroupSettings.query(function groupSettingsPostQuery(q) {
+                    q.select(
+                        createSelectQueryForAllColumns('GroupSetting', 'groupsettings')
+                    )
+                        .from('groupsettings')
+                        .innerJoin('groups', function() {
+                            this.on('groups.groupsetting_id', '=', 'groupsettings.id')
+                                .andOn('groups.id', '=', req.params.group);
+                        })
+                        .update(getPatchKeysWithoutBannedKeys(
+                            'GroupSetting',
+                            req.body
+                        ));
+                })
+                    .fetch()
+                    .then(function groupSettingsPostThen(groupsettings) {
+
+                    })
+                    .catch(function groupSettingsPostError(err) {
+                        error(req, res, err);
+                    });
+
+            }
         }
     },
     '/:group_id/permissions': {
