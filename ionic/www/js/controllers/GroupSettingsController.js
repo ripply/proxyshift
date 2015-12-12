@@ -6,33 +6,85 @@ angular.module('scheduling-app.controllers')
         '$scope',
         '$rootScope',
         '$controller',
+        '$stateParams',
         'StateHistoryService',
+        'GENERAL_EVENTS',
         'STATES',
+        'Restangular',
+        'GroupsModel',
         'UserInfoService',
         function($scope,
                  $rootScope,
                  $controller,
+                 $stateParams,
                  StateHistoryService,
+                 GENERAL_EVENTS,
                  STATES,
+                 Restangular,
+                 GroupsModel,
                  UserInfoService
         ) {
             $controller('BaseModelController', {$scope: $scope});
+            var variableName = 'GroupSettings';
 
             $scope.pageTitle = "Settings";
 
-            var url = window.location.href;
-            var id = url.split('/').pop();
+            function getGroupId() {
+                return $stateParams.group_id;
+            }
 
-            $scope.currentGroup = UserInfoService.getGroup(id);
+            $scope[variableName] = {};
 
-            $scope.settingsList = [
-                { text: "Everyone Can Create Shifts", checked: true},
-                { text: "Shifts Need Confirmation", checked: false}
-            ];
+            $scope.currentGroup = UserInfoService.getGroup(getGroupId());
 
-            $scope.close = function() {
+            $scope.groupsList = UserInfoService.getGroupList();
+
+            $scope.close = function close() {
                 StateHistoryService.returnTo(STATES.SHIFTS);
             };
+
+            $scope.commitSettings = function commitSettings() {
+
+            };
+
+            var lastSuccessfullResult = {};
+
+            $scope.fetchSettings = function fetchSettings() {
+                Restangular.one("groups", getGroupId())
+                    .one("settings")
+                    .get()
+                    .then(function fetchGroupSettings(result) {
+                        result = result.plain();
+                        angular.forEach(result, function(value, key) {
+                            if (value === 0) {
+                                value = false;
+                            } else if (value == 1) {
+                                value = true;
+                            }
+                            result[key] = value;
+                        });
+                        $scope[variableName] = result;
+                        lastSuccessfullResult = angular.copy(result);
+                    }, function fetchGroupSettingsError(err) {
+                        $scope[variableName] = angular.copy(lastSuccessfullResult);
+                    })
+            };
+
+            $scope.saveSettings = function saveSettings() {
+                Restangular.one("groups", getGroupId())
+                    .one("settings")
+                    .customPOST($scope[variableName])
+                    .then(function saveGroupSettingsThen(result, wat) {
+                        console.log(result);
+                        console.log(wat);
+                    }, function saveGroupSettingsError(response) {
+                        $scope[variableName] = angular.copy(lastSuccessfullResult);
+                        $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);
+                    }
+                );
+            };
+
+            $scope.fetchSettings();
 
         }]
 );

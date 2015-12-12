@@ -22,11 +22,15 @@
             <div class="item item-divider">
                 Group Settings
             </div>
-            <ion-toggle ng-repeat="setting in settingsList"
-                        ng-model="setting.checked"
-                        ng-checked="setting.checked"
-                        ng-disabled="true">
-                {{ setting.text }}
+            <ion-toggle ng-model="GroupSettings.allowalltocreateshifts"
+                        ng-checked="GroupSettings.allowalltocreateshifts"
+                        ng-click="saveSettings()">
+                Everyone can create shifts
+            </ion-toggle>
+            <ion-toggle ng-model="GroupSettings.requireshiftconfirmation"
+                        ng-checked="GroupSettings.requireshiftconfirmation"
+                        ng-click="saveSettings()">
+                Shifts require confirmation
             </ion-toggle>
             <div class="item item-divider">
                 Individual Settings

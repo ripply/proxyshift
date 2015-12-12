@@ -85,6 +85,9 @@ var config_data = {
             },
             'VIEW': 'events:calendar:view',
             'INVALIDATE': 'events:calendar:invalidate'
+        },
+        'RESOURCE': {
+            'UNAUTHORIZED': 'events:resource:unauthorized'
         }
     },
     'TOKENS': {

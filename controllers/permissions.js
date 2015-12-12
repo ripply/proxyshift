@@ -26,6 +26,11 @@ module.exports = {
 
     auth: {
 
+        '403': function(req, act) {
+            req.statusCode = 403;
+            return true;
+        },
+
         'anyone': function(req, act) {
             return true
         },

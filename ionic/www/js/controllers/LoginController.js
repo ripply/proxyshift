@@ -29,7 +29,7 @@ angular.module('scheduling-app.controllers')
 
             this.showLoginModal = showLoginModal;
 
-            var hideLoginModal = function() {
+            var hideLoginModal = function hideLoginModal() {
                 console.log("Hide login modal... going " + ($rootScope.previousState || STATES.HOME));
                 $state.go(STATES.HOME, {}, {reload: false, inherit: true});
                 //$rootScope.loginModal.hide();
@@ -37,7 +37,7 @@ angular.module('scheduling-app.controllers')
 
             this.hideLoginModal = hideLoginModal;
 
-            $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.CHECK, function() {
+            $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.CHECK, function authenticationCheckRequested() {
                 SessionService.checkAuthentication()
                     .then(function() {
                         // do nothing
@@ -48,7 +48,7 @@ angular.module('scheduling-app.controllers')
                     });
             });
 
-            $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.REQUIRED, function(e, rejection) {
+            $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.REQUIRED, function authenticationRequired(e, rejection) {
                 // clear any error messages
                 $rootScope.message = null;
                 // reset existing mistyped username/password
@@ -59,7 +59,7 @@ angular.module('scheduling-app.controllers')
                 showLoginModal();
             });
 
-            $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.CONFIRMED, function() {
+            $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.CONFIRMED, function authenticationConfirmed() {
                 $rootScope.user.username = null;
                 $rootScope.user.password = null;
                 $rootScope.message = null;
@@ -67,11 +67,11 @@ angular.module('scheduling-app.controllers')
                 hideLoginModal();
             });
 
-            $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.INVALID, function(e, message) {
+            $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.INVALID, function authenticationInvalid(e, message) {
                 $rootScope.message = message;
             });
 
-            $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.FAILED, function(e, status) {
+            $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.FAILED, function authenticationFailed(e, status) {
                 var error = "Login failed";
                 var statusType = Math.floor(status / 100);
                 if (status == 401) {
@@ -86,7 +86,7 @@ angular.module('scheduling-app.controllers')
                 $rootScope.message = error;
             });
 
-            $rootScope.$on(GENERAL_EVENTS.LOGOUT.COMPLETE, function() {
+            $rootScope.$on(GENERAL_EVENTS.LOGOUT.COMPLETE, function logoutComplete() {
                 $state.go(STATES.HOME, {}, {reload: true, inherit: false});
             });
         }
