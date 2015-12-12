@@ -590,7 +590,7 @@ module.exports = {
                         .from('groupsettings')
                         .innerJoin('groups', function() {
                             this.on('groups.groupsetting_id', '=', 'groupsettings.id')
-                                .andOn('groups.id', '=', req.params.group);
+                                .andOn('groups.id', '=', parseInt(req.params.group));
                         })
                         .update(getPatchKeysWithoutBannedKeys(
                             'GroupSetting',
