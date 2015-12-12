@@ -5,6 +5,7 @@ var models = require('../app/models'),
     postModel = require('./controllerCommon').postModel,
     patchModel = require('./controllerCommon').patchModel,
     deleteModel = require('./controllerCommon').deleteModel,
+    createSelectQueryForAllColumns = require('./controllerCommon').createSelectQueryForAllColumns,
     getPatchKeysWithoutBannedKeys = require('./controllerCommon').getPatchKeysWithoutBannedKeys,
     error = require('./controllerCommon').error,
     Bookshelf = models.Bookshelf;
@@ -577,34 +578,14 @@ module.exports = {
     '/:group_id/settings': {
         'get': { // get group settings
             auth: ['group owner or group member'],
-            route: function(req, res) {
-                models.GroupSetting.query(function(q) {
-                    q.select()
-                        .from('groups')
-                        .innerJoin(function() {
-                            this.on('groups.groupsetting_id', '=', 'groupsettings.id');
-                        })
-                        .where('groups.id', '=', req.params.group_id);
-                })
-                    .fetch()
-                    .then(function (groupsetting) {
-                        if (groupsetting) {
-                            res.json(groupsetting);
-                        } else {
-                            throw new Error("Group setting should exist for group " + req.params.group_id);
-                        }
-                    })
-                    .catch(function (err) {
-                        error(req, res, err);
-                    });
-            }
+            route: groupSettingsGet
         },
         'post': {
-            auth: ['group owner', 'or', 'privileged group member'],
+            auth: ['403', 'group owner', 'or', 'privileged group member'],
             route: function groupSettingsPost(req, res) {
                 return models.GroupSettings.query(function groupSettingsPostQuery(q) {
                     q.select(
-                        createSelectQueryForAllColumns('GroupSetting', 'groupsettings')
+                        createSelectQueryForAllColumns('GroupSetting', 'groupsettings', ['id'])
                     )
                         .from('groupsettings')
                         .innerJoin('groups', function() {
@@ -618,7 +599,7 @@ module.exports = {
                 })
                     .fetch()
                     .then(function groupSettingsPostThen(groupsettings) {
-
+                        return groupSettingsGet(req, res);
                     })
                     .catch(function groupSettingsPostError(err) {
                         error(req, res, err);
@@ -778,6 +759,28 @@ module.exports = {
             }
         }
     }
-}
+};
 
-;
+function groupSettingsGet(req, res) {
+    models.GroupSetting.query(function groupSettingsGetQuery(q) {
+        q.select(
+            createSelectQueryForAllColumns('GroupSetting', 'groupsettings', ['id'])
+        )
+            .from('groupsettings')
+            .innerJoin('groups', function() {
+                this.on('groups.groupsetting_id', '=', 'groupsettings.id')
+                    .andOn('groups.id', '=', req.params.group_id);
+            });
+    })
+        .fetch()
+        .then(function groupSettingsGetThen(groupsetting) {
+            if (groupsetting) {
+                res.json(groupsetting);
+            } else {
+                throw new Error("Group setting should exist for group " + req.params.group_id);
+            }
+        })
+        .catch(function groupSettingsGetError(err) {
+            error(req, res, err);
+        });
+}
