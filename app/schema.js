@@ -445,35 +445,6 @@ var Schema = {
             nullable: false
         }
     },
-    ShiftApplicationAcceptDeclineReason: {
-        id: {
-            type: increments
-        },
-        accept: {
-            type: boolean,
-            nullable: false
-        },
-        shiftapplication_id: {
-            type: integer,
-            references: 'id',
-            inTable: 'shiftapplications',
-            onDelete: cascade
-        },
-        user_id: {
-            type: integer,
-            references: 'id',
-            inTable: 'users',
-            onDelete: cascade
-        },
-        date: {
-            type: date,
-            nullable: false
-        },
-        reason: {
-            type: string,
-            nullable: true
-        }
-    },
     // Application for a shift
     ShiftApplication: {
         id: {
@@ -504,6 +475,35 @@ var Schema = {
         },
         recindeddate: {
             type: date,
+            nullable: true
+        }
+    },
+    ShiftApplicationAcceptDeclineReason: {
+        id: {
+            type: increments
+        },
+        accept: {
+            type: boolean,
+            nullable: false
+        },
+        shiftapplication_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'shiftapplications',
+            onDelete: cascade
+        },
+        user_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'users',
+            onDelete: cascade
+        },
+        date: {
+            type: date,
+            nullable: false
+        },
+        reason: {
+            type: string,
             nullable: true
         }
     },
