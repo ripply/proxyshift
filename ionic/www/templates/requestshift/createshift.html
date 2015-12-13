@@ -22,7 +22,7 @@
             </div>
             <div class="item item-button-right">
                 <ionic-datepicker input-obj="datepickerObject">
-                    <button class="button button-block button-positive"> {{datepickerObject.inputDate | date:'dd - MMMM - yyyy'}}</button>
+                    <button class="button button-block button-steelblue"> {{datepickerObject.inputDate | date:'dd - MMMM - yyyy'}}</button>
                 </ionic-datepicker>
             </div>
             <div class="item item-divider">
@@ -30,7 +30,7 @@
             </div>
             <div class="item">
                 <ionic-timepicker input-obj="timePickerObject">
-                    <button class="button button-block button-positive overflowShow">
+                    <button class="button button-block button-steelblue overflowShow">
                         <standard-time-meridian etime='timePickerObject.inputEpochTime'></standard-time-meridian>
                         {{timePickerObject.inputEpochTime}}
                     </button>
@@ -41,7 +41,7 @@
                 <input type="text" ng-model="shift.length">
             </label>
             <div class="item">
-                <button class="button button-block button-positive" ng-click="createShift()">
+                <button class="button button-block button-steelblue" ng-click="createShift()">
                     Create shift
                 </button>
             </div>

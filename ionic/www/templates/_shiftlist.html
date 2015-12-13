@@ -19,8 +19,8 @@
         <p class="shift-description">{{shift.description}}</p>
         <p class="location-address" ng-show="{{!shift.sublocation_id}}">{{getShiftsLocation(shift).address}}</p>
         <p class="location-address" ng-show="{{shift.sublocation_id}}">{{getShiftsLocation(shift).address}} - {{getShiftsSublocation(shift).title}}</p>
-        <button class="button button-positive" ng-if="applyable">Apply</button>
-        <button class="button button-positive" ng-if="applyable">Cancel</button>
+        <button class="button button-steelblue" ng-if="applyable">Apply</button>
+        <button class="button button-steelblue" ng-if="applyable">Cancel</button>
         <i class="icon ion-minus-circled" ng-if="cancelable" ng-click="applyForShift({{shift.id}})"></i>
         <i class="icon ion-close" ng-if="dismissable" ng-click="ignoreShift({{shift.id}})"></i>
         <button class="button button_accept ion-checkmark-circled" ng-if="manageable" ng-click="acceptShift({{shift.id}})"></button>
