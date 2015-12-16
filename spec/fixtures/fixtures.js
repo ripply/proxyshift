@@ -399,21 +399,25 @@ module.exports = {
             {
                 location_id: '@locations:state:test_state',
                 user_id: '@users:username:test_password',
+                subscribed: true,
                 grouppermission_id: '@grouppermissions:description:unprivileged'
             },
             {
                 location_id: '@locations:state:membershiptest',
                 user_id: '@users:username:locationmember',
+                subscribed: true,
                 grouppermission_id: '@grouppermissions:description:unprivileged'
             },
             {
                 location_id: '@locations:state:membershiptest',
                 user_id: '@users:username:groupmember',
+                subscribed: true,
                 grouppermission_id: '@grouppermissions:description:unprivileged'
             },
             {
                 location_id: '@locations:state:membershiptest',
                 user_id: '@users:username:manager',
+                subscribed: true,
                 grouppermission_id: '@grouppermissions:description:privileged'
             },
         ],

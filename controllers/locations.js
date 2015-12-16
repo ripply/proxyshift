@@ -5,8 +5,11 @@ var models = require('../app/models'),
     postModel = require('./controllerCommon').postModel,
     patchModel = require('./controllerCommon').patchModel,
     deleteModel = require('./controllerCommon').deleteModel,
+    getMark = require('./controllerCommon').getMark,
+    error = require('./controllerCommon').error,
     getPatchKeysWithoutBannedKeys = require('./controllerCommon').getPatchKeysWithoutBannedKeys,
     Bookshelf = models.Bookshelf,
+    controllerCommon = require('./controllerCommon'),
     grabNormalShiftRange = require('./controllerCommon').grabNormalShiftRange,
     knex = models.knex,
     moment = require('moment'),
@@ -49,6 +52,20 @@ module.exports = {
                     .catch(function(err) {
                         error(req, res, err);
                     });
+            }
+        }
+    },
+    '/:location_id/subscribe': {
+        'post': {
+            auth: ['mark if user is member of location'],
+            route: function locationsSubscribePost(req, res) {
+                return locationSubscribeUpdate(req, res, true);
+            }
+        },
+        'delete': {
+            auth: ['location member'],
+            route: function locationsSubscribeDelete(req, res) {
+                return locationSubscribeUpdate(req, res, false);
             }
         }
     },
@@ -118,8 +135,9 @@ module.exports = {
                         knex.select('userpermissions.location_id as locationid')
                             .from('userpermissions')
                             .where('userpermissions.location_id', '=', req.params.location_id)
+                            .andWhere('userpermissions.subscribed', '=', controllerCommon.true)
                             .innerJoin('grouppermissions', function() {
-                                this.on('grouppermissions.id', '=', 'userpermissions.grouppermission_id');
+                                this.on('grouppermissions.id', '=', 'userpermissionss.grouppermission_id');
                             })
                             .where('grouppermissions.permissionlevel', '>=', managingPermissionLevel);
 
@@ -382,4 +400,46 @@ function getShiftsAtLocation(req, res, before, after) {
         .catch(function(err) {
             error(req, res, err);
         })
+}
+
+function locationSubscribeUpdate(req, res, subscribed) {
+    return Bookshelf.transaction(function(t) {
+        return models.UserPermission.query(function(q) {
+            q.select()
+                .from('userpermissions')
+                .where('userpermissions.user_id', '=', req.user.id)
+                .andWhere('userpermissions.location_id', '=', req.params.location_id);
+        })
+            .fetch({
+                transacting: t
+            })
+            .tap(function locationSubscribeUpdateCheck(userpermission) {
+                if (userpermission) {
+                    return models.UserPermission.query(function (q) {
+                        q.select()
+                            .from('userpermissions')
+                            .where('userpermissions.user_id', '=', req.user.id)
+                            .andWhere('userpermissions.location_id', '=', req.params.location_id)
+                            .update({
+                                subscribed: subscribed
+                            })
+                    })
+                        .fetch({
+                            transacting: t
+                        })
+                        .then(function locationsSubscribeSuccess(userpermission) {
+                            res.send(200);
+                        })
+                        .catch(function locationsSubscribeError(err) {
+                            error(req, res, err);
+                        });
+                } else {
+                    return models.UserPermission.forge({
+                        user_id: req.params.user_id,
+                        location_id: req.params.location_id,
+
+                    })
+                }
+            });
+    });
 }

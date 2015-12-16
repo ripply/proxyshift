@@ -11,6 +11,7 @@ var models = require('../app/models'),
     getPatchKeysWithoutBannedKeys = require('./controllerCommon').getPatchKeysWithoutBannedKeys,
     createSelectQueryForAllColumns = require('./controllerCommon').createSelectQueryForAllColumns,
     error = require('./controllerCommon').error,
+    controllerCommon = require('./controllerCommon'),
     variables = require('./variables'),
     Bookshelf = models.Bookshelf;
 

@@ -96,7 +96,7 @@ angular.module('scheduling-app.services')
                 }
             }
 
-            this.getLocation = function(location_id) {
+            this.getLocation = function getLocation(location_id) {
                 if (location_id === undefined || location_id === null) {
                     return undefined;
                 }
@@ -105,7 +105,7 @@ angular.module('scheduling-app.services')
                 }
             };
 
-            this.getGroup = function(group_id) {
+            this.getGroup = function getGroup(group_id) {
                 if (group_id === undefined || group_id === null) {
                     return undefined;
                 }
@@ -114,7 +114,7 @@ angular.module('scheduling-app.services')
                 }
             };
 
-            this.getSublocation = function(sublocation_id) {
+            this.getSublocation = function getSublocation(sublocation_id) {
                 if (sublocation_id === undefined || sublocation_id === null) {
                     return undefined;
                 }
@@ -132,7 +132,23 @@ angular.module('scheduling-app.services')
                 }
             };
 
-            this.getLocationForSublocation = function(sublocation_id) {
+            this.getLocationsMemberOfForGroup = function getLocationsForGroup(group_id) {
+                if (group_id === undefined || group_id === null) {
+                    return undefined;
+                }
+                var resultSet = [];
+                var location_ids = Object.keys(locations);
+                for (var i = 0; i < location_ids.length; i++) {
+                    var location = locations[location_ids[i]];
+                    if (location.hasOwnProperty('group_id') && location.group_id == group_id) {
+                        resultSet.push(location);
+                    }
+                }
+
+                return resultSet;
+            };
+
+            this.getLocationForSublocation = function getLocationForSublocation(sublocation_id) {
                 if (sublocation_id === undefined || sublocation_id === null) {
                     return undefined;
                 }
@@ -155,7 +171,7 @@ angular.module('scheduling-app.services')
             var areas = {};
             var userclasses = {};
 
-            this.updateUserInfo = function() {
+            this.updateUserInfo = function updateUserInfo() {
                 var userinfo = $rootScope.userinfo;
 
                 // empty groups/locations/areas maps
@@ -166,7 +182,9 @@ angular.module('scheduling-app.services')
                     userclasses
                 ], function(object) {
                     for (var key in object) {
-                        delete object[key];
+                        if (object.hasOwnProperty(key)) {
+                            delete object[key];
+                        }
                     }
                 });
 

@@ -24,6 +24,7 @@ var error = controllerCommon.error;
 var clientError = controllerCommon.clientError;
 var clientCreate = controllerCommon.clientCreate;
 var clientStatus = controllerCommon.clientStatus;
+var controllerCommon = controllerCommon;
 var getCurrentTimeForInsertionIntoDatabase = controllerCommon.getCurrentTimeForInsertionIntoDatabase;
 var createSelectQueryForAllColumns = controllerCommon.createSelectQueryForAllColumns;
 
@@ -765,6 +766,7 @@ function getShiftsYouAreManaging(req, res) {
                 knex.select('userpermissions.location_id as locationid')
                     .from('userpermissions')
                     .where('userpermissions.location_id', '=', location_id)
+                    .andWhere('userpermissions.subscribed', '=', controllerCommon.true)
                     .innerJoin('grouppermissions', function () {
                         this.on('grouppermissions.id', '=', 'userpermissions.grouppermission_id');
                     })
@@ -818,6 +820,7 @@ function getShiftsYouAreManaging(req, res) {
                     this.on('userpermissions.location_id', '=', 'locations.id')
                 })
                 .where('userpermissions.user_id', '=', req.user.id)
+                .andWhere('userpermissions.subscribed', '=', controllerCommon.true)
                 .innerJoin('grouppermissions', function() {
                     this.on('grouppermissions.id', '=', 'userpermissions.grouppermission_id')
                 })
@@ -848,6 +851,7 @@ function getShiftsYouAreManaging(req, res) {
                             this.on('userpermissions.location_id', '=', 'locations.id')
                         })
                         .where('userpermissions.user_id', '=', req.user.id)
+                        .andWhere('userpermissions.subscribed', '=', controllerCommon.true)
                         .innerJoin('grouppermissions', function() {
                             this.on('grouppermissions.id', '=', 'userpermissions.grouppermission_id')
                         })

@@ -687,6 +687,10 @@ var Schema = {
             onDelete: cascade,
             onUpdate: cascade,
             nullable: false
+        },
+        subscribed: {
+            type: boolean,
+            defaultTo: true
         }
     },
     // TODO: DESCRIBE THIS

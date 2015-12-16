@@ -338,6 +338,25 @@ module.exports = {
                     console.log(err);
                     return false;
                 });
+        },
+
+        'mark if user is member of location': function markIfUserIsMemberOfLocation(req, act) {
+            return models.UserPermission.query(function(q) {
+                q.select()
+                    .from('userpermissions')
+                    .where('userpermissions.user_id', '=', req.user.id)
+                    .andWhere('userpermissions.location_id', '=', req.params.location_id);
+            })
+                .fetch()
+                .then(function markIfUserIsMemberOfLocationSuccess(userpermission) {
+                    if (userpermission) {
+                        setMark(req, 'location.member', true);
+                        return true;
+                    } else {
+                        setMark(req, 'location.member', true);
+                        return true;
+                    }
+                })
         }
 
     }
