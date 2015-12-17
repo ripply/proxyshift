@@ -68,7 +68,7 @@ describe("#/shifts", function() {
 
             describe('- anonymous user', function() {
 
-                it('- returns 401', function(done) {
+                it.only('- returns 401', function(done) {
 
                     request(app)
                         .post('/api/shifts/')

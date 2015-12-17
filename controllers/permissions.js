@@ -414,12 +414,24 @@ function checkLocationPermissionLevel(permissionLevel, req, act) {
 
     return models.UserPermission.query(function(q) {
         q.select('userpermissions.*')
-            .innerJoin('grouppermissions', function() {
-                this.on('userpermissions.grouppermission_id', '=', 'grouppermissions.id')
-                    .andOn('userpermissions.user_id', '=', user_id);
+            .innerJoin('locations', function() {
+                this.on('locations.id', '=', 'userpermissions.location_id');
             })
-            .where('permissionlevel', '>=', permissionLevel)
-            .andWhere('userpermissions.location_id', '=', location_id);
+            .where('userpermissions.location_id', '=', location_id)
+            .innerJoin('groups', function() {
+                this.on('groups.id', '=', 'locations.group_id');
+            })
+            .innerJoin('groupuserclasses', function() {
+                this.on('groupuserclasses.group_id', '=', 'groups.id');
+            })
+            .innerJoin('groupuserclasstousers', function() {
+                this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id')
+                    .andOn('groupuserclasstousers.user_id', '=', req.user.id);
+            })
+            .innerJoin('grouppermissions', function() {
+                this.on('groupuserclasses.grouppermission_id', '=', 'grouppermissions.id');
+            })
+            .where('grouppermissions.permissionlevel', '>=', permissionLevel);
     })
         .fetchAll({require: true})
         .then(function(locations) {

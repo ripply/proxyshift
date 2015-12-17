@@ -285,7 +285,7 @@ function getUserInfo(user_id, next) {
                     .where('grouppermissions.permissionlevel', '>=', variables.managingGroupMember);
             })
                 .fetchAll()
-                .then(function(groupsAPrivilegedMemeberOf) {
+                .then(function(groupsAPrivilegedMemberOf) {
                     return models.Location.query(function(q) {
                         q.select()
                             .from('locations')
@@ -293,8 +293,14 @@ function getUserInfo(user_id, next) {
                                 this.on('userpermissions.location_id', '=', 'locations.id');
                             })
                             .where('userpermissions.user_id', '=', user_id)
+                            .innerJoin('groupuserclasses', function() {
+                                this.on('groupuserclasses.group_id', '=', 'locations.group_id');
+                            })
+                            .innerJoin('groupuserclasstousers', function() {
+                                this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id');
+                            })
                             .innerJoin('grouppermissions', function() {
-                                this.on('grouppermissions.id', '=', 'userpermissions.grouppermission_id');
+                                this.on('grouppermissions.id', '=', 'groupuserclasses.grouppermission_id');
                             })
                             .where('grouppermissions.permissionlevel', '>=', variables.managingLocationMember);
                     })
@@ -329,9 +335,9 @@ function getUserInfo(user_id, next) {
                                     } else {
                                         userJson.ownedGroups = [];
                                     }
-                                    if (groupsAPrivilegedMemeberOf) {
+                                    if (groupsAPrivilegedMemberOf) {
                                         userJson.privilegedMemberOfGroups =
-                                            groupsAPrivilegedMemeberOf.toJSON();
+                                            groupsAPrivilegedMemberOf.toJSON();
                                     } else {
                                         userJson.privilegedMemberOfGroups = [];
                                     }
