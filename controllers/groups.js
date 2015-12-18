@@ -487,7 +487,7 @@ module.exports = {
             route: function groupLocationsGet(req, res) {
                 var locationColumns = createSelectQueryForAllColumns('Location', 'locations');
                 var locationColumnsWithUserPermission = _.clone(locationColumns);
-                locationColumnsWithUserPermission.push('userpermissions.subscribed as subscribed');
+                //locationColumnsWithUserPermission.push('userpermissions.subscribed as subscribed');
                 return models.Location.query(function groupLocationsGetQuery(q) {
                     q.select(locationColumnsWithUserPermission)
                         .from('locations')
@@ -495,7 +495,14 @@ module.exports = {
                 })
                     .fetchAll({
                         withRelated: [
-                            'sublocations'
+                            'sublocations',
+                            {
+                                'userpermissions': function(qb) {
+                                    qb.columns('userpermissions.location_id', 'userpermissions.subscribed')
+                                        .where('userpermissions.user_id', '=', req.user.id);
+                                        //.andWhere('userpermissions.location_id', '=', ); // can't get this to work... client will just have to prune the result set
+                                }
+                            }
                         ]
                     })
                     .then(function groupLocationsGetSuccess(locations) {
