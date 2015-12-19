@@ -28,8 +28,10 @@ if (cluster.isMaster) {
 
     if (process.env.LOADFIXTURES !== undefined && process.env.LOADFIXTURES == 'true' &&
         (process.env.NODE_ENV === undefined || process.env.NODE_ENV != "PROD")) {
+        global.okToDropTables = process.env.CAN_DROP_TABLES == 'true';
         console.log("Resetting database and loading fixtures");
         var fixtureshelper = require('./spec/fixtureshelper');
+        fixtureshelper.setFixtures(fixtureshelper.fixtures.base);
         fixtureshelper.databaseReady(function() {
             console.log("Fixtures loaded, starting server");
             return launchServer();
