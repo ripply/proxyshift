@@ -73,3 +73,24 @@ ionic serve
 ```bash
 grunt simplemocha
 ```
+
+## Populating database with fixtures
+```bash
+export LOAD_FIXTURES="true"
+grunt simplemocha
+```
+
+## Populating database with fixtures when server starts up
+```bash
+# NOTE: Code will not run when NODE_ENV="PROD"
+export LOAD_FIXTURES="true"
+export CAN_DROP_TABLES="true"
+node server.js
+```
+
+## Using Node.js cluster capabilities
+```bash
+# Use 4 workers
+export WORKERS="4"
+node server.js
+```

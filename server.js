@@ -26,8 +26,10 @@ if (cluster.isMaster) {
         numCPUs = 1;
     }
 
-    if (process.env.LOADFIXTURES !== undefined && process.env.LOADFIXTURES == 'true' &&
-        (process.env.NODE_ENV === undefined || process.env.NODE_ENV != "PROD")) {
+    if (process.env.LOAD_FIXTURES !== undefined && process.env.LOAD_FIXTURES == 'true') {
+        if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === "PROD") {
+            throw new Error("NODE_ENV == 'PROD' AND FIXTURES ARE SET TO BE LOADED, THIS IS A CONFIGURATION ERROR");
+        }
         global.okToDropTables = process.env.CAN_DROP_TABLES == 'true';
         console.log("Resetting database and loading fixtures");
         var fixtureshelper = require('./spec/fixtureshelper');

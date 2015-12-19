@@ -11,7 +11,7 @@ var _ = require('underscore');
 var debug = global.debug;
 var parse = global.parse;
 
-if (process.env.LOADFIXTURES !== undefined && process.env.LOADFIXTURES == 'true') {
+if (process.env.LOAD_FIXTURES !== undefined && process.env.LOAD_FIXTURES == 'true') {
     describe('#Load fixtures', function() {
         it.only('Loading fixtures', function(done) {
             return global.setFixtures(global.fixtures.base)
