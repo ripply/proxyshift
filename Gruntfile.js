@@ -222,6 +222,7 @@ module.exports = function(grunt) {
                     'sinon',
                     'models',
                     'sess',
+                    'resetDatabasePromise',
                     'issue' // TODO: Where is this global coming from?
                 ],
                 timeout: 10000,
