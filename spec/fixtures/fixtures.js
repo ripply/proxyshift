@@ -450,6 +450,10 @@ module.exports = {
             {
                 user_id: '@users:username:groupmember',
                 groupuserclass_id: '@groupuserclasses:title:classtest'
+            },
+            {
+                user_id: '@users:username:manager',
+                groupuserclass_id: '@groupuserclasses:title:manager'
             }
         ],
         areas: [

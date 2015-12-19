@@ -290,6 +290,7 @@ module.exports = function(app, roles) {
 
                                                 // check if the array contains '&&' or '||'
                                                 var authName = getNextProcessName();
+                                                authName = '' + auth;
                                                 //var authName = '' + auth;
                                                 var authRule = process(authName, auth);
                                                 roles.use(authName, authRule);

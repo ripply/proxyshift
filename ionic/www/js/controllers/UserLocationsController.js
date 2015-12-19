@@ -10,6 +10,7 @@ angular.module('scheduling-app.controllers')
         'Restangular',
         'UserInfoService',
         'StateHistoryService',
+        'GENERAL_EVENTS',
         'STATES',
         function($scope,
                  $rootScope,
@@ -18,6 +19,7 @@ angular.module('scheduling-app.controllers')
                  Restangular,
                  UserInfoService,
                  StateHistoryService,
+                 GENERAL_EVENTS,
                  STATES) {
             $controller('BaseModelController', {$scope: $scope});
 

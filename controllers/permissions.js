@@ -433,9 +433,13 @@ function checkLocationPermissionLevel(permissionLevel, req, act) {
             })
             .where('grouppermissions.permissionlevel', '>=', permissionLevel);
     })
-        .fetchAll({require: true})
+        .fetchAll()
         .then(function(locations) {
-            return true;
+            if (locations.length > 0) {
+                return true;
+            } else {
+                return false;
+            }
         })
         .catch(function(err) {
             return false;

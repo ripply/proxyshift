@@ -428,7 +428,7 @@ function locationSubscribeUpdate(req, res, subscribed) {
                             transacting: t
                         })
                         .then(function locationsSubscribeSuccess(userpermission) {
-                            res.send(200);
+                            res.sendStatus(200);
                         })
                         .catch(function locationsSubscribeError(err) {
                             error(req, res, err);
