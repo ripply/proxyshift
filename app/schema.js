@@ -159,6 +159,39 @@ var Schema = {
             nullable: false
         }
     },
+    // groups can have different permissions
+    // eg: unprivileged, privileged etc
+    // here they can customize the name of their permission levels
+    GroupPermission: {
+        id: {
+            type: increments
+        },
+        groupsetting_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'groupsettings',
+            onDelete: cascade,
+            onUpdate: cascade,
+            nullable: false
+        },
+        description: {
+            type: string,
+            nullable: false
+        },
+        permissionlevel: {
+            // TODO: What is this table for? it doesnt link to a user or location
+            type: integer,
+            nullable: false
+        },
+        group_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'groups',
+            onDelete: cascade,
+            onUpdate: cascade,
+            nulable: false
+        }
+    },
     // timezones for linking
     Timezone: {
         id: {
@@ -530,39 +563,6 @@ var Schema = {
             references: 'id',
             inTable: 'users',
             onDelete: cascade
-        }
-    },
-    // groups can have different permissions
-    // eg: unprivileged, privileged etc
-    // here they can customize the name of their permission levels
-    GroupPermission: {
-        id: {
-            type: increments
-        },
-        groupsetting_id: {
-            type: integer,
-            references: 'id',
-            inTable: 'groupsettings',
-            onDelete: cascade,
-            onUpdate: cascade,
-            nullable: false
-        },
-        description: {
-            type: string,
-            nullable: false
-        },
-        permissionlevel: {
-            // TODO: What is this table for? it doesnt link to a user or location
-            type: integer,
-            nullable: false
-        },
-        group_id: {
-            type: integer,
-            references: 'id',
-            inTable: 'groups',
-            onDelete: cascade,
-            onUpdate: cascade,
-            nulable: false
         }
     },
     // connects a user to a group
