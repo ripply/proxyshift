@@ -7,6 +7,8 @@ var models = require('../app/models'),
     deleteModel = require('./controllerCommon').deleteModel,
     createSelectQueryForAllColumns = require('./controllerCommon').createSelectQueryForAllColumns,
     getPatchKeysWithoutBannedKeys = require('./controllerCommon').getPatchKeysWithoutBannedKeys,
+    controllerCommon = require('./controllerCommon'),
+    _ = require('underscore'),
     error = require('./controllerCommon').error,
     Bookshelf = models.Bookshelf;
 
@@ -482,15 +484,33 @@ module.exports = {
     '/:group_id/locations': {
         'get': { // get list of all locations in group
             auth: ['group owner or group member'], // group member/owner
-            route: function(req, res) {
-                simpleGetListModel(
-                    'Location',
-                    {
-                        group_id: req.params.group_id
-                    },
-                    req,
-                    res
-                );
+            route: function groupLocationsGet(req, res) {
+                var locationColumns = createSelectQueryForAllColumns('Location', 'locations');
+                var locationColumnsWithUserPermission = _.clone(locationColumns);
+                //locationColumnsWithUserPermission.push('userpermissions.subscribed as subscribed');
+                return models.Location.query(function groupLocationsGetQuery(q) {
+                    q.select(locationColumnsWithUserPermission)
+                        .from('locations')
+                        .where('locations.group_id', '=', req.params.group_id);
+                })
+                    .fetchAll({
+                        withRelated: [
+                            'sublocations',
+                            {
+                                'userpermissions': function(qb) {
+                                    qb.columns('userpermissions.location_id', 'userpermissions.subscribed')
+                                        .where('userpermissions.user_id', '=', req.user.id);
+                                        //.andWhere('userpermissions.location_id', '=', ); // can't get this to work... client will just have to prune the result set
+                                }
+                            }
+                        ]
+                    })
+                    .then(function groupLocationsGetSuccess(locations) {
+                        res.json(locations.toJSON());
+                    })
+                    .catch(function groupLocationsGetError(err) {
+                        error(req, res, err);
+                    });
             }
         },
         'post': { // create new location in group

@@ -4,8 +4,10 @@
     top: 4%;
     height: 45% !important;
     width: 55px !important;
-    font-size: 35px;
+    font-size: 45px !important;
     color: steelblue;
+    border: 0px;
+    background-color: #ffffff;
 }
 
 .button_reject {
@@ -14,6 +16,8 @@
     top: 51%;
     height: 45% !important;
     width: 55px !important;
-    font-size: 35px;
+    font-size: 45px !important;
     color: indianred;
+    border: 0px;
+    background-color: #ffffff;
 }

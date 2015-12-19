@@ -140,6 +140,7 @@ module.exports = {
     setMark: setMark,
     clearMarks: clearMarks,
     getModelKeys: getModelKeys,
+    true: true,
     createSelectQueryForAllColumns: createSelectQueryForAllColumns
 };
 

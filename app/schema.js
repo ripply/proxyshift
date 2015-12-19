@@ -305,6 +305,14 @@ var Schema = {
         requiremanagerapproval: {
             type: boolean,
             defaultTo: true
+        },
+        grouppermission_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'grouppermissions',
+            onDelete: cascade,
+            onUpdate: cascade,
+            nullable: false
         }
     },
     Shift: {
@@ -680,13 +688,9 @@ var Schema = {
             onDelete: cascade,
             nullable: false
         },
-        grouppermission_id: {
-            type: integer,
-            references: 'id',
-            inTable: 'grouppermissions',
-            onDelete: cascade,
-            onUpdate: cascade,
-            nullable: false
+        subscribed: {
+            type: boolean,
+            defaultTo: true
         }
     },
     // TODO: DESCRIBE THIS

@@ -43,10 +43,6 @@ angular.module('scheduling-app.controllers')
                 StateHistoryService.returnTo(STATES.SHIFTS);
             };
 
-            $scope.commitSettings = function commitSettings() {
-
-            };
-
             var lastSuccessfullResult = {};
 
             $scope.fetchSettings = function fetchSettings() {

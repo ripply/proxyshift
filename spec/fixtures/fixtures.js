@@ -399,34 +399,47 @@ module.exports = {
             {
                 location_id: '@locations:state:test_state',
                 user_id: '@users:username:test_password',
-                grouppermission_id: '@grouppermissions:description:unprivileged'
+                subscribed: true,
+                //grouppermission_id: '@grouppermissions:description:unprivileged'
             },
             {
                 location_id: '@locations:state:membershiptest',
                 user_id: '@users:username:locationmember',
-                grouppermission_id: '@grouppermissions:description:unprivileged'
+                subscribed: true,
+                //grouppermission_id: '@grouppermissions:description:unprivileged'
             },
             {
                 location_id: '@locations:state:membershiptest',
                 user_id: '@users:username:groupmember',
-                grouppermission_id: '@grouppermissions:description:unprivileged'
+                subscribed: true,
+                //grouppermission_id: '@grouppermissions:description:unprivileged'
             },
             {
                 location_id: '@locations:state:membershiptest',
                 user_id: '@users:username:manager',
-                grouppermission_id: '@grouppermissions:description:privileged'
+                subscribed: true,
+                //grouppermission_id: '@grouppermissions:description:privileged'
             },
         ],
         groupuserclasses: [
             {
                 group_id: '@groups:name:membershiptest',
                 title: 'User class 1',
-                description: 'User class 0 description'
+                description: 'User class 0 description',
+                grouppermission_id: '@grouppermissions:description:unprivileged'
             },
             {
                 group_id: '@groups:name:membershiptest',
                 title: 'classtest',
-                description: 'User class 1 description'
+                description: 'User class 1 description',
+                grouppermission_id: '@grouppermissions:description:unprivileged'
+            },
+
+            {
+                group_id: '@groups:name:membershiptest',
+                title: 'manager',
+                description: 'Manages people',
+                grouppermission_id: '@grouppermissions:description:privileged'
             }
         ],
         groupuserclasstousers: [
@@ -437,6 +450,10 @@ module.exports = {
             {
                 user_id: '@users:username:groupmember',
                 groupuserclass_id: '@groupuserclasses:title:classtest'
+            },
+            {
+                user_id: '@users:username:manager',
+                groupuserclass_id: '@groupuserclasses:title:manager'
             }
         ],
         areas: [

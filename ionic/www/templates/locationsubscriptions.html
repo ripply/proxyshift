@@ -6,13 +6,11 @@
     <div class="list">
         <input type="text" ng-model="query" ng-style="{'width' : '100%'}"
                placeholder="Search by address, city, state, zipcode or phone">
-        <ion-toggle ng-repeat="location in locationList | filter:query"
-                    ng-model="location.checked"
-                    ng-checked="location.checked">
+        <ion-toggle ng-repeat="location in locations | filter:query"
+                    ng-model="location.subscribed"
+                    ng-click="saveLocations()"
+                    ng-checked="location.subscribed">
             {{ location.address }}
         </ion-toggle>
     </div>
-    <button class="button button-full button-positive">
-        Save
-    </button>
 </ion-content>
