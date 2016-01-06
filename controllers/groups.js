@@ -788,9 +788,9 @@ function groupSettingsGet(req, res) {
         )
             .from('groupsettings')
             .innerJoin('groups', function() {
-                this.on('groups.groupsetting_id', '=', 'groupsettings.id')
-                    .andOn('groups.id', '=', req.params.group_id);
-            });
+                this.on('groups.groupsetting_id', '=', 'groupsettings.id');
+            })
+            .where('groups.id', '=', req.params.group_id);
     })
         .fetch()
         .then(function groupSettingsGetThen(groupsetting) {
