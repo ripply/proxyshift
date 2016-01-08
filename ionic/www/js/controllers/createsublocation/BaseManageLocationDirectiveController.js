@@ -3,6 +3,7 @@ angular.module('scheduling-app.controllers')
         '$rootScope',
         '$scope',
         '$controller',
+        '$stateParams',
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
         //'Restangular',
@@ -11,6 +12,7 @@ angular.module('scheduling-app.controllers')
         function($rootScope,
                  $scope,
                  $controller,
+                 $stateParams,
                  GENERAL_CONFIG,
                  GENERAL_EVENTS
                  //Restangular,
@@ -27,6 +29,12 @@ angular.module('scheduling-app.controllers')
             /*$rootScope.$watch(ModelVariableName, function(newValue, oldValue) {
                 $scope.Model = newValue;
             });*/
+
+            $scope.group_id = getGroupId;
+
+            function getGroupId() {
+                return $stateParams.group_id;
+            }
 
             function createSubLocation(sublocation) {
                 //Send email invitation

@@ -5,9 +5,23 @@ angular.module('scheduling-app.controllers')
     .controller('GroupLocationsController', [
         '$scope',
         '$rootScope',
+        '$stateParams',
+        '$controller',
         'StateHistoryService',
         'STATES',
-        function($scope, $rootScope, StateHistoryService, STATES) {
+        function($scope,
+                 $rootScope,
+                 $stateParams,
+                 $controller,
+                 StateHistoryService,
+                 STATES) {
+            $controller('BaseModelController', {$scope: $scope});
+
+            $scope.group_id = getGroupId;
+
+            function getGroupId() {
+                return $stateParams.group_id;
+            }
 
             $scope.pageTitle = 'Locations';
 

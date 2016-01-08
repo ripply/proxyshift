@@ -494,7 +494,7 @@ angular.module('scheduling-app', [
                 })
 
                 .state('settings.group.locations.manage', {
-                    url: "/group/:group_id/locations/:location_id/manage",
+                    url: "/:location_id/manage",
                     resolve: {
                         //TODO: Check /userinfo
                     },
