@@ -17,11 +17,17 @@ angular.module('scheduling-app.controllers')
                  STATES) {
             $controller('BaseModelController', {$scope: $scope});
 
-            $scope.group_id = getGroupId;
+            $scope.stateParams = $stateParams;
 
             function getGroupId() {
-                return $stateParams.group_id;
+                return $scope.stateParams.group_id;
             }
+
+            function init() {
+                $scope.group_id = getGroupId();
+            }
+
+            $scope.beforeEnter = init;
 
             $scope.pageTitle = 'Locations';
 

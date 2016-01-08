@@ -30,10 +30,15 @@ angular.module('scheduling-app.controllers')
                 $scope.Model = newValue;
             });*/
 
-            $scope.group_id = getGroupId;
+            $scope.stateParams = $stateParams;
+            $scope.beforeEnter = init;
+
+            function init() {
+                $scope.group_id = getGroupId();
+            }
 
             function getGroupId() {
-                return $stateParams.group_id;
+                return $scope.stateParams.group_id;
             }
 
             function createSubLocation(sublocation) {

@@ -116,45 +116,58 @@ angular.module('scheduling-app.controllers')
                 !needsInitialization();
             }
 
-            $scope.$on('$ionicView.beforeEnter', function() {
+            function beforeEnterEvent() {
                 if (!isInitialized()) {
                     $scope.fetch();
                 }
                 if ($scope.beforeEnter !== undefined) {
                     $scope.beforeEnter();
                 }
-            });
+            }
 
-            $scope.$on('$ionicView.afterEnter', function() {
+            function afterEnterEvent() {
                 if ($scope.afterEnter !== undefined) {
                     $scope.afterEnter();
                 }
-            });
+            }
 
-            $scope.$on('$ionicView.enter', function() {
+            function enterEvent() {
                 if ($scope.enter !== undefined) {
                     $scope.enter();
                 }
-            });
+            }
 
-            $scope.$on('$ionicView.beforeLeave', function() {
+            function beforeLeaveEvent() {
                 if ($scope.beforeLeave !== undefined) {
                     $scope.beforeLeave();
                 }
-            });
+            }
 
-            $scope.$on('$ionicView.afterLeave', function() {
+            function afterLeaveEvent() {
                 setNeedsInitialization(true);
                 if ($scope.afterLeave !== undefined) {
                     $scope.afterLeave();
                 }
-            });
+            }
 
-            $scope.$on('$ionicView.leave', function() {
+            function leaveEvent() {
                 if ($scope.leave !== undefined) {
                     $scope.leave();
                 }
-            });
+            }
+
+            $scope.$on('$ionicView.beforeEnter', beforeEnterEvent);
+            $scope.$on('$ionicNavView.beforeEnter', beforeEnterEvent);
+            $scope.$on('$ionicView.afterEnter', afterEnterEvent);
+            $scope.$on('$ionicNavView.afterEnter', afterEnterEvent);
+            $scope.$on('$ionicView.enter', enterEvent);
+            $scope.$on('$ionicNavView.enter', enterEvent);
+            $scope.$on('$ionicView.beforeLeave', beforeLeaveEvent);
+            $scope.$on('$ionicNavView.beforeLeave', beforeLeaveEvent);
+            $scope.$on('$ionicView.afterLeave', afterLeaveEvent);
+            $scope.$on('$ionicNavView.afterLeave', afterLeaveEvent);
+            $scope.$on('$ionicView.leave', leaveEvent);
+            $scope.$on('$ionicNavView.leave', leaveEvent);
 
             function register(modelName, modelObject, addFunction, subRouteFetchFunction) {
                 if (arguments.length <= 2) {
