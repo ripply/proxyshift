@@ -1,22 +1,16 @@
-<ion-nav-view>
-    <ion-header-bar>
-        <h1 class="title">{{ pageTitle }}</h1>
-        <div class="buttons">
-            <button class="button button-icon ion-close" ng-click="close()"></button>
-        </div>
-    </ion-header-bar>
-    <ion-content>
+<ion-view view-title="Group">
+    <ion-content class="has-header" hide-back-button="false">
         <div class="list">
             <div class="item item-divider">
                 Navigation
             </div>
-            <ion-item href="/#/groupsettings/{{currentGroup.id}}/members/current" class="item-remove-animate">
+            <ion-item href="/#/settings/group/{{group_id}}/members" class="item-remove-animate">
                 Members Page
             </ion-item>
-            <ion-item href="/#/groupsettings/{{currentGroup.id}}/locations/current" class="item-remove-animate">
+            <ion-item href="/#/settings/group/{{group_id}}/locations/current" class="item-remove-animate">
                 Locations Page
             </ion-item>
-            <ion-item href="/#/groupsettings/{{currentGroup.id}}/members/createsubclass" class="item-remove-animate">
+            <ion-item href="/#/settings/group/{{group_id}}/createtype" class="item-remove-animate">
                 Create Subclass
             </ion-item>
             <div class="item item-divider">
@@ -35,9 +29,9 @@
             <div class="item item-divider">
                 Individual Settings
             </div>
-            <ion-item href="/#/groupsettings/{{currentGroup.id}}/locations/subscription" class="item-remove-animate">
+            <ion-item href="/#/settings/group/{{group_id}}/locations/subscription" class="item-remove-animate">
                 Locations Subscription Page
             </ion-item>
         </div>
     </ion-content>
-</ion-nav-view>
+</ion-view>

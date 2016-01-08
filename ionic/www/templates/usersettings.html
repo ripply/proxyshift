@@ -1,11 +1,5 @@
-<ion-nav-view name="content">
-    <ion-header-bar>
-        <h1 class="title">Settings</h1>
-        <div class="buttons">
-            <button class="button button-icon ion-close" ng-click="close()"></button>
-        </div>
-    </ion-header-bar>
-    <ion-content>
+<ion-view view-title="Settings">
+    <ion-content class="has-header" hide-back-button="false">
         <div class="list">
             <ion-toggle ng-model="UserSettings.pushnotifications"
                         ng-checked="UserSettings.pushnotifications"
@@ -27,9 +21,9 @@
             </div>
             <ion-item ng-repeat="group in groupsList"
                       item="group"
-                      href="#{{states.GROUPSETTINGS_URL}}/{{group.id}}" class="item-remove-animate">
+                      href="#{{states.GROUPSETTINGS_URL}}/{{group.id}}/settings" class="item-remove-animate">
                 {{ group.name }}
             </ion-item>
         </div>
     </ion-content>
-</ion-nav-view>
+</ion-view>

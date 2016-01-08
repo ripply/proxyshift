@@ -1,19 +1,21 @@
-<ion-content>
-    <div class="item item-divider">
-        Navigation
-    </div>
-    <ion-item href="/#/groupsettings/{{currentGroup.id}}/members/invite" class="item-remove-animate">
-        Invitation page
-    </ion-item>
-    <div class="item item-divider">
-        Current Members
-    </div>
-    <i class="icon ion-search placeholder-icon"></i>
-    <input type="text" ng-model="query" ng-style="{'width' : '100%'}"
-           placeholder="Search by name, email or phone">
-    <div class="list">
-        <ion-item ng-repeat="user in usersList | filter:query">
-            {{ user.username }}
+<ion-view view-title="Members">
+    <ion-content class="has-header" hide-back-button="false">
+        <div class="item item-divider">
+            Navigation
+        </div>
+        <ion-item href="/#/settings/{{group_id}}/members/invite" class="item-remove-animate">
+            Invitation page
         </ion-item>
-    </div>
-</ion-content>
+        <div class="item item-divider">
+            Current Members
+        </div>
+        <i class="icon ion-search placeholder-icon"></i>
+        <input type="text" ng-model="query" ng-style="{'width' : '100%'}"
+               placeholder="Search by name, email or phone">
+        <div class="list">
+            <ion-item ng-repeat="user in usersList | filter:query">
+                {{ user.username }}
+            </ion-item>
+        </div>
+    </ion-content>
+</ion-view>

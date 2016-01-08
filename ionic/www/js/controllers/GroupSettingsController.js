@@ -35,6 +35,7 @@ angular.module('scheduling-app.controllers')
 
             $scope[variableName] = {};
 
+            $scope.group_id = getGroupId()
             $scope.currentGroup = UserInfoService.getGroup(getGroupId());
 
             $scope.groupsList = UserInfoService.getGroupList();

@@ -367,114 +367,141 @@ angular.module('scheduling-app', [
 
                 .state('settings', {
                     url: "/settings",
+                    templateUrl: "templates/settings/settings.html",
+                    controller: 'SettingsController',
+                    abstract: true,
+                    resolve: {
+                        //TODO: Check /userinfo
+                    }
+                })
+
+                .state('settings.user', {
+                    url: "/user",
                     templateUrl: "templates/usersettings.html",
                     controller: 'SettingsController',
+                    views: {
+                        'content': {
+                            templateUrl: "templates/usersettings.html",
+                            controller: 'SettingsController'
+                        }
+                    },
                     resolve: {
                         //TODO: Check /userinfo
                     }
                 })
 
-                .state('groupsettings', {
-                    url: "/groupsettings/:group_id",
-                    templateUrl: "templates/groupsettings.html",
-                    controller: 'GroupSettingsController',
+                .state('settings.group', {
+                    url: "/group/:group_id",
+                    views: {
+                        'content': {
+                            templateUrl: "templates/settings/settingsgroup.html"
+                        }
+                    },
                     resolve: {
                         //TODO: Check /userinfo
                     }
                 })
 
-                .state('groupsettings.members', {
+                .state('settings.group.settings', {
+                    url: "/settings",
+                    views: {
+                        'groupContent': {
+                            templateUrl: "templates/groupsettings.html",
+                            controller: 'GroupSettingsController'
+                        }
+                    },
+                    resolve: {
+                        //TODO: Check /userinfo
+                    }
+                })
+
+                .state('settings.group.members', {
                     url: "/members",
-                    abstract: true,
-                    templateUrl: "templates/groupmembers.html",
-                    resolve: {
-                        //TODO: Check /userinfo
-                    }
-                })
-
-                .state('groupsettings.members.current', {
-                    url: "/current",
                     resolve: {
                         //TODO: Check /userinfo
                     },
                     views: {
-                        'content': {
+                        'groupContent': {
                             templateUrl: "templates/currentgroupmembers.html",
                             controller: 'GroupMembersController'
                         }
                     }
                 })
 
-                .state('groupsettings.members.invite', {
+                .state('settings.group.invite', {
                     url: "/invite",
                     resolve: {
                         //TODO: Check /userinfo
                     },
                     views: {
-                        'content': {
+                        'groupContent': {
                             templateUrl: "templates/invitemember.html",
                             controller: 'BaseSendInviteDirectiveController'
                         }
                     }
                 })
 
-                .state('groupsettings.members.createsubclass', {
-                    url: "/createsubclass",
+                .state('settings.group.createtype', {
+                    url: "/createtype",
                     resolve: {
                         //TODO: Check /userinfo
                     },
                     views: {
-                        'content': {
+                        'groupContent': {
                             templateUrl: "templates/createsubclass.html",
                             controller: 'BaseCreateSubclassDirectiveController'
                         }
                     }
                 })
 
-                .state('groupsettings.locations', {
+                .state('settings.group.locations', {
                     url: "/locations",
                     abstract: true,
-                    templateUrl: "templates/locations.html",
+                    views: {
+                        'groupContent': {
+                            templateUrl: "templates/locations.html"
+                        }
+                    },
                     resolve: {
                         //TODO: Check /userinfo
                     }
                 })
 
-                .state('groupsettings.locations.current', {
+                .state('settings.group.locations.subscriptions', {
+                    url: "/subscription",
+                    resolve: {
+                        //TODO: Check /userinfo
+                    },
+                    views: {
+                        'locationContent': {
+                            templateUrl: "templates/locationsubscriptions.html",
+                            controller: 'UserLocationsController'
+                        }
+                    }
+                })
+
+                .state('settings.group.locations.current', {
                     url: "/current",
                     resolve: {
                         //TODO: Check /userinfo
                     },
                     views: {
-                        'content': {
+                        'locationContent': {
                             templateUrl: "templates/currentlocations.html",
                             controller: 'GroupLocationsController'
                         }
                     }
                 })
 
-                .state('groupsettings.locations.manage', {
-                    url: "/:location_id/manage",
+                .state('settings.group.locations.manage', {
+                    url: "/group/:group_id/locations/:location_id/manage",
                     resolve: {
                         //TODO: Check /userinfo
                     },
                     views: {
-                        'content': {
+                        'locationContent': {
                             templateUrl: "templates/managelocation.html",
                             controller: 'BaseManageLocationDirectiveController'
-                        }
-                    }
-                })
-
-                .state('groupsettings.locations.subscription', {
-                    url: "/subscription",
-                    resolve: {
-                        //TODO: Check /userinfo
-                    },
-                    views: {
-                        'content': {
-                            templateUrl: "templates/locationsubscriptions.html",
-                            controller: 'UserLocationsController'
                         }
                     }
                 })
