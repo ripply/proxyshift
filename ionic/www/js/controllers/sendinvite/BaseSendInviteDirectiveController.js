@@ -2,6 +2,7 @@ angular.module('scheduling-app.controllers')
     .controller('BaseSendInviteDirectiveController', [
         '$rootScope',
         '$scope',
+        '$stateParams',
         '$controller',
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
@@ -10,6 +11,7 @@ angular.module('scheduling-app.controllers')
         //'Model',
         function($rootScope,
                  $scope,
+                 $stateParams,
                  $controller,
                  GENERAL_CONFIG,
                  GENERAL_EVENTS
@@ -27,6 +29,17 @@ angular.module('scheduling-app.controllers')
             /*$rootScope.$watch(ModelVariableName, function(newValue, oldValue) {
                 $scope.Model = newValue;
             });*/
+
+            $scope.stateParams = $stateParams;
+            $scope.beforeEnter = init;
+
+            function init() {
+                $scope.group_id = getGroupId();
+            }
+
+            function getGroupId() {
+                return $scope.stateParams.group_id;
+            }
 
             $scope.userclassList = [
                 { description: "Nurse"},

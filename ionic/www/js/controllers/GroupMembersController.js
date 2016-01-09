@@ -5,9 +5,28 @@ angular.module('scheduling-app.controllers')
     .controller('GroupMembersController', [
         '$scope',
         '$rootScope',
+        '$stateParams',
+        '$controller',
         'StateHistoryService',
         'STATES',
-        function($scope, $rootScope, StateHistoryService, STATES) {
+        function($scope,
+                 $rootScope,
+                 $stateParams,
+                 $controller,
+                 StateHistoryService,
+                 STATES) {
+            $controller('BaseModelController', {$scope: $scope});
+            $scope.stateParams = $stateParams;
+
+            $scope.beforeEnter = init;
+
+            function init() {
+                $scope.group_id = getGroupId();
+            }
+
+            function getGroupId() {
+                return $scope.stateParams.group_id;
+            }
 
             $scope.usersList = [
                 { username: "Bro 1", email: "email_1@email.com", phone: "1"},
