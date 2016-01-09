@@ -29,6 +29,17 @@ angular.module('scheduling-app.controllers')
 
             var latestLocations;
 
+            function getSubscribed(location) {
+                if (location.userpermissions &&
+                    location.userpermissions instanceof Array &&
+                    location.userpermissions.length > 0) {
+                    var userpermission = location.userpermissions[0];
+                    return userpermission.subscribed == 1;
+                } else {
+                    return false;
+                }
+            }
+
             $scope.fetchLocations = function fetchLocations() {
                 Restangular.one("groups", getGroupId())
                     .all('locations')
@@ -36,7 +47,7 @@ angular.module('scheduling-app.controllers')
                     .then(function fetchGroupLocations(result) {
                         result = result.plain();
                         angular.forEach(result, function(location) {
-                            location.subscribed = location.subscribed == 1;
+                            location.subscribed = getSubscribed(location);
                         });
                         latestLocations = angular.copy(result);
                         $scope.locations = result;
