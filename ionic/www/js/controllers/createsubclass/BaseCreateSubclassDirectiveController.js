@@ -3,6 +3,7 @@ angular.module('scheduling-app.controllers')
         '$rootScope',
         '$scope',
         '$controller',
+        '$stateParams',
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
         //'Restangular',
@@ -11,6 +12,7 @@ angular.module('scheduling-app.controllers')
         function($rootScope,
                  $scope,
                  $controller,
+                 $stateParams,
                  GENERAL_CONFIG,
                  GENERAL_EVENTS
                  //Restangular,
@@ -27,6 +29,18 @@ angular.module('scheduling-app.controllers')
             /*$rootScope.$watch(ModelVariableName, function(newValue, oldValue) {
                 $scope.Model = newValue;
             });*/
+
+            $scope.stateParams = $stateParams;
+
+            function getGroupId() {
+                return $scope.stateParams.group_id;
+            }
+
+            function init() {
+                $scope.group_id = getGroupId();
+            }
+
+            $scope.beforeEnter = init;
 
             $scope.permissionList = [
                 { description: "Can Send Notifications", checked: true },
