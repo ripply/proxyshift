@@ -306,7 +306,8 @@ function getUserInfo(user_id, next) {
                                 this.on('groupuserclasses.group_id', '=', 'locations.group_id');
                             })
                             .innerJoin('groupuserclasstousers', function() {
-                                this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id');
+                                this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id')
+                                    .andOn('groupuserclasstousers.user_id', '=', 'userpermissions.user_id');
                             })
                             .innerJoin('grouppermissions', function() {
                                 this.on('grouppermissions.id', '=', 'groupuserclasses.grouppermission_id');
