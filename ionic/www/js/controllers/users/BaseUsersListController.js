@@ -1,5 +1,5 @@
 angular.module('scheduling-app.controllers')
-    .controller('BaseManageLocationDirectiveController', [
+    .controller('BaseUsersListController', [
         '$rootScope',
         '$scope',
         '$controller',
@@ -7,6 +7,8 @@ angular.module('scheduling-app.controllers')
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
         'ResourceService',
+        //'ModelVariableName',
+        //'Model',
         function($rootScope,
                  $scope,
                  $controller,
@@ -14,6 +16,8 @@ angular.module('scheduling-app.controllers')
                  GENERAL_CONFIG,
                  GENERAL_EVENTS,
                  ResourceService
+                 //ModelVariableName,
+                 //Model
         ) {
             $controller('BaseModelController', {$scope: $scope});
 
@@ -23,6 +27,7 @@ angular.module('scheduling-app.controllers')
             function init() {
                 $scope.group_id = getGroupId();
                 $scope.location_id = getLocationId();
+                getUsers();
             }
 
             function getGroupId() {
@@ -33,9 +38,11 @@ angular.module('scheduling-app.controllers')
                 return $stateParams.location_id;
             }
 
-            $scope.createSubLocation = createSubLocation;
-
-            function createSubLocation(location_id, title, description) {
-                ResourceService.createSublocation(location_id, title, description);
+            function getUsers() {
+                ResourceService.getUsersAtLocation($scope.location_id, function getUsersSuccess(result) {
+                    $scope.users = result;
+                }, function getUsersError(response) {
+                    $scope.users = [{firstname: 'Server Error'}];
+                });
             }
         }]);

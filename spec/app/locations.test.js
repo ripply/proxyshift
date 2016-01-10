@@ -18,6 +18,7 @@ var time = require('../../app/time');
 // DELETE /api/locations/:location_id/sublocations/:sublocation_id
 // GET /api/locations/:location_id/shifts/:groupuserclass_id
 // GET /api/locations/:location_id/shifts/after/:after/before/:before
+// GET /api/locations/:location_id/users
 // POST /api/locations/:location_id/subscribe
 // DELETE /api/locations/:location_id/subscribe
 

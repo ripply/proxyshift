@@ -667,8 +667,7 @@ var Schema = {
             nullable: false
         }
     },
-    // Links a user to a location
-    // with the given permission
+    // Links a user to a location (permissions are linked via group job type instead of via this)
     UserPermission: {
         id: {
             type: increments

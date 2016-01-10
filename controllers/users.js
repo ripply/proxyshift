@@ -29,7 +29,16 @@ var modifiableAccountFields = [
     'sanswer'
 ];
 
+var fieldsToNotSendToClient = [
+    'usersetting_id',
+    'username',
+    'password',
+    'squestion',
+    'sanswer'
+];
+
 module.exports = {
+    bannedFields: fieldsToNotSendToClient,
     route: '/api/users',
     '/': {
         'get': { // get info about your account

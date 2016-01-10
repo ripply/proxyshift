@@ -506,6 +506,19 @@ angular.module('scheduling-app', [
                     }
                 })
 
+                .state('settings.group.locations.users', {
+                    url: "/:location_id/users",
+                    resolve: {
+                        //TODO: Check /userinfo
+                    },
+                    views: {
+                        'locationContent': {
+                            templateUrl: "templates/grouplocationsmanageusers.html",
+                            controller: 'BaseUsersListController'
+                        }
+                    }
+                })
+
                 .state('app.privacypolicy', {
                     url: "/privacypolicy",
                     views: {

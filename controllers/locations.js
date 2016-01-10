@@ -11,6 +11,7 @@ var models = require('../app/models'),
     Bookshelf = models.Bookshelf,
     controllerCommon = require('./controllerCommon'),
     grabNormalShiftRange = require('./controllerCommon').grabNormalShiftRange,
+    users = require('./users'),
     knex = models.knex,
     moment = require('moment'),
     variables = require('./variables'),
@@ -66,6 +67,39 @@ module.exports = {
             auth: ['location member'],
             route: function locationsSubscribeDelete(req, res) {
                 return locationSubscribeUpdate(req, res, false);
+            }
+        }
+    },
+    '/:location_id/users': {
+        'get': {
+            auth: ['privileged location member'],
+            route: function locationsUsersGet(req, res) {
+                return models.User.query(function(q) {
+                    q.select(
+                        controllerCommon.createSelectQueryForAllColumns(
+                            'User',
+                            'users',
+                            users.bannedFields
+                        )
+                    )
+                        .from('users')
+                        .innerJoin('userpermissions', function() {
+                            this.on('userpermissions.user_id', '=', 'users.id');
+                        })
+                        .where('userpermissions.location_id', '=', req.params.location_id)
+                        .andWhere('userpermissions.subscribed', '=', 1);
+                })
+                    .fetchAll()
+                    .then(function locationsUsersGetSuccess(users) {
+                        if (users) {
+                            res.json(users.toJSON());
+                        } else {
+                            res.json([]);
+                        }
+                    })
+                    .catch(function locationsUsersGetError(err) {
+                        error(req, res, err);
+                    });
             }
         }
     },

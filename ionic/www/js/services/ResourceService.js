@@ -7,9 +7,25 @@ angular.module('scheduling-app.services')
                  $controller,
                  Restangular
         ) {
-            this.createSublocation = function createSublocation(locationId, title, description, success, error) {
+            this.createLocation = function createLocation(group_id, state, city, address, zipcode, phonenumber, success, error) {
                 andThen(
-                    Restangular.one('locations', locationId)
+                    Restangular.one('groups', group_id)
+                        .all('locations')
+                        .customPOST({
+                            state: state,
+                            city: city,
+                            address: address,
+                            zipcode: zipcode,
+                            phonenumber: phonenumber
+                        }),
+                    success,
+                    error
+                );
+            };
+
+            this.createSublocation = function createSublocation(location_id, title, description, success, error) {
+                andThen(
+                    Restangular.one('locations', location_id)
                         .all('sublocations')
                         .customPOST({
                             title: title,
@@ -18,6 +34,16 @@ angular.module('scheduling-app.services')
                     success,
                     error
                 );
+            };
+
+            this.getUsersAtLocation = function getUsersAtLocation(location_id, success, error) {
+                andThen(
+                    Restangular.one('locations', location_id)
+                        .all('users')
+                        .getList(),
+                    success,
+                    error
+                )
             };
 
             function andThen(promise, success, error) {
