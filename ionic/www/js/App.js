@@ -509,7 +509,7 @@ angular.module('scheduling-app', [
                 .state('settings.group.locations.users', {
                     url: "/:location_id/users",
                     resolve: {
-                        //TODO: Check /userinfo
+                        //TODO: CHECK USERINFO, MUST BE PRIVILEGED USER OF THE LOCATION
                     },
                     views: {
                         'locationContent': {

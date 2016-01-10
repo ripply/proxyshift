@@ -47,6 +47,23 @@ angular.module('scheduling-app.services')
                 return getUserclassesFromLocationOrSublocation(undefined, sublocation_id);
             };
 
+            this.isPrivilegedMemberOfLocation = function isPrivilegedMemberOfLocation(location_id) {
+                return isMemberOf('privilegedMemberOfLocations', location_id);
+            };
+
+            function isMemberOf(key, id) {
+                var userinfo = $rootScope.userinfo;
+                if (userinfo.hasOwnProperty(key) && userinfo[key] instanceof Array) {
+                    var list = userinfo[key];
+                    for (var i = 0; i < list.length; i++) {
+                        if (list[i].id == id) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+
             this.getUserclassesFromLocationOrSublocation = getUserclassesFromLocationOrSublocation;
 
             function getUserclassesFromLocationOrSublocation(location_id, sublocation_id) {

@@ -4,6 +4,7 @@ angular.module('scheduling-app.controllers')
         '$scope',
         '$controller',
         '$stateParams',
+        'UserInfoService',
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
         'ResourceService',
@@ -11,6 +12,7 @@ angular.module('scheduling-app.controllers')
                  $scope,
                  $controller,
                  $stateParams,
+                 UserInfoService,
                  GENERAL_CONFIG,
                  GENERAL_EVENTS,
                  ResourceService
@@ -32,6 +34,10 @@ angular.module('scheduling-app.controllers')
             function getLocationId() {
                 return $stateParams.location_id;
             }
+
+            $scope.isPrivilegedMemberOfLocation = function isPrivilegedMemberOfLocation() {
+                return UserInfoService.isPrivilegedMemberOfLocation(getLocationId());
+            };
 
             $scope.createSubLocation = createSubLocation;
 
