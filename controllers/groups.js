@@ -152,7 +152,10 @@ module.exports = {
                         group_id: req.params.group_id
                     },
                     req,
-                    res
+                    res,
+                    {
+                        withRelated: 'grouppermission'
+                    }
                 );
             }
         },

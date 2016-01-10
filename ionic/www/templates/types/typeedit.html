@@ -1,0 +1,28 @@
+<ion-view view-title="Modify Job type">
+    <ion-content class="has-header" hide-back-button="false">
+        <div>
+            <form name="typeEditForm" ng-submit="editType(group_id, type_id, type.title, type.description, type.cansendnotification, type.requiremanagerapproval, type.grouppermission_id)">
+                <div class="list">
+                    <input type="hidden" name="location_id" value="{{location_id}}">
+                    <label class="item item-input">
+                        <span class="input-label">Job Title</span>
+                        <input type="text" name="title" title="user" ng-model="type.title">
+                    </label>
+                    <label class="item item-input">
+                        <span class="input-label">Job Description</span>
+                        <input type="text" name="description" ng-model="type.description">
+                    </label>
+                    <ion-checkbox type="checkbox" name="cansendnotification" ng-model="type.cansendnotification" ng-checked="type.cansendnotification">
+                        Can send notifications
+                    </ion-checkbox>
+
+                    <ion-checkbox type="checkbox" name="requiremanagerapproval" ng-model="type.requiremanagerapproval" ng-checked="type.requiremanagerapproval">
+                        Requires manager approval
+                    </ion-checkbox>
+                    <!-- https://github.com/tipstrade/ionic-fancy-select -->
+                    <button class="button button-block button-steelblue" type="submit">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </ion-content>
+</ion-view>

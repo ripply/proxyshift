@@ -94,9 +94,9 @@ module.exports = {
                 error(req, res, err);
             });
     },
-    simpleGetListModel: function(modelName, queryArgs, req, res) {
+    simpleGetListModel: function(modelName, queryArgs, req, res, options) {
         models[modelName].forge(queryArgs)
-            .fetchAll()
+            .fetchAll(options)
             .then(function (fetchedResult) {
                 res.json(fetchedResult);
             })

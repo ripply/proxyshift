@@ -448,9 +448,35 @@ angular.module('scheduling-app', [
                     },
                     views: {
                         'groupContent': {
-                            templateUrl: "templates/createsubclass.html",
-                            controller: 'BaseCreateSubclassDirectiveController'
+                            templateUrl: "templates/types/typecreate.html",
+                            controller: 'JobTypeController'
                         }
+                    }
+                })
+
+                .state('settings.group.types', {
+                    url: "/types",
+                    views: {
+                        'groupContent': {
+                            templateUrl: "templates/types/typelist.html",
+                            controller: 'JobTypeController'
+                        }
+                    },
+                    resolve: {
+                        //TODO: Check /userinfo
+                    }
+                })
+
+                .state('settings.group.type', {
+                    url: "/type/:type_id",
+                    views: {
+                        'groupContent': {
+                            templateUrl: "templates/types/typeedit.html",
+                            controller: 'JobTypeController'
+                        }
+                    },
+                    resolve: {
+                        //TODO: Check /userinfo
                     }
                 })
 
