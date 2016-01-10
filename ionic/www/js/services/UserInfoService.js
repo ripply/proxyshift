@@ -47,6 +47,10 @@ angular.module('scheduling-app.services')
                 return getUserclassesFromLocationOrSublocation(undefined, sublocation_id);
             };
 
+            this.isPrivilegedGroupMember = function isPrivilegedGroupMember(group_id) {
+                return isMemberOf('privilegedMemberOfGroups', group_id);
+            };
+
             this.isPrivilegedMemberOfLocation = function isPrivilegedMemberOfLocation(location_id) {
                 return isMemberOf('privilegedMemberOfLocations', location_id);
             };
