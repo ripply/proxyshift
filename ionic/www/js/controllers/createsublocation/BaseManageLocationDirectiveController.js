@@ -6,7 +6,7 @@ angular.module('scheduling-app.controllers')
         '$stateParams',
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
-        //'Restangular',
+        'ResourceService',
         //'ModelVariableName',
         //'Model',
         function($rootScope,
@@ -14,8 +14,8 @@ angular.module('scheduling-app.controllers')
                  $controller,
                  $stateParams,
                  GENERAL_CONFIG,
-                 GENERAL_EVENTS
-                 //Restangular,
+                 GENERAL_EVENTS,
+                 ResourceService
                  //ModelVariableName,
                  //Model
         ) {
@@ -35,18 +35,21 @@ angular.module('scheduling-app.controllers')
 
             function init() {
                 $scope.group_id = getGroupId();
+                $scope.location_id = getLocationId();
             }
 
             function getGroupId() {
-                return $scope.stateParams.group_id;
+                return $stateParams.group_id;
             }
 
-            function createSubLocation(sublocation) {
-                //Send email invitation
+            function getLocationId() {
+                return $stateParams.location_id;
+            }
 
-                if(checkExistingSubLocation(sublocation)) {
-                    //Also send invitation to user in app
-                }
+            $scope.createSubLocation = createSubLocation;
+
+            function createSubLocation(location_id, title, description) {
+                ResourceService.createSublocation(location_id, title, description);
             }
 
             function checkExistingSubLocation(sublocation) {
