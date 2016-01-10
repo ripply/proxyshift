@@ -14,8 +14,7 @@
                placeholder="Search by name, email or phone">
         <div class="list">
             <ion-item ng-repeat="type in types | filter:query"
-                href="#/settings/group/{{group_id}}/type/{{type.id}}"
-                class="item-remove-animate">
+                href="#/settings/group/{{group_id}}/type/{{type.id}}">
                 {{ type.title }}{{ isPrivilegedType(type) == true ? ' - (Admin)':'' }}
             </ion-item>
         </div>
