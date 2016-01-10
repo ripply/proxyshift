@@ -15,7 +15,7 @@
         <div class="list">
             <ion-item ng-repeat="type in types | filter:query"
                 href="#/settings/group/{{group_id}}/type/{{type.id}}">
-                {{ type.title }}{{ isPrivilegedType(type) == true ? ' - (Admin)':'' }}
+                {{ type.title }}{{ isPrivilegedType(type) ? ' - (Admin)':'' }}
             </ion-item>
         </div>
     </ion-content>

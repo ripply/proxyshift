@@ -98,6 +98,16 @@ angular.module('scheduling-app.services')
                 );
             };
 
+            this.getGroupPermissions = function getGroupPermissions(group_id, success, error) {
+                andThen(
+                    Restangular.one('groups', group_id)
+                        .all('permissions')
+                        .getList(),
+                    success,
+                    error
+                )
+            };
+
             function andThen(promise, success, error) {
                 promise.then(function resourceServiceSuccess(result) {
                     if (success) {
