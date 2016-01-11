@@ -58,6 +58,15 @@ angular.module('scheduling-app.controllers')
                                 var type = $scope.types[i];
                                 if (type.id == $scope.type_id) {
                                     $scope.type = angular.copy(type);
+                                    if ($scope.permissions && $scope.permissions instanceof Array) {
+                                        for (var j = 0; j < $scope.permissions.length; j++) {
+                                            var permission = $scope.permissions[j];
+                                            if (permission.id == $scope.type.grouppermission_id) {
+                                                $scope.grouppermission = permission;
+                                                break;
+                                            }
+                                        }
+                                    }
                                     // clean up fields if necessary
                                     angular.forEach([
                                         'cansendnotification',
