@@ -72,7 +72,7 @@ module.exports = {
     },
     '/:location_id/users': {
         'get': {
-            auth: ['privileged location member'],
+            auth: ['group owner', 'or', 'privileged location member'],
             route: function locationsUsersGet(req, res) {
                 return models.User.query(function(q) {
                     q.select(
