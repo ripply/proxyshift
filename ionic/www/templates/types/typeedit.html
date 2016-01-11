@@ -19,6 +19,21 @@
                     <ion-checkbox type="checkbox" name="requiremanagerapproval" ng-model="type.requiremanagerapproval" ng-checked="type.requiremanagerapproval">
                         Requires manager approval
                     </ion-checkbox>
+                    <fancy-select
+                        header-text="Select an option"
+                        items="items"
+                        value="selected"
+                        icon-property="icon"
+                        value-property="id"
+                        text-property="id"
+                        allow-empty='true'
+                        multi-select="true"
+                        text="Nothing selected"
+                        modal-template-url="lib/ionic-fancy-select/templates/modal-template.html"
+                        template-url="lib/ionic-fancy-select/templates/item-template.html"
+                        note-text="A Note text"
+                        >
+                    </fancy-select>
                     <!-- https://github.com/tipstrade/ionic-fancy-select -->
                     <button class="button button-block button-steelblue" type="submit">Save changes</button>
                 </div>

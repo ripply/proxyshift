@@ -13,6 +13,7 @@ angular.module('scheduling-app', [
     'gettext',
     'restangular',
     'LocalStorageModule',
+    'ionic-fancy-select',
     'scheduling-app.controllers',
     'scheduling-app.authentication',
     'scheduling-app.models',
