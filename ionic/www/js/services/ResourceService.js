@@ -3,11 +3,30 @@ angular.module('scheduling-app.services')
         '$rootScope',
         '$controller',
         'Restangular',
+        'GENERAL_EVENTS',
         function($rootScope,
                  $controller,
-                 Restangular
+                 Restangular,
+                 GENERAL_EVENTS
         ) {
-            this.createLocation = function createLocation(group_id, state, city, address, zipcode, phonenumber, success, error) {
+            function updateUserInfo(callback, argument) {
+                $rootScope.$emit(GENERAL_EVENTS.UPDATES.USERINFO.UPDATENEEDED);
+                if (callback) {
+                    callback(argument);
+                }
+            }
+
+            this.getLocation = function getLocation(group_id, location_id, success, error) {
+                andThen(
+                    Restangular.one('groups', group_id)
+                        .one('locations', location_id)
+                        .get(),
+                    success,
+                    error
+                );
+            };
+
+            this.createLocation = function createLocation(group_id, timezone, state, city, address, zipcode, phonenumber, success, error) {
                 andThen(
                     Restangular.one('groups', group_id)
                         .all('locations')
@@ -18,7 +37,42 @@ angular.module('scheduling-app.services')
                             zipcode: zipcode,
                             phonenumber: phonenumber
                         }),
-                    success,
+                    function createLocationSuccess(result) {
+                        // userinfo has location information
+                        updateUserInfo(success, result);
+                    },
+                    error
+                );
+            };
+
+            this.editLocation = function editLocation(group_id, location_id, timezone, state, city, address, zipcode, phonenumber, success, error) {
+                andThen(
+                    Restangular.one('groups', group_id)
+                        .one('locations', location_id)
+                        .patch({
+                            state: state,
+                            city: city,
+                            address: address,
+                            zipcode: zipcode,
+                            phonenumber: phonenumber
+                        }),
+                    function editLocationSuccess(result) {
+                        // userinfo has location information
+                        updateUserInfo(success, result);
+                    },
+                    error
+                );
+            };
+
+            this.deleteLocation = function deleteLocation(group_id, location_id, success, error) {
+                andThen(
+                    Restangular.one('groups', group_id)
+                        .one('locations', location_id)
+                        .remove(),
+                    function deleteLocationSuccess(result) {
+                        // userinfo has location information
+                        updateUserInfo(success, result);
+                    },
                     error
                 );
             };
@@ -31,7 +85,10 @@ angular.module('scheduling-app.services')
                             title: title,
                             description: description
                         }),
-                    success,
+                    function createSublocationSuccess(result) {
+                        // userinfo has location information
+                        updateUserInfo(success, result);
+                    },
                     error
                 );
             };
@@ -67,12 +124,14 @@ angular.module('scheduling-app.services')
                             requiremanagerapproval: requiremeanagerapproval,
                             grouppermission_id: grouppermission_id
                         }),
-                    success,
+                    function createTypeSuccess(result) {
+                        updateUserInfo(success, result);
+                    },
                     error
                 );
             };
 
-            this.editType = function createType(group_id, type_id, title, description, cansendnotification, requiremeanagerapproval, grouppermission_id, success, error) {
+            this.editType = function editType(group_id, type_id, title, description, cansendnotification, requiremeanagerapproval, grouppermission_id, success, error) {
                 andThen(
                     Restangular.one('groups', group_id)
                         .one('classes', type_id)
@@ -83,7 +142,9 @@ angular.module('scheduling-app.services')
                             requiremanagerapproval: requiremeanagerapproval,
                             grouppermission_id: grouppermission_id
                         }),
-                    success,
+                    function editTypeSuccess(result) {
+                        updateUserInfo(success, result);
+                    },
                     error
                 );
             };
@@ -93,7 +154,9 @@ angular.module('scheduling-app.services')
                     Restangular.one('groups', group_id)
                         .one('classes', type_id)
                         .remove(),
-                    success,
+                    function deleteTypeSuccess(result) {
+                        updateUserInfo(success, result);
+                    },
                     error
                 );
             };

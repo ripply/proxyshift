@@ -480,6 +480,19 @@ angular.module('scheduling-app', [
                     }
                 })
 
+                .state('settings.group.newlocation', {
+                    url: "/newlocation",
+                    views: {
+                        'groupContent': {
+                            templateUrl: "templates/locations/locationcreate.html",
+                            controller: 'LocationEditorController'
+                        }
+                    },
+                    resolve: {
+                        //TODO: Check /userinfo
+                    }
+                })
+
                 .state('settings.group.locations', {
                     url: "/locations",
                     abstract: true,
@@ -521,6 +534,19 @@ angular.module('scheduling-app', [
 
                 .state('settings.group.locations.manage', {
                     url: "/:location_id/manage",
+                    resolve: {
+                        //TODO: Check /userinfo
+                    },
+                    views: {
+                        'locationContent': {
+                            templateUrl: "templates/locations/locationedit.html",
+                            controller: 'LocationEditorController'
+                        }
+                    }
+                })
+
+                .state('settings.group.locations.sublocations', {
+                    url: "/:location_id/sublocations",
                     resolve: {
                         //TODO: Check /userinfo
                     },

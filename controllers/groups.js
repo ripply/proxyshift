@@ -531,8 +531,8 @@ module.exports = {
         }
     },
     '/:group_id/locations/:location_id': {
-        'delete': { // remove location from group
-            auth: ['group owner', 'or', 'privileged group member'], // group owner/privileged member
+        'get': {
+            auth: ['group member'],
             route: function(req, res) {
                 simpleGetSingleModel(
                     'Location',
@@ -543,7 +543,40 @@ module.exports = {
                     req,
                     res
                 );
-                //console.log(res);
+            }
+        },
+        'patch': { // modify location
+            auth: ['group owner', 'or', 'privileged group member'], // group owner/privileged member
+            route: function(req, res) {
+                patchModel(
+                    'Location',
+                    {
+                        id: req.params.location_id,
+                        group_id: req.params.group_id
+                    },
+                    req,
+                    res,
+                    'Location updated',
+                    [
+                        'id',
+                        'group_id'
+                    ]
+                );
+            }
+        },
+        'delete': { // remove location from group
+            auth: ['group owner', 'or', 'privileged group member'], // group owner/privileged member
+            route: function(req, res) {
+                deleteModel(
+                    'Location',
+                    {
+                        id: req.params.location_id,
+                        group_id: req.params.group_id
+                    },
+                    req,
+                    res,
+                    'Location deleted'
+                );
             }
         }
     },

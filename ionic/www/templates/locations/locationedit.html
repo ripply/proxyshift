@@ -1,0 +1,34 @@
+<ion-view view-title="Edit Location">
+    <ion-content class="has-header" hide-back-button="false">
+        <div class="list">
+            <div class="item item-divider">
+                Edit
+            </div>
+            <form name="locationEditForm" ng-submit="editLocation(group_id, location_id, location.timezone_id, location.state, location.city, location.address, location.zipcode, location.phonenumber)">
+                <input type="hidden" name="group_id" value="{{group_id}}">
+                <input type="hidden" name="location_id" value="{{location_id}}">
+                <label class="item item-input">
+                    <span class="input-label">Address</span>
+                    <input type="text" name="address" title="address" ng-model="location.address">
+                </label>
+                <label class="item item-input">
+                    <span class="input-label">State</span>
+                    <input type="text" name="state" title="state" ng-model="location.state">
+                </label>
+                <label class="item item-input">
+                    <span class="input-label">City</span>
+                    <input type="text" name="city" title="city" ng-model="location.city">
+                </label>
+                <label class="item item-input">
+                    <span class="input-label">Zip</span>
+                    <input type="text" name="zip" title="zip" ng-model="location.zipcode">
+                </label>
+                <label class="item item-input">
+                    <span class="input-label">phonenumber</span>
+                    <input type="text" name="phonenumber" title="phonenumber" ng-model="location.phonenumber">
+                </label>
+                <button class="button button-block button-steelblue" type="submit">Save changes</button></div>
+            </form>
+        </div>
+    </ion-content>
+</ion-view>

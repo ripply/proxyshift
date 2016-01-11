@@ -1,6 +1,12 @@
 <ion-view view-title="Location">
     <ion-content class="has-header" hide-back-button="false">
         <div class="item item-divider">
+            Manage
+        </div>
+        <ion-item href="#/settings/group/{{group_id}}/newlocation">
+            New Location
+        </ion-item>
+        <div class="item item-divider">
             Current Locations
         </div>
         <i class="icon ion-search placeholder-icon"></i>
@@ -9,7 +15,7 @@
         <div class="list">
             <ion-item ng-repeat="location in locations | filter:query"
                       item="location"
-                      href="#/settings/group/{{group_id}}/locations/{{ location.id }}/manage" class="item-remove-animate">
+                      href="#/settings/group/{{group_id}}/locations/{{ location.id }}/manage">
                 {{ location.address }}
             </ion-item>
         </div>
