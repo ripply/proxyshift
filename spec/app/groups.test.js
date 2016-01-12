@@ -13,6 +13,9 @@ var parse = global.parse;
 
 // TODO:
 // POST /api/groups/:group_id/users/:user_id/classes/:class_id/permissions/:permission_id
+// GET /api/groups/:group_id/users
+// POST /api/groups/:group_id/users
+// POST /api/groups/:group_id/users/search/:start/:end
 
 describe('#/api/groups', function() {
 

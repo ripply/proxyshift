@@ -10,6 +10,7 @@ var models = require('../app/models'),
     controllerCommon = require('./controllerCommon'),
     _ = require('underscore'),
     error = require('./controllerCommon').error,
+    users = require('./users'),
     Bookshelf = models.Bookshelf;
 
 module.exports = {
@@ -219,29 +220,17 @@ module.exports = {
         'get': { // get all group members
             auth: ['group owner', 'or', 'privileged group member'], // owner/privileged member
             route: function(req, res) {
-                models.User.query(function(q) {
-                    q.select('users.id as id', 'users.firstname as firstname', 'users.lastname as lastname', 'users.username as username')
-                        .from('users')
-                        .innerJoin('usergroups', function() {
-                            this.on('users.id', '=', 'usergroups.user_id');
-                    })
-                        .where('usergroups.group_id', '=', req.params.group_id)
-                        .union(function() {
-                            this.select('users.id as id', 'users.firstname as firstname', 'users.lastname as lastname', 'users.username as username')
-                                .from('users')
-                                .innerJoin('groups', function() {
-                                    this.on('users.id', '=', 'groups.user_id');
-                                })
-                                .where('groups.id', '=', req.params.group_id);
-                        });
+                searchUsers(req, res, function getGroupMembersCallback(json) {
+                    res.json(json);
                 })
-                    .fetchAll()
-                    .then(function(groupmembers) {
-                        res.json(groupmembers.toJSON());
-                    })
-                    .catch(function(err) {
-                        error(req, res, err);
-                    });
+            }
+        },
+        'post': {
+            auth: ['group owner', 'or', 'privileged group member'],
+            route: function searchGroupMembers(req, res) {
+                searchUsers(req, res, function searchGroupMembersCallback(json) {
+                    res.json(json);
+                });
             }
         }
     },
@@ -480,6 +469,38 @@ module.exports = {
                         .catch(function (err) {
                             error(req, res, err);
                         });
+                });
+            }
+        }
+    },
+    '/:group_id/users/search/:start/:end': {
+        'post': {
+            auth: ['group owner', 'or', 'privileged group member'],
+            route: function searchGroupMembersLimit(req, res) {
+                var start = parseInt(req.params.start);
+                var end = parseInt(req.params.end);
+                if (start < 0) {
+                    start = 0;
+                }
+
+                if (end < start) {
+                    res.sendStatus(400);
+                }
+
+                searchUsers(req, res, function searchGroupMembersLimitCallback(json) {
+                    if (start > json.length) {
+                        start = json.length;
+                    }
+
+                    if (end < json.length) {
+                        end = json.length;
+                    }
+                    res.json({
+                        start: start,
+                        end: end,
+                        size: json.length,
+                        result: json.slice(start, end)
+                    });
                 });
             }
         }
@@ -837,6 +858,63 @@ function groupSettingsGet(req, res) {
             }
         })
         .catch(function groupSettingsGetError(err) {
+            error(req, res, err);
+        });
+}
+
+function searchUsers(req, res, next) {
+    var query = req.body.query;
+    var likeQuery = null;
+    if (query) {
+        // force query to be a string
+        query = "" + query;
+        likeQuery = "%" + query + "%";
+    }
+
+    function filter(q) {
+        if (query) {
+            return q.orWhere('users.firstname', 'like', likeQuery)
+                .orWhere('users.lastname', 'like', likeQuery);
+        } else {
+            return q;
+        }
+    }
+
+    models.User.query(function(q) {
+        filter(
+            q.select(
+                'users.id as id',
+                'users.firstname as firstname',
+                'users.lastname as lastname',
+                'usergroups.grouppermission_id as grouppermission_id'
+            )
+                .from('users')
+                .innerJoin('usergroups', function () {
+                    this.on('users.id', '=', 'usergroups.user_id');
+                })
+                .where('usergroups.group_id', '=', req.params.group_id)
+        )
+            .union(function () {
+                filter(
+                    this.select(
+                        'users.id as id',
+                        'users.firstname as firstname',
+                        'users.lastname as lastname',
+                        'groups.name as grouppermission_id' // identify group owners to client by sending grouppermission_id as a string instead of an integer
+                    )
+                        .from('users')
+                        .innerJoin('groups', function () {
+                            this.on('users.id', '=', 'groups.user_id');
+                        })
+                        .where('groups.id', '=', req.params.group_id)
+                );
+            });
+    })
+        .fetchAll()
+        .then(function (groupmembers) {
+            next(groupmembers.toJSON());
+        })
+        .catch(function (err) {
             error(req, res, err);
         });
 }

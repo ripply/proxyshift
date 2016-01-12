@@ -27,7 +27,11 @@ angular.module('scheduling-app.controllers')
             function init() {
                 $scope.group_id = getGroupId();
                 $scope.location_id = getLocationId();
-                getUsers();
+                if ($scope.location_id) {
+                    getAllLocationUsers();
+                } else {
+                    getAllGroupUsers()
+                }
             }
 
             function getGroupId() {
@@ -38,11 +42,29 @@ angular.module('scheduling-app.controllers')
                 return $stateParams.location_id;
             }
 
-            function getUsers() {
+            function getAllLocationUsers() {
                 ResourceService.getUsersAtLocation($scope.location_id, function getUsersSuccess(result) {
                     $scope.users = result;
                 }, function getUsersError(response) {
-                    $scope.users = [{firstname: 'Server Error'}];
+                    $scope.users = [{firstname: 'Error'}];
                 });
+            }
+
+            function getAllGroupUsers() {
+                var group_id = getGroupId();
+                ResourceService.getGroupMembers(group_id, function getAllGroupUsersSuccess(result) {
+                    $scope.users = result;
+                }, function getAllGroupUsersError(response) {
+                    $scope.users = [{firstname: 'Error'}];
+                })
+            }
+
+            function getSomeGroupUsers(start, end) {
+                var group_id = getGroupId();
+                ResourceService.getGroupMembersSlice(group_id, start, end, function getAllGroupUsersSuccess(result) {
+
+                }, function getAllGroupUsersError(response) {
+                    $scope.users = [{firstname: 'Error'}];
+                })
             }
         }]);

@@ -7,14 +7,13 @@ angular.module('scheduling-app.controllers')
         '$rootScope',
         '$stateParams',
         '$controller',
-        'StateHistoryService',
-        'STATES',
+        'ResourceService',
         function($scope,
                  $rootScope,
                  $stateParams,
                  $controller,
-                 StateHistoryService,
-                 STATES) {
+                 ResourceService
+        ) {
             $controller('BaseModelController', {$scope: $scope});
             $scope.stateParams = $stateParams;
 
@@ -22,23 +21,47 @@ angular.module('scheduling-app.controllers')
 
             function init() {
                 $scope.group_id = getGroupId();
+                $scope.location_id = getLocationId();
+                if ($scope.location_id) {
+                    getAllLocationUsers();
+                } else {
+                    getAllGroupUsers()
+                }
             }
 
             function getGroupId() {
                 return $scope.stateParams.group_id;
             }
 
-            $scope.usersList = [
-                { username: "Bro 1", email: "email_1@email.com", phone: "1"},
-                { username: "Bro 2", email: "email_2@email.com", phone: "2"},
-                { username: "Bro 3", email: "email_3@email.com", phone: "3"},
-                { username: "Bro 4", email: "email_4@email.com", phone: "4"},
-                { username: "Bro 5", email: "email_5@email.com", phone: "5"},
-                { username: "Bro 6", email: "email_6@email.com", phone: "6"},
-                { username: "Bro 7", email: "email_7@email.com", phone: "7"},
-                { username: "Bro 8", email: "email_8@email.com", phone: "8"},
-                { username: "Bro 9", email: "email_9@email.com", phone: "9"}
-            ];
+            function getLocationId() {
+                return $stateParams.location_id;
+            }
+
+            function getAllLocationUsers() {
+                ResourceService.getUsersAtLocation($scope.location_id, function getUsersSuccess(result) {
+                    $scope.users = result;
+                }, function getUsersError(response) {
+                    $scope.users = [{firstname: 'Error'}];
+                });
+            }
+
+            function getAllGroupUsers() {
+                var group_id = getGroupId();
+                ResourceService.getGroupMembers(group_id, function getAllGroupUsersSuccess(result) {
+                    $scope.users = result;
+                }, function getAllGroupUsersError(response) {
+                    $scope.users = [{firstname: 'Error'}];
+                })
+            }
+
+            function getSomeGroupUsers(start, end) {
+                var group_id = getGroupId();
+                ResourceService.getGroupMembersSlice(group_id, start, end, function getAllGroupUsersSuccess(result) {
+
+                }, function getAllGroupUsersError(response) {
+                    $scope.users = [{firstname: 'Error'}];
+                })
+            }
 
         }]
 );

@@ -171,6 +171,28 @@ angular.module('scheduling-app.services')
                 )
             };
 
+            this.getGroupMembers = function getGroupMembers(group_id, success, error) {
+                andThen(
+                    Restangular.one('groups', group_id)
+                        .all('users')
+                        .getList(),
+                    success,
+                    error
+                );
+            };
+
+            this.getGroupMembersSlice = function getGroupMembersSlice(group_id, start, end, success, error) {
+                andThen(
+                    Restangular.one('groups', group_id)
+                        .all('users')
+                        .all(start)
+                        .all(end)
+                        .get(),
+                    success,
+                    error
+                );
+            };
+
             function andThen(promise, success, error) {
                 promise.then(function resourceServiceSuccess(result) {
                     if (success) {
