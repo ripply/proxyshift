@@ -895,12 +895,19 @@ function searchUsers(req, res, next) {
                 .where('usergroups.group_id', '=', req.params.group_id)
         )
             .union(function () {
+                /*
+                if (query) {
+                    this.raw("select users.id as id, users.firstname as firstname, users.lastname as lastname, -1 as grouppermission_id from users inner join groups on groups.user_id = users.id where groups.id = ? and where users.firstname like ? and where users.lastname like ?", [req.params.group_id, likeQuery, likeQuery]);
+                } else {
+                    this.raw("select users.id as id, users.firstname as firstname, users.lastname as lastname, -1 as grouppermission_id from users inner join groups on groups.user_id = users.id where groups.id = ?", [req.params.group_id]);
+                }
+                */
                 filter(
                     this.select(
                         'users.id as id',
                         'users.firstname as firstname',
                         'users.lastname as lastname',
-                        'groups.name as grouppermission_id' // identify group owners to client by sending grouppermission_id as a string instead of an integer
+                        'cast(44 as integer) as grouppermission_id' // identify group owners to client by sending grouppermission_id as a string instead of an integer
                     )
                         .from('users')
                         .innerJoin('groups', function () {
