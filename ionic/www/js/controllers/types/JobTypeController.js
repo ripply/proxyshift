@@ -58,14 +58,8 @@ angular.module('scheduling-app.controllers')
                                 var type = $scope.types[i];
                                 if (type.id == $scope.type_id) {
                                     $scope.type = angular.copy(type);
-                                    if ($scope.permissions && $scope.permissions instanceof Array) {
-                                        for (var j = 0; j < $scope.permissions.length; j++) {
-                                            var permission = $scope.permissions[j];
-                                            if (permission.id == $scope.type.grouppermission_id) {
-                                                $scope.grouppermission = permission;
-                                                break;
-                                            }
-                                        }
+                                    if ($scope.type.hasOwnProperty('grouppermission_id')) {
+                                        $scope.type.grouppermissionid = $scope.type.grouppermission_id;
                                     }
                                     // clean up fields if necessary
                                     angular.forEach([
@@ -84,6 +78,18 @@ angular.module('scheduling-app.controllers')
                                     break;
                                 }
                             }
+                        } else {
+                            // set default permission id
+                            var id = 0;
+                            if ($scope.permissions &&
+                                $scope.permissions instanceof Array &&
+                                $scope.permissions.length > 0) {
+                                id = $scope.permissions[0].id;
+                            }
+
+                            $scope.type = {
+                                grouppermissionid: id
+                            };
                         }
                     })
             }

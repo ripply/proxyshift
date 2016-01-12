@@ -1,7 +1,7 @@
 <ion-view view-title="Modify Job type">
     <ion-content class="has-header" hide-back-button="false">
         <div>
-            <form name="typeEditForm" ng-submit="editType(group_id, type_id, type.title, type.description, type.cansendnotification, type.requiremanagerapproval, grouppermission.id)">
+            <form name="typeEditForm" ng-submit="editType(group_id, type_id, type.title, type.description, type.cansendnotification, type.requiremanagerapproval, type.grouppermissionid)">
                 <div class="list">
                     <input type="hidden" name="location_id" value="{{location_id}}">
                     <label class="item item-input">
@@ -21,16 +21,17 @@
                     </ion-checkbox>
                     <fancy-select
                         header-text="Select an option"
-                        items="types"
-                        value-property="grouppermission"
+                        items="permissions"
+                        value-property="id"
+                        value="type.grouppermissionid"
                         text-property="description"
                         allow-empty='false'
                         modal-template-url="templates/types/typemodal.html"
                         template-url="templates/types/typeitem.html"
+                        value-changed="wat(value)"
                         note-text="A Note text"
                         >
                     </fancy-select>
-                    <!-- https://github.com/tipstrade/ionic-fancy-select -->
                     <button class="button button-block button-steelblue" type="submit">Save changes</button>
                 </div>
             </form>
