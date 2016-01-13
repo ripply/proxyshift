@@ -12,10 +12,15 @@
         <i class="icon ion-search placeholder-icon"></i>
         <input type="text" ng-model="query" ng-style="{'width' : '100%'}"
                placeholder="Search by name, email or phone">
-        <div class="list">
+        <ion-list>
             <ion-item ng-repeat="user in users | filter:query">
                 {{ user.firstname }} {{ user.lastname }}
             </ion-item>
-        </div>
+        </ion-list>
+        <ion-infinite-scroll
+            ng-if="moreToLoad()"
+            on-infinite="loadMore()"
+            distance="1%">
+        </ion-infinite-scroll>
     </ion-content>
 </ion-view>

@@ -185,8 +185,9 @@ angular.module('scheduling-app.services')
                 andThen(
                     Restangular.one('groups', group_id)
                         .all('users')
-                        .all(start)
-                        .all(end)
+                        .all('search')
+                        .one('start', start)
+                        .one('end', end)
                         .get(),
                     success,
                     error

@@ -473,35 +473,17 @@ module.exports = {
             }
         }
     },
-    '/:group_id/users/search/:start/:end': {
+    '/:group_id/users/search/start/:start/end/:end': {
+        'get': {
+            auth: ['group owner', 'or', 'privileged group member'],
+            route: function getGroupMembersLimit(req, res) {
+                filterableSearchGroupMembersLimit(req, res);
+            }
+        },
         'post': {
             auth: ['group owner', 'or', 'privileged group member'],
-            route: function searchGroupMembersLimit(req, res) {
-                var start = parseInt(req.params.start);
-                var end = parseInt(req.params.end);
-                if (start < 0) {
-                    start = 0;
-                }
-
-                if (end < start) {
-                    res.sendStatus(400);
-                }
-
-                searchUsers(req, res, function searchGroupMembersLimitCallback(json) {
-                    if (start > json.length) {
-                        start = json.length;
-                    }
-
-                    if (end < json.length) {
-                        end = json.length;
-                    }
-                    res.json({
-                        start: start,
-                        end: end,
-                        size: json.length,
-                        result: json.slice(start, end)
-                    });
-                });
+            route: function searchGroupMembersLimi(req, res) {
+                filterableSearchGroupMembersLimit(req, res);
             }
         }
     },
@@ -907,7 +889,7 @@ function searchUsers(req, res, next) {
                         'users.id as id',
                         'users.firstname as firstname',
                         'users.lastname as lastname',
-                        'cast(44 as integer) as grouppermission_id' // identify group owners to client by sending grouppermission_id as a string instead of an integer
+                        '-1 as grouppermission_id' // identify group owners to client by sending grouppermission_id as a string instead of an integer
                     )
                         .from('users')
                         .innerJoin('groups', function () {
@@ -924,4 +906,37 @@ function searchUsers(req, res, next) {
         .catch(function (err) {
             error(req, res, err);
         });
+}
+
+function filterableSearchGroupMembersLimit(req, res) {
+    var start = parseInt(req.params.start);
+    var end = parseInt(req.params.end);
+    if (start < 0) {
+        start = 0;
+    }
+
+    if (end < 0) {
+        end = 0;
+    }
+
+    if (end < start) {
+        res.sendStatus(400);
+    }
+
+    searchUsers(req, res, function searchGroupMembersLimitCallback(json) {
+        if (start > json.length) {
+            start = json.length;
+        }
+
+        if (end > json.length) {
+            end = json.length;
+        }
+        res.json({
+            start: start,
+            end: end,
+            size: json.length,
+            after: json.length - end,
+            result: json.slice(start, end)
+        });
+    });
 }
