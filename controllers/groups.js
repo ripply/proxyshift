@@ -239,7 +239,12 @@ module.exports = {
             auth: ['group owner', 'or', 'privileged group member'], // must be owner owner of group or group member
             route: function(req, res) {
                 models.User.query(function(q) {
-                    q.select('users.id as id', 'users.firstname as firstname', 'users.lastname as lastname', 'users.username as username')
+                    q.select(
+                        'users.id as id',
+                        'users.firstname as firstname',
+                        'users.lastname as lastname',
+                        'usergroups.grouppermission_id as grouppermission_id'
+                    )
                         .innerJoin('usergroups', function() {
                             this.on('users.id', '=', 'usergroups.user_id');
                         })

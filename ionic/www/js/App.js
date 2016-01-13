@@ -429,6 +429,19 @@ angular.module('scheduling-app', [
                     }
                 })
 
+                .state('settings.group.managemembers', {
+                    url: "/members/:user_id/manage",
+                    resolve: {
+                        //TODO: Check /userinfo
+                    },
+                    views: {
+                        'groupContent': {
+                            templateUrl: "templates/settingsgroupmembersmanage.html",
+                            controller: 'GroupMembersController'
+                        }
+                    }
+                })
+
                 .state('settings.group.invite', {
                     url: "/invite",
                     resolve: {

@@ -17,7 +17,6 @@ angular.module('scheduling-app.controllers')
                  ResourceService
         ) {
             $controller('BaseModelController', {$scope: $scope});
-            $scope.stateParams = $stateParams;
 
             $scope.beforeEnter = init;
             $scope.afterLeave = function() {
@@ -38,9 +37,19 @@ angular.module('scheduling-app.controllers')
                 $scope.users = [{firstname: 'Loading...'}];
                 $scope.group_id = getGroupId();
                 $scope.location_id = getLocationId();
+                $scope.user_id = getGroupUserId();
                 $scope.fetchState = {};
                 if ($scope.location_id) {
                     getAllLocationUsers();
+                } else if ($scope.group_id !== null &&
+                    $scope.group_id !== undefined &&
+                    $scope.user_id !== null &&
+                    $scope.user_id !== undefined) {
+                    getGroupUserAndPermissions(function groupAndUserPermissionSuccess(result) {
+                        // TODO: ?
+                    }, function groupAndUserPermissionError(response) {
+                        // TODO: recover?
+                    });
                 } else {
                     //getAllGroupUsers()
                     loadMore();
@@ -249,11 +258,50 @@ angular.module('scheduling-app.controllers')
             }
 
             function getGroupId() {
-                return $scope.stateParams.group_id;
+                return $stateParams.group_id;
             }
 
             function getLocationId() {
                 return $stateParams.location_id;
+            }
+
+            function getGroupUserId() {
+                return $stateParams.user_id;
+            }
+
+            function getGroupUserAndPermissions(success, error) {
+                var user = getGroupUser();
+                var permissions = getGroupPermissions();
+                $q.all([user, permissions])
+                    .then(success, error);
+            }
+
+            function getGroupUser() {
+                var deferred = $q.defer();
+                $scope.fetching = deferred.promise;
+                ResourceService.getGroupMember($scope.group_id, $scope.user_id, function getGroupUserSuccess(result) {
+                    $scope.user = result;
+                    deferred.resolve();
+                    delete $scope.fetching;
+                }, function getGroupUserError(response) {
+                    $scope.user = {firstname: 'Error'};
+                    deferred.reject();
+                    delete $scope.fetching;
+                });
+
+                return deferred.promise;
+            }
+
+            function getGroupPermissions() {
+                var deferred = $q.defer();
+                ResourceService.getGroupPermissions(getGroupId(), function getGroupPermissionsSuccess(result) {
+                    $scope.permissions = result;
+                    deferred.resolve();
+                }, function getGroupPermissionsError() {
+                    deferred.reject();
+                });
+
+                return deferred.promise;
             }
 
             function getAllLocationUsers() {
