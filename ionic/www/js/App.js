@@ -546,6 +546,19 @@ angular.module('scheduling-app', [
                     }
                 })
 
+                .state('settings.group.locations.list', {
+                    url: "/:location_id/list",
+                    resolve: {
+                        //TODO: Check /userinfo
+                    },
+                    views: {
+                        'locationContent': {
+                            templateUrl: "templates/locations/locationlist.html",
+                            controller: 'GroupLocationsController'
+                        }
+                    }
+                })
+
                 .state('settings.group.locations.manage', {
                     url: "/:location_id/manage",
                     resolve: {
@@ -559,13 +572,52 @@ angular.module('scheduling-app', [
                     }
                 })
 
-                .state('settings.group.locations.sublocations', {
-                    url: "/:location_id/sublocations",
+                .state('settings.group.locations.newsublocation', {
+                    url: "/:location_id/new",
                     resolve: {
                         //TODO: Check /userinfo
                     },
                     views: {
                         'locationContent': {
+                            templateUrl: "templates/sublocations/sublocationcreate.html",
+                            controller: 'LocationEditorController'
+                        }
+                    }
+                })
+
+                .state('settings.group.locations.sublocations', {
+                    url: "/:location_id/sublocations",
+                    abstract: true,
+                    resolve: {
+                        //TODO: Check /userinfo
+                    },
+                    views: {
+                        'locationContent': {
+                            templateUrl: "templates/sublocations.html"
+                        }
+                    }
+                })
+
+                .state('settings.group.locations.sublocations.list', {
+                    url: "/:sublocation_id/list",
+                    resolve: {
+                        //TODO: Check /userinfo
+                    },
+                    views: {
+                        'sublocationContent': {
+                            templateUrl: "templates/sublocationslist.html",
+                            controller: 'GroupLocationsController'
+                        }
+                    }
+                })
+
+                .state('settings.group.locations.sublocations.manage', {
+                    url: "/:sublocation_id/manage",
+                    resolve: {
+                        //TODO: Check /userinfo
+                    },
+                    views: {
+                        'sublocationContent': {
                             templateUrl: "templates/managelocation.html",
                             controller: 'BaseManageLocationDirectiveController'
                         }

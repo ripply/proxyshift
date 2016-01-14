@@ -1,0 +1,26 @@
+<ion-view view-title="Sublocations">
+    <ion-content class="has-header" hide-back-button="false">
+        <div class="item item-divider">
+            Manage
+        </div>
+        <ion-item href="#/settings/group/{{group_id}}/locations/{{location_id}}/manage">
+            Edit Location
+        </ion-item>
+        <ion-item href="#/settings/group/{{group_id}}/locations/{{location_id}}/new">
+            New Sublocation
+        </ion-item>
+        <div class="item item-divider">
+            Sublocations for {{ location.address }}
+        </div>
+        <i class="icon ion-search placeholder-icon"></i>
+        <input type="text" ng-model="query" ng-style="{'width' : '100%'}"
+               placeholder="Search by name, email or phone">
+        <div class="list">
+            <ion-item ng-repeat="sublocation in location.sublocations | filter:query"
+                      item="sublocation"
+                      href="#/settings/group/{{ group_id }}/locations/{{ location_id }}/sublocations/{{ sublocation.id }}/manage">
+                {{ sublocation.title }}
+            </ion-item>
+        </div>
+    </ion-content>
+</ion-view>

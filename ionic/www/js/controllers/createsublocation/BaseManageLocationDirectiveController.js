@@ -25,6 +25,10 @@ angular.module('scheduling-app.controllers')
             function init() {
                 $scope.group_id = getGroupId();
                 $scope.location_id = getLocationId();
+                $scope.sublocation_id = getSublocationId();
+                if ($scope.sublocation_id) {
+                    $scope.sublocation = UserInfoService.getSublocation($scope.sublocation_id);
+                }
             }
 
             function getGroupId() {
@@ -33,6 +37,10 @@ angular.module('scheduling-app.controllers')
 
             function getLocationId() {
                 return $stateParams.location_id;
+            }
+
+            function getSublocationId() {
+                return $stateParams.sublocation_id;
             }
 
             $scope.isPrivilegedMemberOfLocation = function isPrivilegedMemberOfLocation() {
