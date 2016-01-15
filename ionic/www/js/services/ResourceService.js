@@ -87,7 +87,39 @@ angular.module('scheduling-app.services')
                         }),
                     function createSublocationSuccess(result) {
                         // userinfo has location information
-                        updateUserInfo(success, result);
+                        // TODO: UPDATE USERINFO
+                        //updateUserInfo(success, result);
+                    },
+                    error
+                );
+            };
+
+            this.editSublocation = function editSublocation(location_id, sublocation_id, title, description, success, error) {
+                andThen(
+                    Restangular.one('locations', location_id)
+                        .one('sublocations', sublocation_id)
+                        .patch({
+                            title: title,
+                            description: description
+                        }),
+                    function editSublocationSuccess(result) {
+                        // userinfo has location information
+                        // TODO: UPDATE USERINFO
+                        //updateUserInfo(success, result);
+                    },
+                    error
+                );
+            };
+
+            this.deleteSublocation = function deleteSublocation(location_id, sublocation_id, success, error) {
+                andThen(
+                    Restangular.one('locations', location_id)
+                        .one('sublocations', sublocation_id)
+                        .remove(),
+                    function deleteSublocationSuccess(result) {
+                        // userinfo has location information
+                        // TODO: UPDATE USERINFO
+                        //updateUserInfo(success, result);
                     },
                     error
                 );

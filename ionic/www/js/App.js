@@ -619,7 +619,7 @@ angular.module('scheduling-app', [
                     views: {
                         'sublocationContent': {
                             templateUrl: "templates/managelocation.html",
-                            controller: 'BaseManageLocationDirectiveController'
+                            controller: 'LocationEditorController'
                         }
                     }
                 })

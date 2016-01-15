@@ -6,11 +6,13 @@ angular.module('scheduling-app.controllers')
         '$scope',
         '$controller',
         '$stateParams',
+        'UserInfoService',
         'ResourceService',
         function($rootScope,
                  $scope,
                  $controller,
                  $stateParams,
+                 UserInfoService,
                  ResourceService
         ) {
             $controller('BaseModelController', {$scope: $scope});
@@ -21,8 +23,11 @@ angular.module('scheduling-app.controllers')
             function init() {
                 $scope.group_id = getGroupId();
                 $scope.location_id = getLocationId();
+                $scope.sublocation_id = getSublocationId();
                 $scope.location = {};
-                if ($scope.location_id !== null &&
+                if ($scope.sublocation_id) {
+                    $scope.sublocation = angular.copy(UserInfoService.getSublocation($scope.sublocation_id));
+                } else if ($scope.location_id !== null &&
                     $scope.location_id !== undefined) {
                     getLocation(function(result) {
                         console.log(result);
@@ -37,6 +42,10 @@ angular.module('scheduling-app.controllers')
 
             function getLocationId() {
                 return $stateParams.location_id;
+            }
+
+            function getSublocationId() {
+                return $stateParams.sublocation_id;
             }
 
             function getLocation(success, error) {
@@ -55,4 +64,8 @@ angular.module('scheduling-app.controllers')
             $scope.createLocation = ResourceService.createLocation;
             $scope.editLocation = ResourceService.editLocation;
             $scope.deleteLocation = ResourceService.deleteLocation;
+
+            $scope.createSublocation = ResourceService.createSublocation;
+            $scope.editSublocation = ResourceService.editSublocation;
+            $scope.deleteSublocation = ResourceService.deleteSublocation;
         }]);
