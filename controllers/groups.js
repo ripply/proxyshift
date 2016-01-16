@@ -251,7 +251,11 @@ module.exports = {
                         .where('users.id', '=', req.params.user_id)
                         .andWhere('usergroups.group_id', '=', req.params.group_id)
                         .union(function() {
-                            this.select('users.id as id', 'users.firstname as firstname', 'users.lastname as lastname', 'users.username as username')
+                            this.select(
+                                Bookshelf.knex.raw(
+                                    'users.id as id, users.firstname as firstname, users.lastname as lastname, -1 as grouppermission_id'
+                                )
+                            )
                                 .from('users')
                                 .innerJoin('groups', function() {
                                     this.on('users.id', '=', 'groups.user_id');
