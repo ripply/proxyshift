@@ -875,8 +875,8 @@ function searchUsers(req, res, next) {
         filter(
             q.select(
                 'users.id as id',
-                'users.firstname as firstname',
-                'users.lastname as lastname',
+                'users.firstname as lower(firstname)',
+                'users.lastname as lower(lastname)',
                 'usergroups.grouppermission_id as grouppermission_id'
             )
                 .from('users')
@@ -891,7 +891,7 @@ function searchUsers(req, res, next) {
                         // doing this not raw and instead using bookshelf turns the -1 into a string
                         // this means that postgres will spit an error because column types cannot be mixed (int above, now string for group owners)
                         Bookshelf.knex.raw(
-                            'users.id as id, users.firstname as firstname, users.lastname as lastname, -1 as grouppermission_id'
+                            'users.id as id, users.firstname as lower(firstname), users.lastname as lower(lastname), -1 as grouppermission_id'
                         )
                     )
                         .from('users')

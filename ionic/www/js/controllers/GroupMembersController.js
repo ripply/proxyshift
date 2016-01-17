@@ -8,12 +8,14 @@ angular.module('scheduling-app.controllers')
         '$stateParams',
         '$controller',
         '$q',
+        '$timeout',
         'ResourceService',
         function($scope,
                  $rootScope,
                  $stateParams,
                  $controller,
                  $q,
+                 $timeout,
                  ResourceService
         ) {
             $controller('BaseModelController', {$scope: $scope});
@@ -41,6 +43,7 @@ angular.module('scheduling-app.controllers')
             var error = {firstname: 'Error'};
 
             function init() {
+                $scope.fetching = undefined;
                 $scope.filteredUsers = {};
                 $scope.users = [loading];
                 $scope.group_id = getGroupId();
@@ -79,7 +82,7 @@ angular.module('scheduling-app.controllers')
                 } else {
                     var range = getFetchableRange();
                     if (range) {
-                        getSomeGroupUsers($scope.query, range.from, range.to, infiniteScrollComplete, infiniteScrollComplete);
+                        getSomeGroupUsers($scope.query, range.from, range.to, infiniteScrollComplete, infiniteScrollFailed);
                     } else {
                         infiniteScrollComplete();
                     }
@@ -287,6 +290,10 @@ angular.module('scheduling-app.controllers')
                 $scope.$broadcast('scroll.infiniteScrollComplete');
             }
 
+            function infiniteScrollFailed() {
+                $timeout(infiniteScrollComplete, 5000);
+            }
+
             function getGroupId() {
                 return $stateParams.group_id;
             }
@@ -383,6 +390,7 @@ angular.module('scheduling-app.controllers')
                 }
 
                 function getAllGroupUsersError(response) {
+                    console.log(response);
                     $scope.users = [error];
                     deferred.reject();
                     delete $scope.fetching;
