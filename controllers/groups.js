@@ -864,7 +864,7 @@ function searchUsers(req, res, next) {
 
     function filter(q) {
         if (query) {
-            return q.orWhere('users.firstname', 'like', likeQuery)
+            return q.andWhere('users.firstname', 'like', likeQuery)
                 .orWhere('users.lastname', 'like', likeQuery);
         } else {
             return q;

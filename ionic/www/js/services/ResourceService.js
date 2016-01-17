@@ -226,6 +226,21 @@ angular.module('scheduling-app.services')
                 );
             };
 
+            this.getGroupMembersSliceSearch = function getGroupMembersSliceSearch(group_id, start, end, query, success, error) {
+                andThen(
+                    Restangular.one('groups', group_id)
+                        .all('users')
+                        .all('search')
+                        .one('start', start)
+                        .one('end', end)
+                        .customPOST({
+                            query: query
+                        }),
+                    success,
+                    error
+                );
+            };
+
             this.getGroupMember = function getGroupMember(group_id, user_id, success, error) {
                 andThen(
                     Restangular.one('groups', group_id)

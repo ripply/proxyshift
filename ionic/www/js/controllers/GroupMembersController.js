@@ -32,9 +32,17 @@ angular.module('scheduling-app.controllers')
             };
             var fetchIncrement = 2;
 
+            $scope.queryChanged = function queryChanged(value) {
+                $scope.query = value;
+                loadMore();
+            };
+
+            var loading = {firstname: 'Loading...'};
+            var error = {firstname: 'Error'};
+
             function init() {
                 $scope.filteredUsers = {};
-                $scope.users = [{firstname: 'Loading...'}];
+                $scope.users = [loading];
                 $scope.group_id = getGroupId();
                 $scope.location_id = getLocationId();
                 $scope.user_id = getGroupUserId();
@@ -71,7 +79,9 @@ angular.module('scheduling-app.controllers')
                 } else {
                     var range = getFetchableRange();
                     if (range) {
-                        getSomeGroupUsers(range.from, range.to, infiniteScrollComplete, infiniteScrollComplete);
+                        getSomeGroupUsers($scope.query, range.from, range.to, infiniteScrollComplete, infiniteScrollComplete);
+                    } else {
+                        infiniteScrollComplete();
                     }
                 }
             }
@@ -131,7 +141,7 @@ angular.module('scheduling-app.controllers')
                 return $scope.query;
             }
 
-            function updateFetchingState(state, from, to, total) {
+            function updateFetchingState(state, result, from, to, total) {
                 if (to < from) {
                     return;
                 }
@@ -141,7 +151,27 @@ angular.module('scheduling-app.controllers')
                     $scope.fetchState[state] = {
                         list: []
                     };
-                    return updateFetchingState(state, from, to, total);
+                    return updateFetchingState(state, result, from, to, total);
+                }
+
+                var existingUsers = $scope.users;
+
+                if (result.hasOwnProperty('result')) {
+                    result = result.result;
+                }
+
+                if (existingUsers.length == 1 &&
+                    (existingUsers.indexOf(loading) >= 0 || existingUsers.indexOf(error) >= 0)) {
+                    existingUsers.length = 0;
+                }
+
+                if (result instanceof Array) {
+                    angular.forEach(result, function(user) {
+                        if (!$scope.filteredUsers.hasOwnProperty(user.id)) {
+                            $scope.users.push(user);
+                            $scope.filteredUsers[user.id] = user;
+                        }
+                    });
                 }
 
                 var fetchState = fetchStateAll.users;
@@ -284,7 +314,7 @@ angular.module('scheduling-app.controllers')
                     deferred.resolve();
                     delete $scope.fetching;
                 }, function getGroupUserError(response) {
-                    $scope.user = {firstname: 'Error'};
+                    $scope.user = error;
                     deferred.reject();
                     delete $scope.fetching;
                 });
@@ -309,12 +339,11 @@ angular.module('scheduling-app.controllers')
                 var deferred = $q.defer();
                 $scope.fetching = deferred.promise;
                 ResourceService.getUsersAtLocation($scope.location_id, function getUsersSuccess(result) {
-                    $scope.users = result;
-                    updateFetchingState(state, 0, result.size, result.size);
+                    updateFetchingState(state, result, 0, result.size, result.size);
                     deferred.resolve();
                     delete $scope.fetching;
                 }, function getUsersError(response) {
-                    $scope.users = [{firstname: 'Error'}];
+                    $scope.users = [error];
                     deferred.reject();
                     delete $scope.fetching;
                 });
@@ -326,12 +355,11 @@ angular.module('scheduling-app.controllers')
                 var deferred = $q.defer();
                 $scope.fetching = deferred.promise;
                 ResourceService.getGroupMembers(group_id, function getAllGroupUsersSuccess(result) {
-                    $scope.users = result;
-                    updateFetchingState(state, 0, result.size, result.size);
+                    updateFetchingState(state, result, 0, result.size, result.size);
                     deferred.resolve();
                     delete $scope.fetching;
                 }, function getAllGroupUsersError(response) {
-                    $scope.users = [{firstname: 'Error'}];
+                    $scope.users = [error];
                     deferred.reject();
                     delete $scope.fetching;
                 })
@@ -339,40 +367,35 @@ angular.module('scheduling-app.controllers')
 
             $scope.filteredUsers = {};
 
-            function getSomeGroupUsers(start, end, success, error) {
+            function getSomeGroupUsers(query, start, end, success, error) {
                 var group_id = getGroupId();
                 var state = getFetchingState();
                 var deferred = $q.defer();
                 $scope.fetching = deferred.promise;
-                ResourceService.getGroupMembersSlice(group_id, start, end, function getAllGroupUsersSuccess(result) {
-                    if (result.hasOwnProperty('result')) {
-                        var users = result.result;
-                        if (users instanceof Array) {
-                            if ($scope.users.length == 1) {
-                                $scope.users = [];
-                            }
-                            angular.forEach(users, function(user) {
-                                if (!$scope.filteredUsers.hasOwnProperty(user.id)) {
-                                    $scope.users.push(user);
-                                    $scope.filteredUsers[user.id] = user;
-                                }
-                            });
-                        }
-                    }
-                    updateFetchingState(state, result.start, result.end, result.size);
+
+                function getAllGroupUsersSuccess(result) {
+                    updateFetchingState(state, result, result.start, result.end, result.size);
                     deferred.resolve();
                     delete $scope.fetching;
                     if (success) {
                         success(result);
                     }
-                }, function getAllGroupUsersError(response) {
-                    $scope.users = [{firstname: 'Error'}];
+                }
+
+                function getAllGroupUsersError(response) {
+                    $scope.users = [error];
                     deferred.reject();
                     delete $scope.fetching;
                     if (error) {
                         error(response);
                     }
-                })
+                }
+
+                if (!query || query == '') {
+                    ResourceService.getGroupMembersSlice(group_id, start, end, getAllGroupUsersSuccess, getAllGroupUsersError);
+                } else {
+                    ResourceService.getGroupMembersSliceSearch(group_id, start, end, query, getAllGroupUsersSuccess, getAllGroupUsersError);
+                }
             }
 
         }]
