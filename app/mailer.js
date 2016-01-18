@@ -2,10 +2,10 @@ var config = require('config');
 var nodemailer = require('nodemailer');
 var xoauth2 = require('xoauth2');
 
-var user = config.get('google.api.gmail.user');
 var smtpConfig;
 var smtpTransport;
 if (config.has('google.api.gmail.client_id')) {
+    var user = config.get('google.api.gmail.user');
     var client_id = config.get('google.api.gmail.client_id');
     var client_secret = config.get('google.api.gmail.client_secret');
     var refresh_token = config.get('google.api.gmail.refresh_token');
@@ -33,7 +33,8 @@ if (config.has('google.api.gmail.client_id')) {
             })
         }
     });
-} else {
+} else if (config.has('google.api.gmail.pass')) {
+    var user = config.get('google.api.gmail.user');
     var pass = config.get('google.api.gmail.pass');
 
     smtpConfig = {
