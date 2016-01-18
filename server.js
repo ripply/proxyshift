@@ -1,3 +1,5 @@
+process.env.WEB = true;
+
 var express = require('express'),
     cluster = require('cluster'),
     http = require('http'),
@@ -16,7 +18,7 @@ var express = require('express'),
     cookieParser = require('cookie-parser'),
     session = require('express-session'),
     errorHandler = require('errorhandler'),
-    numCPUs = require('os').cpus().length;
+    numCPUs = require('os').cpus().length,
     app = express();
 
 if (cluster.isMaster) {

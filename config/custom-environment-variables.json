@@ -18,5 +18,9 @@
             // contains actual client secret
             "secret": "PUSH_WNS_SECRET"
         }
+    },
+    "rabbit": {
+        "url": "CLOUDAMQP_URL",
+        "workers": "RABBIT_WORKERS"
     }
 }

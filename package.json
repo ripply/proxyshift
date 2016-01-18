@@ -35,6 +35,7 @@
     "esprima": "~2.2.0",
     "express": "^4.11.0",
     "express-session": "^1.11.3",
+    "jackrabbit": "^4.0.3",
     "knex": "~0.8.6",
     "log4js": "~0.6.22",
     "method-override": "^2.3.3",
@@ -43,6 +44,7 @@
     "moment-timezone": "^0.4.1",
     "morgan": "^1.6.0",
     "node-gcm": "^0.12.0",
+    "nodemailer": "^2.0.0",
     "parsley": "~0.1.0",
     "passport": "~0.2.1",
     "passport-local": "~1.0.0",
@@ -52,6 +54,7 @@
     "raw-body": "~2.0.2",
     "sql-fixtures": "^0.11.0",
     "sqlite3": "~3.0.8",
+    "throng": "^1.0.1",
     "uid2": "0.0.3",
     "underscore": "~1.7.0",
     "wns": "^0.5.3"

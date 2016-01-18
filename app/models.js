@@ -23,6 +23,8 @@ var Schema = require('./schema').Schema,
     time = require('./time'),
     SALT_WORK_FACTOR = 10;
 
+var master = cluster.isMaster && process.env.WEB;
+
 var Notifications = new notifications.Notifications();
 var neverDropAllTables = false; // safety setting later for production
 function okToDropAllTables() {
@@ -118,7 +120,7 @@ if ((global.db_dialect || 'sqlite3') == 'sqlite3') {
     }
 }
 
-if (cluster.isMaster) {
+if (master) {
     console.log(dbConnection);
 }
 
@@ -315,7 +317,7 @@ var specialFieldList = {
 
 function initDb(dropAllTables) {
 
-    if (!cluster.isMaster) {
+    if (!master) {
         return Promise.resolve('slave');
     }
 
@@ -456,11 +458,42 @@ function initDb(dropAllTables) {
     });
 
     initDbPromise = tablesPopulatedPromise;
-    initDbPromise.tap(function() {
-        initDbPromise = null;
+    initDbPromise.tap(function initDbPromiseTap() {
+        if (shouldWeLaunchMessageBrokerInThisProcess()) {
+            return launchMessageBroker()
+                .tap(function messageBrokerLaunched() {
+                    setDbPromiseNull();
+                });
+        } else {
+            setDbPromiseNull();
+        }
+
+        function setDbPromiseNull() {
+            initDbPromise = null;
+        }
     });
 
     return tablesPopulatedPromise;
+}
+
+function shouldWeLaunchMessageBrokerInThisProcess() {
+    if (config.has('rabbit.workers')) {
+        var workers = config.get('rabbit.workers');
+        return workers <= 0;
+    } else {
+        return false;
+    }
+}
+
+function launchMessageBroker() {
+    return new Promise(function launchingMessageBroker(resolve, reject) {
+        var instance = require('../app');
+        var resolved = false;
+        instance.on('ready', function messageBrokerReady() {
+            resolved = true;
+            resolve();
+        });
+    });
 }
 
 function populateTables(t, next) {
@@ -541,7 +574,7 @@ function onDatabaseReady(fn) {
         // because we set the promise to null when it resolves
         // something *could* *maybe* be run before the tap method runs
 
-        // note that checkign if it is pending or not is not atomic
+        // note that checking if it is pending or not is not atomic
         // so the following else statement would normally not be safe
         // but since javascript is single threaded this is OK to do
         // as nothing will be interrupting us
@@ -794,7 +827,7 @@ _.each(modelNames, function(tableName, modelName) {
                         throw new Error("Cannot map foreign table to model: '" + foreignTableName + "'");
                     }
 
-                    if (global.silent !== true && cluster.isMaster) {
+                    if (global.silent !== true && master) {
                         console.log(modelName + "." + methodName + "() = " + modelName + "." + relationMethodName + "(" + foreignModelName + ")");
                     }
                     modelOptions[methodName] = function() {

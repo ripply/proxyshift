@@ -5,6 +5,7 @@ var middleware = require('./misc/middleware'),
     time = require('../app/time'),
     users = require('../controllers/users'),
     error = require('../controllers/controllerCommon').error,
+    appLogic = require('../app'),
     passport = require('passport');
 
 require('./../app/configure_passport');
