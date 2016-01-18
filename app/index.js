@@ -43,6 +43,7 @@ App.prototype.onLost = function() {
 };
 
 App.prototype.startHandlingEmails = function() {
+    console.log("Started handling emails from RabbitMQ");
     this.connections.email.consume(this.handleEmailJob.bind(this));
     return this;
 };

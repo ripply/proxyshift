@@ -3,35 +3,51 @@ var nodemailer = require('nodemailer');
 var xoauth2 = require('xoauth2');
 
 var user = config.get('google.api.gmail.user');
-var client_id = config.get('google.api.gmail.client_id');
-var client_secret = config.get('google.api.gmail.client_secret');
-var refresh_token = config.get('google.api.gmail.refresh_token');
-var access_token = config.get('google.api.gmail.access_token');
+var smtpConfig;
+var smtpTransport;
+if (config.has('google.api.gmail.client_id')) {
+    var client_id = config.get('google.api.gmail.client_id');
+    var client_secret = config.get('google.api.gmail.client_secret');
+    var refresh_token = config.get('google.api.gmail.refresh_token');
+    var access_token = config.get('google.api.gmail.access_token');
 
-var smtpConfig = {
-    user: user,
-    client_id: client_id,
-    client_secret: client_secret,
-    refresh_token: refresh_token,
-    access_token: access_token,
-    access_timeout: 5000
-};
+    smtpConfig = {
+        user: user,
+        client_id: client_id,
+        client_secret: client_secret,
+        refresh_token: refresh_token,
+        access_token: access_token,
+        access_timeout: 5000
+    };
+
+    smtpTransport = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            XOAuth2: xoauth2.createXOAuth2Generator({
+                user: smtpConfig.user,
+                clientId: smtpConfig.client_id,
+                clientSecret: smtpConfig.client_secret,
+                refreshToken: smtpConfig.refresh_token,
+                accessToken: smtpConfig.access_token,
+                timeout: smtpConfig.access_timeout - Date.now()
+            })
+        }
+    });
+} else {
+    var pass = config.get('google.api.gmail.pass');
+
+    smtpConfig = {
+        user: user,
+        pass: pass
+    };
+
+    smtpTransport = nodemailer.createTransport({
+        service: 'gmail',
+        auth: smtpConfig
+    });
+}
 
 console.log(smtpConfig);
-
-var smtpTransport = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        XOAuth2: xoauth2.createXOAuth2Generator({
-            user: smtpConfig.user,
-            clientId: smtpConfig.client_id,
-            clientSecret: smtpConfig.client_secret,
-            refreshToken: smtpConfig.refresh_token,
-            accessToken: smtpConfig.access_token,
-            timeout: smtpConfig.access_timeout - Date.now()
-        })
-    }
-});
 
 module.exports = smtpTransport;
 
