@@ -490,6 +490,7 @@ function launchMessageBroker() {
         var instance = require('../app');
         var resolved = false;
         instance.on('ready', function messageBrokerReady() {
+            instance.startHandlingEmails();
             resolved = true;
             resolve();
         });

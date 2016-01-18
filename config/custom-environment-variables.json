@@ -19,6 +19,17 @@
             "secret": "PUSH_WNS_SECRET"
         }
     },
+    "google": {
+        "api": {
+            "gmail": {
+                "user": "GMAIL_USER",
+                "client_id": "GMAIL_CLIENT_ID",
+                "client_secret": "GMAIL_CLIENT_SECRET",
+                "refresh_token": "GMAIL_REFRESH_TOKEN",
+                "access_token": "GMAIL_ACCESS_TOKEN"
+            }
+        }
+    },
     "rabbit": {
         "url": "CLOUDAMQP_URL",
         "workers": "RABBIT_WORKERS"

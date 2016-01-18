@@ -2,6 +2,7 @@ var Promise = require('bluebird');
 var EventEmitter = require('events').EventEmitter;
 var models = require('./models');
 var config = require('config');
+var mailer = require('./mailer');
 
 var connections = require('./connections');
 
@@ -64,7 +65,15 @@ App.prototype.sendEmail = function(from, to, subject, text, html) {
 App.prototype.handleEmailJob = function(job, ack) {
     console.log("GOT EMAIL JOB");
     console.log(job);
-    ack();
+    mailer.sendMail(job, function sendMailCallback(error, info) {
+        ack();
+        if (error) {
+            console.log("error");
+            console.log(error);
+        } else {
+            console.log("Mail successfully sent: " + info.response);
+        }
+    });
 };
 
 module.exports = new App();
