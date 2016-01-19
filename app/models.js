@@ -557,6 +557,7 @@ function populateTables(t, next) {
             }
         })
         .catch(function(err) {
+            console.log("Failed to populate timezones");
             console.log(err);
             next(err);
         });
@@ -598,6 +599,7 @@ function onDatabaseReady(fn) {
                 return fn();
             })
             .catch(function(err) {
+                console.log("onDatabaseReady() error");
                 console.log(err);
                 return fn(err);
             });
