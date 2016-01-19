@@ -25,6 +25,8 @@ module.exports = function(app, settings){
         home = require('../controllers/home'),
         users = require('../controllers/users');
 
+    var maxAgeInMs = 604800000;
+
     /*
     app.use(function(req, res, next) {
         console.log('Received request');
@@ -75,6 +77,54 @@ module.exports = function(app, settings){
         }
     });
 
+    // consumes email verification token
+    app.get('/emailverify', function getEmailVerify(req, res, next) {
+        if(req.query.hasOwnProperty('token')) {
+            var token = req.query.token;
+            return models.Bookshelf.transaction(function emailVerifyTransaction(t) {
+                return users.consumeEmailVerifyToken(token, {
+                    transacting: t
+                }, function emailVerifyTransactionConsumed(user) {
+                    if (user) {
+                        req.login(user, function (err) {
+                            if (err) {
+                                return res.sendStatus(500);
+                            }
+
+                            models.issueToken(req.user, function (err, token, tokenid) {
+                                if (err) {
+                                    return res.redirect('/');
+                                }
+                                models.registerDeviceIdForUser(req.user.id, req.body.deviceid, req.body.platform, getWhenRememberMeTokenExpires(), tokenid, function (deviceIdRegistered, err) {
+                                    if (err) {
+                                        console.log("Failed to register user's device for push notifications - userid: " + req.user.id + " deviceid:" + req.body.deviceid + "\n" + err);
+                                    }
+                                    res.cookie('remember_me', token, {path: '/', httpOnly: true, maxAge: maxAgeInMs});
+
+                                    res.redirect('/');
+                                });
+                            });
+                        })
+                    } else {
+                        console.log(user);
+                        res.sendStatus(400);
+                    }
+                });
+            })
+                .catch(function (err) {
+                    console.log(err);
+                    res.sendStatus(500);
+                });
+        } else {
+            // token not passed in properly, redirect the user
+            res.redirect('/');
+        }
+    });
+
+    function getWhenRememberMeTokenExpires() {
+        return time.nowInUtc() + (maxAgeInMs / 1000);
+    }
+
     app.post('/session/login', requireJson, function(req, res, next) {
         passport.authenticate('local', {session: true}, function (err, user, info) {
             if (err) { return next(err); }
@@ -123,8 +173,7 @@ module.exports = function(app, settings){
             req.login(user, function (err) {
                 if (err) { return next(err); }
 
-                var maxAgeInMs = 604800000;
-                var expires = time.nowInUtc() + (maxAgeInMs / 1000);
+                var expires = getWhenRememberMeTokenExpires();
                 // https://github.com/jaredhanson/passport-remember-me#setting-the-remember-me-cookie
                 // issue a remember me cookie if the option was checked
                 users.getUserInfo(req.user.id, function(err, userJson) {

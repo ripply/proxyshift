@@ -31,6 +31,9 @@
             }
         }
     },
+    "web": {
+        "url": "WEB_URL"
+    },
     "rabbit": {
         "url": "CLOUDAMQP_URL",
         "workers": "RABBIT_WORKERS"

@@ -4,8 +4,14 @@ var xoauth2 = require('xoauth2');
 
 var smtpConfig;
 var smtpTransport;
-if (config.has('google.api.gmail.client_id')) {
-    var user = config.get('google.api.gmail.user');
+var user;
+if (config.has('google.api.gmail.client_id') &&
+    config.has('google.api.gmail.user') &&
+    config.has('google.api.gmail.client_secret') &&
+    config.has('google.api.gmail.refresh_token') &&
+    config.has('google.api.gmail.access_token')) {
+
+    user = config.get('google.api.gmail.user');
     var client_id = config.get('google.api.gmail.client_id');
     var client_secret = config.get('google.api.gmail.client_secret');
     var refresh_token = config.get('google.api.gmail.refresh_token');
@@ -13,28 +19,22 @@ if (config.has('google.api.gmail.client_id')) {
 
     smtpConfig = {
         user: user,
-        client_id: client_id,
-        client_secret: client_secret,
-        refresh_token: refresh_token,
-        access_token: access_token,
-        access_timeout: 5000
+        clientId: client_id,
+        clientSecret: client_secret,
+        refreshToken: refresh_token,
+        accessToken: access_token,
+        timeout: 5000 - Date.now()
     };
 
     smtpTransport = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            XOAuth2: xoauth2.createXOAuth2Generator({
-                user: smtpConfig.user,
-                clientId: smtpConfig.client_id,
-                clientSecret: smtpConfig.client_secret,
-                refreshToken: smtpConfig.refresh_token,
-                accessToken: smtpConfig.access_token,
-                timeout: smtpConfig.access_timeout - Date.now()
-            })
+            XOAuth2: xoauth2.createXOAuth2Generator(smtpConfig)
         }
     });
-} else if (config.has('google.api.gmail.pass')) {
-    var user = config.get('google.api.gmail.user');
+    console.log("Email is configured to use OAuth for " + user);
+} else if (config.has('google.api.gmail.pass') && config.has('google.api.gmail.user')) {
+    user = config.get('google.api.gmail.user');
     var pass = config.get('google.api.gmail.pass');
 
     smtpConfig = {
@@ -46,12 +46,13 @@ if (config.has('google.api.gmail.client_id')) {
         service: 'gmail',
         auth: smtpConfig
     });
+
+    console.log("Email is configured for " + user + " in less secure mode");
+} else {
+    console.log("Email is not configured properly, cannot send emails.");
 }
 
-console.log(smtpConfig);
-
 module.exports = smtpTransport;
-
 /*
 var passport = require('passport'),
     GoogleStrategy = require('passport-google-oauth').OAuthStrategy,

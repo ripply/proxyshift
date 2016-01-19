@@ -450,6 +450,7 @@ function initDb(dropAllTables) {
                 return populateTables(trx, function(err) {
                     if (err) {
                         console.log("***Error populating tables***");
+                        console.log(err);
                     }
                     tablesPopulatedResolve();
                 });
@@ -460,11 +461,13 @@ function initDb(dropAllTables) {
     initDbPromise = tablesPopulatedPromise;
     initDbPromise.tap(function initDbPromiseTap() {
         if (shouldWeLaunchMessageBrokerInThisProcess()) {
+            console.log("Launching message broker in this process");
             return launchMessageBroker()
                 .tap(function messageBrokerLaunched() {
                     setDbPromiseNull();
                 });
         } else {
+            console.log("Not launching message broker consumer in this process");
             setDbPromiseNull();
         }
 
@@ -481,7 +484,8 @@ function shouldWeLaunchMessageBrokerInThisProcess() {
         var workers = config.get('rabbit.workers');
         return workers <= 0;
     } else {
-        return false;
+        console.log("NOTICE: Launching message broker but RABBIT_WORKERS is not set");
+        return true;
     }
 }
 
@@ -489,11 +493,19 @@ function launchMessageBroker() {
     return new Promise(function launchingMessageBroker(resolve, reject) {
         var instance = require('../app');
         var resolved = false;
-        instance.on('ready', function messageBrokerReady() {
+        if (instance.ready) {
+            // RabbitMQ is not configured, so it instantly says it is ready
+            messageBrokerReady();
+        } else {
+            instance.on('ready', messageBrokerReady);
+        }
+
+        function messageBrokerReady() {
+            console.log("Starting message broker!");
             instance.startHandlingEmails();
             resolved = true;
             resolve();
-        });
+        }
     });
 }
 
@@ -524,9 +536,9 @@ function populateTables(t, next) {
 
             if (remainingTimezones.length > 0) {
                 var newTimezones = new models.Timezones();
-                for (var i = 0; i < remainingTimezones.length; i++) {
+                for (var j = 0; j < remainingTimezones.length; j++) {
                     newTimezones.add({
-                        name: remainingTimezones[i]
+                        name: remainingTimezones[j]
                     });
                 }
                 return newTimezones.invokeThen('save', null, {

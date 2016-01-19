@@ -71,6 +71,10 @@ var Schema = {
             // lowercase: true,
             nullable: false
         },
+        verified_email: {
+            type: boolean,
+            default: false
+        },
         password: {
             type: string,
             unique: false,
@@ -95,6 +99,49 @@ var Schema = {
         },
         pagernumber: {
             type: string
+        }
+    },
+    // GMail OAuth tokens
+    // refresh_token can only be obtained once upon OAuth
+    // access_token will be updated occasionally and must be stored
+    EmailAccessToken: {
+        id: {
+            type: increments
+        },
+        account: {
+            type: string,
+            nullable: false
+        },
+        refresh_token: {
+            type: string,
+            nullable: false
+        },
+        access_token: {
+            type: string,
+            nullable: false
+        }
+    },
+    // Tokens for users to verify their emails
+    EmailVerifyToken: {
+        id: {
+            type: increments
+        },
+        user_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'users',
+            onDelete: cascade,
+            onUpdate: cascade,
+            unique: false,
+            nullable: false
+        },
+        token: {
+            type: string,
+            nullable: false
+        },
+        expires: {
+            type: date,
+            nullable: false
         }
     },
     // Holds settings for groups

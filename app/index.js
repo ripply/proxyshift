@@ -14,12 +14,13 @@ function App() {
 
     this.config = config;
     this.models = models;
+    this.ready = false;
     if (config.has('rabbit.url')) {
         this.connections = connections(config.get('rabbit.url'));
         this.connections.once('ready', this.onConnected.bind(this));
         this.connections.once('lost', this.onLost.bind(this));
     } else {
-        console.log("RabbitMQ not configured, will not send emails");
+        console.log("RabbitMQ not configured, will not use a message broker for emails/notifications, set CLOUDAMQP_URL");
         this.onReady();
     }
 }
@@ -34,6 +35,7 @@ App.prototype.onConnected = function() {
 
 App.prototype.onReady = function() {
     //logger.log({ type: 'info', msg: 'app.ready' });
+    this.ready = true;
     this.emit('ready');
 };
 
@@ -43,24 +45,49 @@ App.prototype.onLost = function() {
 };
 
 App.prototype.startHandlingEmails = function() {
-    console.log("Started handling emails from RabbitMQ");
-    this.connections.email.consume(this.handleEmailJob.bind(this));
+    if (this.connections) {
+        console.log("Started handling emails from RabbitMQ");
+        this.connections.email.consume(this.handleEmailJob.bind(this));
+    } else {
+        console.log("Not handling emails from RabbitMQ as it is not configured");
+    }
     return this;
 };
 
-App.prototype.sendEmail = function(from, to, subject, text, html) {
-    if (!this.connections) {
-        console.log("Cannot send email, RabbitMQ server is not defined");
-        return;
+App.prototype.createVerifyUrl = function(token) {
+    var url = 'http://localhost';
+    if (config.has('web.url')) {
+        url = config.get('web.url');
+    } else {
+        console.log("NOTICE: WEB_URL env variable is not set to server address, verification emails will be sent with " + url);
     }
-    console.log("Sending email...");
-    this.connections.queue.default().publish({
+
+    return url + "/emailverify?token=" + token;
+};
+
+App.prototype.sendVerifyEmail = function(token, to, name) {
+    var verifyUrl = this.createVerifyUrl(token);
+    this.sendEmail('thamer@proxyshift.com', to, 'Verify your email', verifyUrl, '<a href="' + verifyUrl + '">' + verifyUrl + '</a>')
+};
+
+App.prototype.sendEmail = function(from, to, subject, text, html) {
+    var email = {
         from: from,
         to: to,
         subject: subject,
         text: text,
         html: html
-    }, {key: EMAIL_QUEUE});
+    };
+
+    if (!this.connections) {
+        console.log("RabbitMQ not configured, sending email now in web process");
+        this.handleEmailJob(email, function noop() {});
+    } else {
+        console.log("Sending email to queue...");
+        console.log(email);
+
+        this.connections.queue.default().publish(email, {key: EMAIL_QUEUE});
+    }
 };
 
 App.prototype.handleEmailJob = function(job, ack) {

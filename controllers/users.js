@@ -8,10 +8,16 @@ var models = require('../app/models'),
     postModel = require('./controllerCommon').postModel,
     patchModel = require('./controllerCommon').patchModel,
     deleteModel = require('./controllerCommon').deleteModel,
+    getModelKeys = require('./controllerCommon').getModelKeys,
+    clientCreate = require('./controllerCommon').clientCreate,
+    clientError = require('./controllerCommon').clientError,
     getPatchKeysWithoutBannedKeys = require('./controllerCommon').getPatchKeysWithoutBannedKeys,
     createSelectQueryForAllColumns = require('./controllerCommon').createSelectQueryForAllColumns,
     error = require('./controllerCommon').error,
     controllerCommon = require('./controllerCommon'),
+    time = require('../app/time'),
+    utils = require('../app/utils'),
+    appLogic = require('../app'),
     variables = require('./variables'),
     Bookshelf = models.Bookshelf;
 
@@ -39,6 +45,7 @@ var fieldsToNotSendToClient = [
 
 module.exports = {
     bannedFields: fieldsToNotSendToClient,
+    consumeEmailVerifyToken: consumeEmailVerifyToken,
     route: '/api/users',
     '/': {
         'get': { // get info about your account
@@ -58,28 +65,35 @@ module.exports = {
             // auth: // anyone not logged in
             route: function(req, res) {
                 Bookshelf.transaction(function usersPostTransaction(t) {
+                    var sqlOptions = {
+                        transacting: t
+                    };
                     return models.UserSetting.forge({})
                         .save(null, {transacting: t})
-                        .tap(function usersPostUserSettingsSaved(usersettins) {
-                            return postModel(
-                                'User',
-                                {
-                                    usersetting_id: usersettins.get('id')
-                                },
-                                req,
-                                res,
-                                [
-                                    'id',
-                                    'usersetting_id'
-                                ],
-                                {
-                                    transacting: t
-                                }
-                            );
+                        .tap(function usersPostUserSettingsSaved(usersettings) {
+                            var modelKeys = getModelKeys('User', ['id', 'usersetting_id']);
+                            var keysToSave = _.pick(req.body, _.keys(modelKeys));
+                            var fullArgs = _.extend(keysToSave, {
+                                usersetting_id: usersettings.get('id')
+                            });
+                            return models.User.forge(fullArgs)
+                                .save(undefined, sqlOptions)
+                                .tap(function usersPostUserCreated(user) {
+                                    return sendEmailVerificationEmail(
+                                        user.toJSON(),
+                                        sqlOptions,
+                                        function emailVerificationSent() {
+                                            clientCreate(req, res, 201, user.get('id'));
+                                        });
+                                });
                         });
                 })
                     .catch(function usersPostTransactionCatch(err) {
-                        error(req, res, err);
+                        if (err.hasOwnProperty('errors')) {
+                            clientError(req, res, 400, err.errors);
+                        } else {
+                            error(req, res, err);
+                        }
                     })
             }
         },
@@ -136,6 +150,80 @@ module.exports = {
                             error(req, res, err);
                         });
                 }
+            }
+        }
+    },
+    '/emailverify': {
+        'post': {
+            // auth: ['anyone'], // anyone
+            route: function(req, res) {
+                Bookshelf.transaction(function emailVerifyPostTransaction(t) {
+                    var sqlOptions = {
+                        transacting: t
+                    };
+                    return models.Users.query(function emailVerifyPostTransactionQuery(q) {
+                        q.select()
+                            .from('users')
+                            .where('users.id', '=', req.user.id)
+                            .andWhere('users.verified_email', '=', true);
+                    })
+                        .fetch(sqlOptions)
+                        .tap(function emailVerifyPostTransactionCheckUser(user) {
+                            if (user) {
+                                // user is already verified
+                                res.sendStatus(200);
+                            } else {
+                                return purgeExpiredEmailVerificationTokens(sqlOptions)
+                                    .tap(function emailVerifyPostTransactionExpiredTokensPurged() {
+                                        // check if they already have an existing token
+                                        return models.EmailVerifyToken.query(function purgeExpiredEmailVerificationTokensQuery(q) {
+                                            q.select()
+                                                .from('emailverifytokens')
+                                                .where('user_id', '=', req.user.id);
+                                        })
+                                            .fetch(sqlOptions)
+                                            .tap(function emailVerifyPostTransactionCheckLastEmail(existingToken) {
+                                                if (existingToken) {
+                                                    // they already have one
+                                                    // check if it has been a little bit since the last one was sent
+                                                    // to prevent against spam
+                                                    var stagger = 60 * 5; // 5 mins
+                                                    var now = time.nowInUtc();
+                                                    var previousEmailSentAt = getWhenVerifyTokenWasSent(existingToken.get('expires'));
+                                                    if (now - previousEmailSentAt >= stagger) {
+                                                        // user has requested an email be sent to them already within the last 5 mins
+                                                        // don't send another!
+                                                        res.sendStatus(200);
+                                                        return;
+                                                    }
+                                                }
+                                                // it has been awhile since the user asked for a new email verification to be sent, send it to them!
+                                                return models.EmailVerifyToken.query(function purgeExpiredEmailVerificationTokensQuery(q) {
+                                                    q.select()
+                                                        .from('emailverifytokens')
+                                                        .where('user_id', '=', req.user.id)
+                                                        .del();
+                                                })
+                                                    .fetchAll(sqlOptions)
+                                                    .tap(function emailVerifyPostTransactionUsersTokensPurged() {
+                                                        // their existing tokens should be purged now
+                                                        // create a new one and email it to them
+                                                        return sendEmailVerificationEmail(
+                                                            user.toJSON(),
+                                                            sqlOptions,
+                                                            function emailVerifyPostTransactionSentEmail() {
+                                                                return res.sendStatus(201);
+                                                            }
+                                                        );
+                                                    });
+                                            });
+                                    });
+                            }
+                        });
+                })
+                    .catch(function emailVerifyPostTransactionCatch(err) {
+                        error(req, res, err);
+                    });
             }
         }
     },
@@ -462,5 +550,131 @@ function userSettingsGet(req, res) {
         })
         .catch(function userSettingsGetError(err) {
             error(req, res, err);
+        });
+}
+
+function createEmailToken(user_id, sqlOptions, next) {
+    var largeEnoughAttemptsToNotEverBeAnIssueButProtectAgainstInfiniteLoop = 100;
+    return createEmailTokenRecurse(
+        user_id,
+        sqlOptions,
+        next,
+        largeEnoughAttemptsToNotEverBeAnIssueButProtectAgainstInfiniteLoop
+    );
+}
+
+function createEmailTokenRecurse(user_id, sqlOptions, next, attemptsLeft) {
+    if (attemptsLeft < 0) {
+        return next(null);
+    }
+    var verifyToken = utils.randomString(64);
+    return models.EmailVerifyToken.query(function emailVerifyTokenDuplicateCheckQuery(q) {
+        q.select('emailverifytokens.user_id as user_id')
+            .from('emailverifytokens')
+            .where('emailverifytokens.token', '=', verifyToken);
+    })
+        .fetch(sqlOptions)
+        .tap(function emailVerifyTokenDuplicateCheckResult(token) {
+            if (token) {
+                return createEmailTokenRecurse(user_id, sqlOptions, next, attemptsLeft - 1)
+            } else {
+                return models.EmailVerifyToken.forge({
+                    user_id: user_id,
+                    token: verifyToken,
+                    expires: getWhenVerifyTokenShouldExpireFromNow()
+                })
+                    .save(undefined, sqlOptions)
+                    .tap(function emailVerifyTokenCreated(tokenObject) {
+                        return next(tokenObject.get('token'));
+                    });
+            }
+        });
+}
+
+var emailVerifyTokenExpiresIn = 60 * 60 * 6; // 6 hours
+
+function getWhenVerifyTokenShouldExpireFromNow() {
+    return time.nowInUtc() + emailVerifyTokenExpiresIn;
+}
+
+function getWhenVerifyTokenWasSent(expires) {
+    return expires - emailVerifyTokenExpiresIn;
+}
+
+function sendEmailVerificationEmail(userJson, sqlOptions, next) {
+    var user_id = userJson.id;
+    var email = userJson.email;
+    var firstname = userJson.firstname;
+
+    return createEmailToken(user_id, sqlOptions,
+        function emailVerifyTokenCreated(token) {
+            if (token == null) {
+                // had a lot of collisions...
+                // don't tell user, instead have them try to re-send their email verify key
+                console.log("Got a null token when generating email verify token...");
+            } else {
+                console.log("Got a token to verify email with! " + token);
+                appLogic.sendVerifyEmail(token, email, firstname);
+            }
+            next();
+        });
+}
+
+function purgeExpiredEmailVerificationTokens(sqlOptions) {
+    return models.EmailVerifyToken.query(function purgeExpiredEmailVerificationTokensQuery(q) {
+        q.select()
+            .from('emailverifytokens')
+            .where('expires', '<=', time.nowInUtc())
+            .del();
+    })
+        .fetchAll(sqlOptions);
+}
+
+function consumeEmailVerifyToken(token, sqlOptions, next) {
+    return models.EmailVerifyToken.query(function consumeEmailVerifyTokenQuery(q) {
+        q.select()
+            .from('emailverifytokens')
+            .where('emailverifytokens.token', '=', token);
+    })
+        .fetch(sqlOptions)
+        .tap(function consumeEmailVerifyTokenSuccess(foundToken) {
+            if (foundToken) {
+                var user_id = foundToken.get('user_id');
+                return models.EmailVerifyToken.query(function consumeEmailVerifyTokenConsumeQuery(q) {
+                    q.select()
+                        .from('emailverifytokens')
+                        .where('emailverifytokens.token', '=', token)
+                        .del();
+                })
+                    .fetchAll(sqlOptions)
+                    .tap(function consumeEmailVerifyTokenConsumedSuccess() {
+                        return models.User.query(function consumeEmailVerifyTokenUpdateUserQuery(q) {
+                            q.select()
+                                .from('users')
+                                .where('users.id', '=', user_id)
+                                .update({
+                                    verified_email: true
+                                });
+                        })
+                            .fetch(sqlOptions)
+                            .tap(function consumeEmailVerifyTokenUserUpdated() {
+                                return models.User.query(function consumeEmailVerifyFetchUserInfo(q) {
+                                    q.select()
+                                        .from('users')
+                                        .where('users.id', '=', user_id);
+                                })
+                                    .fetch(sqlOptions)
+                                    .tap(function consumeEmailVerifyFetchUserInfoSuccess(user) {
+                                        console.log(user_id);
+                                        console.log(user);
+                                        next(user);
+                                    });
+                            });
+                    });
+            } else {
+                // no token found
+                console.log("no token found");
+                next(null);
+            }
         });
 }
