@@ -458,25 +458,29 @@ function initDb(dropAllTables) {
         });
     });
 
-    initDbPromise = tablesPopulatedPromise;
-    initDbPromise.tap(function initDbPromiseTap() {
-        if (shouldWeLaunchMessageBrokerInThisProcess()) {
-            console.log("Launching message broker in this process");
-            return launchMessageBroker()
-                .tap(function messageBrokerLaunched() {
-                    setDbPromiseNull();
-                });
-        } else {
-            console.log("Not launching message broker consumer in this process");
-            setDbPromiseNull();
-        }
+    initDbPromise = new Promise(function(resolve, reject) {
+        //initDbPromise = tablesPopulatedPromise;
+        tablesPopulatedPromise.tap(function initDbPromiseTap() {
+            console.log("Database has been initialized");
+            if (shouldWeLaunchMessageBrokerInThisProcess()) {
+                console.log("Launching message broker in this process");
+                return launchMessageBroker()
+                    .tap(function messageBrokerLaunched() {
+                        setDbPromiseNull();
+                    });
+            } else {
+                console.log("Not launching message broker consumer in this process");
+                setDbPromiseNull();
+            }
 
-        function setDbPromiseNull() {
-            initDbPromise = null;
-        }
+            function setDbPromiseNull() {
+                initDbPromise = null;
+                resolve();
+            }
+        });
     });
 
-    return tablesPopulatedPromise;
+    return initDbPromise;
 }
 
 function shouldWeLaunchMessageBrokerInThisProcess() {
