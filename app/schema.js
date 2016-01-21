@@ -144,6 +144,80 @@ var Schema = {
             nullable: false
         }
     },
+    GroupInvitation: {
+        id: {
+            type: increments
+        },
+        inviter_user_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'users',
+            onDelete: cascade,
+            onUpdate: cascade,
+            unique: false,
+            nullable: false
+        },
+        // if invited person is already in the system
+        user_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'users',
+            onDelete: cascade,
+            onUpdate: cascade,
+            unique: false,
+            nullable: true
+        },
+        // invited person is not in the system
+        email: {
+            type: string,
+            unique: false,
+            nullable: true
+        },
+        grouppermission_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'grouppermissions',
+            onDelete: cascade,
+            onUpdate: cascade,
+            unique: false,
+            nullable: false
+        },
+        message: {
+            type: string,
+            nullable: true
+        },
+        expires: {
+            type: date,
+            nullable: false
+        },
+        token: {
+            type: string,
+            nullable: false
+        }
+    },
+    GroupInvitationUserClass: {
+        id: {
+            type: increments
+        },
+        groupinvitation_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'groupinvitations',
+            onDelete: cascade,
+            onUpdate: cascade,
+            unique: false,
+            nullable: false
+        },
+        groupuserclass_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'groupuserclasses',
+            onDelete: cascade,
+            onUpdate: cascade,
+            unique: false,
+            nullable: false
+        }
+    },
     // Holds settings for groups
     GroupSetting: {
         id: {

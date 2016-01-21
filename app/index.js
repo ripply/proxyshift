@@ -54,7 +54,7 @@ App.prototype.startHandlingEmails = function() {
     return this;
 };
 
-App.prototype.createVerifyUrl = function(token) {
+App.prototype.createTokenUrl = function(base, token) {
     var url = 'http://localhost';
     if (config.has('web.url')) {
         url = config.get('web.url');
@@ -62,15 +62,23 @@ App.prototype.createVerifyUrl = function(token) {
         console.log("NOTICE: WEB_URL env variable is not set to server address, verification emails will be sent with " + url);
     }
 
-    return url + "/emailverify?token=" + token;
+    return url + base + "?token=" + token;
+};
+
+App.prototype.sendInviteEmail = function(token, to, message) {
+    var inviteUrl = this.createTokenUrl("/accept", token);
+    this.sendEmail('thamer@proxyshift.com', to, 'Company invitation', inviteUrl, '<a href="' + inviteUrl + '">' + inviteUrl + '</a>')
 };
 
 App.prototype.sendVerifyEmail = function(token, to, name) {
-    var verifyUrl = this.createVerifyUrl(token);
+    var verifyUrl = this.createTokenUrl("/emailverify", token);
     this.sendEmail('thamer@proxyshift.com', to, 'Verify your email', verifyUrl, '<a href="' + verifyUrl + '">' + verifyUrl + '</a>')
 };
 
 App.prototype.sendEmail = function(from, to, subject, text, html) {
+    if (to === null || to === undefined) {
+        throw new Error("Email recipient required (not specified)");
+    }
     var email = {
         from: from,
         to: to,

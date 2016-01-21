@@ -251,6 +251,22 @@ angular.module('scheduling-app.services')
                 )
             };
 
+            this.inviteUsersToGroup = function inviteUsersToGroup(group_id, grouppermission_id, userclasses, emails, message, success, error) {
+                andThen(
+                    Restangular.one('groups', group_id)
+                        .all('users')
+                        .all('invite')
+                        .customPOST({
+                            emails: emails,
+                            grouppermission_id: grouppermission_id,
+                            userclasses: userclasses,
+                            message: message
+                        }),
+                    success,
+                    error
+                );
+            };
+
             function andThen(promise, success, error) {
                 promise.then(function resourceServiceSuccess(result) {
                     if (success) {

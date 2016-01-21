@@ -4,6 +4,7 @@ angular.module('scheduling-app.controllers')
         '$scope',
         '$stateParams',
         '$controller',
+        'ResourceService',
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
         //'Restangular',
@@ -13,6 +14,7 @@ angular.module('scheduling-app.controllers')
                  $scope,
                  $stateParams,
                  $controller,
+                 ResourceService,
                  GENERAL_CONFIG,
                  GENERAL_EVENTS
                  //Restangular,
@@ -67,4 +69,6 @@ angular.module('scheduling-app.controllers')
                     return false;
                 }
             }
+
+            $scope.inviteUsersToGroup = ResourceService.inviteUsersToGroup;
         }]);
