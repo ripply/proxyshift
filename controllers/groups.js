@@ -270,6 +270,8 @@ module.exports = {
                         // check if this invitation already exists for any of these emails/users
                         return findExistingInvitationsForTheFoundUserIdsAndSpecifiedEmails(sqlOptions, emails, foundUserIds, function inviteUserToGroupFilterInvalidGrouppermissions(groupinvitations) {
                             var groupinvitationsJson = groupinvitations.toJSON();
+                            console.log("Existing invitations:");
+                            console.log(groupinvitationsJson);
                             var groupinviteMaps = getFoundGroupinvitationToUserIdMap(groupinvitationsJson);
                             // map of groupinvitation.id => user_id
                             var existingGroupinvitationIdsToUserIdMap = groupinviteMaps.idToUserIdMap;
@@ -324,6 +326,7 @@ module.exports = {
                             return validateGrouppermissionIdIsPartOfGroup(sqlOptions, group_id, grouppermission_id, function inviteUserToGroupFilterInvalidGrouppermissionsSuccess(fetchedGrouppermission) {
                                 if (!fetchedGrouppermission) {
                                     // cannot invite without permission level
+                                    console.log("Invalid grouppermission_id sent: " + grouppermission_id);
                                     return res.sendStatus(400);
                                 } else {
                                     // grouppermission_id is valid
@@ -334,6 +337,7 @@ module.exports = {
                                     // found all valid group permissions
                                     if (foundUserClasses.length === 0) {
                                         // cannot invite without user class types
+                                        console.log("Invalid groupuserclasses sent: " + userclasses);
                                         return res.sendStatus(400);
                                     }
                                     // we need to delete existing GroupInvitationUserClass rows that link to the existing GroupInvitation tables
@@ -361,6 +365,15 @@ module.exports = {
                                         // create them in the database
                                         return createMultipleGroupInvitations(sqlOptions, newGroupInvitations, function inviteUserToGroupCreatedInvitations(createdGroupInvitations) {
                                             var groupInvitationUserClasses = [];
+                                            _.each(foundExistingGroupinvitationIds, function (existingGroupinvitationId) {
+                                                _.each(foundUserClasses, function(userclass_id) {
+                                                    groupInvitationUserClasses.push({
+                                                        groupinvitation_id: existingGroupinvitationId,
+                                                        groupuserclass_id: userclass_id
+                                                    });
+                                                });
+                                            });
+
                                             _.each(createdGroupInvitations, function(createdGroupInvitation) {
                                                 _.each(foundUserClasses, function(userclass_id) {
                                                     groupInvitationUserClasses.push({
@@ -371,14 +384,23 @@ module.exports = {
                                             });
 
                                             if (groupInvitationUserClasses.length === 0) {
-                                                return res.send(400);
+                                                console.log("Couldn't find any valid userclases\n" + createdGroupInvitations);
+                                                return res.sendStatus(400);
                                             }
 
                                             return createMultipleGroupInvitationUserClasses(sqlOptions, groupInvitationUserClasses, function inviteUserToGroupUserClassesCreated() {
                                                 // do not put the sending of emails into a promise
                                                 // they will send data over the network and we dont want to be doing a sql transaction during that
                                                 _.each(groupinvitationsJson, function(existingGroupInvitation) {
-                                                    sendEmail(existingGroupInvitation.token, existingGroupInvitation.usersemail, message);
+                                                    var email;
+                                                    if (existingGroupInvitation.usersemail) {
+                                                        email = existingGroupInvitation.usersemail;
+                                                    } else {
+                                                        email = existingGroupInvitation.email;
+                                                    }
+
+                                                    console.log(email);
+                                                    sendEmail(existingGroupInvitation.token, email, message);
                                                 });
                                                 _.each(newGroupInvitations, function(newGroupInvitation) {
                                                     var email;
@@ -390,7 +412,7 @@ module.exports = {
 
                                                     sendEmail(newGroupInvitation.token, email, message);
                                                 });
-                                                res.send(200);
+                                                res.sendStatus(200);
                                             });
                                         });
                                     });
@@ -438,13 +460,35 @@ module.exports = {
                     }
 
                     function findExistingInvitationsForTheFoundUserIdsAndSpecifiedEmails(sqlOptions, emails, user_ids, next) {
+                        console.log("Searching for exisitng invites");
+                        console.log(emails);
+                        console.log(user_ids);
                         return models.GroupInvitation.query(function inviteUserToGroupFindExistingInvitationQuery(q) {
-                            q.select()//'groupinvitations.id as id, groupinvitations.token as token, groupinvitations.user_id as user_id, groupinvitations.email as email, users.email as usersemail')
+                            q.select([
+                                'groupinvitations.id as id',
+                                'groupinvitations.token as token',
+                                'groupinvitations.user_id as user_id',
+                                'groupinvitations.email as email',
+                                'groupinvitations.expires as expires',
+                                'users.email as usersemail'
+                            ])
                                 .from('groupinvitations')
                                 .whereIn('groupinvitations.user_id', user_ids)
-                                .orWhereIn('groupinvitations.email', '=', emails)
+                                .orWhereIn('groupinvitations.email', emails)
                                 .innerJoin('users', function() {
                                     this.on('users.id', '=', 'groupinvitations.user_id');
+                                })
+                                .union(function() {
+                                    this.select([
+                                        'groupinvitations.id as id',
+                                        'groupinvitations.token as token',
+                                        'groupinvitations.user_id as user_id',
+                                        'groupinvitations.email as email',
+                                        'groupinvitations.expires as expires',
+                                        ' as usersemail' // empty usersemail because not joining with user table
+                                    ])
+                                        .from('groupinvitations')
+                                        .whereIn('groupinvitations.email', emails)
                                 });
                         })
                             .fetchAll(sqlOptions)
