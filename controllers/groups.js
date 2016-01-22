@@ -260,7 +260,7 @@ module.exports = {
                     var sqlOptions = {
                         transacting: t
                     };
-                    return getCurrentUserInfo(req.user.id, function inviteUserToGroupGetInviterUserInfo(inviter_user) {
+                    return getCurrentUserInfo(sqlInfo, req.user.id, function inviteUserToGroupGetInviterUserInfo(inviter_user) {
                         var inviter_user_json = inviter_user.toJSON();
                         // see if the email already exists in the system
                         // if it does, use that user_id
@@ -500,7 +500,7 @@ module.exports = {
                             error(req, res, err);
                         });
 
-                    function getCurrentUserInfo(sqlOptions, next) {
+                    function getCurrentUserInfo(sqlOptions, user_id, next) {
                         return models.User.query(function inviteUserToGroupGetInviterQuery(q) {
                             q.select([
                                 // don't even accidentally expose sensitive info like hashed passwords
@@ -510,8 +510,9 @@ module.exports = {
                                 'users.email as email'
                             ])
                                 .from('users')
-                                .where('users.id', '=', req.user.id);
+                                .where('users.id', '=', user_id);
                         })
+                            .fetch(sqlOptions)
                             .tap(next);
                     }
 
