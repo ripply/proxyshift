@@ -65,12 +65,12 @@ App.prototype.createTokenUrl = function(base, token) {
     return url + base + "?token=" + token;
 };
 
-App.prototype.notifyGroupPromoted = function(user_id, group_id) {
+App.prototype.notifyGroupPromoted = function(user_id, inviter_user, group_id) {
     // TODO:
     console.log("PROMOTEDD");
 };
 
-App.prototype.sendInviteEmail = function(token, to, message) {
+App.prototype.sendInviteEmail = function(token, to, inviter_user, message) {
     var inviteUrl = this.createTokenUrl("/accept", token);
     this.sendEmail('thamer@proxyshift.com', to, 'Company invitation', inviteUrl, '<a href="' + inviteUrl + '">' + inviteUrl + '</a>')
 };
