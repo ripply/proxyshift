@@ -741,7 +741,7 @@ var customModelRelations = {
             return this.belongsToMany(models['GroupPermission']).through(models['UserPermission']);
         },
         groupBasedGroupPermissions: function() {
-            return this.belongsToMany(models['GroupPermission']).through(models['UserGroups']);
+            return this.belongsToMany(models['GroupPermission']).through(models['UserGroup']);
         },
         userClasses: function() {
             return this.belongsToMany(models['GroupUserClass']).through(models['GroupUserClassToUser']);
