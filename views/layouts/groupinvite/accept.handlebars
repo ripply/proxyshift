@@ -5,21 +5,28 @@
     {{#if message}}
         <p>{{message}}</p>
     {{/if}}
+    <p>to accept this invitation on this account click here</p>
+    <form action="/acceptinvitation" method="post">
+        <input type="hidden" name="accept" value="true">
+        <input type="hidden" name="token" value="{{invitation.token}}">
+        <input type="submit" value="Accept">
+    </form>
+    <p>or signin to another existing account</p>
 {{else}}
     <p>To get started either sign into an existing Proxy Shift account or create a new one</p>
     <p>Sign In to an existing Proxy Shift account</p>
     {{#if message}}
         <p>{{message}}</p>
     {{/if}}
-    {{#if loginFailure}}
-        <p>INVALID USERNAME/PASSWORD</p>
-    {{/if}}
-    <form action="/acceptinvitation" method="post">
-        User Name:<br>
-        <input type="text" name="username" value="{{inputUsername}}"><br>
-        Password:<br>
-        <input type="text" name="password"><br><br>
-        <input type="hidden" name="token" value="{{invitation.token}}">
-        <input type="submit" value="Submit">
-    </form>
 {{/if}}
+{{#if loginFailure}}
+    <p>INVALID USERNAME/PASSWORD</p>
+{{/if}}
+<form action="/acceptinvitation" method="post">
+    User Name:<br>
+    <input type="text" name="username" value="{{inputUsername}}"><br>
+    Password:<br>
+    <input type="text" name="password"><br><br>
+    <input type="hidden" name="token" value="{{invitation.token}}">
+    <input type="submit" value="Submit">
+</form>
