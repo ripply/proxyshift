@@ -252,6 +252,12 @@ angular.module('scheduling-app.services')
             };
 
             this.inviteUsersToGroup = function inviteUsersToGroup(group_id, grouppermission_id, userclasses, emails, message, success, error) {
+                if (!(userclasses instanceof Array)) {
+                    userclasses = [userclasses];
+                }
+                if (!(emails instanceof Array)) {
+                    emails = [emails];
+                }
                 andThen(
                     Restangular.one('groups', group_id)
                         .all('users')

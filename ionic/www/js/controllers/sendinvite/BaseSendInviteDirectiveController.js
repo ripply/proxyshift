@@ -4,6 +4,7 @@ angular.module('scheduling-app.controllers')
         '$scope',
         '$stateParams',
         '$controller',
+        'UserInfoService',
         'ResourceService',
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
@@ -14,6 +15,7 @@ angular.module('scheduling-app.controllers')
                  $scope,
                  $stateParams,
                  $controller,
+                 UserInfoService,
                  ResourceService,
                  GENERAL_CONFIG,
                  GENERAL_EVENTS
@@ -22,21 +24,61 @@ angular.module('scheduling-app.controllers')
                  //Model
         ) {
             $controller('BaseModelController', {$scope: $scope});
-           /* $scope.register(
-                //ModelVariableName,
-                //Model,
-                //undefined
-            );*/
-            //$scope.Model = $rootScope[ModelVariableName];
-            /*$rootScope.$watch(ModelVariableName, function(newValue, oldValue) {
-                $scope.Model = newValue;
-            });*/
 
             $scope.stateParams = $stateParams;
             $scope.beforeEnter = init;
+            UserInfoService.onUserInfoUpdate($scope, init);
 
             function init() {
                 $scope.group_id = getGroupId();
+                $scope.grouppermission_id = 2;
+                if ($rootScope.userinfo) {
+                    $scope.usersUserclasses = $rootScope.userinfo.userClasses;
+                }
+                $scope.group = UserInfoService.getGroup($scope.group_id);
+                if ($scope.group) {
+                    $scope.userClasses= angular.copy($scope.group.userClasses);
+                    // filter userclasses to that below yours
+                    var groupUserclass;
+                    for (var i = 0; i < $scope.usersUserclasses.length; i++) {
+                        var usersUserClass = $scope.usersUserclasses[i];
+                        if (usersUserClass.group_id == $scope.group_id) {
+                            // match
+                            groupUserclass = usersUserClass;
+                            break;
+                        }
+                    }
+
+                    var grouppermissionIdMap = {};
+                    var lowestGrouppermissionlevel;
+                    for (i = 0; i < $rootScope.userinfo.allGroupPermissions.length; i++) {
+                        var individualGrouppermission = $rootScope.userinfo.allGroupPermissions[i];
+                        grouppermissionIdMap[individualGrouppermission.id] = individualGrouppermission;
+                        if (!lowestGrouppermissionlevel && individualGrouppermission.group_id == $scope.group_id ||
+                            (lowestGrouppermissionlevel.permissionlevel > individualGrouppermission.permissionlevel)) {
+                            lowestGrouppermissionlevel = individualGrouppermission;
+                        }
+                    }
+
+                    $scope.grouppermission_id = lowestGrouppermissionlevel.id;
+
+                    var ourGroupPermission = grouppermissionIdMap[groupUserclass.grouppermission_id];
+
+                    $scope.filteredUserclasses = [];
+                    var userclasses_ids = Object.keys($scope.userClasses);
+                    for (i = 0; i < userclasses_ids.length; i++) {
+                        var userclass = $scope.userClasses[userclasses_ids[i]];
+                        var grouppermission_id = userclass.grouppermission_id;
+                        if (grouppermissionIdMap.hasOwnProperty(grouppermission_id)) {
+                            var grouppermission = grouppermissionIdMap[grouppermission_id];
+                            var permissionLevel = grouppermission.permissionlevel;
+                            if (permissionLevel <= ourGroupPermission.permissionlevel) {
+                                $scope.filteredUserclasses.push(userclass);
+                            }
+                        }
+                    }
+                    console.log($scope.filteredUserclasses);
+                }
             }
 
             function getGroupId() {

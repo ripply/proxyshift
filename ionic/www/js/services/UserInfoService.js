@@ -31,6 +31,10 @@ angular.module('scheduling-app.services')
                 userClasses: MEMBER
             };
 
+            this.onUserInfoUpdate = function(scope, fn) {
+                scope.$on(GENERAL_EVENTS.UPDATES.USERINFO.PROCESSED, fn);
+            };
+
             this.getLocationList = function() {
                 return locations;
             };
@@ -258,11 +262,11 @@ angular.module('scheduling-app.services')
                         {
                             source: areas,
                             attribute: 'areas'
-                        },
+                        }/*,
                         {
                             source: userclasses,
                             attribute: 'userclasses'
-                        }
+                        }*/
                     ], function(sourceAttribute) {
                         var source = sourceAttribute.source;
                         var attribute = sourceAttribute.attribute;

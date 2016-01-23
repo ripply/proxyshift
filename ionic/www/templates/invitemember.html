@@ -7,39 +7,44 @@
             User Details
         </div>
         <div>
-            <form name="inviteForm" ng-submit="inviteUsersToGroup(group_id, grouppermission_id, userclasses, emails, message)">
+            <form name="inviteForm" ng-submit="inviteUsersToGroup(group_id, grouppermission_id, userclass_id, email, message)">
                 <div class="list">
                     <label class="item item-input">
-                        <span class="input-label">Usernames or Email</span>
+                        <span class="input-label">Email</span>
                         <input type="text"
                                placeholder="Ex: john@gmail.com, bob@gmail.com, etc"
-                               name="user">
+                               ng-model="email"
+                               name="email">
                     </label>
-                    <label class="item item-input item-select">
-                        <div class="input-label">
-                            Userclass
-                        </div>
-                        <select>
-                            <option ng-repeat="class in userclassList"
-                                    value="{{ class.description }}">
-                                {{ class.description }}
-                            </option>
-                        </select>
-                    </label>
-                    <label class="item item-input item-select">
-                        <div class="input-label">
-                            Permission
-                        </div>
-                        <select>
-                            <option ng-repeat="permission in permissionsList"
-                                    value="{{ permission.description }}">
-                                {{ permission.description }}
-                            </option>
-                        </select>
-                    </label>
+                    <fancy-select
+                        header-text="Select a job type"
+                        items="filteredUserclasses"
+                        value-property="id"
+                        value="userclass_id"
+                        text-property="description"
+                        allow-empty='false'
+                        modal-template-url="templates/types/typemodal.html"
+                        template-url="templates/types/typeitem.html"
+                        value-changed="wat(value)"
+                        note-text="A Note text"
+                        >
+                    </fancy-select>
+                    <fancy-select
+                        header-text="Select a job type"
+                        items="group.grouppermissions"
+                        value-property="id"
+                        value="grouppermission_id"
+                        text-property="description"
+                        allow-empty='false'
+                        modal-template-url="templates/types/typemodal.html"
+                        template-url="templates/types/typeitem.html"
+                        value-changed="wat(value)"
+                        note-text="A Note text"
+                        >
+                    </fancy-select>
                     <label class="item item-input">
                         <span class="input-label">Invitation Message</span>
-                        <input type="text" name="message">
+                        <input type="text" name="message" ng-model="message">
                     </label>
                     <button class="button button-block button-steelblue" type="submit">Invite User</button>
                 </div>

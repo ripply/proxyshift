@@ -256,11 +256,27 @@ module.exports = {
                 var message = req.body.message;
                 var group_id = req.params.group_id;
                 var user_id;
+
+                if (!(userclasses instanceof Array)) {
+                    userclasses = [userclasses];
+                }
+
+                userclasses = _.filter(userclasses, rejectNullOrUndefinedOrEmpty);
+                emails = _.filter(emails, rejectNullOrUndefinedOrEmpty);
+
+                if (userclasses.length === 0 || emails.length === 0) {
+                    console.log("Empty userclasses or emails sent");
+                    return res.sendStatus(400);
+                }
+
+                console.log(emails);
+                console.log(userclasses);
+
                 Bookshelf.transaction(function inviteUserToGroupTransaction(t) {
                     var sqlOptions = {
                         transacting: t
                     };
-                    return getCurrentUserInfo(sqlInfo, req.user.id, function inviteUserToGroupGetInviterUserInfo(inviter_user) {
+                    return getCurrentUserInfo(sqlOptions, req.user.id, function inviteUserToGroupGetInviterUserInfo(inviter_user) {
                         var inviter_user_json = inviter_user.toJSON();
                         // see if the email already exists in the system
                         // if it does, use that user_id
@@ -463,7 +479,9 @@ module.exports = {
                                                             return createMultipleGroupInvitationUserClasses(sqlOptions, groupInvitationUserClasses, function inviteUserToGroupUserClassesCreated() {
                                                                 // do not put the sending of emails into a promise
                                                                 // they will send data over the network and we dont want to be doing a sql transaction during that
+                                                                var didAnything = false;
                                                                 _.each(groupinvitationsJson, function(existingGroupInvitation) {
+                                                                    didAnything = true;
                                                                     var email;
                                                                     if (existingGroupInvitation.usersemail) {
                                                                         email = existingGroupInvitation.usersemail;
@@ -473,6 +491,7 @@ module.exports = {
                                                                     sendEmail(existingGroupInvitation.token, email, inviter_user_json, message);
                                                                 });
                                                                 _.each(newGroupInvitations, function(newGroupInvitation) {
+                                                                    didAnything = true;
                                                                     var email;
                                                                     if (newGroupInvitation.user_id) {
                                                                         email = userIdsToEmail[newGroupInvitation.user_id];
@@ -482,9 +501,10 @@ module.exports = {
                                                                     sendEmail(newGroupInvitation.token, email, inviter_user_json, message);
                                                                 });
                                                                 _.each(usersToInstantlyPromote, function(promotedUser) {
+                                                                    didAnything = true;
                                                                     appLogic.notifyGroupPromoted(promotedUser.id, inviter_user_json, group_id);
                                                                 });
-                                                                res.sendStatus(200);
+                                                                res.sendStatus(didAnything ? 201:200);
                                                             });
                                                         });
                                                     });
@@ -1480,4 +1500,16 @@ function filterableSearchGroupMembersLimit(req, res) {
             result: json.slice(start, end + 1)
         });
     });
+}
+
+function rejectNullOrUndefinedOrEmpty(value) {
+    if (value !== null && value !== undefined) {
+        if (typeof value === 'string') {
+            return value.trim() != '';
+        } else {
+            return true;
+        }
+    } else {
+        return false;
+    }
 }

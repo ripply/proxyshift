@@ -72,12 +72,12 @@ App.prototype.notifyGroupPromoted = function(user_id, inviter_user, group_id) {
 
 App.prototype.sendInviteEmail = function(token, to, inviter_user, message) {
     var inviteUrl = this.createTokenUrl("/accept", token);
-    this.sendEmail('thamer@proxyshift.com', to, 'Company invitation', inviteUrl, '<a href="' + inviteUrl + '">' + inviteUrl + '</a>')
+    this.sendEmail('thamer@proxyshift.com', to, 'Company invitation', inviteUrl + ' ' + message, '<a href="' + inviteUrl + '">' + inviteUrl + '</a>' + message)
 };
 
 App.prototype.sendVerifyEmail = function(token, to, name) {
     var verifyUrl = this.createTokenUrl("/emailverify", token);
-    this.sendEmail('thamer@proxyshift.com', to, 'Verify your email', verifyUrl, '<a href="' + verifyUrl + '">' + verifyUrl + '</a>')
+    this.sendEmail('thamer@proxyshift.com', to, 'Verify your email', verifyUrl + ' ' + message, '<a href="' + verifyUrl + '">' + verifyUrl + '</a>' + message)
 };
 
 App.prototype.sendEmail = function(from, to, subject, text, html) {

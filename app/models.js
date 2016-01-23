@@ -750,6 +750,9 @@ var customModelRelations = {
     Group: {
         groupPermissions: function() {
             return this.belongsToMany(models['GroupPermission']).through(models['GroupSetting']);
+        },
+        userClasses: function() {
+            return this.hasMany(models['GroupUserClass']);
         }
     }
 };

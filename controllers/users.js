@@ -381,8 +381,13 @@ function getUserInfo(user_id, next) {
                     })
                     .where('grouppermissions.permissionlevel', '>=', variables.managingGroupMember);
             })
-                .fetchAll()
-                .then(function(groupsAPrivilegedMemberOf) {
+                .fetchAll({
+                    withRelated: [
+                        'grouppermissions',
+                        'userClasses'
+                    ]
+                })
+                .tap(function(groupsAPrivilegedMemberOf) {
                     return models.Location.query(function(q) {
                         q.select()
                             .from('locations')
@@ -404,10 +409,11 @@ function getUserInfo(user_id, next) {
                     })
                         .fetchAll({
                             withRelated: [
-                                'sublocations'
+                                'sublocations',
+                                'userClasses'
                             ]
                         })
-                        .then(function(locationsAPrivilegedMemeberOf) {
+                        .tap(function(locationsAPrivilegedMemeberOf) {
                             return models.User.query(function(q) {
                                 q.select(
                                     'users.id as id',
@@ -422,101 +428,111 @@ function getUserInfo(user_id, next) {
                                 .fetch({
                                     require: true,
                                     withRelated: [
-                                        'memberOfGroups',
-                                        'userClasses'
+                                        'memberOfGroups.grouppermissions',
+                                        'memberOfGroups.groupsetting',
+                                        'memberOfGroups.userClasses',
+                                        'userClasses'//,
+                                        //'allGroupPermissions'
                                     ]
                                 })
-                                .then(function(user) {
-                                    var userJson = user.toJSON();
-                                    if (groupsYouOwn) {
-                                        userJson.ownedGroups = groupsYouOwn.toJSON();
-                                    } else {
-                                        userJson.ownedGroups = [];
-                                    }
-                                    if (groupsAPrivilegedMemberOf) {
-                                        userJson.privilegedMemberOfGroups =
-                                            groupsAPrivilegedMemberOf.toJSON();
-                                    } else {
-                                        userJson.privilegedMemberOfGroups = [];
-                                    }
-                                    if (locationsAPrivilegedMemeberOf) {
-                                        userJson.privilegedMemberOfLocations =
-                                            locationsAPrivilegedMemeberOf.toJSON();
-                                    } else {
-                                        userJson.privilegedMemberOfLocations = [];
-                                    }
-                                    var group_ids = [];
-                                    _.each([
-                                        userJson.ownedGroups,
-                                        //userJson.memberOfGroups,
-                                        userJson.privilegedMemberOfGroups
-                                    ], function(groups) {
-                                        _.each(groups, function(group) {
-                                            group_ids.push(group.id);
-                                        });
-                                    });
-
-                                    // now fetch AreaLocation
-                                    var location_ids = [];
-                                    _.each([
-                                        userJson.memberOfLocations,
-                                        userJson.privilegedMemberOfLocations
-                                    ], function(locations) {
-                                        _.each(locations, function(location) {
-                                            location_ids.push(location.id);
-                                        });
-                                    });
-
-                                    return models.Location.query(function(q) {
+                                .tap(function(user) {
+                                    return models.GroupPermission.query(function(q) {
                                         q.select()
-                                            .from('locations')
-                                            .innerJoin('userpermissions', function() {
-                                                this.on('userpermissions.location_id', '=', 'locations.id');
+                                            .from('grouppermissions')
+                                            .innerJoin('groups', function() {
+                                                this.on('groups.id', '=', 'grouppermissions.group_id');
                                             })
-                                            .where('userpermissions.user_id', '=', user_id);
+                                            .innerJoin('usergroups', function() {
+                                                this.on('usergroups.group_id', '=', 'groups.id');
+                                            })
+                                            .where('usergroups.user_id', '=', user_id);
                                     })
-                                        .fetchAll({
-                                            withRelated: [
-                                                'sublocations'
-                                            ]
-                                        })
-                                        .then(function(locationsAndSublocations) {
-                                            if (locationsAndSublocations) {
-                                                userJson.memberOfLocations = locationsAndSublocations.toJSON();
+                                        .fetchAll()
+                                        .tap(function(allGroupPermissions) {
+                                            var userJson = user.toJSON();
+                                            if (allGroupPermissions) {
+                                                userJson.allGroupPermissions = allGroupPermissions.toJSON();
+                                            } else {
+                                                userJson.allGroupPermissions = [];
                                             }
+                                            if (groupsYouOwn) {
+                                                userJson.ownedGroups = groupsYouOwn.toJSON();
+                                            } else {
+                                                userJson.ownedGroups = [];
+                                            }
+                                            if (groupsAPrivilegedMemberOf) {
+                                                userJson.privilegedMemberOfGroups =
+                                                    groupsAPrivilegedMemberOf.toJSON();
+                                            } else {
+                                                userJson.privilegedMemberOfGroups = [];
+                                            }
+                                            if (locationsAPrivilegedMemeberOf) {
+                                                userJson.privilegedMemberOfLocations =
+                                                    locationsAPrivilegedMemeberOf.toJSON();
+                                            } else {
+                                                userJson.privilegedMemberOfLocations = [];
+                                            }
+                                            var group_ids = [];
+                                            _.each([
+                                                userJson.ownedGroups,
+                                                //userJson.memberOfGroups,
+                                                userJson.privilegedMemberOfGroups
+                                            ], function(groups) {
+                                                _.each(groups, function(group) {
+                                                    group_ids.push(group.id);
+                                                });
+                                            });
 
-                                            return models.AreaLocation.query(function(q) {
+                                            // now fetch AreaLocation
+                                            var location_ids = [];
+                                            _.each([
+                                                userJson.memberOfLocations,
+                                                userJson.privilegedMemberOfLocations
+                                            ], function(locations) {
+                                                _.each(locations, function(location) {
+                                                    location_ids.push(location.id);
+                                                });
+                                            });
+
+                                            return models.Location.query(function(q) {
                                                 q.select()
-                                                    .from('arealocations')
-                                                    .whereIn('arealocations.location_id', location_ids)
+                                                    .from('locations')
+                                                    .innerJoin('userpermissions', function() {
+                                                        this.on('userpermissions.location_id', '=', 'locations.id');
+                                                    })
+                                                    .where('userpermissions.user_id', '=', user_id);
                                             })
                                                 .fetchAll({
                                                     withRelated: [
-                                                        'area'
+                                                        'sublocations'
                                                     ]
                                                 })
-                                                .then(function(arealocations) {
-                                                    if (arealocations) {
-                                                        userJson.arealocations = arealocations.toJSON();
+                                                .tap(function(locationsAndSublocations) {
+                                                    if (locationsAndSublocations) {
+                                                        userJson.memberOfLocations = locationsAndSublocations.toJSON();
                                                     }
 
-                                                    next(undefined, userJson);
-                                                })
-                                                .catch(function(err) {
-                                                    next(err);
+                                                    return models.AreaLocation.query(function(q) {
+                                                        q.select()
+                                                            .from('arealocations')
+                                                            .whereIn('arealocations.location_id', location_ids)
+                                                    })
+                                                        .fetchAll({
+                                                            withRelated: [
+                                                                'area'
+                                                            ]
+                                                        })
+                                                        .tap(function(arealocations) {
+                                                            if (arealocations) {
+                                                                userJson.arealocations = arealocations.toJSON();
+                                                            }
+
+                                                            next(undefined, userJson);
+                                                        });
                                                 });
-                                        })
-                                        .catch(function(err) {
-                                            next(err);
                                         });
-                                })
-                                .catch(function(err) {
-                                    next(err);
-                                })
-                        })
-                        .catch(function(err) {
-                            next(err);
-                        })
+                                });
+                        });
                 })
                 .catch(function(err) {
                     next(err);
