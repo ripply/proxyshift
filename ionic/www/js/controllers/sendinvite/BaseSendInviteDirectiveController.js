@@ -64,6 +64,14 @@ angular.module('scheduling-app.controllers')
 
                     var ourGroupPermission = grouppermissionIdMap[groupUserclass.grouppermission_id];
 
+                    $scope.filteredGrouppermissions = [];
+                    for (i = 0; i < $scope.group.grouppermissions.length; i++) {
+                        var filterableGrouppermssion = $scope.group.grouppermissions[i];
+                        if (filterableGrouppermssion.permissionlevel <= ourGroupPermission.permissionlevel) {
+                            $scope.filteredGrouppermissions.push(filterableGrouppermssion);
+                        }
+                    }
+
                     $scope.filteredUserclasses = [];
                     var userclasses_ids = Object.keys($scope.userClasses);
                     for (i = 0; i < userclasses_ids.length; i++) {
