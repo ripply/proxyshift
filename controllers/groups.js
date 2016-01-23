@@ -269,9 +269,6 @@ module.exports = {
                     return res.sendStatus(400);
                 }
 
-                console.log(emails);
-                console.log(userclasses);
-
                 Bookshelf.transaction(function inviteUserToGroupTransaction(t) {
                     var sqlOptions = {
                         transacting: t
