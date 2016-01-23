@@ -381,7 +381,7 @@ function initDb(dropAllTables) {
                                 current = current.dropTable(tableName);
                             }
                         });
-                        return current.then(function () {
+                        return current.tap(function () {
                             // now create all the tables that they have been dropped successfully
                             // we are using the same transaction but have executed the sql
                             current = trx.schema;
@@ -439,13 +439,24 @@ function initDb(dropAllTables) {
                                 });
                             });
                         });
-                        resolve();
-                        return current;
+                        return current.tap(function() {
+                            if (tables) {
+                                var tableList = Object.keys(tables);
+                                if (tableList.length > 0) {
+                                    console.log("The following tables have been created: " + tableList.join(', '));
+                                } else {
+                                    console.log("No tables were created, they all exist");
+                                }
+                            }
+                            resolve();
+                        });
+                        /*resolve();
+                        return current;*/
                     }
                 });
             }
         });
-        return transactionCompletedPromise.then(function() {
+        return transactionCompletedPromise.tap(function() {
             return Bookshelf.transaction(function(trx) {
                 return populateTables(trx, function(err) {
                     if (err) {
