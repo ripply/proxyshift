@@ -450,8 +450,6 @@ function initDb(dropAllTables) {
                             }
                             resolve();
                         });
-                        /*resolve();
-                        return current;*/
                     }
                 });
             }
@@ -525,6 +523,7 @@ function launchMessageBroker() {
 }
 
 function populateTables(t, next) {
+    console.log("Trying to populate tables (timezones)");
     // specifically populate timezone table
     var timezones = _.clone(moment.tz.names());
     return models.Timezone.query(function(q) {
