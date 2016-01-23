@@ -558,7 +558,9 @@ function populateTables(t, next) {
                 return newTimezones.invokeThen('save', null, {
                     transacting: t
                 })
-                    .tap(next)
+                    .tap(function() {
+                        next();
+                    })
                     .catch(function(err) {
                         console.log("Failed to create timezones");
                         console.log(err);
