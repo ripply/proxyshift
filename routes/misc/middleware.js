@@ -54,8 +54,12 @@ function logout(req, res) {
     req.session.destroy();
 }
 
+function isLoggedIn(req) {
+    return (req.user !== undefined && req.user.id !== undefined);
+}
+
 function notLoggedIn(req, res, next) {
-    if (req.user === undefined || req.user.id === undefined) {
+    if (isLoggedIn(res)) {
         next();
     } else {
         res.sendStatus(401);
@@ -67,5 +71,6 @@ module.exports = {
     requireJson: requireJson,
     ensureCsrf: ensureCsrf,
     logout: logout,
+    isLoggedIn: isLoggedIn,
     notLoggedIn: notLoggedIn
 };

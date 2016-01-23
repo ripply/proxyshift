@@ -71,7 +71,7 @@ App.prototype.notifyGroupPromoted = function(user_id, inviter_user, group_id) {
 };
 
 App.prototype.sendInviteEmail = function(token, to, inviter_user, message) {
-    var inviteUrl = this.createTokenUrl("/accept", token);
+    var inviteUrl = this.createTokenUrl("/acceptinvitation", token);
     this.sendEmail('thamer@proxyshift.com', to, 'Company invitation', inviteUrl + ' ' + message, '<a href="' + inviteUrl + '">' + inviteUrl + '</a>' + message)
 };
 

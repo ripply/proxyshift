@@ -1,0 +1,25 @@
+<h1>Welcome to Proxy Shift!</h1>
+<p>You've been invited to join {{group.name}}'s Proxy Shift Group by {{inviter.firstname}}</p>
+{{#if loggedIn}}
+    <p>You are already logged in as {{loggedIn.username}}</p>
+    {{#if message}}
+        <p>{{message}}</p>
+    {{/if}}
+{{else}}
+    <p>To get started either sign into an existing Proxy Shift account or create a new one</p>
+    <p>Sign In to an existing Proxy Shift account</p>
+    {{#if message}}
+        <p>{{message}}</p>
+    {{/if}}
+    {{#if loginFailure}}
+        <p>INVALID USERNAME/PASSWORD</p>
+    {{/if}}
+    <form action="/acceptinvitation" method="post">
+        User Name:<br>
+        <input type="text" name="username" value="{{inputUsername}}"><br>
+        Password:<br>
+        <input type="text" name="password"><br><br>
+        <input type="hidden" name="token" value="{{invitation.token}}">
+        <input type="submit" value="Submit">
+    </form>
+{{/if}}

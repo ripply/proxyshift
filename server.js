@@ -5,7 +5,7 @@ var express = require('express'),
     http = require('http'),
     path = require('path'),
     routes = require('./app/routes'),
-    //exphbs = require('express3-handlebars'),
+    exphbs = require('express-handlebars'),
     seeder = require('./app/seeder'),
     passport = require('passport'),
     passportLocal = require('passport-local').Strategy,
@@ -76,15 +76,15 @@ function launchServer() {
         app.set('views', __dirname + '/views');
         app.set('view cache', process.env.NODE_ENV !== 'development');
 
-        /*
          var hbs = exphbs.create();
 
-         app.engine('handlebars', exphbs({
-         defaultLayout: 'main',
-         layoutsDir: app.get('views') + '/layouts'
-         }));
+         app.engine('handlebars',
+             exphbs({
+                 defaultLayout: 'main',
+                 layoutsDir: app.get('views') + '/layouts'
+             })
+         );
          app.set('view engine', 'handlebars');
-         */
 
         if (false) {
             var appLog = log4js.getLogger();

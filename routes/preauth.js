@@ -15,6 +15,7 @@ var requireJson = middleware.requireJson;
 var ensureAuthenticated = middleware.ensureAuthenticated;
 var ensureDatabaseReady = models.databaseReadyMiddleware;
 var logout = middleware.logout;
+var isLoggedIn = middleware.isLoggedIn;
 var notLoggedIn = middleware.notLoggedIn;
 
 module.exports = function(app, settings){
@@ -77,6 +78,237 @@ module.exports = function(app, settings){
         }
     });
 
+    app.get('/acceptinvitation', acceptGroupInvite);
+    app.post('/acceptinvitation', acceptGroupInvite);
+
+    function acceptGroupInvite(req, res, next) {
+        var token;
+        var username;
+        var password;
+        var loggedIn = isLoggedIn(req);
+        var getting = true;
+        console.log(req.method);
+        if (req.method == 'GET') {
+            token = req.query.token;
+        } else {
+            getting = false;
+            token = req.body.token;
+            username = req.body.username;
+            password = req.body.password;
+        }
+        if(token) {
+            return models.GroupInvitation.query(function acceptGroupInviteFindToken(q) {
+                q.select()
+                    .from('groupinvitations')
+                    .where('groupinvitations.token', '=', token);
+            })
+                .fetch({
+                    withRelated: [
+                        'inviter',
+                        'invited',
+                        'group',
+                        'groupinvitationuserclasses',
+                        'groupinvitationuserclasses.groupuserclass'
+                    ]
+                })
+                .tap(function acceptGroupInviteGotToken(groupinvitation) {
+                    if (groupinvitation) {
+                        var groupinvitationJson = groupinvitation.toJSON();
+                        var now = time.nowInUtc();
+                        var data = {
+                            invitation: groupinvitationJson,
+                            inviter: groupinvitationJson.inviter,
+                            invited: groupinvitationJson.invited,
+                            group: groupinvitationJson.group,
+                            userclasses: groupinvitationJson.groupinvitationuserclasses
+                        };
+                        if (now >= groupinvitationJson.expires) {
+                            return res.render('layouts/groupinvite/expired', data);
+                        }
+                        console.log(data);
+                        if (loggedIn) {
+                            return models.Users.query(function acceptGroupInviteGetLoggedInUser(q) {
+                                q.select(models.usersColumns)
+                                    .from('users')
+                                    .where('users.id', '=', req.user.id);
+                            })
+                                .fetch()
+                                .tap(function acceptGroupInviteGotLoggedInUser(loggedIn) {
+                                    data.loggedIn = loggedIn.toJSON();
+                                    return afterGettingLoggedInUsersStuff();
+                                });
+                        } else {
+                            return afterGettingLoggedInUsersStuff();
+                        }
+
+                        function showPage(message) {
+                            data.message = message;
+                            res.render("layouts/groupinvite/accept", data);
+                        }
+
+                        function showPageErrorUserIsInviter() {
+                            showPage("That user did the inviting");
+                        }
+
+                        function afterGettingLoggedInUsersStuff() {
+                            if (getting) {
+                                showPage();
+                            } else {
+                                if (loggedIn) {
+                                    return afterLoggedInConsumeToken();
+                                } else {
+                                    passport.authenticate('local', {session: true}, function (err, user, info) {
+                                        if (err) {return next(err); }
+                                        if (!user) {
+                                            data.loginFailure = true;
+                                            data.inputUsername = username;
+                                            showPage();
+                                        } else {
+                                            if (user.id == data.inviter.id) {
+                                                return showPageErrorUserIsInviter();
+                                            }
+                                            req.login(user, function (err) {
+                                                if (err) {
+                                                    return res.sendStatus(500);
+                                                }
+
+                                                data.invited = req.user;
+
+                                                models.issueToken(req.user, function (err, token, tokenid) {
+                                                    if (err) {
+                                                        return res.redirect('/');
+                                                    }
+                                                    models.registerDeviceIdForUser(req.user.id, req.body.deviceid, req.body.platform, getWhenRememberMeTokenExpires(), tokenid, function (deviceIdRegistered, err) {
+                                                        if (err) {
+                                                            console.log("Failed to register user's device for push notifications - userid: " + req.user.id + " deviceid:" + req.body.deviceid + "\n" + err);
+                                                        }
+                                                        res.cookie('remember_me', token, {path: '/', httpOnly: true, maxAge: maxAgeInMs});
+
+                                                        return afterLoggedInConsumeToken();
+                                                    });
+                                                });
+                                            })
+                                        }
+                                    })(req, res, function() {
+                                        showPage();
+                                    });
+                                }
+                            }
+                        }
+
+                        function afterLoggedInConsumeToken() {
+                            // fail if the logged in user is the one who did the inviting
+                            if (req.user.id == data.inviter.id) {
+                                return showPageErrorUserIsInviter();
+                            }
+
+                            // reject fields that we don't want to leak to a template
+                            var validKeys = _.reject(Object.keys(data.invited), function(columnName) {
+                                return (users.bannedFields.indexOf(columnName) < 0);
+                            });
+
+                            data.invited = _.reduce(validKeys, function(memo, validColumn) {
+                                memo[validColumn] = data.invited[validColumn];
+                                return memo;
+                            }, {});
+
+                            return models.Bookshelf.transaction(function consumeInviteTokenTransaction(t) {
+                                var sqlOptions = {
+                                    transacting: t
+                                };
+                                // make the user a member of the group with the specified permission level
+                                return models.UserGroup.forge({
+                                    group_id: data.group.id,
+                                    user_id: req.user.id,
+                                    grouppermission_id: data.invitation.grouppermission_id
+                                })
+                                    .save(undefined, sqlOptions)
+                                    .tap(function consumeInviteTokenCreateUserGroups() {
+                                        var groupuserclass_ids = _.reduce(data.userclasses, function(memo, userclass) {
+                                            memo.push(userclass.id);
+                                            return memo;
+                                        }, []);
+                                        // figure out what job types they already have
+                                        // then don't grant them a duplicate of any of them
+                                        return models.GroupUserClassToUser.query(function consumeInviteTokenGetExistingUserclasses(q) {
+                                            q.select('groupuserclasstousers.groupuserclass_id as groupuserclass_id')
+                                                .from('groupuserclasstousers')
+                                                .whereIn('groupuserclasstousers.groupuserclass_id', groupuserclass_ids);
+                                        })
+                                            .fetchAll(sqlOptions)
+                                            .tap(function consumeInviteTokenGotExistingUserclasses(existingUserclasses) {
+                                                var userclassesIdsMap = _.reduce(existingUserclasses.toJSON(), function(memo, userclass) {
+                                                    memo['' + userclass.groupuserclass_id] = true;
+                                                    return memo;
+                                                }, {});
+
+                                                var newGroupUserClassToUser = _.reduce(groupuserclass_ids, function(memo, groupuserclass_id) {
+                                                    if (!userclassesIdsMap.hasOwnProperty('' + groupuserclass_id)) {
+                                                        memo.push({
+                                                            user_id: data.invited.id,
+                                                            groupuserclass_id: groupuserclass_id
+                                                        });
+                                                    }
+                                                    return memo;
+                                                }, []);
+
+                                                if (newGroupUserClassToUser.length > 0) {
+                                                    // grant the user the specified job types
+                                                    return models.GroupUserClassToUser.forge(newGroupUserClassToUser)
+                                                        .save(undefined, sqlOptions)
+                                                        .tap(consumeInviteTokenUsergroupsGranted);
+                                                } else {
+                                                    return consumeInviteTokenUsergroupsGranted();
+                                                }
+
+                                                function consumeInviteTokenUsergroupsGranted() {
+                                                    // finally delete the invitation
+                                                    return models.GroupInvitation.query(function consumeInviteTokenDeleteInvitation(q) {
+                                                        q.select()
+                                                            .from('groupinvitations')
+                                                            .where('groupinvitations.id', '=', data.invitation.id)
+                                                            .del();
+                                                    })
+                                                        .fetch(sqlOptions)
+                                                        .tap(function consumeInviteTokenInvitationDeleted() {
+                                                            // success!
+                                                            // user has been added to the group
+                                                            // and set to the specified job types
+                                                            // and the invitation has been deleted
+                                                            res.render('layouts/groupinvite/success', data);
+                                                        });
+                                                }
+                                            });
+                                    });
+                            })
+                                .catch(function(err) {
+                                    showPage("Internal error: " + err);
+                                });
+                        }
+                    } else {
+                        res.redirect('/');
+                    }
+                });
+        } else {
+            res.redirect('/');
+        }
+    }
+
+    app.post('/accept', function acceptGroupInviteLogin(req, res, next) {
+
+        if (!token) {
+            res.redirect('/');
+        }
+
+        if (username && password) {
+
+        } else if (loggedIn) {
+
+        } else {
+            res.redirect('/');
+        }
+    });
+
     // consumes email verification token
     app.get('/emailverify', function getEmailVerify(req, res, next) {
         if(req.query.hasOwnProperty('token')) {
@@ -106,13 +338,11 @@ module.exports = function(app, settings){
                             });
                         })
                     } else {
-                        console.log(user);
                         res.sendStatus(400);
                     }
                 });
             })
                 .catch(function (err) {
-                    console.log(err);
                     res.sendStatus(500);
                 });
         } else {

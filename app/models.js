@@ -729,6 +729,13 @@ _.each(relations, function(relationTypeHash, normalizedTableName) {
 
 });
 */
+var usersColumns = [
+    'users.id as id',
+    'users.username as username',
+    'users.firstname as firstname',
+    'users.lastname as lastname',
+    'users.email as email'
+];
 // Custom functions that will be added to Models
 // models will below have all relations added
 // to them dynamically based upon schema
@@ -763,6 +770,17 @@ var customModelRelations = {
         },
         userClasses: function() {
             return this.hasMany(models['GroupUserClass']);
+        }
+    },
+    GroupInvitation: {
+        inviter: function() {
+            return this.belongsTo(models['User'], 'inviter_user_id').query({select: usersColumns});
+        },
+        invited: function() {
+            return this.belongsTo(models['User']).query({select: usersColumns});
+        },
+        group: function() {
+            return this.belongsTo(models['Group']).through(models['GroupPermission']);
         }
     }
 };
@@ -1243,7 +1261,8 @@ var exports = {
     onDatabaseReady: onDatabaseReady,
     databaseReadyMiddleware: databaseReadyMiddleware,
     sendNotificationToUsers: sendNotificationToUsers,
-    Notifications: Notifications
+    Notifications: Notifications,
+    usersColumns: usersColumns
 };
 
 exports = _.extend(exports, models);
