@@ -287,7 +287,8 @@ module.exports = {
                             var foundUserIds = usersAndEmails.user_ids;
                             // check if this invitation already exists for any of these emails/users
                             return findExistingInvitationsForTheFoundUserIdsAndSpecifiedEmails(sqlOptions, emails, foundUserIds, function inviteUserToGroupFilterInvalidGrouppermissions(groupinvitations) {
-                                var groupinvitationsJson = groupinvitations.toJSON();
+                                var groupinvitationsJson = filterFillerUsersemails(groupinvitations.toJSON());
+
                                 var groupinviteMaps = getFoundGroupinvitationToUserIdMap(groupinvitationsJson);
                                 // map of groupinvitation.id => user_id
                                 var existingGroupinvitationIdsToUserIdMap = groupinviteMaps.idToUserIdMap;
@@ -594,7 +595,7 @@ module.exports = {
                                         'groupinvitations.user_id as user_id',
                                         'groupinvitations.email as email',
                                         'groupinvitations.expires as expires',
-                                        ' as usersemail' // empty usersemail because not joining with user table
+                                        '_ as usersemail' // empty usersemail because not joining with user table
                                     ])
                                         .from('groupinvitations')
                                         .whereIn('groupinvitations.email', emails)
@@ -602,6 +603,18 @@ module.exports = {
                         })
                             .fetchAll(sqlOptions)
                             .tap(next);
+                    }
+
+                    function filterFillerUsersemails(groupinvitationsJson) {
+                        // postgres wont allow zero length delimited identifier
+                        // so we put a dummy value there in the method above
+                        // findExistingInvitationsForTheFoundUserIdsAndSpecifiedEmails
+                        // and just filter it here
+                        _.each(groupinvitationsJson, function(groupinvitation) {
+                            if (groupinvitation.usersemail === '_') {
+                                groupinvitations.usersemail = '';
+                            }
+                        });
                     }
 
                     function getFoundGroupinvitationToUserIdMap(groupinvitations_json) {
