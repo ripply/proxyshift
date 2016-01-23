@@ -280,7 +280,7 @@ module.exports = {
                         var inviter_user_json = inviter_user.toJSON();
                         // see if the email already exists in the system
                         // if it does, use that user_id
-                        return seeIfEmailsAlreadyExistInSystem(sqlOptions, function inviteUserToGroupFindExistingUserSuccess(users) {
+                        return seeIfEmailsAlreadyExistInSystem(sqlOptions, emails, function inviteUserToGroupFindExistingUserSuccess(users) {
                             var usersAndEmails = convertFoundUsersEmailsToUserIds(emails, users);
                             var emailsToUserIds = usersAndEmails.emails;
                             var userIdsToEmail = usersAndEmails.user_ids_to_email;
@@ -346,7 +346,7 @@ module.exports = {
                                 });
 
                                 // we next need to validate that the grouppermission level is part of the group that the client says it is a part of
-                                return validateGrouppermissionIdIsPartOfGroup(sqlOptions, group_id, grouppermission_id, function inviteUserToGroupFilterInvalidGrouppermissionsSuccess(fetchedGrouppermission) {
+                                return validateGrouppermissionIdIsPartOfGroup(sqlOptions, group_id, grouppermission_id, req.user.id, function inviteUserToGroupFilterInvalidGrouppermissionsSuccess(fetchedGrouppermission) {
                                     if (!fetchedGrouppermission) {
                                         // cannot invite without permission level
                                         console.log("Invalid grouppermission_id sent: " + grouppermission_id);
@@ -520,287 +520,6 @@ module.exports = {
                         .catch(function(err) {
                             error(req, res, err);
                         });
-
-                    function getCurrentUserInfo(sqlOptions, user_id, next) {
-                        return models.User.query(function inviteUserToGroupGetInviterQuery(q) {
-                            q.select([
-                                // don't even accidentally expose sensitive info like hashed passwords
-                                'users.id as id',
-                                'users.firstname as firstname',
-                                'users.lastname as lastname',
-                                'users.email as email'
-                            ])
-                                .from('users')
-                                .where('users.id', '=', user_id);
-                        })
-                            .fetch(sqlOptions)
-                            .tap(next);
-                    }
-
-                    function seeIfEmailsAlreadyExistInSystem(sqlOptions, next) {
-                        return models.User.query(function inviteUserToGroupFindExistingUserQuery(q) {
-                            q.select()
-                                .from('users')
-                                .whereIn('users.email', emails);
-                        })
-                            .fetchAll(_.extend({
-                                withRelated: 'groupBasedGroupPermissions'
-                            }, sqlOptions))
-                            .tap(next);
-                    }
-
-                    function convertFoundUsersEmailsToUserIds(emails, users) {
-                        var emailSet = {};
-                        var userIdToEmail = {};
-                        var user_ids = [];
-                        _.each(emails, function(email) {
-                            emailSet[email] = null;
-                        });
-                        if (users) {
-                            var foundUsers = users.toJSON();
-                            _.each(foundUsers, function (foundUser) {
-                                emailSet[foundUser.email] = foundUser.id;
-                                userIdToEmail[foundUser.id] = foundUser.email;
-                                user_ids.push(foundUser.id);
-                            });
-                        }
-
-                        return {
-                            emails: emailSet,
-                            user_ids: user_ids,
-                            user_ids_to_email: userIdToEmail
-                        };
-                    }
-
-                    function findExistingInvitationsForTheFoundUserIdsAndSpecifiedEmails(sqlOptions, emails, user_ids, next) {
-                        return models.GroupInvitation.query(function inviteUserToGroupFindExistingInvitationQuery(q) {
-                            q.select([
-                                'groupinvitations.id as id',
-                                'groupinvitations.token as token',
-                                'groupinvitations.user_id as user_id',
-                                'groupinvitations.email as email',
-                                'groupinvitations.expires as expires',
-                                'users.email as usersemail'
-                            ])
-                                .from('groupinvitations')
-                                .whereIn('groupinvitations.user_id', user_ids)
-                                .orWhereIn('groupinvitations.email', emails)
-                                .innerJoin('users', function() {
-                                    this.on('users.id', '=', 'groupinvitations.user_id');
-                                })
-                                .union(function() {
-                                    this.select([
-                                        'groupinvitations.id as id',
-                                        'groupinvitations.token as token',
-                                        'groupinvitations.user_id as user_id',
-                                        'groupinvitations.email as email',
-                                        'groupinvitations.expires as expires',
-                                        '_ as usersemail' // empty usersemail because not joining with user table
-                                    ])
-                                        .from('groupinvitations')
-                                        .whereIn('groupinvitations.email', emails)
-                                });
-                        })
-                            .fetchAll(sqlOptions)
-                            .tap(next);
-                    }
-
-                    function filterFillerUsersemails(groupinvitationsJson) {
-                        // postgres wont allow zero length delimited identifier
-                        // so we put a dummy value there in the method above
-                        // findExistingInvitationsForTheFoundUserIdsAndSpecifiedEmails
-                        // and just filter it here
-                        _.each(groupinvitationsJson, function(groupinvitation) {
-                            if (groupinvitation.usersemail === '_') {
-                                groupinvitations.usersemail = '';
-                            }
-                        });
-                    }
-
-                    function getFoundGroupinvitationToUserIdMap(groupinvitations_json) {
-                        var idToUserIdMap = {};
-                        var userIdToGroupinviteIdMap = {};
-                        var emailToGroupinviteIdMap = {};
-                        _.each(groupinvitations_json, function(groupinvitation) {
-                            idToUserIdMap[groupinvitation.id] = groupinvitation.user_id;
-                            userIdToGroupinviteIdMap[groupinvitation.user_id] = groupinvitation.id;
-                            if (groupinvitation.email !== null && groupinvitation.email !== undefined) {
-                                emailToGroupinviteIdMap[groupinvitation.email] = groupinvitation.id;
-                            }
-                        });
-
-                        return {
-                            idToUserIdMap: idToUserIdMap,
-                            userIdToGroupinviteIdMap: userIdToGroupinviteIdMap,
-                            emailToGroupInviteIdMap: emailToGroupinviteIdMap
-                        };
-                    }
-
-                    function validateGrouppermissionIdIsPartOfGroup(sqlOptions, group_id, grouppermission_id, next) {
-                        return models.GroupPermission.query(function inviteUserToGroupFilterInvalidGrouppermissionsQuery(q) {
-                            q.select()
-                                .from('grouppermissions')
-                                .innerJoin('usergroups as a', function() {
-                                    this.on('a.group_id', '=', 'grouppermissions.group_id');
-                                })
-                                .innerJoin('grouppermissions as b', function() {
-                                    this.on('b.id', '=', 'a.grouppermission_id');
-                                })
-                                .where('grouppermissions.group_id', '=', group_id)
-                                .andWhere('grouppermissions.id', '=', grouppermission_id)
-                                .andWhere('a.user_id', '=', req.user.id)
-                                .andWhereRaw('grouppermissions.permissionlevel <= b.permissionlevel');
-                        })
-                            .fetch(sqlOptions)
-                            .tap(next);
-                    }
-
-                    function getGroupsPermissionSet(sqlOptions, group_id, next) {
-                        return models.GroupPermission.query(function inviteUserToGroupGetPermissionSetQuery(q) {
-                            q.select()
-                                .from('grouppermissions')
-                                .where('grouppermissions.group_id', '=', group_id);
-                        })
-                            .fetchAll(sqlOptions)
-                            .tap(next);
-                    }
-
-                    function orderGroupPermissionSetByPermissionLevel(grouppermissions_json) {
-                        var permissions = {};
-                        _.each(grouppermissions_json, function (grouppermission) {
-                            if (permissions.hasOwnProperty(grouppermission.id)) {
-                                permissions[grouppermission.id].push(grouppermission);
-                            } else {
-                                permissions[grouppermission.id] = [grouppermission];
-                            }
-                        });
-
-                        return permissions;
-                    }
-
-                    function getGroupPermissionIdToGroupPermissionMap(grouppermissions_json) {
-                        var grouppermissionIdToGrouppermission = {};
-                        _.each(grouppermissions_json, function (grouppermission) {
-                            grouppermissionIdToGrouppermission[grouppermission.id] = grouppermission;
-                        });
-
-                        return grouppermissionIdToGrouppermission;
-                    }
-
-                    function filterInvalidUserClasses(sqlOptions, group_id, userclasses, next) {
-                        return models.GroupUserClass.query(function inviteUserToGroupFilterInvalidUserClassesQuery(q) {
-                            q.select()
-                                .from('groupuserclasses')
-                                .where('groupuserclasses.group_id', '=', group_id)
-                                .whereIn('groupuserclasses.id', userclasses);
-                        })
-                            .fetchAll(sqlOptions)
-                            .tap(next);
-                    }
-
-                    function getFoundUserclassIds(userclasses) {
-                        var foundUserClasses = [];
-                        _.each(userclasses.toJSON(), function(fetchedUserClass) {
-                            foundUserClasses.push(fetchedUserClass.id);
-                        });
-
-                        return foundUserClasses;
-                    }
-
-                    function upgradeExistingGroupMembers(sqlOptions, user_ids, group_id, grouppermission_id, next) {
-                        if (user_ids.length > 0) {
-                            return models.UserGroup.query(function inviteUserToGroupUpgradeExistingMemberQuery(q) {
-                                q.select()
-                                    .from('usergroups')
-                                    .whereIn('usergroups.user_id', user_ids)
-                                    .andWhere('usergroups.group_id', '=', group_id)
-                                    .update({
-                                        grouppermission_id: grouppermission_id
-                                    });
-                            })
-                                .fetchAll(sqlOptions)
-                                .tap(next);
-                        } else {
-                            return next();
-                        }
-                    }
-
-                    function deleteExistingGroupInvitationUserClasses(sqlOptions, groupinvitation_ids, next) {
-                        return models.GroupInvitationUserClass.query(function inviteUserToGroupDeleteOldUserClasses(q) {
-                            q.select()
-                                .from('groupinvitationuserclasses')
-                                .whereIn('groupinvitationuserclasses.groupinvitation_id', groupinvitation_ids)
-                                .del();
-                        })
-                            .fetchAll(sqlOptions)
-                            .tap(next);
-                    }
-
-                    function createGroupInvitation(inviter, user_id, email, grouppermission_id, message, expires) {
-                        if ((user_id === null || user_id === undefined) && (email === null || email === undefined)) {
-                            throw new Error("Internal error, failed to create invitation");
-                        }
-                        return {
-                            inviter_user_id: inviter,
-                            user_id: user_id,
-                            email: email,
-                            grouppermission_id: grouppermission_id,
-                            message: message,
-                            expires: expires,
-                            token: utils.randomString(64)
-                        };
-                    }
-
-                    function updateMultipleGroupInvitations(sqlOptions, existingGroupInvitationIds, updates, next) {
-                        if (existingGroupInvitationIds.length > 0) {
-                            return models.GroupInvitation.query(function updateExistingGroupInvitationsQuery(q) {
-                                q.select()
-                                    .from('groupinvitations')
-                                    .whereIn('groupinvitations.id', existingGroupInvitationIds)
-                                    .update(updates);
-                            })
-                                .fetchAll(sqlOptions)
-                                .tap(next);
-                        } else {
-                            return next();
-                        }
-                    }
-
-                    function createMultipleGroupInvitations(sqlOptions, groupinvitations, next) {
-                        if (groupinvitations.length > 0) {
-                            return createSingleGroupInvitation(sqlOptions, groupinvitations, 0, [], next);
-                        } else {
-                            return next();
-                        }
-                    }
-
-                    function createSingleGroupInvitation(sqlOptions, groupinvitations, index, createdInvitations, next) {
-                        if (index >= groupinvitations.length) {
-                            return next(createdInvitations);
-                        }
-                        return models.GroupInvitation.forge(groupinvitations[index])
-                            .save(undefined, sqlOptions)
-                            .tap(function recursivelyCreateSingleGroupInvitations(newGroupinvitation) {
-                                createdInvitations.push(newGroupinvitation);
-                                return createSingleGroupInvitation(sqlOptions, groupinvitations, index + 1, createdInvitations, next);
-                            });
-                    }
-
-                    function createMultipleGroupInvitationUserClasses(sqlOptions, groupInvitationUserClasses, next) {
-                        var invitationUserClasses = models.GroupInvitationUserClasses.forge(groupInvitationUserClasses);
-                        return Promise.all(invitationUserClasses.invoke('save', null, sqlOptions))
-                            .tap(next);
-                    }
-
-                    function sendEmail(token, to, inviter_user, message) {
-                        if (to === null || to === undefined) {
-                            throw new Error("Internal error, email recipient is not defined");
-                        }
-                        return new Promise(function sendInviteEmailPromise(resolve, reject) {
-                            appLogic.sendInviteEmail(token, to, inviter_user, message);
-                            resolve();
-                        });
-                    }
                 })
             }
         }
@@ -1526,3 +1245,294 @@ function rejectNullOrUndefinedOrEmpty(value) {
         return false;
     }
 }
+
+/**
+ * START OF GROUPINVITE HELPER FUNCTIONS
+ */
+
+function getCurrentUserInfo(sqlOptions, user_id, next) {
+    return models.User.query(function inviteUserToGroupGetInviterQuery(q) {
+        q.select([
+            // don't even accidentally expose sensitive info like hashed passwords
+            'users.id as id',
+            'users.firstname as firstname',
+            'users.lastname as lastname',
+            'users.email as email'
+        ])
+            .from('users')
+            .where('users.id', '=', user_id);
+    })
+        .fetch(sqlOptions)
+        .tap(next);
+}
+
+function seeIfEmailsAlreadyExistInSystem(sqlOptions, emails, next) {
+    return models.User.query(function inviteUserToGroupFindExistingUserQuery(q) {
+        q.select()
+            .from('users')
+            .whereIn('users.email', emails);
+    })
+        .fetchAll(_.extend({
+            withRelated: 'groupBasedGroupPermissions'
+        }, sqlOptions))
+        .tap(next);
+}
+
+function convertFoundUsersEmailsToUserIds(emails, users) {
+    var emailSet = {};
+    var userIdToEmail = {};
+    var user_ids = [];
+    _.each(emails, function(email) {
+        emailSet[email] = null;
+    });
+    if (users) {
+        var foundUsers = users.toJSON();
+        _.each(foundUsers, function (foundUser) {
+            emailSet[foundUser.email] = foundUser.id;
+            userIdToEmail[foundUser.id] = foundUser.email;
+            user_ids.push(foundUser.id);
+        });
+    }
+
+    return {
+        emails: emailSet,
+        user_ids: user_ids,
+        user_ids_to_email: userIdToEmail
+    };
+}
+
+function findExistingInvitationsForTheFoundUserIdsAndSpecifiedEmails(sqlOptions, emails, user_ids, next) {
+    return models.GroupInvitation.query(function inviteUserToGroupFindExistingInvitationQuery(q) {
+        q.select([
+            'groupinvitations.id as id',
+            'groupinvitations.token as token',
+            'groupinvitations.user_id as user_id',
+            'groupinvitations.email as email',
+            'groupinvitations.expires as expires',
+            'users.email as usersemail'
+        ])
+            .from('groupinvitations')
+            .whereIn('groupinvitations.user_id', user_ids)
+            .orWhereIn('groupinvitations.email', emails)
+            .innerJoin('users', function() {
+                this.on('users.id', '=', 'groupinvitations.user_id');
+            })
+            .union(function() {
+                this.select(
+                    Bookshelf.knex.raw(
+                        'groupinvitations.id as id, ' +
+                        'groupinvitations.token as token, ' +
+                        'groupinvitations.user_id as user_id, ' +
+                        'groupinvitations.email as email,' +
+                        'groupinvitations.expires as expires, ' +
+                        "'' as usersemail"
+                    )
+                )
+                    .from('groupinvitations')
+                    .whereIn('groupinvitations.email', emails)
+            });
+    })
+        .fetchAll(sqlOptions)
+        .tap(next);
+}
+
+function filterFillerUsersemails(groupinvitationsJson) {
+    // postgres wont allow zero length delimited identifier
+    // so we put a dummy value there in the method above
+    // findExistingInvitationsForTheFoundUserIdsAndSpecifiedEmails
+    // and just filter it here
+    _.each(groupinvitationsJson, function(groupinvitation) {
+        if (groupinvitation.usersemail === '_') {
+            groupinvitations.usersemail = '';
+        }
+    });
+}
+
+function getFoundGroupinvitationToUserIdMap(groupinvitations_json) {
+    var idToUserIdMap = {};
+    var userIdToGroupinviteIdMap = {};
+    var emailToGroupinviteIdMap = {};
+    _.each(groupinvitations_json, function(groupinvitation) {
+        idToUserIdMap[groupinvitation.id] = groupinvitation.user_id;
+        userIdToGroupinviteIdMap[groupinvitation.user_id] = groupinvitation.id;
+        if (groupinvitation.email !== null && groupinvitation.email !== undefined) {
+            emailToGroupinviteIdMap[groupinvitation.email] = groupinvitation.id;
+        }
+    });
+
+    return {
+        idToUserIdMap: idToUserIdMap,
+        userIdToGroupinviteIdMap: userIdToGroupinviteIdMap,
+        emailToGroupInviteIdMap: emailToGroupinviteIdMap
+    };
+}
+
+function validateGrouppermissionIdIsPartOfGroup(sqlOptions, group_id, grouppermission_id, user_id, next) {
+    return models.GroupPermission.query(function inviteUserToGroupFilterInvalidGrouppermissionsQuery(q) {
+        q.select()
+            .from('grouppermissions')
+            .innerJoin('usergroups as a', function() {
+                this.on('a.group_id', '=', 'grouppermissions.group_id');
+            })
+            .innerJoin('grouppermissions as b', function() {
+                this.on('b.id', '=', 'a.grouppermission_id');
+            })
+            .where('grouppermissions.group_id', '=', group_id)
+            .andWhere('grouppermissions.id', '=', grouppermission_id)
+            .andWhere('a.user_id', '=', user_id)
+            .andWhereRaw('grouppermissions.permissionlevel <= b.permissionlevel');
+    })
+        .fetch(sqlOptions)
+        .tap(next);
+}
+
+function getGroupsPermissionSet(sqlOptions, group_id, next) {
+    return models.GroupPermission.query(function inviteUserToGroupGetPermissionSetQuery(q) {
+        q.select()
+            .from('grouppermissions')
+            .where('grouppermissions.group_id', '=', group_id);
+    })
+        .fetchAll(sqlOptions)
+        .tap(next);
+}
+
+function orderGroupPermissionSetByPermissionLevel(grouppermissions_json) {
+    var permissions = {};
+    _.each(grouppermissions_json, function (grouppermission) {
+        if (permissions.hasOwnProperty(grouppermission.id)) {
+            permissions[grouppermission.id].push(grouppermission);
+        } else {
+            permissions[grouppermission.id] = [grouppermission];
+        }
+    });
+
+    return permissions;
+}
+
+function getGroupPermissionIdToGroupPermissionMap(grouppermissions_json) {
+    var grouppermissionIdToGrouppermission = {};
+    _.each(grouppermissions_json, function (grouppermission) {
+        grouppermissionIdToGrouppermission[grouppermission.id] = grouppermission;
+    });
+
+    return grouppermissionIdToGrouppermission;
+}
+
+function filterInvalidUserClasses(sqlOptions, group_id, userclasses, next) {
+    return models.GroupUserClass.query(function inviteUserToGroupFilterInvalidUserClassesQuery(q) {
+        q.select()
+            .from('groupuserclasses')
+            .where('groupuserclasses.group_id', '=', group_id)
+            .whereIn('groupuserclasses.id', userclasses);
+    })
+        .fetchAll(sqlOptions)
+        .tap(next);
+}
+
+function getFoundUserclassIds(userclasses) {
+    var foundUserClasses = [];
+    _.each(userclasses.toJSON(), function(fetchedUserClass) {
+        foundUserClasses.push(fetchedUserClass.id);
+    });
+
+    return foundUserClasses;
+}
+
+function upgradeExistingGroupMembers(sqlOptions, user_ids, group_id, grouppermission_id, next) {
+    if (user_ids.length > 0) {
+        return models.UserGroup.query(function inviteUserToGroupUpgradeExistingMemberQuery(q) {
+            q.select()
+                .from('usergroups')
+                .whereIn('usergroups.user_id', user_ids)
+                .andWhere('usergroups.group_id', '=', group_id)
+                .update({
+                    grouppermission_id: grouppermission_id
+                });
+        })
+            .fetchAll(sqlOptions)
+            .tap(next);
+    } else {
+        return next();
+    }
+}
+
+function deleteExistingGroupInvitationUserClasses(sqlOptions, groupinvitation_ids, next) {
+    return models.GroupInvitationUserClass.query(function inviteUserToGroupDeleteOldUserClasses(q) {
+        q.select()
+            .from('groupinvitationuserclasses')
+            .whereIn('groupinvitationuserclasses.groupinvitation_id', groupinvitation_ids)
+            .del();
+    })
+        .fetchAll(sqlOptions)
+        .tap(next);
+}
+
+function createGroupInvitation(inviter, user_id, email, grouppermission_id, message, expires) {
+    if ((user_id === null || user_id === undefined) && (email === null || email === undefined)) {
+        throw new Error("Internal error, failed to create invitation");
+    }
+    return {
+        inviter_user_id: inviter,
+        user_id: user_id,
+        email: email,
+        grouppermission_id: grouppermission_id,
+        message: message,
+        expires: expires,
+        token: utils.randomString(64)
+    };
+}
+
+function updateMultipleGroupInvitations(sqlOptions, existingGroupInvitationIds, updates, next) {
+    if (existingGroupInvitationIds.length > 0) {
+        return models.GroupInvitation.query(function updateExistingGroupInvitationsQuery(q) {
+            q.select()
+                .from('groupinvitations')
+                .whereIn('groupinvitations.id', existingGroupInvitationIds)
+                .update(updates);
+        })
+            .fetchAll(sqlOptions)
+            .tap(next);
+    } else {
+        return next();
+    }
+}
+
+function createMultipleGroupInvitations(sqlOptions, groupinvitations, next) {
+    if (groupinvitations.length > 0) {
+        return createSingleGroupInvitation(sqlOptions, groupinvitations, 0, [], next);
+    } else {
+        return next();
+    }
+}
+
+function createSingleGroupInvitation(sqlOptions, groupinvitations, index, createdInvitations, next) {
+    if (index >= groupinvitations.length) {
+        return next(createdInvitations);
+    }
+    return models.GroupInvitation.forge(groupinvitations[index])
+        .save(undefined, sqlOptions)
+        .tap(function recursivelyCreateSingleGroupInvitations(newGroupinvitation) {
+            createdInvitations.push(newGroupinvitation);
+            return createSingleGroupInvitation(sqlOptions, groupinvitations, index + 1, createdInvitations, next);
+        });
+}
+
+function createMultipleGroupInvitationUserClasses(sqlOptions, groupInvitationUserClasses, next) {
+    var invitationUserClasses = models.GroupInvitationUserClasses.forge(groupInvitationUserClasses);
+    return Promise.all(invitationUserClasses.invoke('save', null, sqlOptions))
+        .tap(next);
+}
+
+function sendEmail(token, to, inviter_user, message) {
+    if (to === null || to === undefined) {
+        throw new Error("Internal error, email recipient is not defined");
+    }
+    return new Promise(function sendInviteEmailPromise(resolve, reject) {
+        appLogic.sendInviteEmail(token, to, inviter_user, message);
+        resolve();
+    });
+}
+
+/**
+ * END OF GROUPINVITE HELPER FUNCTIONS
+ */

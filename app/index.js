@@ -106,15 +106,21 @@ App.prototype.sendEmail = function(from, to, subject, text, html) {
 App.prototype.handleEmailJob = function(job, ack) {
     console.log("GOT EMAIL JOB");
     console.log(job);
-    mailer.sendMail(job, function sendMailCallback(error, info) {
-        ack();
-        if (error) {
-            console.log("error");
-            console.log(error);
-        } else {
-            console.log("Mail successfully sent: " + info.response);
-        }
-    });
+    if (mailer) {
+        // setup
+        mailer.sendMail(job, function sendMailCallback(error, info) {
+            ack();
+            if (error) {
+                console.log("error");
+                console.log(error);
+            } else {
+                console.log("Mail successfully sent: " + info.response);
+            }
+        });
+    } else {
+        // not setup
+        console.log("Cannot send email as email is not configured properly");
+    }
 };
 
 module.exports = new App();
