@@ -533,7 +533,7 @@ function populateTables(t, next) {
         .fetchAll({
             transacting: t
         })
-        .then(function(existingTimezones) {
+        .tap(function(existingTimezones) {
             if (existingTimezones) {
                 var existingTimezonesJson = existingTimezones.toJSON();
                 for (var i = 0; i < existingTimezonesJson.length; i++) {
@@ -558,9 +558,7 @@ function populateTables(t, next) {
                 return newTimezones.invokeThen('save', null, {
                     transacting: t
                 })
-                    .then(function() {
-                        next();
-                    })
+                    .tap(next)
                     .catch(function(err) {
                         console.log("Failed to create timezones");
                         console.log(err);
