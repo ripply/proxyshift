@@ -415,7 +415,7 @@ module.exports = {
                                                 }
                                             });
 
-                                            return upgradeExistingGroupMembers(sqlOptions, Object.keys(usersToInstantlyPromote), group_id, grouppermission_id, function inviteUserToGroupUpgradeExistingUsers() {
+                                            return upgradeExistingGroupMembers(sqlOptions, Object.keys(usersToInstantlyPromote), Object.keys(usersToIgnoreAndPromote), group_id, grouppermission_id, foundUserClasses, function inviteUserToGroupUpgradeExistingUsers() {
                                                 // we need to delete existing GroupInvitationUserClass rows that link to the existing GroupInvitation tables
                                                 // (so that we can remake everything at once)
                                                 return deleteExistingGroupInvitationUserClasses(sqlOptions, foundExistingGroupinvitationIds, function inviteUserToGroupDeleteExistingUserClasses() {
@@ -1435,7 +1435,7 @@ function getFoundUserclassIds(userclasses) {
     return foundUserClasses;
 }
 
-function upgradeExistingGroupMembers(sqlOptions, user_ids, group_id, grouppermission_id, next) {
+function upgradeExistingGroupMembers(sqlOptions, user_ids, groupmembers_user_ids, group_id, grouppermission_id, groupuserclass_ids, next) {
     if (user_ids.length > 0) {
         return models.UserGroup.query(function inviteUserToGroupUpgradeExistingMemberQuery(q) {
             q.select()
@@ -1447,9 +1447,59 @@ function upgradeExistingGroupMembers(sqlOptions, user_ids, group_id, grouppermis
                 });
         })
             .fetchAll(sqlOptions)
-            .tap(next);
+            .tap(inviteUserToGroupUpgradeExistingMembersUserClasses);
+    } else if (groupmembers_user_ids.length > 0) {
+        // no users that need promoting
+        // but users do need to have userclasses added
+        return inviteUserToGroupUpgradeExistingMembersUserClasses();
     } else {
         return next();
+    }
+
+    function inviteUserToGroupUpgradeExistingMembersUserClasses() {
+        return models.GroupUserClassToUser.query(function inviteUserToGroupFindExistingUserClasses(q) {
+            q.select()
+                .from('groupuserclasstousers')
+                .whereIn('groupuserclasstousers.user_id', groupmembers_user_ids)
+                .whereIn('groupuserclasstousers.groupuserclass_id', groupuserclass_ids);
+        })
+            .fetchAll(sqlOptions)
+            .tap(function inviteUserToGroupExistingUserClasses(groupuserclasstousers) {
+                var userIdToClassIds = {};
+                _.each(groupuserclasstousers.toJSON(), function(groupuserclasstouser) {
+                    var user_id = groupuserclasstouser.user_id;
+                    if (!userIdToClassIds.hasOwnProperty(user_id)) {
+                        userIdToClassIds[user_id] = {};
+                    }
+                    userIdToClassIds[user_id][groupuserclasstouser.groupuserclass_id] = true;
+                });
+
+                var newGroupUserClassToUsers = [];
+                _.each(groupmembers_user_ids, function(user_id) {
+                    var usersExistingClasses = userIdToClassIds[user_id];
+                    _.each(groupuserclass_ids, function(groupuserclass_id) {
+                        var create = true;
+                        if (usersExistingClasses) {
+                            create = !usersExistingClasses.hasOwnProperty(groupuserclass_id);
+                        }
+
+                        if (create) {
+                            newGroupUserClassToUsers.push({
+                                user_id: user_id,
+                                groupuserclass_id: groupuserclass_id
+                            })
+                        }
+                    });
+                });
+
+                if (newGroupUserClassToUsers.length > 0) {
+                    var newGroupUserClassToUsersModel = models.GroupUserClassToUsers.forge(newGroupUserClassToUsers);
+                    return Promise.all(newGroupUserClassToUsersModel.invoke('save', undefined, sqlOptions))
+                        .tap(next);
+                } else {
+                    return next();
+                }
+            });
     }
 }
 
