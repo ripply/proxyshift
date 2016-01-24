@@ -694,7 +694,6 @@ function createUser(sqlOptions, req, next) {
             var fullArgs = _.extend(keysToSave, {
                 usersetting_id: usersettings.get('id')
             });
-            console.log(fullArgs);
             return models.User.forge(fullArgs)
                 .save(undefined, sqlOptions)
                 .tap(next);

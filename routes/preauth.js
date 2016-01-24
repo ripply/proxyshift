@@ -183,8 +183,6 @@ module.exports = function(app, settings){
                         if (getting) {
                             showPage();
                         } else {
-                            console.log("signup = ");
-                            console.log(signup);
                             if ((loggedIn && !signin) || signup) {
                                 console.log("1");
                                 return afterLoggedInConsumeToken();
@@ -237,7 +235,6 @@ module.exports = function(app, settings){
                         if (signup) {
                             // signup
                             signup = false;
-                            console.log("signup");
                             return users.createUser(undefined, req, function consumeInviteSignupUser(user) {
                                 // need to sign in as user
                                 return req.login(user, function (err) {
