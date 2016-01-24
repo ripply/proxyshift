@@ -46,6 +46,7 @@ var fieldsToNotSendToClient = [
 module.exports = {
     bannedFields: fieldsToNotSendToClient,
     consumeEmailVerifyToken: consumeEmailVerifyToken,
+    createUser: createUser,
     route: '/api/users',
     '/': {
         'get': { // get info about your account
@@ -68,25 +69,14 @@ module.exports = {
                     var sqlOptions = {
                         transacting: t
                     };
-                    return models.UserSetting.forge({})
-                        .save(null, {transacting: t})
-                        .tap(function usersPostUserSettingsSaved(usersettings) {
-                            var modelKeys = getModelKeys('User', ['id', 'usersetting_id']);
-                            var keysToSave = _.pick(req.body, _.keys(modelKeys));
-                            var fullArgs = _.extend(keysToSave, {
-                                usersetting_id: usersettings.get('id')
+                    return createUser(sqlOptions, req, function usersPostUserCreated(user) {
+                        return sendEmailVerificationEmail(
+                            user.toJSON(),
+                            sqlOptions,
+                            function emailVerificationSent() {
+                                clientCreate(req, res, 201, user.get('id'));
                             });
-                            return models.User.forge(fullArgs)
-                                .save(undefined, sqlOptions)
-                                .tap(function usersPostUserCreated(user) {
-                                    return sendEmailVerificationEmail(
-                                        user.toJSON(),
-                                        sqlOptions,
-                                        function emailVerificationSent() {
-                                            clientCreate(req, res, 201, user.get('id'));
-                                        });
-                                });
-                        });
+                    });
                 })
                     .catch(function usersPostTransactionCatch(err) {
                         if (err.hasOwnProperty('errors')) {
@@ -692,5 +682,21 @@ function consumeEmailVerifyToken(token, sqlOptions, next) {
                 console.log("no token found");
                 next(null);
             }
+        });
+}
+
+function createUser(sqlOptions, req, next) {
+    return models.UserSetting.forge({})
+        .save(null, sqlOptions)
+        .tap(function usersPostUserSettingsSaved(usersettings) {
+            var modelKeys = getModelKeys('User', ['id', 'usersetting_id']);
+            var keysToSave = _.pick(req.body, _.keys(modelKeys));
+            var fullArgs = _.extend(keysToSave, {
+                usersetting_id: usersettings.get('id')
+            });
+            console.log(fullArgs);
+            return models.User.forge(fullArgs)
+                .save(undefined, sqlOptions)
+                .tap(next);
         });
 }

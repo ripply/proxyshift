@@ -7,7 +7,6 @@
     {{/if}}
     <p>to accept this invitation on this account click here</p>
     <form action="/acceptinvitation" method="post">
-        <input type="hidden" name="accept" value="true">
         <input type="hidden" name="token" value="{{invitation.token}}">
         <input type="submit" value="Accept">
     </form>
@@ -23,10 +22,38 @@
     <p>INVALID USERNAME/PASSWORD</p>
 {{/if}}
 <form action="/acceptinvitation" method="post">
+    <input type="hidden" name="token" value="{{invitation.token}}">
+    <input type="hidden" name="action" value="signin">
     User Name:<br>
     <input type="text" name="username" value="{{inputUsername}}"><br>
     Password:<br>
     <input type="text" name="password"><br><br>
+    <input type="submit" value="Submit">
+</form>
+
+<p>Or create a new account</p>
+<form action="/acceptinvitation" method="post">
+    <input type="hidden" name="action" value="signup">
     <input type="hidden" name="token" value="{{invitation.token}}">
+    User Name:<br>
+    <input type="text" name="username"><br>
+    First name:<br>
+    <input type="text" name="firstname"><br>
+    Last name:<br>
+    <input type="text" name="lastname"><br>
+    Email:<br>
+    <input type="text" name="email"><br>
+    Password:<br>
+    <input type="text" name="password"><br>
+    Secret question:<br>
+    <input type="text" name="squestion"><br>
+    Secret answer:<br>
+    <input type="text" name="sanswer"><br>
+    Phone (Home):<br>
+    <input type="text" name="phonehome"><br>
+    Phone (Mobile):<br>
+    <input type="text" name="phonemobile"><br>
+    Pager number:<br>
+    <input type="text" name="pagernumber"><br>
     <input type="submit" value="Submit">
 </form>

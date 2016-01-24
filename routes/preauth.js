@@ -87,6 +87,9 @@ module.exports = function(app, settings){
         var password;
         var loggedIn = isLoggedIn(req);
         var acceptOnThisAccount = false;
+        var action = req.body.action;
+        var signin = action == 'signin';
+        var signup = action == 'signup';
         var getting = true;
         if (req.method == 'GET') {
             token = req.query.token;
@@ -95,7 +98,7 @@ module.exports = function(app, settings){
             token = req.body.token;
             username = req.body.username;
             password = req.body.password;
-            acceptOnThisAccount = req.body.accept;
+            acceptOnThisAccount = action == 'this';
         }
         if(token) {
             return models.GroupInvitation.query(function acceptGroupInviteFindToken(q) {
@@ -180,10 +183,13 @@ module.exports = function(app, settings){
                         if (getting) {
                             showPage();
                         } else {
-                            if (loggedIn) {
+                            console.log("signup = ");
+                            console.log(signup);
+                            if ((loggedIn && !signin) || signup) {
+                                console.log("1");
                                 return afterLoggedInConsumeToken();
-                            } else {
-                                passport.authenticate('local', {session: true}, function (err, user, info) {
+                            } else if (signin) {
+                                return passport.authenticate('local', {session: true}, function (err, user, info) {
                                     if (err) {return next(err); }
                                     if (!user) {
                                         data.loginFailure = true;
@@ -193,18 +199,18 @@ module.exports = function(app, settings){
                                         if (user.id == data.inviter.id) {
                                             return showPageErrorUserIsInviter();
                                         }
-                                        req.login(user, function (err) {
+                                        return req.login(user, function (err) {
                                             if (err) {
                                                 return res.sendStatus(500);
                                             }
 
                                             data.invited = req.user;
 
-                                            models.issueToken(req.user, function (err, token, tokenid) {
+                                            return models.issueToken(req.user, function (err, token, tokenid) {
                                                 if (err) {
                                                     return res.redirect('/');
                                                 }
-                                                models.registerDeviceIdForUser(req.user.id, req.body.deviceid, req.body.platform, getWhenRememberMeTokenExpires(), tokenid, function (deviceIdRegistered, err) {
+                                                return models.registerDeviceIdForUser(req.user.id, req.body.deviceid, req.body.platform, getWhenRememberMeTokenExpires(), tokenid, function (deviceIdRegistered, err) {
                                                     if (err) {
                                                         console.log("Failed to register user's device for push notifications - userid: " + req.user.id + " deviceid:" + req.body.deviceid + "\n" + err);
                                                     }
@@ -216,7 +222,7 @@ module.exports = function(app, settings){
                                         });
                                     }
                                 })(req, res, function() {
-                                    showPage();
+                                    return showPage();
                                 });
                             }
                         }
@@ -224,78 +230,113 @@ module.exports = function(app, settings){
 
                     function afterLoggedInConsumeToken() {
                         // fail if the logged in user is the one who did the inviting
-                        if (req.user.id == data.inviter.id) {
+                        if (!signup && req.user.id == data.inviter.id) {
                             return showPageErrorUserIsInviter();
+                        }
+
+                        if (signup) {
+                            // signup
+                            signup = false;
+                            console.log("signup");
+                            return users.createUser(undefined, req, function consumeInviteSignupUser(user) {
+                                // need to sign in as user
+                                return req.login(user, function (err) {
+                                    if (err) {
+                                        return res.sendStatus(500);
+                                    }
+
+                                    data.invited = req.user;
+
+                                    return models.issueToken(req.user, function (err, token, tokenid) {
+                                        if (err) {
+                                            return res.redirect('/');
+                                        }
+                                        return models.registerDeviceIdForUser(req.user.id, req.body.deviceid, req.body.platform, getWhenRememberMeTokenExpires(), tokenid, function (deviceIdRegistered, err) {
+                                            if (err) {
+                                                console.log("Failed to register user's device for push notifications - userid: " + req.user.id + " deviceid:" + req.body.deviceid + "\n" + err);
+                                            }
+                                            res.cookie('remember_me', token, {path: '/', httpOnly: true, maxAge: maxAgeInMs});
+
+                                            return afterLoggedInConsumeToken();
+                                        });
+                                    });
+                                });
+                            });
                         }
 
                         return models.Bookshelf.transaction(function consumeInviteTokenTransaction(t) {
                             var sqlOptions = {
                                 transacting: t
                             };
-                            // make the user a member of the group with the specified permission level
-                            return models.UserGroup.forge({
-                                group_id: data.group.id,
-                                user_id: req.user.id,
-                                grouppermission_id: data.invitation.grouppermission_id
-                            })
-                                .save(undefined, sqlOptions)
-                                .tap(function consumeInviteTokenCreateUserGroups() {
-                                    var groupuserclass_ids = _.reduce(data.userclasses, function(memo, userclass) {
-                                        memo.push(userclass.id);
-                                        return memo;
-                                    }, []);
-                                    // figure out what job types they already have
-                                    // then don't grant them a duplicate of any of them
-                                    return models.GroupUserClassToUser.query(function consumeInviteTokenGetExistingUserclasses(q) {
-                                        q.select('groupuserclasstousers.groupuserclass_id as groupuserclass_id')
-                                            .from('groupuserclasstousers')
-                                            .whereIn('groupuserclasstousers.groupuserclass_id', groupuserclass_ids);
-                                    })
-                                        .fetchAll(sqlOptions)
-                                        .tap(function consumeInviteTokenGotExistingUserclasses(existingUserclasses) {
-                                            var userclassesIdsMap = _.reduce(existingUserclasses.toJSON(), function(memo, userclass) {
-                                                memo['' + userclass.groupuserclass_id] = true;
-                                                return memo;
-                                            }, {});
 
-                                            var newGroupUserClassToUser = _.reduce(groupuserclass_ids, function(memo, groupuserclass_id) {
-                                                if (!userclassesIdsMap.hasOwnProperty('' + groupuserclass_id)) {
-                                                    memo.push({
-                                                        user_id: data.invited.id,
-                                                        groupuserclass_id: groupuserclass_id
-                                                    });
+                            return consumeInviteTokenAddUserToGroup();
+
+                            function consumeInviteTokenAddUserToGroup() {
+                                // make the user a member of the group with the specified permission level
+                                return models.UserGroup.forge({
+                                    group_id: data.group.id,
+                                    user_id: req.user.id,
+                                    grouppermission_id: data.invitation.grouppermission_id
+                                })
+                                    .save(undefined, sqlOptions)
+                                    .tap(function consumeInviteTokenCreateUserGroups() {
+                                        var groupuserclass_ids = _.reduce(data.userclasses, function(memo, userclass) {
+                                            memo.push(userclass.id);
+                                            return memo;
+                                        }, []);
+                                        // figure out what job types they already have
+                                        // then don't grant them a duplicate of any of them
+                                        return models.GroupUserClassToUser.query(function consumeInviteTokenGetExistingUserclasses(q) {
+                                            q.select('groupuserclasstousers.groupuserclass_id as groupuserclass_id')
+                                                .from('groupuserclasstousers')
+                                                .whereIn('groupuserclasstousers.groupuserclass_id', groupuserclass_ids);
+                                        })
+                                            .fetchAll(sqlOptions)
+                                            .tap(function consumeInviteTokenGotExistingUserclasses(existingUserclasses) {
+                                                var userclassesIdsMap = _.reduce(existingUserclasses.toJSON(), function(memo, userclass) {
+                                                    memo['' + userclass.groupuserclass_id] = true;
+                                                    return memo;
+                                                }, {});
+
+                                                var newGroupUserClassToUser = _.reduce(groupuserclass_ids, function(memo, groupuserclass_id) {
+                                                    if (!userclassesIdsMap.hasOwnProperty('' + groupuserclass_id)) {
+                                                        memo.push({
+                                                            user_id: data.invited.id,
+                                                            groupuserclass_id: groupuserclass_id
+                                                        });
+                                                    }
+                                                    return memo;
+                                                }, []);
+
+                                                if (newGroupUserClassToUser.length > 0) {
+                                                    // grant the user the specified job types
+                                                    return models.GroupUserClassToUser.forge(newGroupUserClassToUser)
+                                                        .save(undefined, sqlOptions)
+                                                        .tap(consumeInviteTokenUsergroupsGranted);
+                                                } else {
+                                                    return consumeInviteTokenUsergroupsGranted();
                                                 }
-                                                return memo;
-                                            }, []);
 
-                                            if (newGroupUserClassToUser.length > 0) {
-                                                // grant the user the specified job types
-                                                return models.GroupUserClassToUser.forge(newGroupUserClassToUser)
-                                                    .save(undefined, sqlOptions)
-                                                    .tap(consumeInviteTokenUsergroupsGranted);
-                                            } else {
-                                                return consumeInviteTokenUsergroupsGranted();
-                                            }
-
-                                            function consumeInviteTokenUsergroupsGranted() {
-                                                // finally delete the invitation
-                                                return models.GroupInvitation.query(function consumeInviteTokenDeleteInvitation(q) {
-                                                    q.select()
-                                                        .from('groupinvitations')
-                                                        .where('groupinvitations.id', '=', data.invitation.id)
-                                                        .del();
-                                                })
-                                                    .fetch(sqlOptions)
-                                                    .tap(function consumeInviteTokenInvitationDeleted() {
-                                                        // success!
-                                                        // user has been added to the group
-                                                        // and set to the specified job types
-                                                        // and the invitation has been deleted
-                                                        renderPage('layouts/groupinvite/success');
-                                                    });
-                                            }
-                                        });
-                                });
+                                                function consumeInviteTokenUsergroupsGranted() {
+                                                    // finally delete the invitation
+                                                    return models.GroupInvitation.query(function consumeInviteTokenDeleteInvitation(q) {
+                                                        q.select()
+                                                            .from('groupinvitations')
+                                                            .where('groupinvitations.id', '=', data.invitation.id)
+                                                            .del();
+                                                    })
+                                                        .fetch(sqlOptions)
+                                                        .tap(function consumeInviteTokenInvitationDeleted() {
+                                                            // success!
+                                                            // user has been added to the group
+                                                            // and set to the specified job types
+                                                            // and the invitation has been deleted
+                                                            renderPage('layouts/groupinvite/success');
+                                                        });
+                                                }
+                                            });
+                                    });
+                            }
                         })
                             .catch(function(err) {
                                 showPage("Internal error: " + err);
