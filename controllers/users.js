@@ -399,8 +399,7 @@ function getUserInfo(user_id, next) {
                     })
                         .fetchAll({
                             withRelated: [
-                                'sublocations',
-                                'userClasses'
+                                'sublocations'
                             ]
                         })
                         .tap(function(locationsAPrivilegedMemeberOf) {
