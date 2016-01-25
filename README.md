@@ -74,7 +74,7 @@ ionic serve
 grunt simplemocha
 ```
 
-## Populating database with fixtures
+## Populating database with fixtures (without running tests)
 ```bash
 export LOAD_FIXTURES="true"
 grunt simplemocha
@@ -93,4 +93,33 @@ node server.js
 # Use 4 workers
 export WORKERS="4"
 node server.js
+```
+
+## Configuring push notifications
+```bash
+# Google cloud messaging
+export PUSH_GCM_KEY="gcm_key"
+# Apple push notifictions
+export PUSH_APN_CERT="apn_certficiate"
+export PUSH_APN_KEY="apn_key"
+# Windows notification service
+export PUSH_WNS_ID="wns_app_id"
+export PUSH_WNS_SECRET="wns_secret"
+```
+
+## Configuring gmail for sending emails
+```bash
+# configure with username/password
+export GMAIL_USER="user@gmail.com"
+export GMAIL_PASS="using_passwords_instead_of_oauth"
+# or with OAuth
+export GMAIL_CLIENT_ID="your_client_id"
+export GMAIL_REFRESH_TOKEN="your_refresh_token"
+export GMAIL_ACCESS_TOKEN="your_access_token"
+# specify the url of the webserver (for sending links in emails)
+export WEB_URL="https://www.proxyshift.com"
+# configure RabbitMQ
+export CLOUDAMQP_URL="url_to_rabbitmq_server"
+# spawn 4 workers per worker that gets ran
+export RABBIT_WORKERS="4"
 ```
