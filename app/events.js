@@ -64,12 +64,26 @@ var eventLoggedInMesages = {
     )
 };
 
+var verifyEmail = {
+    email: {
+        from: 'thamer@proxyshift.com',
+        subject: _.template("Proxyshift Email verification"),
+        text: _.template("Verify email at <%- link %>"),
+        html: _.template('Verify email at <a href="<%- link %>"><%- link %></a>')
+    }
+};
+
 module.exports = {
     invitedToGroup: function eventInvitedToGroup(user_ids, args) {
+        // TODO: MODIFY THIS TO ACCEPT A TO EMAIL
         // send email and notification
         return this.sendToUsers(user_ids, eventInvitedToGroupMessages, args);
     },
     loggedIn: function loggedIn(user_ids, args) {
         return this.sendToUsers(user_ids, eventLoggedInMesages, args);
-    }
+    },
+    verifyEmail: function verifyEmail(user_ids, args) {
+        args.link = this.createTokenUrl("/emailverify", args.token);
+        return this.sendToUsers(user_ids, verifyEmail, args);
+    },
 };

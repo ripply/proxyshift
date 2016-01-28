@@ -619,7 +619,9 @@ function sendEmailVerificationEmail(userJson, sqlOptions, next) {
                 console.log("Got a null token when generating email verify token...");
             } else {
                 console.log("Got a token to verify email with! " + token);
-                appLogic.sendVerifyEmail(token, email, firstname);
+                appLogic.fireEvent('verifyEmail', user_id, {
+                    token: token
+                });
             }
             next();
         });

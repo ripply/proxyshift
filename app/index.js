@@ -247,11 +247,6 @@ App.prototype.sendInviteEmail = function(token, to, inviter_user, message) {
     this.sendEmail('thamer@proxyshift.com', to, 'Company invitation', inviteUrl + ' ' + message, '<a href="' + inviteUrl + '">' + inviteUrl + '</a>' + message)
 };
 
-App.prototype.sendVerifyEmail = function(token, to, name) {
-    var verifyUrl = this.createTokenUrl("/emailverify", token);
-    this.sendEmail('thamer@proxyshift.com', to, 'Verify your email', verifyUrl + ' ' + message, '<a href="' + verifyUrl + '">' + verifyUrl + '</a>' + message)
-};
-
 App.prototype.sendNotification = function sendNotification(service, endpoints, expires, message) {
     var notification = {
         service: service,
