@@ -414,40 +414,10 @@ module.exports = function(app, settings){
             // authentication failed, send 401 unauthorized
             if (!user) { return res.sendStatus(401); }
             if (req.body.deviceid && req.body.deviceid != '') {
-                console.log("User sent a deviceid, attempting to send message after 20s");
+                console.log("User sent a deviceid, attempting to send message after 10s");
                 setTimeout(function () {
                         console.log("Sending device a push notification... " + req.body.deviceid);
-                        var message = {
-                            default: {test: 'test'},
-                            ios: {
-                                badge: 3,
-                                    alert: 'You logged in!',
-                                    payload: {
-                                    message: 'Push: You logged in!'
-                                }
-                            },
-                            android: {
-                                contentAvailable: true,
-                                    timeToLive: 3,
-                                    data: {
-                                    message: 'Push: You logged in!'
-                                },
-                                notification: {
-                                    title: 'You logged in',
-                                        body: 'Successfully!'
-                                }
-                            }
-                        };
                         appLogic.fireEvent('loggedIn', user.id);
-                        //models.sendNotificationToUsers([req.user.id], undefined, message);
-                        /*
-                        new notifications().send(
-                            req.body.platform,
-                            [req.body.deviceid],
-                            undefined,
-                            message
-                        );
-                        */
                     },
                     10 * 1000
                 );

@@ -6,7 +6,8 @@ var config = require('config');
 var mailer = require('./mailer');
 var events = require('./events');
 var time = require('./time');
-var Notifications = require('./notifications').Notifications;
+var notifications = require('./notifications');
+var Notifications = new notifications.Notifications();
 
 var connections = require('./connections');
 
@@ -128,7 +129,7 @@ App.prototype.sendToUsers = function sendToUsers(user_ids, messages, args, test)
                 }
 
                 if (args.pushForce || (usersetting.pushnotifications && messages['push'])) {
-                    var pushtokens = user.pushtokens;
+                    var pushtokens = user.pushTokens;
                     var now = time.nowInUtc();
                     var serviceTokens = {};
                     var expired = false;
@@ -138,7 +139,7 @@ App.prototype.sendToUsers = function sendToUsers(user_ids, messages, args, test)
                             expired = true;
                         } else {
                             if (!serviceTokens.hasOwnProperty(pushtoken.platform)) {
-                                serviceToken[pushtoken.platform] = [];
+                                serviceTokens[pushtoken.platform] = [];
                             }
 
                             serviceTokens[pushtoken.platform].push(pushtoken.token);
