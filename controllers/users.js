@@ -143,6 +143,99 @@ module.exports = {
             }
         }
     },
+    '/passwordreset': {
+        'get': {
+            // auth: ['anyone'],
+            route: function getPasswordResetCaptcha(req, res) {
+
+            }
+        },
+        'post': {
+            route: function postPasswordResetCaptcha(req, res) {
+                var usernameOrEmail = req.body.username;
+                if (usernameOrEmail) {
+                    usernameOrEmail = usernameOrEmail.toLowerCase();
+                } else {
+                    return res.sendStatus(400);
+                }
+                Bookshelf.transaction(function(t) {
+                    var sqlOptions = {
+                        transacting: t
+                    };
+
+                    // check if the username/email is valid
+                    return models.User.query(function postPasswordResetFindUsernameOrEmail(q) {
+                        q.select('users.user_id as user_id')
+                            .from('users')
+                            .where('users.username', '=', usernameOrEmail)
+                            .orWhere('users.email', '=', usernameOrEmail);
+                    })
+                        .fetch(sqlOptions)
+                        .tap(function postPasswordResetFoundUser(user) {
+                            if (user) {
+                                return models.ResetPasswordToken.query(function (q) {
+                                    q.select()
+                                        .from('resetpasswordtokens')
+                                        .where('resetpasswordtokens.user_id', '=', user.get('id'));
+                                })
+                                    .fetch(sqlOptions)
+                                    .tap(function postPasswordResetFindExistingTokens(token) {
+                                        var now = time.nowInUtc();
+                                        var generatedToken = null;
+                                        if (token) {
+                                            // token already exists
+                                            // see if it has been a bit since we last sent an email
+                                            // if it has been a little, re-send the same email
+                                            if (token.get('expires') >= now) {
+                                                // token expired
+                                                // update it and resend the invite email
+                                                generatedToken = generatePasswordToken();
+                                                return models.ResetPasswordToken.query(function(q) {
+                                                    q.select()
+                                                        .from('resetpasswordtokens')
+                                                        .where('id', '=', token.get('id'))
+                                                        .update({
+                                                            token: generatedToken,
+                                                            expires: passwordTokenExpiresAt(now)
+                                                        })
+                                                })
+                                            }
+                                        } else {
+                                            // create a token and trigger email event
+                                            generatedToken = generatePasswordToken();
+                                            return models.ResetPasswordToken.forge({
+                                                user_id: user.get('id'),
+                                                token: generatedToken,
+                                                expires: passwordTokenExpiresAt(now),
+                                                lastEmailSent: now
+                                            })
+                                                .save(undefined, sqlOptions)
+                                                .tap(passwordTokenCreated);
+                                        }
+
+                                        function generatePasswordToken() {
+                                            return utils.randomString(64);
+                                        }
+
+                                        function passwordTokenExpiresAt(now) {
+                                            return now + (60 * 60); // 1 hour
+                                        }
+
+                                        function passwordTokenCreated() {
+                                            appLogic.fireEvent('passwordReset', user.get('id'), {
+                                                token: generatedToken
+                                            });
+                                        }
+                                    });
+                            } else {
+                                // send success even if it failed (which it did)
+                                return res.sendStatus(200);
+                            }
+                        });
+                });
+            }
+        }
+    },
     '/emailverify': {
         'post': {
             // auth: ['anyone'], // anyone

@@ -895,6 +895,33 @@ var Schema = {
             type: boolean,
             defaultsTo: false
         }
+    },
+    ResetPasswordToken: {
+        id: {
+            type: increments
+        },
+        user_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'users',
+            onDelete: cascade,
+            onUpdate: cascade,
+            nullable: false,
+            unique: true
+        },
+        token: {
+            type: string,
+            nullable: false,
+            unique: true
+        },
+        expires: {
+            type: date,
+            nullable: false
+        },
+        lastEmailSent: {
+            type: date,
+            nullable: false
+        }
     }
 };
 
