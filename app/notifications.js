@@ -261,7 +261,7 @@ Notifications.prototype._sendToWns = function(expires, message, endpoint) {
 };
 
 Notifications.prototype.send = function send(service, endpoints, expires, message) {
-    if (cluster.isMaster) {
+    //if (cluster.isMaster) {
         if (!this.sendMap.hasOwnProperty(service) && platformMap.hasOwnProperty(service)) {
             // allow addressing service by name instead of just index
             service = platformMap[service];
@@ -275,6 +275,7 @@ Notifications.prototype.send = function send(service, endpoints, expires, messag
             console.log("Push: Unknown service: " + service);
             return false;
         }
+    /*
     } else {
         console.log("sending sendNotification");
         process.send('sendNotification', [
@@ -284,6 +285,7 @@ Notifications.prototype.send = function send(service, endpoints, expires, messag
             message
         ]);
     }
+    */
 };
 /*
 // Send to a topic, with no retry this time

@@ -1,8 +1,12 @@
 var Promise = require('bluebird');
+var _ = require('underscore');
 var EventEmitter = require('events').EventEmitter;
 var models = require('./models');
 var config = require('config');
 var mailer = require('./mailer');
+var events = require('./events');
+var time = require('./time');
+var Notifications = require('./notifications').Notifications;
 
 var connections = require('./connections');
 
@@ -26,6 +30,152 @@ function App() {
 }
 
 App.prototype = Object.create(EventEmitter.prototype);
+_.extend(App.prototype, events);
+_.bindAll.apply(this, _.flatten([App.prototype, Object.keys(events)]));
+
+App.prototype.getUserSettings = function getUserSettings(user_ids, next) {
+    if (!user_ids instanceof Array) {
+        user_ids = [user_ids];
+    }
+
+    return models.User.query(function (q) {
+        q.select()
+            .from('users')
+            .whereIn('users.id', user_ids);
+    })
+        .fetchAll({
+            withRelated: [
+                'usersetting',
+                'pushTokens'
+            ]
+        })
+        .tap(next);
+};
+
+App.prototype.forEachUserSetting = function forEachUserSetting(user_ids, each) {
+    return this.getUserSettings(user_ids, function forEachUserSettingGetPermissions(permissions) {
+        if (permissions) {
+            permissions.forEach(each);
+        }
+    });
+};
+
+App.prototype.getUserSettingsAndSubs = function getUserSettingsAndSubs(user_ids, next) {
+    if (!user_ids instanceof Array) {
+        user_ids = [user_ids];
+    }
+
+    return models.User.query(function (q) {
+        q.select()
+            .from('users')
+            .whereIn('users.id', user_ids);
+    })
+        .fetchAll({
+            withRelated: [
+                'usersetting',
+                'subscriptions',
+                'pushTokens'
+            ]
+        })
+        .tap(next);
+};
+
+App.prototype.forEachUserSettingAndSubs = function forEachUserSettingsAndSubs(user_ids, each) {
+    return this.getUserSettingsAndSubs(user_ids, function forEachUserSettingAndSubsGetPermissions(permissions) {
+        if (permissions) {
+            console.log(permissions);
+            permissions.forEach(each);
+        }
+    });
+};
+
+App.prototype.sendToUsers = function sendToUsers(user_ids, messages, args, test) {
+    var hasLocationId = args.hasOwnProperty('location_id');
+    var self = this;
+    if (hasLocationId) {
+        return this.forEachUserSettingAndSubs(user_ids, sendToUsersForEach);
+    } else {
+        return this.forEachUserSetting(user_ids, sendToUsersForEach);
+    }
+
+    function sendToUsersForEach(user) {
+        user = user.toJSON();
+        if (test === undefined || test(user)) {
+            var usersetting = user.usersetting;
+            if (usersetting.pushnotifications ||
+                usersetting.textnotifications ||
+                usersetting.emailnotifications) {
+                if (hasLocationId) {
+                    var subscriptions = user.get('subscriptions');
+                    for (var i = 0; i < subscriptions.length; i++) {
+                        var subscription = subscriptions[i];
+                        if (subscription.location_id == args.location_id) {
+                            if (!subscription.subscribed) {
+                                return;
+                            }
+                        }
+                    }
+                }
+
+                args.username = user.username;
+                args.firstname = user.firstname;
+                args.lastname = user.lastname;
+
+                if (args.force) {
+                    args.pushForce = true;
+                    args.emailForce = true;
+                    // args.textForce = true;
+                }
+
+                if (args.pushForce || (usersetting.pushnotifications && messages['push'])) {
+                    var pushtokens = user.pushtokens;
+                    var now = time.nowInUtc();
+                    var serviceTokens = {};
+                    var expired = false;
+                    var foundPushToken = false;
+                    _.each(pushtokens, function (pushtoken) {
+                        if (pushtoken.expires <= now) {
+                            expired = true;
+                        } else {
+                            if (!serviceTokens.hasOwnProperty(pushtoken.platform)) {
+                                serviceToken[pushtoken.platform] = [];
+                            }
+
+                            serviceTokens[pushtoken.platform].push(pushtoken.token);
+                            foundPushToken = true;
+                        }
+                    });
+
+                    if (foundPushToken) {
+                        var message = messages.push(args);
+                        _.each(serviceTokens, function (tokens, service) {
+                            self.sendNotification(service, tokens, now + 100000, message);
+                        });
+                    }
+                }
+
+                if (args.emailForce || (usersetting.emailnotifications && messages['email']) ) {
+                    var email = messages.email;
+                    var subject = email.subject(args);
+                    var text = email.text(args);
+                    var html = email.html(args);
+                    var from = email.from;
+                    if (!from && args.from) {
+                        from = args.from;
+                    }
+                    var to = user.email;
+                    console.log("Sending email.....");
+                    self.sendEmail(from, to, subject, text, html);
+                }
+
+                // TODO: TEXT MESSAGE
+            } else {
+                // this user has disabled all notifications
+                console.log("User has all notifications disabled");
+            }
+        }
+    }
+};
 
 App.prototype.onConnected = function() {
     this.connections.email = this.connections.queue.default().queue({name: EMAIL_QUEUE});// , { prefetch: 5 }, onCreate.bind(this));
@@ -44,6 +194,11 @@ App.prototype.onLost = function() {
     this.emit('lost');
 };
 
+App.prototype.init = function() {
+    this.startHandlingEmails();
+    this.startHandlingNotifications();
+};
+
 App.prototype.startHandlingEmails = function() {
     if (this.connections) {
         console.log("Started handling emails from RabbitMQ");
@@ -52,6 +207,15 @@ App.prototype.startHandlingEmails = function() {
         console.log("Not handling emails from RabbitMQ as it is not configured");
     }
     return this;
+};
+
+App.prototype.startHandlingNotifications = function() {
+    if (this.connections) {
+        console.log("Started handling notifications from RabbitMQ");
+        this.connections.notifications.consume(this.handleNotificationJob.bind(this));
+    } else {
+        console.log("Not handling notifications from RabbitMQ as it is not configured");
+    }
 };
 
 App.prototype.createTokenUrl = function(base, token) {
@@ -63,6 +227,13 @@ App.prototype.createTokenUrl = function(base, token) {
     }
 
     return url + base + "?token=" + token;
+};
+
+App.prototype.fireEvent = function fireEvent(event, user_id, args) {
+    if (!args) {
+        args = {};
+    }
+    return this[event](user_id, args);
 };
 
 App.prototype.notifyGroupPromoted = function(user_id, inviter_user, group_id) {
@@ -78,6 +249,32 @@ App.prototype.sendInviteEmail = function(token, to, inviter_user, message) {
 App.prototype.sendVerifyEmail = function(token, to, name) {
     var verifyUrl = this.createTokenUrl("/emailverify", token);
     this.sendEmail('thamer@proxyshift.com', to, 'Verify your email', verifyUrl + ' ' + message, '<a href="' + verifyUrl + '">' + verifyUrl + '</a>' + message)
+};
+
+App.prototype.sendNotification = function sendNotification(service, endpoints, expires, message) {
+    var notification = {
+        service: service,
+        endpoints: endpoints,
+        expires: expires,
+        message: message
+    };
+
+    if (!this.connections) {
+        console.log("RabbitMQ not configured, sending push notification in web process");
+        this.handleNotificationJob(notification, function() {});
+    } else {
+        console.log("Sending push notification to queue...");
+        console.log(push);
+
+        this.connections.queue.default().publish(notification, {key: NOTIFICATION_QUEUE});
+    }
+};
+
+App.prototype.handleNotificationJob = function handleNotificationJob(job, ack) {
+    console.log("GOT NOTIFICATION JOB");
+    console.log(job);
+
+    Notifications.send(job.service, job.endpoints, job.expires, job.message);
 };
 
 App.prototype.sendEmail = function(from, to, subject, text, html) {
@@ -108,6 +305,11 @@ App.prototype.handleEmailJob = function(job, ack) {
     console.log(job);
     if (mailer) {
         // setup
+        if (job.to.endsWith("@example.com")) {
+            console.log("Not sending email to " + job.to + " as it is example.com (FIXTURE DATA)");
+            ack();
+            return;
+        }
         mailer.sendMail(job, function sendMailCallback(error, info) {
             ack();
             if (error) {

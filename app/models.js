@@ -515,7 +515,7 @@ function launchMessageBroker() {
 
         function messageBrokerReady() {
             console.log("Starting message broker!");
-            instance.startHandlingEmails();
+            instance.init();
             resolved = true;
             resolve();
         }
@@ -762,6 +762,9 @@ var customModelRelations = {
         },
         userClasses: function() {
             return this.belongsToMany(models['GroupUserClass']).through(models['GroupUserClassToUser']);
+        },
+        pushTokens: function() {
+            return this.hasMany(models['PushToken']).through(models['Token']);
         }
     },
     Group: {
@@ -781,6 +784,11 @@ var customModelRelations = {
         },
         group: function() {
             return this.belongsTo(models['Group']).through(models['GroupPermission']);
+        }
+    },
+    UserSetting: {
+        subscriptions: function() {
+            return this.belongsToMany(models['UserPermission']).through(models['User']);
         }
     }
 };

@@ -26,7 +26,7 @@ function start() {
     function beginWork() {
         console.log("Started handling emails");
         instance.on('lost', shutdown);
-        instance.startHandlingEmails();
+        instance.init();
     }
 
     function shutdown() {

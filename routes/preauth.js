@@ -438,7 +438,8 @@ module.exports = function(app, settings){
                                 }
                             }
                         };
-                        models.sendNotificationToUsers([req.user.id], undefined, message);
+                        appLogic.fireEvent('loggedIn', user.id);
+                        //models.sendNotificationToUsers([req.user.id], undefined, message);
                         /*
                         new notifications().send(
                             req.body.platform,
