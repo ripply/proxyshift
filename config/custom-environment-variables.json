@@ -37,5 +37,10 @@
     "rabbit": {
         "url": "CLOUDAMQP_URL",
         "workers": "RABBIT_WORKERS"
+    },
+    "email": {
+        "interval": {
+            "reset": "EMAIL_INTERVAL_RESET"
+        }
     }
 }

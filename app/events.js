@@ -64,6 +64,14 @@ var eventLoggedInMesages = {
     )
 };
 
+var eventPasswordReset = {
+    email: {
+        subject: _.template("Proxyshift Password reset"),
+        text: _.template("Click to reset your password: <%- link %>"),
+        html: _.template("Click to reset your password: <a href=\"<%- link %>\"><%- link -></a>")
+    }
+};
+
 var verifyEmail = {
     email: {
         from: 'thamer@proxyshift.com',
@@ -86,4 +94,8 @@ module.exports = {
         args.link = this.createTokenUrl("/emailverify", args.token);
         return this.sendToUsers(user_ids, verifyEmail, args);
     },
+    passwordReset: function passwordReset(user_ids, args) {
+        args.link = this.createTokenUrl("/passwordreset", args.token);
+        return this.sendToUsers(user_ids, eventPasswordReset, args);
+    }
 };

@@ -2,6 +2,7 @@ var models = require('../app/models'),
     logout = require('../routes/misc/middleware').logout,
     updateModel = require('./controllerCommon').updateModel,
     _ = require('underscore'),
+    config = require('config'),
     encryptKey = require('./encryption/encryption').encryptKey,
     simpleGetSingleModel = require('./controllerCommon').simpleGetSingleModel,
     simpleGetListModel = require('./controllerCommon').simpleGetListModel,
@@ -196,9 +197,31 @@ module.exports = {
                                                         .where('id', '=', token.get('id'))
                                                         .update({
                                                             token: generatedToken,
-                                                            expires: passwordTokenExpiresAt(now)
+                                                            expires: passwordTokenExpiresAt(now),
+                                                            lastEmailSent: now
                                                         })
                                                 })
+                                                    .fetchAll(sqlOptions)
+                                                    .tap(passwordTokenCreated);
+                                            } else {
+                                                // token is not expired
+                                                // check if it has been a little bit since it was last sent
+                                                var interval = getEmailResetInterval();
+                                                var canSendFrom = now + interval;
+                                                if (token.get('lastEmailSent') > canSendFrom) {
+                                                    return models.ResetPasswordToken.query(function(q) {
+                                                        q.select()
+                                                            .from('resetpasswordtokens')
+                                                            .update({
+                                                                lastEmailSent: now
+                                                            });
+                                                    })
+                                                        .fetchAll(sqlOptions)
+                                                        .tap(passwordTokenCreated);
+                                                } else {
+                                                    // don't send
+                                                    return res.sendStatus(200);
+                                                }
                                             }
                                         } else {
                                             // create a token and trigger email event
@@ -225,6 +248,7 @@ module.exports = {
                                             appLogic.fireEvent('passwordReset', user.get('id'), {
                                                 token: generatedToken
                                             });
+                                            return res.sendStatus(200);
                                         }
                                     });
                             } else {
@@ -792,4 +816,13 @@ function createUser(sqlOptions, req, next) {
                 .save(undefined, sqlOptions)
                 .tap(next);
         });
+}
+
+function getEmailResetInterval() {
+    var interval = 60 * 5;
+    if (config.has('email.interval.reset')) {
+        interval = config.get('email.interval.reset');
+    }
+
+    return interval;
 }
