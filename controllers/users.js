@@ -218,7 +218,9 @@ module.exports = {
                                             .from('users')
                                             .where('users.id', '=', resetpasswordtoken.get('user_id'))
                                             .update({
-                                                password: encryptKey(newpassword)
+                                                password: encryptKey(newpassword),
+                                                // also verify email because they got this link from their email!
+                                                verified_email: true
                                             });
                                     })
                                         .fetch(sqlOptions)
