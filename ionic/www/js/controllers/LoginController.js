@@ -145,11 +145,15 @@ angular.module('scheduling-app.controllers')
             };
 
             $scope.closeForgotPassword = function() {
+                $rootScope.$broadcast(GENERAL_EVENTS.RESETPASSWORD.HIDE);
+            };
+
+            $scope._closeForgotPassword = function() {
                 $scope.forgotPasswordModal.hide();
             };
 
             $scope.$on(GENERAL_EVENTS.RESETPASSWORD.HIDE, function() {
-                $scope.closeForgotPassword();
+                $scope._closeForgotPassword();
             });
 
             $scope.login = function() {
