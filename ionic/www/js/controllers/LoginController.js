@@ -98,6 +98,7 @@ angular.module('scheduling-app.controllers')
         '$state',
         '$ionicModal',
         'GENERAL_CONFIG',
+        'GENERAL_EVENTS',
         'AuthenticationService',
         'SessionService',
         'LoginControllerService',
@@ -107,10 +108,11 @@ angular.module('scheduling-app.controllers')
                  $state,
                  $ionicModal,
                  GENERAL_CONFIG,
+                 GENERAL_EVENTS,
                  AuthenticationService,
                  SessionService,
-                 LoginControllerService,
-                 GENERAL_EVENTS) {
+                 LoginControllerService
+        ) {
 
             $scope.api = GENERAL_CONFIG.APP_URL;
 
@@ -145,6 +147,10 @@ angular.module('scheduling-app.controllers')
             $scope.closeForgotPassword = function() {
                 $scope.forgotPasswordModal.hide();
             };
+
+            $scope.$on(GENERAL_EVENTS.RESETPASSWORD.HIDE, function() {
+                $scope.closeForgotPassword();
+            });
 
             $scope.login = function() {
                 AuthenticationService.login($rootScope.user)

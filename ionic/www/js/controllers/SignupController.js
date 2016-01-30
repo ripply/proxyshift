@@ -58,12 +58,40 @@ angular.module('scheduling-app.controllers')
                     return;
                 }
                 $scope.busy = true;
-                ResourceService.resetPassword($scope.user.username, function resetPasswordSuccess() {
-                    console.log("SUCCESS");
+                var usernameOrPassword = $scope.usernameOrPassword;
+                ResourceService.resetPassword(usernameOrPassword, function resetPasswordSuccess() {
                     $scope.busy = false;
+                    $rootScope.$emit(GENERAL_EVENTS.POPUP.REQUESTED, function($ionicPopup) {
+                        $scope.prompt = $scope.popup = $ionicPopup.show({
+                            templateUrl: 'templates/notifications/resetpasswordsuccess.html',
+                            title: 'Notice',
+                            //subTitle: '(this will only be shown once)',
+                            scope: $scope,
+                            buttons: [
+                                {
+                                    text: 'OK',
+                                    onTap: function(e) {
+                                        $rootScope.$broadcast(GENERAL_EVENTS.RESETPASSWORD.HIDE);
+                                    }
+                                }
+                            ]
+                        });
+                    });
                 }, function resetPasswordError() {
-                    console.log("ERROR");
                     $scope.busy = false;
+                    $rootScope.$emit(GENERAL_EVENTS.POPUP.REQUESTED, function($ionicPopup) {
+                        $scope.prompt = $scope.popup = $ionicPopup.show({
+                            templateUrl: 'templates/notifications/unknownerror.html',
+                            title: 'Notice',
+                            //subTitle: '(this will only be shown once)',
+                            scope: $scope,
+                            buttons: [
+                                {
+                                    text: 'OK'
+                                }
+                            ]
+                        });
+                    });
                 });
             };
 

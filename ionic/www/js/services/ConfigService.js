@@ -52,6 +52,9 @@ var config_data = {
             'SHOW': 'event:loading:show',
             'HIDE': 'event:loading:hide'
         },
+        'RESETPASSWORD': {
+            'HIDE': 'event:resetpassword:hide'
+        },
         'SLOW_REQUEST': 'events:slow-request',
         'UPDATES': {
             'USERINFO': {
