@@ -6,7 +6,8 @@ I18n.translations["en"] = {
     welcome: {
         to: {
             proxyshift: 'Welcome to Proxy Shift!'
-        }
+        },
+        resetpassword: 'Reset your password'
     },
     invites: {
         join: {
@@ -70,6 +71,7 @@ I18n.translations["en"] = {
     form: {
         username: 'Username',
         password: 'Password',
+        verifypassword: 'Verify password',
         lastname: 'Lastname',
         firstname: 'Firstname',
         email: 'Email',
@@ -79,6 +81,13 @@ I18n.translations["en"] = {
             home: 'Phone (Home)',
             mobile: 'Phone (Mobile)',
             pager: 'Pager number'
+        }
+    },
+    message: {
+        internalerror: 'Internal error',
+        password: {
+            notmatch: "Passwords don't match",
+            invalid: 'Password is invalid'
         }
     }
 };

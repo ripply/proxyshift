@@ -9,6 +9,7 @@ angular.module('scheduling-app.controllers')
         '$state',
         'UsersModel',
         'ErrorMessageService',
+        'ResourceService',
         'GENERAL_EVENTS',
         'STATES',
         function($rootScope,
@@ -17,6 +18,7 @@ angular.module('scheduling-app.controllers')
                  $state,
                  UsersModel,
                  ErrorMessageService,
+                 ResourceService,
                  GENERAL_EVENTS,
                  STATES) {
 
@@ -34,18 +36,35 @@ angular.module('scheduling-app.controllers')
             };
 
             $scope.doSignup = function(valid) {
-                if (!valid) {
+                if (!valid && !$scope.busy) {
                     return;
                 }
+                $scope.busy = true;
                 UsersModel.post($scope.user)
                     .then(function() {
+                        $scope.busy = false;
                         console.log("User successfully signed up.");
                         $rootScope.$broadcast(GENERAL_EVENTS.SIGNUP.SUCCESS);
                     }, function(response) {
+                        $scope.busy = false;
                         console.log("User failed to signup.");
                         console.log(response);
                         $rootScope.$broadcast(GENERAL_EVENTS.SIGNUP.FAILED, ErrorMessageService.parse(response, 'An error occurred'));
                     });
+            };
+
+            $scope.forgotPassword = function(valid) {
+                if (!valid && !$scope.busy) {
+                    return;
+                }
+                $scope.busy = true;
+                ResourceService.resetPassword($scope.user.username, function resetPasswordSuccess() {
+                    console.log("SUCCESS");
+                    $scope.busy = false;
+                }, function resetPasswordError() {
+                    console.log("ERROR");
+                    $scope.busy = false;
+                });
             };
 
             $scope.$on(GENERAL_EVENTS.SIGNUP.REQUIRED, function(e, rejection) {

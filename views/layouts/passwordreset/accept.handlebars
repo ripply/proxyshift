@@ -1,0 +1,13 @@
+<h1>{{_ 'welcome.to.proxyshift'}}</h1>
+<p>{{_ 'welcome.resetpassword'}}</p>
+{{#if message}}
+    <p>{{_ message}}</p>
+{{/if}}
+<form action="/passwordreset" method="post">
+    <input type="hidden" name="token" value="{{token}}">
+    {{_ 'form.password'}}:<br>
+    <input type="text" name="password" value="{{inputUsername}}"><br>
+    {{_ 'form.verifypassword'}}:<br>
+    <input type="text" name="verifypassword"><br><br>
+    <input type="submit" value="Submit">
+</form>

@@ -122,13 +122,28 @@ angular.module('scheduling-app.controllers')
                 $scope.signupModal = modal;
             });
 
+            $ionicModal.fromTemplateUrl('templates/forgotpassword.html', {
+                scope: $scope
+            }).then(function(modal) {
+                $scope.forgotPasswordModal = modal;
+            });
+
             $scope.signup = function() {
                 $rootScope.$broadcast('event:signup-required');
                 $scope.signupModal.show();
             };
 
+            $scope.forgot = function() {
+                $rootScope.$broadcast('event:forgot-password');
+                $scope.forgotPasswordModal.show();
+            };
+
             $scope.closeSignup = function() {
                 $scope.signupModal.hide();
+            };
+
+            $scope.closeForgotPassword = function() {
+                $scope.forgotPasswordModal.hide();
             };
 
             $scope.login = function() {

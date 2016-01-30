@@ -83,8 +83,6 @@ function launchServer() {
                                 args[i] = arguments[i];
                             }
                         }
-                        console.log(arguments);
-                        //console.log(args);
                         return (I18n != undefined ? I18n.t(key, args) : key);
                     }
                 }
@@ -125,7 +123,6 @@ function launchServer() {
         var csrfProtection = csrf({
             cookie: true,
             value: function (req) {
-                console.log(req.session);
                 console.log("Given secret: " + req.cookies['_csrf']);
                 return req.cookies['XSRF-TOKEN'];
             }

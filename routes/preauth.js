@@ -184,7 +184,6 @@ module.exports = function(app, settings){
                             showPage();
                         } else {
                             if ((loggedIn && !signin) || signup) {
-                                console.log("1");
                                 return afterLoggedInConsumeToken();
                             } else if (signin) {
                                 return passport.authenticate('local', {session: true}, function (err, user, info) {
@@ -336,7 +335,7 @@ module.exports = function(app, settings){
                             }
                         })
                             .catch(function(err) {
-                                showPage("Internal error: " + err);
+                                showPage('messsage.internalerror');
                             });
                     }
                 });
@@ -467,7 +466,7 @@ module.exports = function(app, settings){
             });
         })(req, res, next);
     }, function(req, res, next) {
-
+        next();
     });
 
     app.post('/session/logout', ensureCsrf, ensureAuthenticated, function(req, res, next) {
@@ -492,7 +491,8 @@ module.exports = function(app, settings){
 
     // creating users is ok to do without being logged in
     app.post('/api/users', notLoggedIn, users['/'].post.route);
-    app.get('/api/users/passwordreset', notLoggedIn, users['/passwordreset'].get.route);
-    app.post('/api/users/passwordreset', notLoggedIn, users['/passwordreset'].post.route);
+    app.get('/passwordreset', users['/passwordreset'].get.route);
+    app.post('/passwordreset', users['/passwordreset'].post.route);
+    app.post('/api/users/passwordreset', users['/passwordreset'].post.route);
 
 };

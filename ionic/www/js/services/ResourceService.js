@@ -16,6 +16,18 @@ angular.module('scheduling-app.services')
                 }
             }
 
+            this.resetPassword = function resetPassword(usernameOrEmail, success, error) {
+                andThen(
+                    Restangular.all('users')
+                        .all('passwordreset')
+                        .customPOST({
+                            username: usernameOrEmail
+                        }),
+                    success,
+                    error
+                );
+            };
+
             this.getLocation = function getLocation(group_id, location_id, success, error) {
                 andThen(
                     Restangular.one('groups', group_id)
