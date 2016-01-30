@@ -19,7 +19,9 @@ var express = require('express'),
     session = require('express-session'),
     errorHandler = require('errorhandler'),
     numCPUs = require('os').cpus().length,
+    I18n = require('i18n-js'),
     app = express();
+require('./app/handlebarTranslations');
 
 if (cluster.isMaster) {
     if (process.env.WORKERS) {
@@ -63,28 +65,32 @@ function launchServer() {
             process._debugPort = 5858 + cluster.worker.id;
             console.log("Set debug port to " + process._debugPort);
         }
-        // Workers can share any TCP connection
-        // In this case it is an HTTP server
-        /*
-         http.createServer(function(req, res) {
-         res.writeHead(200);
-         res.end("hello world\n");
-         }).listen(8000);
-         */
 
         app.set('port', process.env.PORT || 3300);
         app.set('views', __dirname + '/views');
         app.set('view cache', process.env.NODE_ENV !== 'development');
 
-         var hbs = exphbs.create();
-
-         app.engine('handlebars',
-             exphbs({
-                 defaultLayout: 'main',
-                 layoutsDir: app.get('views') + '/layouts'
-             })
-         );
-         app.set('view engine', 'handlebars');
+        app.engine('handlebars',
+            exphbs({
+                defaultLayout: 'main',
+                layoutsDir: app.get('views') + '/layouts',
+                helpers: {
+                    _: function handlebarsI18n(){
+                        var key = arguments[0];
+                        var args = {};
+                        if (arguments.length > 1) {
+                            for (var i = 1; i < arguments.length; i++) {
+                                args[i] = arguments[i];
+                            }
+                        }
+                        console.log(arguments);
+                        //console.log(args);
+                        return (I18n != undefined ? I18n.t(key, args) : key);
+                    }
+                }
+            })
+        );
+        app.set('view engine', 'handlebars');
 
         if (false) {
             var appLog = log4js.getLogger();

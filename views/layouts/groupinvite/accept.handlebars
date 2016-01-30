@@ -1,59 +1,59 @@
-<h1>Welcome to Proxy Shift!</h1>
-<p>You've been invited to join {{group.name}}'s Proxy Shift Group by {{inviter.firstname}}</p>
+<h1>{{_ 'welcome.to.proxyshift'}}</h1>
+<p>{{_ 'invites.join.group' group.name inviter.firstname }}</p>
 {{#if loggedIn}}
-    <p>You are already logged in as {{loggedIn.username}}</p>
+    <p>{{_ 'you.already.loggedin.as' loggedIn.username}}</p>
     {{#if message}}
         <p>{{message}}</p>
     {{/if}}
-    <p>to accept this invitation on this account click here</p>
+    <p>{{_ 'accept.invitation.thisaccount.clickhere'}}</p>
     <form action="/acceptinvitation" method="post">
         <input type="hidden" name="token" value="{{invitation.token}}">
         <input type="submit" value="Accept">
     </form>
-    <p>or signin to another existing account</p>
+    <p>{{_ 'or.signin.other.existingaccount'}}</p>
 {{else}}
-    <p>To get started either sign into an existing Proxy Shift account or create a new one</p>
-    <p>Sign In to an existing Proxy Shift account</p>
+    <p>{{_ 'to.getstarted.signin.anotherexistingaccount.orcreateanewone'}}</p>
+    <p>{{_ 'signin.existing.proxyshift.account'}}</p>
     {{#if message}}
-        <p>{{message}}</p>
+        <p>{{_ message}}</p>
     {{/if}}
 {{/if}}
 {{#if loginFailure}}
-    <p>INVALID USERNAME/PASSWORD</p>
+    <p>{{_ 'invalid.usernameorpassword.caps'}}</p>
 {{/if}}
 <form action="/acceptinvitation" method="post">
     <input type="hidden" name="token" value="{{invitation.token}}">
     <input type="hidden" name="action" value="signin">
-    User Name:<br>
+    {{_ 'form.username'}}:<br>
     <input type="text" name="username" value="{{inputUsername}}"><br>
-    Password:<br>
+    {{_ 'form.password'}}:<br>
     <input type="text" name="password"><br><br>
     <input type="submit" value="Submit">
 </form>
 
-<p>Or create a new account</p>
+<p>{{_ 'or.create.new.account.caps'}}</p>
 <form action="/acceptinvitation" method="post">
     <input type="hidden" name="action" value="signup">
     <input type="hidden" name="token" value="{{invitation.token}}">
-    User Name:<br>
+    {{_ 'form.username'}}:<br>
     <input type="text" name="username"><br>
-    First name:<br>
+    {{_ 'form.firstname'}}:<br>
     <input type="text" name="firstname"><br>
-    Last name:<br>
+    {{_ 'form.lastname'}}:<br>
     <input type="text" name="lastname"><br>
-    Email:<br>
+    {{_ 'form.email'}}:<br>
     <input type="text" name="email"><br>
-    Password:<br>
+    {{_ 'form.password'}}:<br>
     <input type="text" name="password"><br>
-    Secret question:<br>
+    {{_ 'form.secretquestion'}}:<br>
     <input type="text" name="squestion"><br>
-    Secret answer:<br>
+    {{_ 'form.secretanswer'}}:<br>
     <input type="text" name="sanswer"><br>
-    Phone (Home):<br>
+    {{_ 'form.phone.home'}}:<br>
     <input type="text" name="phonehome"><br>
-    Phone (Mobile):<br>
+    {{_ 'form.phone.mobile'}}:<br>
     <input type="text" name="phonemobile"><br>
-    Pager number:<br>
+    {{_ 'form.phone.pager'}}:<br>
     <input type="text" name="pagernumber"><br>
     <input type="submit" value="Submit">
 </form>
