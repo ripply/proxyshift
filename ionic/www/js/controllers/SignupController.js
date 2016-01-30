@@ -61,7 +61,7 @@ angular.module('scheduling-app.controllers')
                 var usernameOrPassword = $scope.usernameOrPassword;
                 ResourceService.resetPassword(usernameOrPassword, function resetPasswordSuccess() {
                     $scope.busy = false;
-                    $rootScope.$emit(GENERAL_EVENTS.POPUP.REQUESTED, function($ionicPopup) {
+                        $rootScope.$emit(GENERAL_EVENTS.POPUP.REQUESTED, function($ionicPopup) {
                         $scope.prompt = $scope.popup = $ionicPopup.show({
                             templateUrl: 'templates/notifications/resetpasswordsuccess.html',
                             title: 'Notice',
@@ -94,6 +94,10 @@ angular.module('scheduling-app.controllers')
                     });
                 });
             };
+
+            $scope.$on(GENERAL_EVENTS.RESETPASSWORD.HIDE, function() {
+                $scope.usernameOrPassword = '';
+            });
 
             $scope.$on(GENERAL_EVENTS.SIGNUP.REQUIRED, function(e, rejection) {
                 // clear any error messages
