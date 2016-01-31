@@ -87,8 +87,11 @@ module.exports = {
                             this.on('shifts.location_id', '=', 'locations.id');
                         })
                         .where(function() {
-                            this.where('shifts.start', '<=', before)
-                                .orWhere('shifts.end', '>=', after);
+                            this.where('shifts.start', '>=', before)
+                                .orWhere(function() {
+                                    this.where('shifts.end', '>=', before)
+                                        .andWhere('shifts.end', '<=', after);
+                                });
                         })
                         .whereIn('locations.id', relatedLocationsSubQuery)
                         .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery);
@@ -100,8 +103,11 @@ module.exports = {
                                     this.on('shifts.sublocation_id', '=', 'sublocations.id');
                                 })
                                 .where(function() {
-                                    this.where('shifts.start', '<=', before)
-                                        .orWhere('shifts.end', '>=', after);
+                                    this.where('shifts.start', '>=', before)
+                                        .orWhere(function() {
+                                            this.where('shifts.end', '>=', before)
+                                                .andWhere('shifts.end', '<=', after);
+                                        });
                                 })
                                 .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery)
                                 .whereIn('sublocations.location_id', relatedLocationsSubQuery);
@@ -796,8 +802,13 @@ function getShiftsYouAreManaging(req, res) {
                 .from('shifts')
                 .where('shifts.location_id', '=', req.params.location_id)
                 .andWhere(function () {
-                    this.orWhere('shifts.start', '<=', before)
-                        .orWhere('shifts.end', '>=', after);
+                    this.where('shifts.start', '>=', before);
+                        /*
+                        .orWhere(function() {
+                            this.where('shifts.end', '>=', before)
+                                .andWhere('shifts.end', '<=', after);
+                        });
+                        */
                 })
                 .whereIn('shifts.groupuserclass_id', managingClassesAtLocationSubQuery)
                 .union(function () {
@@ -810,8 +821,13 @@ function getShiftsYouAreManaging(req, res) {
                         //.whereIn('sublocations.location_id', relatedLocationsSubQuery)
                         .whereIn('shifts.groupuserclass_id', managingClassesAtLocationSubQuery)
                         .andWhere(function () {
-                            this.orWhere('shifts.start', '<=', before)
-                                .orWhere('shifts.end', '>=', after);
+                            this.where('shifts.start', '<=', before);
+                                /*
+                                .orWhere(function() {
+                                    this.where('shifts.end', '>=', before)
+                                        .andWhere('shifts.end', '<=', after);
+                                });
+                            */
                         });
                 });
         } else {
@@ -822,8 +838,13 @@ function getShiftsYouAreManaging(req, res) {
             q.select(columns)
                 .from('shifts')
                 .where(function () {
-                    this.orWhere('shifts.start', '<=', before)
-                        .orWhere('shifts.end', '>=', after);
+                    this.where('shifts.start', '>=', before);
+                        /*
+                        .andWhere(function() {
+                            this.where('shifts.end', '>=', before)
+                                .andWhere('shifts.end', '<=', after);
+                        });
+                        */
                 })
                 //.whereIn('shifts.groupuserclass_id', managingClassesAtLocationSubQuery)
                 .innerJoin('locations', function() {
@@ -868,8 +889,8 @@ function getShiftsYouAreManaging(req, res) {
                     this.select(columns)
                         .from('shifts')
                         .where(function () {
-                            this.orWhere('shifts.start', '<=', before)
-                                .orWhere('shifts.end', '>=', after);
+                            this.where('shifts.start', '>=', before);
+                                //.orWhere('shifts.end', '>=', after);
                         })
                         //.whereIn('shifts.groupuserclass_id', managingClassesAtLocationSubQuery)
                         .innerJoin('locations', function() {
@@ -908,8 +929,8 @@ function getShiftsYouAreManaging(req, res) {
                             this.select(columns)
                                 .from('shifts')
                                 .where(function () {
-                                    this.orWhere('shifts.start', '<=', before)
-                                        .orWhere('shifts.end', '>=', after);
+                                    this.where('shifts.start', '>=', before);
+                                        //.orWhere('shifts.end', '>=', after);
                                 })
                                 .innerJoin('sublocations', function() {
                                     this.on('sublocations.id', '=', 'shifts.sublocation_id');
@@ -941,8 +962,8 @@ function getShiftsYouAreManaging(req, res) {
                                     this.select(columns)
                                         .from('shifts')
                                         .where(function () {
-                                            this.orWhere('shifts.start', '<=', before)
-                                                .orWhere('shifts.end', '>=', after);
+                                            this.where('shifts.start', '>=', before);
+                                                //.orWhere('shifts.end', '>=', after);
                                         })
                                         .innerJoin('sublocations', function() {
                                             this.on('sublocations.id', '=', 'shifts.sublocation_id');
@@ -983,8 +1004,13 @@ function getShiftsYouAreManaging(req, res) {
                                             this.select(columns)
                                                 .from('shifts')
                                                 .where(function () {
-                                                    this.orWhere('shifts.start', '<=', before)
-                                                        .orWhere('shifts.end', '>=', after);
+                                                    this.where('shifts.start', '>=', before);
+                                                        /*
+                                                        .orWhere(function() {
+                                                            this.where('shifts.end', '>=', before)
+                                                                .andWhere('shifts.end', '<=', after);
+                                                        });
+                                                        */
                                                 })
                                                 //.whereIn('shifts.groupuserclass_id', managingClassesAtLocationSubQuery)
                                                 .innerJoin('locations', function() {
@@ -1000,8 +1026,13 @@ function getShiftsYouAreManaging(req, res) {
                                                     this.select(columns)
                                                         .from('shifts')
                                                         .where(function () {
-                                                            this.orWhere('shifts.start', '<=', before)
-                                                                .orWhere('shifts.end', '>=', after);
+                                                            this.where('shifts.start', '>=', before);
+                                                            /*
+                                                                .orWhere(function() {
+                                                                    this.where('shifts.end', '>=', before)
+                                                                        .andWhere('shifts.end', '<=', after);
+                                                                });
+                                                                */
                                                         })
                                                         //.whereIn('shifts.groupuserclass_id', managingClassesAtLocationSubQuery)
                                                         .innerJoin('sublocations', function() {
