@@ -191,7 +191,7 @@ function launchServer() {
         routes.initialize(app);
 
         //finally boot up the server:
-        http.createServer(app).listen(app.get('port'), function () {
+        http.createServer(app).listen(app.get('port'), '0.0.0.0', function () {
             if (cluster.isMaster) {
                 console.log('Server up: http://localhost:' + app.get('port'));
             } else {

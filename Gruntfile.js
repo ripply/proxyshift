@@ -18,7 +18,7 @@ module.exports = function(grunt) {
         clean: {
             build: ['build'],
             dev: {
-                src: ['build/app.js', 'build/<%= pkg.name %>.css', 'build/<%= pkg.name %>.js']
+                src: ['ionic/www/js/app.js', 'ionic/www/css/<%= pkg.name %>.css', 'ionic/www/js/<%= pkg.name %>.js']
             },
             prod: ['dist']
         },
@@ -122,12 +122,10 @@ module.exports = function(grunt) {
         less: {
             transpile: {
                 files: {
-                    'build/<%= pkg.name %>.css': [
-                        'client/styles/reset.css',
-                        'client/requires/*/css/*',
-                        'client/styles/less/main.less',
-                        'client/requires/bootstrap/bootstrap.css',
-                        'client/requires/fullcalendar/js/fullcalendar.css'
+                    'ionic/www/css/<%= pkg.name %>.css': [
+                        'ionic/www/css/style.css',
+                        'ionic/www/css/*/css/*',
+                        'ionic/less/main.less'
                     ]
                 }
             }
@@ -187,7 +185,7 @@ module.exports = function(grunt) {
                 tasks: ['clean:dev', 'browserify:app', 'concat', 'copy:dev']
             },
             less: {
-                files: ['client/styles/**/*.less'],
+                files: ['ionic/less/**/*.less', 'ionic/www/css/**/style.css'],
                 tasks: ['less:transpile', 'copy:dev']
             },
             test: {
@@ -252,7 +250,7 @@ module.exports = function(grunt) {
 
         concurrent: {
             dev: {
-                tasks: ['nodemon:dev', 'watch:scripts', 'watch:test'],
+                tasks: ['nodemon:dev', 'watch:scripts', 'watch:less'],
                 options: {
                     logConcurrentOutput: true
                 }
@@ -296,7 +294,7 @@ module.exports = function(grunt) {
 
     //grunt.registerTask('server', ['build:dev', 'concurrent:dev']);
     grunt.registerTask('server', ['concurrent:dev']);
-    grunt.registerTask('test:server', ['simplemocha:server']);
+    grunt.registerTask('test:server', ['concurrent:dev', 'simplemocha:server']);
 
     grunt.registerTask('test:client', ['karma:test']);
     grunt.registerTask('tdd', ['karma:watcher:start', 'concurrent:test']);
