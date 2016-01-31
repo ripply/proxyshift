@@ -1,21 +1,38 @@
-<form ng-submit="login()">
-    <div class="list">
-        <label class="item item-input">
-            <span class="input-label">Username</span>
-            <input type="text" ng-model="user.username">
-        </label>
-        <label class="item item-input">
-            <span class="input-label">Password</span>
-            <input type="password" ng-model="user.password">
-        </label>
-        <label class="item">
-            <span class="input-label">Remember me<input type="checkbox" id="remember_me" name="remember_me" ng-model="user.remember_me"></span>
-        </label>
-        <label class="item" ng-show="message != null">
-            <span>{{message}}</span>
-        </label>
-        <button class="button button-block button-steelblue" type="submit">Log in</button>
+<div class="login-container">
+    <div>
+        <form ng-submit="login()">
+            <div class="list list-inset">
+                <img src="img/logo.png" class="logo">
+                <label class="item item-input">
+                    <i class="icon ion-email placeholder-icon"></i>
+                    <input type="text" ng-model="user.username" placeholder="Username or email">
+                </label>
+                <label class="item item-input">
+                    <i class="icon ion-locked placeholder-icon"></i>
+                    <input type="password" ng-model="user.password" placeholder="Password">
+                </label>
+                <label class="item item-toggle">
+                    Keep me logged in
+                    <label class="toggle">
+                        <input type="checkbox" id="remember_me" name="remember_me" ng-model="user.remember_me">
+                        <div class="track">
+                            <div class="handle"></div>
+                        </div>
+                    </label>
+                </label>
+                <label class="item" ng-show="message != null">
+                    <span>{{message}}</span>
+                </label>
+                <button class="button button-block" type="submit">Log in</button>
+            </div>
+        </form>
     </div>
-</form>
-<button class="button button-block button-steelblue" ng-click="forgot()">Forgot password?</button>
-<button class="button button-block button-steelblue" ng-click="signup()">Signup</button>
+    <div class="forgot-password">
+        <p>
+            <a ng-click="forgot()" href="#">Forgot your password?</a>
+        </p>
+    </div>
+    <div class="new-account">
+        <p>Don't have an account? <a ng-click="signup()" href="#">Create one</a></p>
+    </div>
+</div>

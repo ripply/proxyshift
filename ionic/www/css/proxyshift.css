@@ -1,0 +1,213 @@
+/* Header Title */
+ion-header-bar.bar.bar-positive {
+  background-color: #159DEB;
+}
+/* Header Tabs */
+.tabs-striped.tabs-background-positive .tabs {
+  background-color: #159DEB;
+}
+.item-divider.p {
+  color: #000000;
+}
+.item p {
+  color: #000000;
+}
+.item h2 {
+  color: #000000;
+}
+/* A Previous button in calendar */
+.calendar .calendarback {
+  font-size: 64px;
+}
+/* A Next button in calendar */
+.calendar .calendarnext {
+  float: right;
+  font-size: 64px;
+}
+/* A Current month button in calendar */
+.calendar .calendarnow {
+  font-size: 64px;
+}
+/* TABLE Actual calendar */
+.calendar .calendar-month {
+  width: 100%;
+  text-align: center;
+}
+/* TR displaying days of weeks */
+.calendar .calendar-header {
+  width: 100%;
+  text-align: center;
+}
+/* TH Day of week displayed in header */
+/* TR displaying week days */
+/* TD for a day in a week */
+/* P Day with a shift in it */
+.calendar .calendar-week .calendar-day .shift {
+  background: #FF0000;
+}
+/* P Day with no shift */
+.calendar .calendar-week .calendar-day-today .noshift {
+  background: #42F36D;
+}
+.calendar .calendar-week .calendar-day-today .shift {
+  background: #DDDDDD;
+}
+/* TD Day is of the currently visible month */
+/* TD Day from previous/next month in calendar */
+.calendar .calendar-week .calendar-day-othermonth {
+  background: #2F4F4F;
+}
+/* DIV that shows when shifts are being fetched and no data can be shown to user */
+
+/*
+//@background: #373447;
+//@background-input: #50597b;
+@background-input: #373447;
+@placeholder-color: #fff;
+//@input-text-color: #fff;
+@input-text-color: #cec8ea;
+//@offtext-color: #9099b7;
+@offtext-color: #666084;
+@offtext-link-color: #746d97;
+//@button-color: #e64c65;
+@button-color: #312e3f;
+*/
+body,
+.pane,
+.scroll-content,
+.list,
+.logo {
+  background: #394264;
+}
+.item {
+  background: #50597b;
+}
+.login-container .forgot-password {
+  color: #9099b7;
+  margin-left: auto;
+  margin-right: auto;
+}
+.login-container {
+  display: table;
+}
+.login-container input {
+  text-align: center;
+  color: #ffffff;
+}
+.login-container input ::-webkit-input-placeholder {
+  /* WebKit browsers */
+  color: #ffffff;
+}
+.login-container input :-moz-input-placeholder {
+  /* Mozilla Firefox 4 to 18 */
+  color: #ffffff;
+}
+.login-container input ::-moz-input-placeholder {
+  /* Mozilla Firefox 19+ */
+  color: #ffffff;
+}
+.login-container input :-ms-input-placeholder {
+  /* Internet Explorer 10+ */
+  color: #ffffff;
+}
+.login-container input :focus {
+  outline: none;
+  /* removes the default orange border when focus */
+  border: 1px solid #11a8ab;
+}
+.login-container p {
+  color: #9099b7;
+}
+.login-container a {
+  color: #746d97;
+}
+.login-container > div form {
+  height: 100%;
+}
+.login-container > div form .button {
+  background: #e64c65;
+  color: #ffffff;
+  margin: 10px auto;
+  border-radius: 0;
+  border-width: 0;
+  vertical-align: bottom;
+}
+.login-container .list {
+  height: 90%;
+}
+.login-container .item,
+.login-container .list {
+  border-width: 0;
+}
+.login-container .new-account {
+  display: table-row;
+}
+.login-container .new-account > p {
+  display: table-cell;
+  vertical-align: bottom;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+.login-container .item-input {
+  margin-bottom: 2px;
+  border-bottom-width: 1px;
+}
+.login-container .forgot-password > p {
+  display: block;
+  vertical-align: top;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  width: 100%;
+}
+.button {
+  border-radius: 5px;
+}
+@media only screen and (max-width: 300px) {
+  .login-container {
+    height: 100%;
+    margin-bottom: 10%;
+  }
+}
+@media only screen and (min-width: 301px) and (max-width: 350px) {
+  .login-container {
+    height: 100%;
+    margin-bottom: 10%;
+    /* iPod has a small screen and a big logo pushes up against right side */
+    margin-left: 2%;
+    margin-right: 2%;
+  }
+}
+@media only screen and (max-width: 700px) and (min-width: 351px) {
+  /*  */
+  .login-container {
+    height: 100%;
+    margin-bottom: 10%;
+    margin-left: 10%;
+    margin-right: 10%;
+  }
+}
+@media only screen and (max-width: 700px) {
+  /* Move the logo down a little bit and set proper width */
+  .login-container .logo {
+    margin-top: 30%;
+    margin-bottom: 10%;
+    width: 100%;
+  }
+}
+@media only screen and (min-width: 701px) {
+  /*  */
+  .login-container {
+    height: 80%;
+    width: 350px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  /* Move the logo down a little bit and set proper width */
+  .login-container .logo {
+    margin-top: 30%;
+    width: 100%;
+    vertical-align: 50%;
+  }
+}

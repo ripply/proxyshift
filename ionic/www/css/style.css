@@ -8,20 +8,6 @@ ion-header-bar.bar.bar-positive {
     background-color: #159DEB;
 }
 
-/* Content */
-ion-content {
-    background-color: #FFFFFF;
-}
-
-ion-item.item {
-    background-color: #FFFFFF;
-    border-color: #DDE1EA;
-}
-
-.item-divider {
-    background-color: #DDE1EA;
-}
-
 .item-divider.p {
     color: #000000;
 }
@@ -34,11 +20,6 @@ ion-item.item {
     color: #000000;
 }
 
-/* Tabs Footer */
-ion-footer-bar.tabs.bar-footer {
-    background-color: #FFFFFF;
-    border-color: #FFFFFF;
-}
 
 /* A Previous button in calendar */
 .calendar .calendarback {

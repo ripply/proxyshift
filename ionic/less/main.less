@@ -1,0 +1,190 @@
+@background: #394264;
+@background-input: #50597b;
+@placeholder-color: #fff;
+@input-text-color: #fff;
+@offtext-color: #9099b7;
+@offtext-link-color: #746d97;
+@button-color: #e64c65;
+/*
+//@background: #373447;
+//@background-input: #50597b;
+@background-input: #373447;
+@placeholder-color: #fff;
+//@input-text-color: #fff;
+@input-text-color: #cec8ea;
+//@offtext-color: #9099b7;
+@offtext-color: #666084;
+@offtext-link-color: #746d97;
+//@button-color: #e64c65;
+@button-color: #312e3f;
+*/
+
+body, .pane, .scroll-content, .list, .logo {
+    background: @background
+}
+
+.item {
+    background: @background-input;
+}
+
+.login-container .forgot-password {
+    color: @offtext-color;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.login-container {
+
+    display: table;
+
+    > div {
+        //display: table-row;
+    }
+
+    input {
+        text-align: center;
+        color: @input-text-color;
+
+        ::-webkit-input-placeholder { /* WebKit browsers */
+            color: @placeholder-color;
+        }
+        :-moz-input-placeholder { /* Mozilla Firefox 4 to 18 */
+            color: @placeholder-color;
+        }
+        ::-moz-input-placeholder { /* Mozilla Firefox 19+ */
+            color: @placeholder-color;
+        }
+        :-ms-input-placeholder { /* Internet Explorer 10+ */
+            color: @placeholder-color;
+        }
+        :focus {
+            outline: none; /* removes the default orange border when focus */
+            border: 1px solid #11a8ab;
+        }
+    }
+
+    p {
+        color: @offtext-color;
+    }
+
+    a {
+        color: @offtext-link-color;
+    }
+
+    > div {
+        //height: 80%;
+
+        form {
+            height: 100%;
+
+            .button {
+                background: @button-color;
+                color: @input-text-color;
+                margin: 10px auto;
+                border-radius: 0;
+                border-width: 0;
+                vertical-align: bottom;
+            }
+
+        }
+
+    }
+
+    .list {
+        height: 90%;
+    }
+
+    .item, .list {
+        border-width: 0;
+    }
+
+    .new-account {
+        display: table-row;
+
+        > p {
+            display: table-cell;
+            vertical-align: bottom;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+    }
+
+    .item-input {
+        margin-bottom: 2px;
+        border-bottom-width: 1px;
+    }
+
+    .forgot-password > p {
+        display: block;
+        vertical-align: top;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+        width: 100%;
+    }
+}
+
+.button {
+    border-radius: 5px;
+}
+
+@media only screen and (max-width: 300px) {
+
+    .login-container {
+        height: 100%;
+        margin-bottom: 10%;
+    }
+
+}
+
+@media only screen and (min-width: 301px) and (max-width: 350px) {
+
+    .login-container {
+        height: 100%;
+        margin-bottom: 10%;
+        /* iPod has a small screen and a big logo pushes up against right side */
+        margin-left: 2%;
+        margin-right: 2%;
+    }
+
+}
+
+@media only screen and (max-width: 700px) and (min-width: 351px) {
+
+    /*  */
+    .login-container {
+        height: 100%;
+        margin-bottom: 10%;
+        margin-left: 10%;
+        margin-right: 10%;
+    }
+}
+
+@media only screen and (max-width: 700px) {
+
+    /* Move the logo down a little bit and set proper width */
+    .login-container .logo {
+        margin-top: 30%;
+        margin-bottom: 10%;
+        width: 100%;
+    }
+}
+
+@media only screen and (min-width: 701px) {
+
+    /*  */
+    .login-container {
+        height: 80%;
+        width: 350px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Move the logo down a little bit and set proper width */
+    .login-container .logo {
+        margin-top: 30%;
+        width: 100%;
+        vertical-align: 50%;
+    }
+}
