@@ -15,49 +15,6 @@ ion-header-bar.bar.bar-positive {
 .item h2 {
   color: #000000;
 }
-/* A Previous button in calendar */
-.calendar .calendarback {
-  font-size: 64px;
-}
-/* A Next button in calendar */
-.calendar .calendarnext {
-  float: right;
-  font-size: 64px;
-}
-/* A Current month button in calendar */
-.calendar .calendarnow {
-  font-size: 64px;
-}
-/* TABLE Actual calendar */
-.calendar .calendar-month {
-  width: 100%;
-  text-align: center;
-}
-/* TR displaying days of weeks */
-.calendar .calendar-header {
-  width: 100%;
-  text-align: center;
-}
-/* TH Day of week displayed in header */
-/* TR displaying week days */
-/* TD for a day in a week */
-/* P Day with a shift in it */
-.calendar .calendar-week .calendar-day .shift {
-  background: #FF0000;
-}
-/* P Day with no shift */
-.calendar .calendar-week .calendar-day-today .noshift {
-  background: #42F36D;
-}
-.calendar .calendar-week .calendar-day-today .shift {
-  background: #DDDDDD;
-}
-/* TD Day is of the currently visible month */
-/* TD Day from previous/next month in calendar */
-.calendar .calendar-week .calendar-day-othermonth {
-  background: #2F4F4F;
-}
-/* DIV that shows when shifts are being fetched and no data can be shown to user */
 
 /*
 //@background: #373447;
@@ -210,4 +167,105 @@ body,
     width: 100%;
     vertical-align: 50%;
   }
+}
+.arrow-btn-container {
+  position: relative;
+}
+.arrow-btn {
+  position: absolute;
+  display: block;
+  width: 60px;
+  height: 60px;
+  -webkit-transition: background .3s;
+  transition: background .3s;
+}
+.arrow-btn :hover {
+  text-decoration: none;
+}
+.arrow-btn .icon {
+  display: block;
+  font-size: 18px;
+  border: 2px solid #fff;
+  border-radius: 100%;
+  line-height: 17px;
+  width: 21px;
+  margin: 20px auto;
+  text-align: center;
+}
+.arrow-btn .calendar-back .icon {
+  padding-right: 2px;
+}
+.arrow-btn.calendar-back {
+  border-top-left-radius: 5px;
+}
+.arrow-btn.calendar-next {
+  border-top-right-radius: 5px;
+  right: 0;
+  top: 0;
+}
+.titler {
+  display: block;
+  line-height: 60px;
+  margin: 0;
+  text-align: center;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+/* A Previous button in calendar */
+.calendar-month {
+  display: block;
+}
+.calendar-month .calendar-day {
+  height: 320px;
+  background: #3468af;
+}
+.calendar-month .calendar-day .calendar-title {
+  background: #1a4e95;
+}
+.calendar-month .calendar-day .arrow-btn:hover {
+  background: #16417E;
+}
+.calendar-month .calendar-day .the-day {
+  margin: 0;
+  text-align: center;
+  font-size: 146px;
+}
+.calendar-month .add-event.button {
+  background: #4fc4f6;
+}
+.calendar-month .add-event.button:hover {
+  background: #35aadc;
+}
+.calendar-month .titler {
+  background: #3468af;
+}
+.calendar-month .calendar-month .arrow-btn:hover {
+  background: #1a4e95;
+}
+.calendar-month .calendar {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+.calendar-month .calendar a,
+.calendar-month .calendar p {
+  font-size: 17px;
+}
+.calendar-month .calendar td,
+.calendar-month .calendar th {
+  width: 40px;
+  height: 38px;
+}
+.calendar-month .calendar .calendar-day-othermonth > p {
+  display: none;
+}
+.calendar-month .calendar .days-week {
+  color: #4fc4f6;
+}
+.calendar-month .calendar .today {
+  display: block;
+  width: 34px;
+  line-height: 34px;
+  background: #e64c65;
+  border-radius: 100%;
 }

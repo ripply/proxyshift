@@ -1,17 +1,20 @@
 <div class="calendarWrapper">
-    <div ng-show="calendarData" class="calendar" ng-class="{'calendar-loading': calendarData.loading}">
-        <a ng-click="previousMonth()" class="calendarback ion-arrow-left-a"></a>
-        <a ng-click="currentMonth()" class="calendarnow icon ion-home"></a>
-        <a ng-click="nextMonth()" class="calendarnext ion-arrow-right-a"></a>
-        <div class="calendar-month-name">
-            {{monthData.name}} - {{monthData.year}}
+    <div ng-show="calendarData" class="calendar-month" ng-class="{'calendar-loading': calendarData.loading}">
+        <div class="arrow-btn-container">
+            <a ng-click="previousMonth()" class="arrow-btn calendar-back">
+                <span class="icon ion-chevron-left"></span>
+            </a>
+                <h2 class="titler calendar-now" ng-click="currentMonth()">{{monthData.name}} {{monthData.year}}</h2>
+            <a ng-click="nextMonth()" class="arrow-btn calendar-next">
+                <span class="icon ion-chevron-right"></span>
+            </a>
         </div>
-        <table class="calendar calendar-month">
-            <tr calss="calendar-header">
-                <th class="calendar-header-day" ng-repeat="day in weekData">{{day}}</th>
+        <table class="calendar">
+            <tr calss="days-week">
+                <th ng-repeat="day in weekData">{{day}}</th>
             </tr>
             <tr class="calendar-week" ng-repeat="week in calendarData">
-                <td class="calendar-day" ng-repeat="day in week" ng-class="{'calendar-day-currentmonth': day.thisMonth, 'calendar-day-othermonth': !day.thisMonth, 'calendar-day-today': day.today}">
+                <td class="calendar-day" ng-repeat="day in week" ng-class="{'calendar-day-currentmonth': day.thisMonth, 'calendar-day-othermonth': !day.thisMonth, 'today': day.today}">
                     <p ng-show="day.shifts" class="shift">({{day.number}})</p>
                     <p ng-hide="day.shifts" class="noshift">{{day.number}}</p>
                 </td>
