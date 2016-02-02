@@ -1,5 +1,6 @@
 @background: #394264;
 @background-input: #50597b;
+@background-softer: #283154;
 @placeholder-color: #fff;
 @input-text-color: #fff;
 @offtext-color: #9099b7;
@@ -206,10 +207,10 @@ body, .pane, .scroll-content, .list, .logo {
 
     .icon {
         display: block;
-        font-size: 18px;
-        border: 2px solid #fff;
-        border-radius: 100%;
-        line-height: 17px;
+        font-size: 22px;
+        //border: 2px solid #fff;
+        //border-radius: 100%;
+        //line-height: 17px;
         width: 21px;
         margin: 20px auto;
         text-align: center;
@@ -236,9 +237,11 @@ body, .pane, .scroll-content, .list, .logo {
     line-height: 60px;
     margin: 0;
     text-align: center;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
+    //border-top-left-radius: 5px;
+    //border-top-right-radius: 5px;
 }
+
+@calendar-day-height: 40px;
 
 /* A Previous button in calendar */
 .calendar-month {
@@ -246,11 +249,11 @@ body, .pane, .scroll-content, .list, .logo {
 
     .calendar-day {
         height: 320px;
-        background: #3468af;
+        //background: #3468af;
     }
 
     .calendar-day .calendar-title {
-        background: #1a4e95;
+        //background: #1a4e95;
     }
 
     .calendar-day {
@@ -273,7 +276,7 @@ body, .pane, .scroll-content, .list, .logo {
     }
 
     .titler {
-        background: #3468af;
+        //background: #3468af;
     }
 
     .calendar-month .arrow-btn:hover {
@@ -284,18 +287,29 @@ body, .pane, .scroll-content, .list, .logo {
         margin-left: auto;
         margin-right: auto;
         text-align: center;
+        width: 100%;
 
         a, p {
             font-size: 17px;
         }
 
         td, th {
-            width: 40px;
-            height: 38px;
+            width: @calendar-day-height;
+            height: @calendar-day-height;
+            line-height: @calendar-day-height;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        td > p {
+            width: @calendar-day-height;
+            height: @calendar-day-height;
+            display: inline-block;
         }
 
         .calendar-day-othermonth > p {
-            display: none;
+            //display: none;
+            color: @offtext-color;
         }
 
         .calendar-day-currentmonth > .shift {
@@ -303,15 +317,18 @@ body, .pane, .scroll-content, .list, .logo {
         }
 
         .days-week {
-            color: #4fc4f6;
+            //color: #4fc4f6;
         }
 
-        .today {
+        .calendar-day-currentmonth.calendar-day-today {
             display: block;
-            width: 34px;
-            line-height: 34px;
+            //width: 34px;
+            //line-height: 34px;
             background: #e64c65;
             border-radius: 100%;
+            -moz-box-shadow: 0 0 3px @background-softer;
+            -webkit-box-shadow: 0 0 3px @background-softer;
+            box-shadow: 0 0 3px @background-softer;
         }
 
     }

@@ -184,10 +184,7 @@ body,
 }
 .arrow-btn .icon {
   display: block;
-  font-size: 18px;
-  border: 2px solid #fff;
-  border-radius: 100%;
-  line-height: 17px;
+  font-size: 22px;
   width: 21px;
   margin: 20px auto;
   text-align: center;
@@ -208,8 +205,6 @@ body,
   line-height: 60px;
   margin: 0;
   text-align: center;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
 }
 /* A Previous button in calendar */
 .calendar-month {
@@ -217,10 +212,6 @@ body,
 }
 .calendar-month .calendar-day {
   height: 320px;
-  background: #3468af;
-}
-.calendar-month .calendar-day .calendar-title {
-  background: #1a4e95;
 }
 .calendar-month .calendar-day .arrow-btn:hover {
   background: #16417E;
@@ -236,9 +227,6 @@ body,
 .calendar-month .add-event.button:hover {
   background: #35aadc;
 }
-.calendar-month .titler {
-  background: #3468af;
-}
 .calendar-month .calendar-month .arrow-btn:hover {
   background: #1a4e95;
 }
@@ -246,6 +234,7 @@ body,
   margin-left: auto;
   margin-right: auto;
   text-align: center;
+  width: 100%;
 }
 .calendar-month .calendar a,
 .calendar-month .calendar p {
@@ -254,18 +243,24 @@ body,
 .calendar-month .calendar td,
 .calendar-month .calendar th {
   width: 40px;
-  height: 38px;
+  height: 40px;
+  line-height: 40px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.calendar-month .calendar td > p {
+  width: 40px;
+  height: 40px;
+  display: inline-block;
 }
 .calendar-month .calendar .calendar-day-othermonth > p {
-  display: none;
+  color: #9099b7;
 }
-.calendar-month .calendar .days-week {
-  color: #4fc4f6;
-}
-.calendar-month .calendar .today {
+.calendar-month .calendar .calendar-day-currentmonth.calendar-day-today {
   display: block;
-  width: 34px;
-  line-height: 34px;
   background: #e64c65;
   border-radius: 100%;
+  -moz-box-shadow: 0 0 3px #283154;
+  -webkit-box-shadow: 0 0 3px #283154;
+  box-shadow: 0 0 3px #283154;
 }
