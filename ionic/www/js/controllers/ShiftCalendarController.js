@@ -31,6 +31,32 @@ angular.module('scheduling-app.controllers')
             $scope.$on(GENERAL_EVENTS.CALENDAR.UPDATE.FETCHING, loading);
             $scope.$on(GENERAL_EVENTS.CALENDAR.UPDATE.DONE, loadingComplete);
 
+            $scope.show = false;
+            $rootScope.$on(GENERAL_EVENTS.CALENDAR.SHOW, function() {
+                if (isHidable()) {
+                    $scope.show = true;
+                    $rootScope.calendarShown = true;
+                }
+            });
+
+            $rootScope.$on(GENERAL_EVENTS.CALENDAR.HIDE, function() {
+                if (isHidable()) {
+                    $scope.show = false;
+                    $rootScope.calendarShown = false;
+                }
+            });
+
+            $rootScope.$on(GENERAL_EVENTS.CALENDAR.TOGGLE, function() {
+                if (isHidable()) {
+                    $scope.show = !$scope.show;
+                    $rootScope.calendarShown = $scope.show;
+                }
+            });
+
+            function isHidable() {
+                return $scope.attributes['toggle'];
+            }
+
             $scope.nextMonth = nextMonth;
             $scope.previousMonth = previousMonth;
             $scope.currentMonth = currentMonth;
@@ -154,6 +180,16 @@ angular.module('scheduling-app.controllers')
                 calendarBounds.end = moment(now).endOf("month").endOf("week").endOf("day");
 
                 return calendarBounds;
+            }
+
+            function initialShowOrHide() {
+                if ($scope.attributes['show'] == 'true') {
+                    $scope.show = true;
+                }
+
+                if (isHidable()) {
+                    $rootScope.calendarShown = $scope.show;
+                }
             }
 
             function calculateCalendar() {

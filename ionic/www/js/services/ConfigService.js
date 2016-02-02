@@ -86,6 +86,9 @@ var config_data = {
                 'RANGE': 'events:calendar:update:range',
                 'DATASETUPDATED': 'events:calendar:update:datasetupdated'
             },
+            'SHOW': 'events:calendar:show',
+            'HIDE': 'events:calendar:hide',
+            'TOGGLE': 'events:calendar:toggle',
             'VIEW': 'events:calendar:view',
             'INVALIDATE': 'events:calendar:invalidate'
         },
