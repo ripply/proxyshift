@@ -1,11 +1,15 @@
 @background: #394264;
 @background-input: #50597b;
 @background-softer: #283154;
+@background-light: #3468af;
 @placeholder-color: #fff;
 @input-text-color: #fff;
 @offtext-color: #9099b7;
 @offtext-link-color: #746d97;
 @button-color: #e64c65;
+@color-assertive: #f00;
+@text-color: #fff;
+@text-bright: #4fc4f6;
 /*
 //@background: #373447;
 //@background-input: #50597b;
@@ -190,14 +194,21 @@ body, .pane, .scroll-content, .list, .logo {
     }
 }
 
+@calendar-day-height: 40px;
+@calendar-shift-dot-height: 5px;
+@calendar-shift-x-pos: round((@calendar-day-height / 2) - (@calendar-shift-dot-height / 2));
+@calendar-shift-y-pos: (0 - ((@calendar-day-height / 2) - ((@calendar-shift-dot-height / 2) + (@calendar-day-height / 5))));
+@calendar-arrow-height: @calendar-day-height * 1.5;
+@calendar-header-line-height: 60px;
+
 .arrow-btn-container {
     position: relative;
 }
 .arrow-btn {
     position: absolute;
     display: block;
-    width: 60px;
-    height: 60px;
+    width: @calendar-arrow-height;
+    height: @calendar-arrow-height;
     -webkit-transition: background .3s;
     transition: background .3s;
 
@@ -211,8 +222,9 @@ body, .pane, .scroll-content, .list, .logo {
         //border: 2px solid #fff;
         //border-radius: 100%;
         //line-height: 17px;
-        width: 21px;
-        margin: 20px auto;
+        //width: 21px;
+        //margin: auto auto;
+        line-height: @calendar-header-line-height;
         text-align: center;
     }
 
@@ -234,18 +246,19 @@ body, .pane, .scroll-content, .list, .logo {
 
 .titler {
     display: block;
-    line-height: 60px;
+    line-height: @calendar-header-line-height;
     margin: 0;
     text-align: center;
+    color: @text-color;
     //border-top-left-radius: 5px;
     //border-top-right-radius: 5px;
 }
 
-@calendar-day-height: 40px;
-
 /* A Previous button in calendar */
 .calendar-month {
     display: block;
+    background-color: @background;
+    color: @text-color;
 
     .calendar-day {
         height: 320px;
@@ -276,7 +289,7 @@ body, .pane, .scroll-content, .list, .logo {
     }
 
     .titler {
-        //background: #3468af;
+        background: @background-light;
     }
 
     .calendar-month .arrow-btn:hover {
@@ -307,8 +320,18 @@ body, .pane, .scroll-content, .list, .logo {
             display: inline-block;
         }
 
+        .shift > span {
+            display: block;
+            background: #f00;
+            border-radius: 100%;
+            height: @calendar-shift-dot-height;
+            width: @calendar-shift-dot-height;
+            position: relative;
+            top: @calendar-shift-y-pos;
+            left: @calendar-shift-x-pos;
+        }
+
         .calendar-day-othermonth > p {
-            //display: none;
             color: @offtext-color;
         }
 
@@ -317,14 +340,14 @@ body, .pane, .scroll-content, .list, .logo {
         }
 
         .days-week {
-            //color: #4fc4f6;
+            color: @text-bright;
         }
 
         .calendar-day-currentmonth.calendar-day-today {
             display: block;
             //width: 34px;
             //line-height: 34px;
-            background: #e64c65;
+            background: @background-light;
             border-radius: 100%;
             -moz-box-shadow: 0 0 3px @background-softer;
             -webkit-box-shadow: 0 0 3px @background-softer;
