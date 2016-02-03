@@ -10,6 +10,9 @@
 @color-assertive: #f00;
 @text-color: #fff;
 @text-bright: #4fc4f6;
+
+@settings-background: #2d2d3a;
+@settings-offset-color: #575761;
 /*
 //@background: #373447;
 //@background-input: #50597b;
@@ -201,64 +204,64 @@ body, .pane, .scroll-content, .list, .logo {
 @calendar-arrow-height: @calendar-day-height * 1.5;
 @calendar-header-line-height: 60px;
 
-.arrow-btn-container {
-    position: relative;
-}
-.arrow-btn {
-    position: absolute;
-    display: block;
-    width: @calendar-arrow-height;
-    height: @calendar-arrow-height;
-    -webkit-transition: background .3s;
-    transition: background .3s;
-
-    :hover {
-        text-decoration: none;
-    }
-
-    .icon {
-        display: block;
-        font-size: 22px;
-        //border: 2px solid #fff;
-        //border-radius: 100%;
-        //line-height: 17px;
-        //width: 21px;
-        //margin: auto auto;
-        line-height: @calendar-header-line-height;
-        text-align: center;
-    }
-
-    .calendar-back .icon {
-        padding-right: 2px;
-    }
-
-}
-
-.arrow-btn.calendar-back {
-    border-top-left-radius: 5px;
-}
-
-.arrow-btn.calendar-next {
-    border-top-right-radius: 5px;
-    right: 0;
-    top: 0;
-}
-
-.titler {
-    display: block;
-    line-height: @calendar-header-line-height;
-    margin: 0;
-    text-align: center;
-    color: @text-color;
-    //border-top-left-radius: 5px;
-    //border-top-right-radius: 5px;
-}
-
 /* A Previous button in calendar */
 .calendar-month {
     display: block;
     background-color: @background;
     color: @text-color;
+
+    .arrow-btn-container {
+        position: relative;
+    }
+    .arrow-btn {
+        position: absolute;
+        display: block;
+        width: @calendar-arrow-height;
+        height: @calendar-arrow-height;
+        -webkit-transition: background .3s;
+        transition: background .3s;
+
+        :hover {
+            text-decoration: none;
+        }
+
+        .icon {
+            display: block;
+            font-size: 22px;
+            //border: 2px solid #fff;
+            //border-radius: 100%;
+            //line-height: 17px;
+            //width: 21px;
+            //margin: auto auto;
+            line-height: @calendar-header-line-height;
+            text-align: center;
+        }
+
+        .calendar-back .icon {
+            padding-right: 2px;
+        }
+
+    }
+
+    .arrow-btn.calendar-back {
+        border-top-left-radius: 5px;
+    }
+
+    .arrow-btn.calendar-next {
+        border-top-right-radius: 5px;
+        right: 0;
+        top: 0;
+    }
+
+    .titler {
+        display: block;
+        line-height: @calendar-header-line-height;
+        margin: 0;
+        text-align: center;
+        color: @text-color;
+        //border-top-left-radius: 5px;
+        //border-top-right-radius: 5px;
+    }
 
     .calendar-day {
         height: 320px;
@@ -357,3 +360,61 @@ body, .pane, .scroll-content, .list, .logo {
     }
 
 }
+
+// Settings page
+
+.list {
+    background-color: @settings-background;
+
+    .item {
+        background-color: @settings-background;
+        border-top-width: 0;
+        border-bottom-color: @settings-offset-color;
+        border-bottom-width: 2px;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

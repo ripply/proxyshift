@@ -168,10 +168,16 @@ body,
     vertical-align: 50%;
   }
 }
-.arrow-btn-container {
+/* A Previous button in calendar */
+.calendar-month {
+  display: block;
+  background-color: #394264;
+  color: #ffffff;
+}
+.calendar-month .arrow-btn-container {
   position: relative;
 }
-.arrow-btn {
+.calendar-month .arrow-btn {
   position: absolute;
   display: block;
   width: 60px;
@@ -179,37 +185,31 @@ body,
   -webkit-transition: background .3s;
   transition: background .3s;
 }
-.arrow-btn :hover {
+.calendar-month .arrow-btn :hover {
   text-decoration: none;
 }
-.arrow-btn .icon {
+.calendar-month .arrow-btn .icon {
   display: block;
   font-size: 22px;
   line-height: 60px;
   text-align: center;
 }
-.arrow-btn .calendar-back .icon {
+.calendar-month .arrow-btn .calendar-back .icon {
   padding-right: 2px;
 }
-.arrow-btn.calendar-back {
+.calendar-month .arrow-btn.calendar-back {
   border-top-left-radius: 5px;
 }
-.arrow-btn.calendar-next {
+.calendar-month .arrow-btn.calendar-next {
   border-top-right-radius: 5px;
   right: 0;
   top: 0;
 }
-.titler {
+.calendar-month .titler {
   display: block;
   line-height: 60px;
   margin: 0;
   text-align: center;
-  color: #ffffff;
-}
-/* A Previous button in calendar */
-.calendar-month {
-  display: block;
-  background-color: #394264;
   color: #ffffff;
 }
 .calendar-month .calendar-day {
@@ -281,4 +281,13 @@ body,
   -moz-box-shadow: 0 0 3px #283154;
   -webkit-box-shadow: 0 0 3px #283154;
   box-shadow: 0 0 3px #283154;
+}
+.list {
+  background-color: #2d2d3a;
+}
+.list .item {
+  background-color: #2d2d3a;
+  border-top-width: 0;
+  border-bottom-color: #575761;
+  border-bottom-width: 2px;
 }
