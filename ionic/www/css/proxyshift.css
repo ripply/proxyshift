@@ -289,5 +289,6 @@ body,
   background-color: #2d2d3a;
   border-top-width: 0;
   border-bottom-color: #575761;
-  border-bottom-width: 2px;
+  border-bottom-width: 1px;
+  margin: 0;
 }
