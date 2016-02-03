@@ -49,8 +49,8 @@ module.exports = {
             route: function(req, res) {
                 var now = new Date();
                 var range = grabNormalShiftRange(now, after, before);
-                var after = range[0];
-                var before = range[1];
+                var before = range[0];
+                var after = range[1];
                 models.Shift.query(function(q) {
                     // grab groups the user is a part of
                     var relatedGroupsSubQuery =
