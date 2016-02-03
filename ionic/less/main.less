@@ -1,4 +1,4 @@
-@background: #394264;
+//@background: #394264;
 @background-input: #50597b;
 @background-softer: #283154;
 @background-light: #3468af;
@@ -13,6 +13,7 @@
 
 @settings-background: #2d2d3a;
 @settings-offset-color: #575761;
+@background: @settings-background;
 /*
 //@background: #373447;
 //@background-input: #50597b;
@@ -363,15 +364,70 @@ body, .pane, .scroll-content, .list, .logo {
 
 // Settings page
 
+#settings-page {
+
+    .bar-header {
+        background-color: @settings-offset-color;
+        color: @text-color;
+    }
+
+}
+
 .list {
     background-color: @settings-background;
 
+    .activated {
+        background-color: @settings-offset-color;
+    }
+
+    .item-indent {
+        background-color: inherit;
+        border-top-width: 0;
+        border-bottom-color: @settings-offset-color;
+        border-bottom-width: 0;
+        margin: 0;
+        padding-left: 20px;
+
+        .item {
+            padding-left: 0;
+            color: @text-color;
+
+            a {
+                padding-left: 0;
+            }
+        }
+
+    }
+
+    .item-complex {
+        //position: relative;
+        :after {
+            content: ">";
+            position: absolute;
+            display: block;
+            right: 20px;
+            top: 20px;
+        }
+    }
+
     .item {
-        background-color: @settings-background;
+        background-color: inherit;
         border-top-width: 0;
         border-bottom-color: @settings-offset-color;
         border-bottom-width: 1px;
+        border-left-width: 0;
+        border-right-width: 0;
         margin: 0;
+        color: @settings-offset-color;
+        //margin-left: 50px;
+
+        a {
+            background-color: inherit;
+        }
+    }
+
+    .item-divider {
+        padding-top: 30px;
     }
 
 }

@@ -34,7 +34,7 @@ body,
 .scroll-content,
 .list,
 .logo {
-  background: #394264;
+  background: #2d2d3a;
 }
 .item {
   background: #50597b;
@@ -171,7 +171,7 @@ body,
 /* A Previous button in calendar */
 .calendar-month {
   display: block;
-  background-color: #394264;
+  background-color: #2d2d3a;
   color: #ffffff;
 }
 .calendar-month .arrow-btn-container {
@@ -282,13 +282,51 @@ body,
   -webkit-box-shadow: 0 0 3px #283154;
   box-shadow: 0 0 3px #283154;
 }
+#settings-page .bar-header {
+  background-color: #575761;
+  color: #ffffff;
+}
 .list {
   background-color: #2d2d3a;
 }
+.list .activated {
+  background-color: #575761;
+}
+.list .item-indent {
+  background-color: inherit;
+  border-top-width: 0;
+  border-bottom-color: #575761;
+  border-bottom-width: 0;
+  margin: 0;
+  padding-left: 20px;
+}
+.list .item-indent .item {
+  padding-left: 0;
+  color: #ffffff;
+}
+.list .item-indent .item a {
+  padding-left: 0;
+}
+.list .item-complex :after {
+  content: ">";
+  position: absolute;
+  display: block;
+  right: 20px;
+  top: 20px;
+}
 .list .item {
-  background-color: #2d2d3a;
+  background-color: inherit;
   border-top-width: 0;
   border-bottom-color: #575761;
   border-bottom-width: 1px;
+  border-left-width: 0;
+  border-right-width: 0;
   margin: 0;
+  color: #575761;
+}
+.list .item a {
+  background-color: inherit;
+}
+.list .item-divider {
+  padding-top: 30px;
 }

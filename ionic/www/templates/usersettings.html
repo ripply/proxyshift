@@ -4,29 +4,36 @@
             <div class="item item-divider">
                 Notifications
             </div>
-            <ion-toggle ng-model="UserSettings.pushnotifications"
-                        ng-checked="UserSettings.pushnotifications"
-                        ng-click="commitSettings()">
-                Push Notifications
-            </ion-toggle>
-            <ion-toggle ng-model="UserSettings.emailnotifications"
-                        ng-checked="UserSettings.emailnotifications"
-                        ng-click="commitSettings()">
-                Email Notifications
-            </ion-toggle>
-            <ion-toggle ng-model="UserSettings.textnotifications"
-                        ng-checked="UserSettings.textnotifications"
-                        ng-click="commitSettings()">
-                Text Notifications
-            </ion-toggle>
+            <div class="item-indent">
+                <ion-toggle ng-model="UserSettings.pushnotifications"
+                            ng-checked="UserSettings.pushnotifications"
+                            ng-click="commitSettings()">
+                    <i class="icon ion-ios-bell"></i>
+                    Push Notifications
+                </ion-toggle>
+                <ion-toggle ng-model="UserSettings.emailnotifications"
+                            ng-checked="UserSettings.emailnotifications"
+                            ng-click="commitSettings()">
+                    <i class="icon ion-email"></i>
+                    Email Notifications
+                </ion-toggle>
+                <ion-toggle ng-model="UserSettings.textnotifications"
+                            ng-checked="UserSettings.textnotifications"
+                            ng-click="commitSettings()">
+                    <i class="icon ion-ios-telephone"></i>
+                    Text Notifications
+                </ion-toggle>
+            </div>
             <div class="item item-divider">
                 Groups
             </div>
-            <ion-item ng-repeat="group in groupsList"
-                      item="group"
-                      href="#{{states.GROUPSETTINGS_URL}}/{{group.id}}/settings" class="item-remove-animate">
-                {{ group.name }}
-            </ion-item>
+            <div class="item-indent">
+                <ion-item ng-repeat="group in groupsList"
+                          item="group"
+                          href="#{{states.GROUPSETTINGS_URL}}/{{group.id}}/settings" class="item-remove-animate">
+                    {{ group.name }}
+                </ion-item>
+            </div>
         </div>
     </ion-content>
 </ion-view>
