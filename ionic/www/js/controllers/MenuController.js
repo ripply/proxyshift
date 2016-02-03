@@ -20,5 +20,11 @@ angular.module('scheduling-app.controllers')
             $scope.openSettings = function() {
                 StateHistoryService.addToGotoHistory();
             };
+
+            $scope.$on('$ionicView.enter', function() {
+                document.body.requestFullscreen();
+            });
+
+
         }
     ]);
