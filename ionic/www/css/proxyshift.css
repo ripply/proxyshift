@@ -330,3 +330,34 @@ body,
 .list .item-divider {
   padding-top: 30px;
 }
+.shift-item p {
+  color: #ffffff;
+}
+.shift-left {
+  float: left;
+  padding-left: 25px;
+}
+.shift-right {
+  float: right;
+}
+.shift-duration {
+  float: right;
+}
+.shift-left-icon {
+  position: absolute;
+  float: left;
+  color: green;
+  top: 38px;
+  left: 10px;
+}
+.shift-left-icon i {
+  font-size: 23px;
+}
+.shift-expanded {
+  height: 100%;
+}
+.shift-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}

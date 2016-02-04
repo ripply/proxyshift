@@ -37,6 +37,26 @@ angular.module('scheduling-app.services')
                 return startLocal.format("Z") != startUsersTime.format("Z");
             }
 
+            var units = {
+                'year': 'year',
+                'month': 'month',
+                'day': 'day',
+                'hour': 'hr',
+                'minute': 'min'
+            };
+
+            this.getReadableShiftDuration = function(shift) {
+                var duration = moment.duration(getEndOfShift(shift) - getStartOfShift(shift));
+                var list = [];
+                angular.forEach(units, function(string, unit) {
+                    var count = duration.get(unit);
+                    if (count > 0) {
+                        list.push(count + ' ' + string + (count > 1 ? 's':''));
+                    }
+                });
+                return list.join(' ');
+            };
+
             this.getReadableLocalShiftStartTime = function(shift, format) {
                 var startLocal = getStartOfShift(shift);
                 return getDisplayableFormat(startLocal, format);

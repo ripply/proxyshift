@@ -429,12 +429,26 @@ angular.module('scheduling-app.controllers')
                 return window.ShiftShared.grabNormalShiftRange();
             }
 
+            $scope.ellipsis = function(text, length) {
+                if (text.length > length) {
+                    return text.substr(0, length) + "...";
+                } else {
+                    return text;
+                }
+            };
+
+            $scope.clicked = function(shift) {
+                shift.expanded = !shift.expanded;
+            }
+
             $scope.getReadableLocalShiftStartTime = ShiftProcessingService.getReadableLocalShiftStartTime;
             $scope.getReadableLocalShiftEndTime = ShiftProcessingService.getReadableLocalShiftEndTime;
             $scope.getReadableLocalShiftDiffTime = ShiftProcessingService.getReadableLocalShiftDiffTime;
             $scope.getReadableUsersShiftTime = ShiftProcessingService.getReadableUsersShiftTime;
             $scope.getReadableUsersShiftStartTime = ShiftProcessingService.getReadableUsersShiftStartTime;
             $scope.getReadableUsersShiftEndTime = ShiftProcessingService.getReadableUsersShiftEndTime;
+            $scope.getReadableShiftDuration = ShiftProcessingService.getReadableShiftDuration;
+            $scope.userIsInDifferentTimeZone = ShiftProcessingService.userIsInDifferentTimeZone;
             $scope.getShiftsLocation = ShiftProcessingService.getShiftsLocation;
             $scope.getShiftsSublocation = ShiftProcessingService.getShiftsSublocation;
         }]);
