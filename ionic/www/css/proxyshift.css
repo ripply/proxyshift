@@ -361,3 +361,12 @@ body,
   bottom: 0;
   left: 0;
 }
+.shift-collapsed {
+  max-height: 10px;
+  transition: max-height 0.15s ease-out;
+  overflow: hidden;
+}
+.shift-expanded {
+  max-height: 250px;
+  transition: max-height 1.25s ease-in;
+}

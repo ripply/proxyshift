@@ -15,32 +15,19 @@
         ng-hide="shift.canceled || ignoredShift(shift)"
         ng-click="clicked(shift)">
         <div class="shift-left-icon"><i class="icon ion-ios-checkmark-outline"></i></div>
-        <div ng-hide="shift.expanded">
+        <div ng-class="{'shift-expanded': shift.expanded, 'shift-collapsed': !shift.expanded}">
             <div class="shift-left">
                 <p class="shift-location" ng-show="{{!shift.sublocation_id}}">{{getShiftsLocation(shift).address}}</p>
                 <p class="shift-location shift-location-floor" ng-show="{{shift.sublocation_id}}">{{getShiftsLocation(shift).address}} - {{getShiftsSublocation(shift).title}}</p>
-                <p class="shift-title">{{ellipsis(shift.title, 15)}}</p>
-                <p class="shift-desc">{{ellipsis(shift.description, 15)}}</p>
+                <p class="shift-title">{{shift.expanded ? shift.title : ellipsis(shift.title, 15)}}</p>
+                <p class="shift-desc">{{shift.expanded ? shift.description : ellipsis(shift.description, 15)}}</p>
             </div>
             <div class="shift-right">
                 <p class="shift-star" ng-hide="{{userIsInDifferentTimeZone(shift)}}">{{getReadableLocalShiftEndTime(shift)}}</p>
                 <p class="shift-star" ng-show="{{userIsInDifferentTimeZone(shift)}}">{{getReadableLocalShiftEndTime(shift)}} (local)</p>
                 <p class="shift-duration">{{getReadableShiftDuration(shift)}}</p>
             </div>
-        </div>
-        <div class="shift-expanded" ng-show="shift.expanded">
-            <div class="shift-left">
-                <p class="shift-location" ng-show="{{!shift.sublocation_id}}">{{getShiftsLocation(shift).address}}</p>
-                <p class="shift-location shift-location-floor" ng-show="{{shift.sublocation_id}}">{{getShiftsLocation(shift).address}} - {{getShiftsSublocation(shift).title}}</p>
-                <p class="shift-title">{{shift.title}}</p>
-                <p class="shift-desc">{{shift.description}}</p>
-            </div>
-            <div class="shift-right">
-                <p class="shift-star" ng-hide="{{userIsInDifferentTimeZone(shift)}}">{{getReadableLocalShiftEndTime(shift)}}</p>
-                <p class="shift-star" ng-show="{{userIsInDifferentTimeZone(shift)}}">{{getReadableLocalShiftEndTime(shift)}} (local)</p>
-                <p class="shift-duration">{{getReadableShiftDuration(shift)}}</p>
-            </div>
-            <div class="shift-bottom">
+            <div class="shift-bottom" ng-show="shift.expanded">
                 <p class="shift-left">Accept</p>
                 <p class="shift-right">Decline</p>
             </div>
