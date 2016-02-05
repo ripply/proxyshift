@@ -436,12 +436,17 @@ body, .pane, .scroll-content, .list, .logo {
     color: @text-color;
 }
 
-.shift-left {
-    float: left;
+.shift-info {
     padding-left: 25px;
+}
+
+.shift-left {
+    display: block;
+    float: left;
 };
 
 .shift-right {
+    display: block;
     float: right;
 }
 
@@ -461,23 +466,58 @@ body, .pane, .scroll-content, .list, .logo {
     }
 }
 
-.shift-expanded {
-    height: 100%;
-}
-
 .shift-bottom {
-    position: absolute;
-    bottom: 0;
-    left: 0;
+    width: 100%;
+
+    p {
+        text-align: center;
+    }
 }
 
 .shift-collapsed {
-    max-height: 10px;
+    max-height: 65px;
     transition: max-height 0.15s ease-out;
     overflow: hidden;
+
+    .shift-info {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 }
 
 .shift-expanded {
-    max-height: 250px;
+    max-height: 1000px;
+    overflow: hidden;
     transition: max-height 1.25s ease-in;
+    border-bottom-width: 0px;
+
+    .shift-info p {
+        overflow: visible;
+        text-overflow: clip;
+        text-wrap: normal;
+        white-space: normal;
+    }
+}
+
+.clear-padding {
+    padding: 0;
+}
+
+.list-padding {
+    padding: 16px;
+}
+
+.shift-accept {
+    width: 50%;
+    //background-color: red;
+    //border-color: red;
+    border-radius: 0px;
+}
+
+.shift-decline {
+    width: 50%;
+    //background-color: blueviolet;
+    //border-color: blueviolet;
+    border-radius: 0px;
 }

@@ -333,11 +333,15 @@ body,
 .shift-item p {
   color: #ffffff;
 }
-.shift-left {
-  float: left;
+.shift-info {
   padding-left: 25px;
 }
+.shift-left {
+  display: block;
+  float: left;
+}
 .shift-right {
+  display: block;
   float: right;
 }
 .shift-duration {
@@ -353,20 +357,45 @@ body,
 .shift-left-icon i {
   font-size: 23px;
 }
-.shift-expanded {
-  height: 100%;
-}
 .shift-bottom {
-  position: absolute;
-  bottom: 0;
-  left: 0;
+  width: 100%;
+}
+.shift-bottom p {
+  text-align: center;
 }
 .shift-collapsed {
-  max-height: 10px;
+  max-height: 65px;
   transition: max-height 0.15s ease-out;
   overflow: hidden;
 }
+.shift-collapsed .shift-info {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .shift-expanded {
-  max-height: 250px;
+  max-height: 1000px;
+  overflow: hidden;
   transition: max-height 1.25s ease-in;
+  border-bottom-width: 0px;
+}
+.shift-expanded .shift-info p {
+  overflow: visible;
+  text-overflow: clip;
+  text-wrap: normal;
+  white-space: normal;
+}
+.clear-padding {
+  padding: 0;
+}
+.list-padding {
+  padding: 16px;
+}
+.shift-accept {
+  width: 50%;
+  border-radius: 0px;
+}
+.shift-decline {
+  width: 50%;
+  border-radius: 0px;
 }
