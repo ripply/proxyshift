@@ -16,14 +16,15 @@
     "Makefile",
     "package.json"
   ],
-  "version": "4.0.6",
-  "_release": "4.0.6",
+  "version": "4.7.1",
+  "_release": "4.7.1",
   "_resolution": {
     "type": "version",
-    "tag": "4.0.6",
-    "commit": "827e916b7835c813131c24131eef1c07a6682e30"
+    "tag": "4.7.1",
+    "commit": "ccd3a48fb4ed664f5d0d9a9ad4420d014e5b3a46"
   },
   "_source": "git://github.com/chriso/validator.js.git",
-  "_target": "~4.0.2",
-  "_originalSource": "validator-js"
+  "_target": "^4.7.1",
+  "_originalSource": "validator-js",
+  "_direct": true
 }

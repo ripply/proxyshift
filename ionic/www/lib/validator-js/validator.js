@@ -26,6 +26,8 @@
         module.exports = definition();
     } else if (typeof define === 'function' && typeof define.amd === 'object') {
         define(definition);
+    } else if (typeof define === 'function' && typeof define.petal === 'object') {
+        define(name, [], definition);
     } else {
         this[name] = definition();
     }
@@ -33,7 +35,7 @@
 
     'use strict';
 
-    validator = { version: '4.0.6' };
+    validator = { version: '4.7.1', coerce: true };
 
     var emailUserPart = /^[a-z\d!#\$%&'\*\+\-\/=\?\^_`{\|}~]+$/i;
     var quotedEmailUser = /^([\s\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e]|(\\[\x01-\x09\x0b\x0c\x0d-\x7f]))*$/i;
@@ -50,6 +52,8 @@
     var isbn10Maybe = /^(?:[0-9]{9}X|[0-9]{10})$/
       , isbn13Maybe = /^(?:[0-9]{13})$/;
 
+    var macAddress = /^([0-9a-fA-F][0-9a-fA-F]:){5}([0-9a-fA-F][0-9a-fA-F])$/;
+
     var ipv4Maybe = /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
       , ipv6Block = /^[0-9A-F]{1,4}$/i;
 
@@ -60,8 +64,14 @@
       , all: /^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$/i
     };
 
-    var alpha = /^[A-Z]+$/i
-      , alphanumeric = /^[0-9A-Z]+$/i
+    var alpha = {
+        'en-US': /^[A-Z]+$/i,
+        'de-DE': /^[A-ZÄÖÜß]+$/i,
+      }
+      , alphanumeric = {
+        'en-US': /^[0-9A-Z]+$/i,
+        'de-DE': /^[0-9A-ZÄÖÜß]+$/i
+      }
       , numeric = /^[-+]?[0-9]+$/
       , int = /^(?:[-+]?(?:0|[1-9][0-9]*))$/
       , float = /^(?:[-+]?(?:[0-9]+))?(?:\.[0-9]*)?(?:[eE][\+\-]?(?:[0-9]+))?$/
@@ -79,18 +89,26 @@
     var base64 = /^(?:[A-Z0-9+\/]{4})*(?:[A-Z0-9+\/]{2}==|[A-Z0-9+\/]{3}=|[A-Z0-9+\/]{4})$/i;
 
     var phones = {
-      'zh-CN': /^(\+?0?86\-?)?1[345789]\d{9}$/,
+      'zh-CN': /^(\+?0?86\-?)?((13\d|14[57]|15[^4,\D]|17[678]|18\d)\d{8}|170[059]\d{7})$/,
       'zh-TW': /^(\+?886\-?|0)?9\d{8}$/,
       'en-ZA': /^(\+?27|0)\d{9}$/,
       'en-AU': /^(\+?61|0)4\d{8}$/,
       'en-HK': /^(\+?852\-?)?[569]\d{3}\-?\d{4}$/,
       'fr-FR': /^(\+?33|0)[67]\d{8}$/,
-      'pt-PT': /^(\+351)?9[1236]\d{7}$/,
-      'el-GR': /^(\+30)?((2\d{9})|(69\d{8}))$/,
+      'pt-PT': /^(\+?351)?9[1236]\d{7}$/,
+      'el-GR': /^(\+?30)?(69\d{8})$/,
       'en-GB': /^(\+?44|0)7\d{9}$/,
       'en-US': /^(\+?1)?[2-9]\d{2}[2-9](?!11)\d{6}$/,
-      'en-ZM': /^(\+26)?09[567]\d{7}$/,
-      'ru-RU': /^(\+?7|8)?9\d{9}$/
+      'en-ZM': /^(\+?26)?09[567]\d{7}$/,
+      'ru-RU': /^(\+?7|8)?9\d{9}$/,
+      'nb-NO': /^(\+?47)?[49]\d{7}$/,
+      'nn-NO': /^(\+?47)?[49]\d{7}$/,
+      'vi-VN': /^(\+?84|0)?((1(2([0-9])|6([2-9])|88|99))|(9((?!5)[0-9])))([0-9]{7})$/,
+      'en-NZ': /^(\+?64|0)2\d{7,9}$/,
+      'en-IN': /^(\+?91|0)?[789]\d{9}$/,
+      'es-ES': /^(\+?34)?(6\d{1}|7[1234])\d{7}$/,
+      'de-DE': /^(\+?49[ \.\-])?([\(]{1}[0-9]{1,6}[\)])?([0-9 \.\-\/]{3,20})((x|ext|extension)[ ]?[0-9]{1,4})?$/,
+      'fi-FI': /^(\+?358|0)\s?(4(0|1|2|4|5)?|50)\s?(\d\s?){4,8}\d$/
     };
 
     // from http://goo.gl/0ejHHW
@@ -116,15 +134,38 @@
         }
     };
 
+    var depd = null;
+    validator.deprecation = function (msg) {
+        if (depd === null) {
+            if (typeof require !== 'function') {
+                return;
+            }
+            depd = require('depd')('validator');
+        }
+        depd(msg);
+    };
+
     validator.toString = function (input) {
-        if (typeof input === 'object' && input !== null && input.toString) {
-            input = input.toString();
+        if (typeof input !== 'string') {
+            // The library validates strings only. Currently it coerces all input to a string, but this
+            // will go away in an upcoming major version change. Print a deprecation notice for now
+            if (!validator.coerce) {
+                throw new Error('this library validates strings only');
+            }
+            validator.deprecation('you tried to validate a ' + typeof input + ' but this library ' +
+                    '(validator.js) validates strings only. Please update your code as this will ' +
+                    'be an error soon.');
+        }
+        if (typeof input === 'object' && input !== null) {
+            if (typeof input.toString === 'function') {
+                input = input.toString();
+            } else {
+                input = '[object Object]';
+            }
         } else if (input === null || typeof input === 'undefined' || (isNaN(input) && !input.length)) {
             input = '';
-        } else if (typeof input !== 'string') {
-            input += '';
         }
-        return input;
+        return '' + input;
     };
 
     validator.toDate = function (date) {
@@ -190,8 +231,8 @@
             user = user.replace(/\./g, '').toLowerCase();
         }
 
-        if (!validator.isByteLength(user, 0, 64) ||
-                !validator.isByteLength(domain, 0, 256)) {
+        if (!validator.isByteLength(user, {max: 64}) ||
+                !validator.isByteLength(domain, {max: 256})) {
             return false;
         }
 
@@ -291,8 +332,12 @@
         return true;
     };
 
+    validator.isMACAddress = function (str) {
+        return macAddress.test(str);
+    };
+
     validator.isIP = function (str, version) {
-        version = validator.toString(version);
+        version = version ? version + '' : '';
         if (!version) {
             return validator.isIP(str, 4) || validator.isIP(str, 6);
         } else if (version === '4') {
@@ -389,8 +434,10 @@
                 // disallow full-width chars
                 return false;
             }
-            if (part[0] === '-' || part[part.length - 1] === '-' ||
-                    part.indexOf('---') >= 0) {
+            if (part[0] === '-' || part[part.length - 1] === '-') {
+                return false;
+            }
+            if (part.indexOf('---') >= 0 && part.slice(0, 4) !== 'xn--') {
                 return false;
             }
         }
@@ -401,12 +448,14 @@
         return (['true', 'false', '1', '0'].indexOf(str) >= 0);
     };
 
-    validator.isAlpha = function (str) {
-        return alpha.test(str);
+    validator.isAlpha = function (str, locale) {
+        locale = locale || 'en-US';
+        return alpha[locale].test(str);
     };
 
-    validator.isAlphanumeric = function (str) {
-        return alphanumeric.test(str);
+    validator.isAlphanumeric = function (str, locale) {
+        locale = locale || 'en-US';
+        return alphanumeric[locale].test(str);
     };
 
     validator.isNumeric = function (str) {
@@ -440,24 +489,42 @@
 
     validator.isFloat = function (str, options) {
         options = options || {};
-        return str !== '' && float.test(str) && (!options.hasOwnProperty('min') || str >= options.min) && (!options.hasOwnProperty('max') || str <= options.max);
+        if (str === '' || str === '.') {
+            return false;
+        }
+        return float.test(str) && (!options.hasOwnProperty('min') || str >= options.min) && (!options.hasOwnProperty('max') || str <= options.max);
     };
 
     validator.isDivisibleBy = function (str, num) {
-        return validator.toFloat(str) % validator.toInt(num) === 0;
+        return validator.toFloat(str) % parseInt(num, 10) === 0;
     };
 
     validator.isNull = function (str) {
         return str.length === 0;
     };
 
-    validator.isLength = function (str, min, max) {
+    validator.isLength = function (str, options) {
+        var min, max;
+        if (typeof(options) === 'object') {
+            min = options.min || 0;
+            max = options.max;
+        } else { // backwards compatibility: isLength(str, min [, max])
+            min = arguments[1];
+            max = arguments[2];
+        }
         var surrogatePairs = str.match(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g) || [];
         var len = str.length - surrogatePairs.length;
         return len >= min && (typeof max === 'undefined' || len <= max);
     };
-
-    validator.isByteLength = function (str, min, max) {
+    validator.isByteLength = function (str, options) {
+        var min, max;
+        if (typeof(options) === 'object') {
+            min = options.min || 0;
+            max = options.max;
+        } else { // backwards compatibility: isByteLength(str, min [, max])
+            min = arguments[1];
+            max = arguments[2];
+        }
         var len = encodeURI(str).split(/%..|./).length - 1;
         return len >= min && (typeof max === 'undefined' || len <= max);
     };
@@ -467,8 +534,85 @@
         return pattern && pattern.test(str);
     };
 
+    function getTimezoneOffset(str) {
+        var iso8601Parts = str.match(iso8601)
+          , timezone, sign, hours, minutes;
+        if (!iso8601Parts) {
+            str = str.toLowerCase();
+            timezone = str.match(/(?:\s|gmt\s*)(-|\+)(\d{1,4})(\s|$)/);
+            if (!timezone) {
+                return str.indexOf('gmt') !== -1 ? 0 : null;
+            }
+            sign = timezone[1];
+            var offset = timezone[2];
+            if (offset.length === 3) {
+                offset = '0' + offset;
+            }
+            if (offset.length <= 2) {
+                hours = 0;
+                minutes = parseInt(offset);
+            } else {
+                hours = parseInt(offset.slice(0, 2));
+                minutes = parseInt(offset.slice(2, 4));
+            }
+        } else {
+            timezone = iso8601Parts[21];
+            if (!timezone) {
+                // if no hour/minute was provided, the date is GMT
+                return !iso8601Parts[12] ? 0 : null;
+            }
+            if (timezone === 'z' || timezone === 'Z') {
+                return 0;
+            }
+            sign = iso8601Parts[22];
+            if (timezone.indexOf(':') !== -1) {
+                hours = parseInt(iso8601Parts[23]);
+                minutes = parseInt(iso8601Parts[24]);
+            } else {
+                hours = 0;
+                minutes = parseInt(iso8601Parts[23]);
+            }
+        }
+        return (hours * 60 + minutes) * (sign === '-' ? 1 : -1);
+    }
+
     validator.isDate = function (str) {
-        return !isNaN(Date.parse(str));
+        var normalizedDate = new Date(Date.parse(str));
+        if (isNaN(normalizedDate)) {
+            return false;
+        }
+
+        // normalizedDate is in the user's timezone. Apply the input
+        // timezone offset to the date so that the year and day match
+        // the input
+        var timezoneOffset = getTimezoneOffset(str);
+        if (timezoneOffset !== null) {
+            var timezoneDifference = normalizedDate.getTimezoneOffset() -
+                timezoneOffset;
+            normalizedDate = new Date(normalizedDate.getTime() +
+                60000 * timezoneDifference);
+        }
+
+        var day = String(normalizedDate.getDate());
+        var dayOrYear, dayOrYearMatches, year;
+        //check for valid double digits that could be late days
+        //check for all matches since a string like '12/23' is a valid date
+        //ignore everything with nearby colons
+        dayOrYearMatches = str.match(/(^|[^:\d])[23]\d([^:\d]|$)/g);
+        if (!dayOrYearMatches) {
+            return true;
+        }
+        dayOrYear = dayOrYearMatches.map(function(digitString) {
+            return digitString.match(/\d+/g)[0];
+        }).join('/');
+
+        year = String(normalizedDate.getFullYear()).slice(-2);
+        if (dayOrYear === day || dayOrYear === year) {
+            return true;
+        } else if ((dayOrYear === (day + '/' + year)) || (dayOrYear === (year + '/' + day))) {
+            return true;
+        }
+        return false;
     };
 
     validator.isAfter = function (str, date) {
@@ -497,6 +641,16 @@
             return options.indexOf(str) >= 0;
         }
         return false;
+    };
+
+    validator.isWhitelisted = function (str, chars) {
+        for (var i = str.length - 1; i >= 0; i--) {
+            if (chars.indexOf(str[i]) === -1) {
+                return false;
+            }
+        }
+
+        return true;
     };
 
     validator.isCreditCard = function (str) {
@@ -553,7 +707,7 @@
     };
 
     validator.isISBN = function (str, version) {
-        version = validator.toString(version);
+        version = version ? version + '' : '';
         if (!version) {
             return validator.isISBN(str, 10) || validator.isISBN(str, 13);
         }
@@ -700,7 +854,9 @@
     };
 
     var default_normalize_email_options = {
-        lowercase: true
+        lowercase: true,
+        remove_dots: true,
+        remove_extension: true
     };
 
     validator.normalizeEmail = function (email, options) {
@@ -711,11 +867,16 @@
         var parts = email.split('@', 2);
         parts[1] = parts[1].toLowerCase();
         if (parts[1] === 'gmail.com' || parts[1] === 'googlemail.com') {
-            parts[0] = parts[0].toLowerCase().replace(/\./g, '');
-            if (parts[0][0] === '+') {
+            if (options.remove_extension) {
+                parts[0] = parts[0].split('+')[0];
+            }
+            if (options.remove_dots) {
+                parts[0] = parts[0].replace(/\./g, '');
+            }
+            if (!parts[0].length) {
                 return false;
             }
-            parts[0] = parts[0].split('+')[0];
+            parts[0] = parts[0].toLowerCase();
             parts[1] = 'gmail.com';
         } else if (options.lowercase) {
             parts[0] = parts[0].toLowerCase();
