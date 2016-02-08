@@ -6,14 +6,14 @@ angular.module('scheduling-app.controllers')
         '$scope',
         '$controller',
         'RemoteUserSettingsService',
-        'UserSettingsModel',
+        'UsersModel',
         'StateHistoryService',
         'STATES',
         'UserInfoService',
         function($scope,
                  $controller,
                  RemoteUserSettingsService,
-                 UserSettingsModel,
+                 UsersModel,
                  StateHistoryService,
                  STATES,
                  UserInfoService
@@ -21,8 +21,8 @@ angular.module('scheduling-app.controllers')
             $controller('BaseModelController', {$scope: $scope});
             $scope.register(
                 'UserSettings',
-                UserSettingsModel,
-                undefined
+                UsersModel,
+                'settings'
             );
             $scope.isList = false;
             $scope.fetch();

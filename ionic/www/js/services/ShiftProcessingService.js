@@ -2,12 +2,12 @@
 angular.module('scheduling-app.services')
     .service('ShiftProcessingService', [
         '$rootScope',
-        'Restangular',
         'UserInfoService',
+        'GENERAL_EVENTS',
         function(
             $rootScope,
-            Restangular,
-            UserInfoService
+            UserInfoService,
+            GENERAL_EVENTS
         ) {
             $rootScope.userIsInDifferentTimeZone = userIsInDifferentTimeZone;
 
@@ -38,11 +38,11 @@ angular.module('scheduling-app.services')
             }
 
             var units = {
-                'year': 'year',
-                'month': 'month',
-                'day': 'day',
-                'hour': 'hr',
-                'minute': 'min'
+                'year': ' year',
+                'month': ' month',
+                'day': ' day',
+                'hour': 'h',
+                'minute': 'm'
             };
 
             this.getReadableShiftDuration = function(shift) {
@@ -51,7 +51,7 @@ angular.module('scheduling-app.services')
                 angular.forEach(units, function(string, unit) {
                     var count = duration.get(unit);
                     if (count > 0) {
-                        list.push(count + ' ' + string + (count > 1 ? 's':''));
+                        list.push(count + string + (!string.startsWith(' ') ? '' : (count > 1 ? 's':'')));
                     }
                 });
                 return list.join(' ');
@@ -149,5 +149,45 @@ angular.module('scheduling-app.services')
             function getEndOfShift(shift) {
                 return moment.tz(shift.end * 1000, shift.timezone.name);
             }
+
+            this.markDayBreaksForShifts = markDayBreaksForShifts;
+
+            function markDayBreaksForShifts(result) {
+                if (!result) {
+                    return;
+                }
+                var lastDay = null;
+                var startDay = null;
+                var endDay = null;
+                // assume everything is sequential sent by server
+                angular.forEach(result, function(shift) {
+                    var day = getStartOfShift(shift);
+                    if (!lastDay) {
+                        shift.dayBreak = true;
+                    } else if (day.isBetween(startDay, endDay)) {
+                        // same day
+                        shift.dayBreak = false;
+                    } else {
+                        // different day
+                        shift.dayBreak = true;
+                    }
+
+                    lastDay = day;
+                    startDay = lastDay.startOf('day');
+                    endDay = lastDay.endOf('day');
+                });
+            }
+
+            this.getReadableStartDate = getReadableStartDate;
+
+            function getReadableStartDate(shift, format) {
+                return getStartOfShift(shift).format(format);
+            }
+
+            $rootScope.$on(GENERAL_EVENTS.UPDATES.RESOURCE, function(state, resource, value) {
+                if (resource == 'AllShifts') {
+                    //markDayBreaksForShifts(value);
+                }
+            });
         }
     ]);

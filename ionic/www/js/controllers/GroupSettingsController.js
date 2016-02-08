@@ -10,7 +10,7 @@ angular.module('scheduling-app.controllers')
         'StateHistoryService',
         'GENERAL_EVENTS',
         'STATES',
-        'Restangular',
+        'ResourceService',
         'GroupsModel',
         'UserInfoService',
         function($scope,
@@ -20,7 +20,7 @@ angular.module('scheduling-app.controllers')
                  StateHistoryService,
                  GENERAL_EVENTS,
                  STATES,
-                 Restangular,
+                 ResourceService,
                  GroupsModel,
                  UserInfoService
         ) {
@@ -48,14 +48,12 @@ angular.module('scheduling-app.controllers')
                 return UserInfoService.isPrivilegedGroupMember(getGroupId());
             };
 
-            var lastSuccessfullResult = {};
+            var lastSuccessfulResult = {};
 
             $scope.fetchSettings = function fetchSettings() {
-                Restangular.one("groups", getGroupId())
-                    .one("settings")
-                    .get()
-                    .then(function fetchGroupSettings(result) {
-                        result = result.plain();
+                ResourceService.getGroupSettings(
+                    getGroupId(),
+                    function fetchGroupSettings(result) {
                         angular.forEach(result, function(value, key) {
                             if (value === 0) {
                                 value = false;
@@ -65,21 +63,22 @@ angular.module('scheduling-app.controllers')
                             result[key] = value;
                         });
                         $scope[variableName] = result;
-                        lastSuccessfullResult = angular.copy(result);
+                        lastSuccessfulResult = angular.copy(result);
                     }, function fetchGroupSettingsError(err) {
-                        $scope[variableName] = angular.copy(lastSuccessfullResult);
-                    })
+                        $scope[variableName] = angular.copy(lastSuccessfulResult);
+                    }
+                );
             };
 
             $scope.saveSettings = function saveSettings() {
-                Restangular.one("groups", getGroupId())
-                    .one("settings")
-                    .customPOST($scope[variableName])
-                    .then(function saveGroupSettingsThen(result, wat) {
+                ResourceService.saveGroupSettings(
+                    getGroupId(),
+                    $scope[variableName],
+                    function saveGroupSettingsThen(result, wat) {
                         console.log(result);
                         console.log(wat);
                     }, function saveGroupSettingsError(response) {
-                        $scope[variableName] = angular.copy(lastSuccessfullResult);
+                        $scope[variableName] = angular.copy(lastSuccessfulResult);
                         $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);
                     }
                 );

@@ -11,13 +11,12 @@ angular.module('scheduling-app', [
     'ionic',
     'ngCookies',
     'gettext',
-    'restangular',
     'LocalStorageModule',
     'ionic-fancy-select',
     'scheduling-app.controllers',
     'scheduling-app.authentication',
-    'scheduling-app.models',
     'scheduling-app.session',
+    'scheduling-app.resources',
     'scheduling-app.directives',
     'scheduling-app.cookies',
     'scheduling-app.config',
@@ -67,7 +66,7 @@ angular.module('scheduling-app', [
         '$injector',
         '$provide',
         '$ionicConfigProvider',
-        'RestangularProvider',
+        '$resourceProvider',
         'localStorageServiceProvider',
         'STATES',
         'GENERAL_CONFIG',
@@ -78,7 +77,7 @@ angular.module('scheduling-app', [
                  $injector,
                  $provide,
                  $ionicConfigProvider,
-                 RestangularProvider,
+                 $resourceProvider,
                  localStorageServiceProvider,
                  STATES,
                  GENERAL_CONFIG,
@@ -111,10 +110,8 @@ angular.module('scheduling-app', [
                 GENERAL_CONFIG.APP_URL = GENERAL_CONFIG.APP_URL_DEV;
                 console.log("Running in browser using dev api source: " + GENERAL_CONFIG.APP_URL);
             }
-            // update restangular configuration so that models will use new base url
-            var base_url = GENERAL_CONFIG.APP_URL + GENERAL_CONFIG.APP_URL_API;
-            RestangularProvider.setBaseUrl(base_url);
-            //RestangularConfig.configure();
+
+            console.log("APP-uRL=" + GENERAL_CONFIG.APP_URL);
 
             // Services cannot be asked for during config
             // instead, ask for injector provider and

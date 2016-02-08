@@ -112,7 +112,8 @@ module.exports = {
                                 .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery)
                                 .whereIn('sublocations.location_id', relatedLocationsSubQuery);
                             query = joinShiftApplications(query, req.user.id);
-                        });
+                        })
+                        .orderBy('shifts.start');
                 })
                     .fetchAll({
                         withRelated: [

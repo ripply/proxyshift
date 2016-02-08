@@ -5,7 +5,7 @@ angular.module('scheduling-app.controllers')
         '$controller',
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
-        'Restangular',
+        //'Restangular',
         'ShiftProcessingService',
         'ModelVariableName',
         'Model',
@@ -14,7 +14,7 @@ angular.module('scheduling-app.controllers')
                  $controller,
                  GENERAL_CONFIG,
                  GENERAL_EVENTS,
-                 Restangular,
+                 //Restangular,
                  ShiftProcessingService,
                  ModelVariableName,
                  Model
@@ -41,7 +41,7 @@ angular.module('scheduling-app.controllers')
                 }
             };
             // TODO: Remove and figurout why $ionivView.afterEnter does not trigger in super class
-            $scope.fetch();
+            //$scope.fetch();
 
             $scope.promptRecindShift = function(id) {
                 // TODO: Angular replacement for website
@@ -448,6 +448,7 @@ angular.module('scheduling-app.controllers')
             $scope.getReadableUsersShiftStartTime = ShiftProcessingService.getReadableUsersShiftStartTime;
             $scope.getReadableUsersShiftEndTime = ShiftProcessingService.getReadableUsersShiftEndTime;
             $scope.getReadableShiftDuration = ShiftProcessingService.getReadableShiftDuration;
+            $scope.getReadableStartDate = ShiftProcessingService.getReadableStartDate;
             $scope.userIsInDifferentTimeZone = ShiftProcessingService.userIsInDifferentTimeZone;
             $scope.getShiftsLocation = ShiftProcessingService.getShiftsLocation;
             $scope.getShiftsSublocation = ShiftProcessingService.getShiftsSublocation;

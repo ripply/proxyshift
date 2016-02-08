@@ -10,10 +10,15 @@
     </div>
     <ion-item
         class="item clear-padding"
+        collection-repeat="shift in Model"
+        item-height="shift.isDivider ? 37 : (shift.expanded ? 200 : 65)"
         ng-show="Model"
-        ng-repeat="shift in Model"
         ng-hide="shift.canceled || ignoredShift(shift)"
         ng-click="clicked(shift)">
+        <div ng-if="shift.isDivider">
+            {{getReadableStartDate(shift.shift, 'MMMM Dd')}}
+        </div>
+        <div ng-if="!shift.isDivider">
         <div class="shift-item list-padding">
             <div class="shift-left-icon"><i class="icon ion-ios-checkmark-outline"></i></div>
             <div ng-class="{'shift-expanded': shift.expanded, 'shift-collapsed': !shift.expanded}">
@@ -34,29 +39,17 @@
             <button class="button button-outline button-positive shift-accept shift-left">Accept</button>
             <button class="button button-outline button-assertive shift-decline shift-right">Decline</button>
         </div>
+        </div>
     </ion-item>
     <ion-item
         ng-hide="Model"
         class="item item-icon-right">
-        <p>There are currently no open shifts</p>
+        <p>There are currently no open shifts asdf{{Model.length}}</p>
     </ion-item>
     <div class="item item-divider"
         ng-show="ignorableShiftsExist()">
         {{declinedshifttitle}}
     </div>
-    <ion-item
-        class="item item-icon-right"
-        ng-repeat="shift in Model"
-        ng-hide="shift.canceled || !ignoredShift(shift)">
-        <h2>{{getReadableLocalShiftStartTime(shift)}} - {{getReadableLocalShiftEndTime(shift)}} - {{getReadableLocalShiftDiffTime(shift)}}</h2>
-        <h2 ng-show="{{userIsInDifferentTimeZone(shift)}}">{{getReadableUsersShiftStartTime(shift)}} - {{getReadableUsersShiftEndTime(shift)}} (your time)</h2>
-        <p class="shift-title">{{shift.title}}</p>
-        <p class="shift-description">{{shift.description}}</p>
-        <p class="location-address" ng-show="{{!shift.sublocation_id}}">{{getShiftsLocation(shift).address}}</p>
-        <p class="location-address" ng-show="{{shift.sublocation_id}}">{{getShiftsLocation(shift).address}} - {{getShiftsSublocation(shift).title}}</p>
-        <div ng-show="isIgnoredShift(shift)">wut</div>
-        <i class="icon ion-minus-circled" ng-if="cancelable" ng-click="promptCancelShift({{shift.id}})"></i>
-        <i class="icon ion-close" ng-if="dismissable" ng-click="unIgnoreShift({{shift.id}})"></i>
-    </ion-item>
+
 
 </ion-list>

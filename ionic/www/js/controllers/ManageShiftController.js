@@ -4,7 +4,7 @@ angular.module('scheduling-app.controllers')
         '$rootScope',
         '$controller',
         '$stateParams',
-        'Restangular',
+        //'Restangular',
         'GENERAL_EVENTS',
         'GENERAL_CONFIG',
         'ManagingShiftsModel',
@@ -12,7 +12,7 @@ angular.module('scheduling-app.controllers')
                  $rootScope,
                  $controller,
                  $stateParams,
-                 Restangular,
+                 //Restangular,
                  GENERAL_EVENTS,
                  GENERAL_CONFIG,
                  ManagingShiftsModel

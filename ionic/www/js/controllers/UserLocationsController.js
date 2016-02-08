@@ -7,7 +7,8 @@ angular.module('scheduling-app.controllers')
         '$rootScope',
         '$controller',
         '$stateParams',
-        'Restangular',
+        'GroupsModel',
+        'LocationsModel',
         'UserInfoService',
         'StateHistoryService',
         'GENERAL_EVENTS',
@@ -16,7 +17,8 @@ angular.module('scheduling-app.controllers')
                  $rootScope,
                  $controller,
                  $stateParams,
-                 Restangular,
+                 GroupsModel,
+                 LocationsModel,
                  UserInfoService,
                  StateHistoryService,
                  GENERAL_EVENTS,
@@ -41,21 +43,19 @@ angular.module('scheduling-app.controllers')
             }
 
             $scope.fetchLocations = function fetchLocations() {
-                Restangular.one("groups", getGroupId())
-                    .all('locations')
-                    .getList()
-                    .then(function fetchGroupLocations(result) {
-                        result = result.plain();
-                        angular.forEach(result, function(location) {
-                            location.subscribed = getSubscribed(location);
-                        });
-                        latestLocations = angular.copy(result);
-                        $scope.locations = result;
-                        console.log(result);
-                    }, function fetchGroupLocationsError(err) {
-                        $scope.locations = angular.copy(latestLocations);
-                        console.log(err);
+                GroupsModel.locations({
+                    group_id: getGroupId()
+                }, function fetchGroupLocations(result) {
+                    angular.forEach(result, function(location) {
+                        location.subscribed = getSubscribed(location);
                     });
+                    latestLocations = angular.copy(result);
+                    $scope.locations = result;
+                    console.log(result);
+                }, function fetchGroupLocationsError(err) {
+                    $scope.locations = angular.copy(latestLocations);
+                    console.log(err);
+                });
             };
 
             $scope.saveLocations = function saveLocations() {
@@ -83,12 +83,9 @@ angular.module('scheduling-app.controllers')
 
                     var promises = [];
                     angular.forEach(diff, function saveLocationsPost(subscribed, location_id) {
-                        var rest = Restangular.one("locations", location_id)
-                            .one('subscribe');
-                        var verb = subscribed ? 'doPOST':'doDELETE';
-                        var promise = rest[verb]();
+                        var verb = subscribed ? 'subscribe':'unsubscribe';
+                        var promise = LocationsModel[verb]({location_id: location_id}).$promise;
                         promises.push(promise);
-                        var location;
                         promise.then(function saveLocationsPostSuccess(result) {
                             for (var i = 0; i < latestLocations.length; i++) {
                                 var unmodifiedLocation = latestLocations[i];

@@ -2,12 +2,18 @@ angular.module('scheduling-app.services')
     .service('ResourceService', [
         '$rootScope',
         '$controller',
-        'Restangular',
         'GENERAL_EVENTS',
+        'UsersModel',
+        'LocationsModel',
+        'GroupsModel',
+        'ShiftsModel',
         function($rootScope,
                  $controller,
-                 Restangular,
-                 GENERAL_EVENTS
+                 GENERAL_EVENTS,
+                 UsersModel,
+                 LocationsModel,
+                 GroupsModel,
+                 ShiftsModel
         ) {
             function updateUserInfo(callback, argument) {
                 $rootScope.$emit(GENERAL_EVENTS.UPDATES.USERINFO.UPDATENEEDED);
@@ -16,13 +22,43 @@ angular.module('scheduling-app.services')
                 }
             }
 
+            this.getGroupSettings = function getGroupSettings(group_id, success, error) {
+                andThen(
+                    GroupsModel.settings({
+                        group_id: group_id
+                    }),
+                    success,
+                    error
+                );
+            };
+
+            this.saveGroupSettings = function saveGroupSettings(group_id, settings, success, error) {
+                andThen(
+                    GroupsModel.updateSettings({
+                            group_id: group_id
+                        },
+                        settings
+                    ),
+                    success,
+                    error
+                );
+            };
+
+            this.updateSettings = function updateSettings(settings, success, error) {
+                andThen(
+                    UsersModel.updateSettings({},
+                        settings
+                    ),
+                    success,
+                    error
+                );
+            };
+
             this.resetPassword = function resetPassword(usernameOrEmail, success, error) {
                 andThen(
-                    Restangular.all('users')
-                        .all('passwordreset')
-                        .customPOST({
-                            username: usernameOrEmail
-                        }),
+                    UsersModel.passwordReset({
+                        username: usernameOrEmail
+                    }),
                     success,
                     error
                 );
@@ -30,9 +66,10 @@ angular.module('scheduling-app.services')
 
             this.getLocation = function getLocation(group_id, location_id, success, error) {
                 andThen(
-                    Restangular.one('groups', group_id)
-                        .one('locations', location_id)
-                        .get(),
+                    GroupsModel.location({
+                        group_id: group_id,
+                        location_id: location_id
+                    }),
                     success,
                     error
                 );
@@ -40,15 +77,15 @@ angular.module('scheduling-app.services')
 
             this.createLocation = function createLocation(group_id, timezone, state, city, address, zipcode, phonenumber, success, error) {
                 andThen(
-                    Restangular.one('groups', group_id)
-                        .all('locations')
-                        .customPOST({
-                            state: state,
-                            city: city,
-                            address: address,
-                            zipcode: zipcode,
-                            phonenumber: phonenumber
-                        }),
+                    GroupModel.createLocation({
+                        group_id: group_id
+                    }, {
+                        state: state,
+                        city: city,
+                        address: address,
+                        zipcode: zipcode,
+                        phonenumber: phonenumber
+                    }),
                     function createLocationSuccess(result) {
                         // userinfo has location information
                         updateUserInfo(success, result);
@@ -59,15 +96,16 @@ angular.module('scheduling-app.services')
 
             this.editLocation = function editLocation(group_id, location_id, timezone, state, city, address, zipcode, phonenumber, success, error) {
                 andThen(
-                    Restangular.one('groups', group_id)
-                        .one('locations', location_id)
-                        .patch({
-                            state: state,
-                            city: city,
-                            address: address,
-                            zipcode: zipcode,
-                            phonenumber: phonenumber
-                        }),
+                    GroupsModel.updateLocation({
+                        group_id: group_id,
+                        location_id: location_id
+                    }, {
+                        state: state,
+                        city: city,
+                        address: address,
+                        zipcode: zipcode,
+                        phonenumber: phonenumber
+                    }),
                     function editLocationSuccess(result) {
                         // userinfo has location information
                         updateUserInfo(success, result);
@@ -78,9 +116,10 @@ angular.module('scheduling-app.services')
 
             this.deleteLocation = function deleteLocation(group_id, location_id, success, error) {
                 andThen(
-                    Restangular.one('groups', group_id)
-                        .one('locations', location_id)
-                        .remove(),
+                    GroupsModel.removeLocation({
+                        group_id: group_id,
+                        location_id: location_id
+                    }),
                     function deleteLocationSuccess(result) {
                         // userinfo has location information
                         updateUserInfo(success, result);
@@ -91,12 +130,12 @@ angular.module('scheduling-app.services')
 
             this.createSublocation = function createSublocation(location_id, title, description, success, error) {
                 andThen(
-                    Restangular.one('locations', location_id)
-                        .all('sublocations')
-                        .customPOST({
-                            title: title,
-                            description: description
-                        }),
+                    LocationsModel.createSublocation({
+                        location_id: location_id
+                    }, {
+                        title: title,
+                        description: description
+                    }),
                     function createSublocationSuccess(result) {
                         // userinfo has location information
                         // TODO: UPDATE USERINFO
@@ -108,12 +147,12 @@ angular.module('scheduling-app.services')
 
             this.editSublocation = function editSublocation(location_id, sublocation_id, title, description, success, error) {
                 andThen(
-                    Restangular.one('locations', location_id)
-                        .one('sublocations', sublocation_id)
-                        .patch({
-                            title: title,
-                            description: description
-                        }),
+                    LocationsModel.updateSublocation({
+                        location_id: location_id
+                    }, {
+                        title: title,
+                        description: description
+                    }),
                     function editSublocationSuccess(result) {
                         // userinfo has location information
                         // TODO: UPDATE USERINFO
@@ -125,9 +164,9 @@ angular.module('scheduling-app.services')
 
             this.deleteSublocation = function deleteSublocation(location_id, sublocation_id, success, error) {
                 andThen(
-                    Restangular.one('locations', location_id)
-                        .one('sublocations', sublocation_id)
-                        .remove(),
+                    LocationsModel.removeSublocation({
+                        location_id: location_id
+                    }),
                     function deleteSublocationSuccess(result) {
                         // userinfo has location information
                         // TODO: UPDATE USERINFO
@@ -139,9 +178,9 @@ angular.module('scheduling-app.services')
 
             this.getUsersAtLocation = function getUsersAtLocation(location_id, success, error) {
                 andThen(
-                    Restangular.one('locations', location_id)
-                        .all('users')
-                        .getList(),
+                    LocationsModel.users({
+                        location_id: location_id
+                    }),
                     success,
                     error
                 )
@@ -149,9 +188,9 @@ angular.module('scheduling-app.services')
 
             this.getJobsAtGroup = function getJobsAtGroup(group_id, success, error) {
                 andThen(
-                    Restangular.one('groups', group_id)
-                        .all('classes')
-                        .getList(),
+                    GroupsModel.classes({
+                        group_id: group_id
+                    }),
                     success,
                     error
                 );
@@ -159,15 +198,15 @@ angular.module('scheduling-app.services')
 
             this.createType = function createType(group_id, title, description, cansendnotification, requiremeanagerapproval, grouppermission_id, success, error) {
                 andThen(
-                    Restangular.one('groups', group_id)
-                        .all('classes')
-                        .customPOST({
-                            title: title,
-                            description: description,
-                            cansendnotification: cansendnotification,
-                            requiremanagerapproval: requiremeanagerapproval,
-                            grouppermission_id: grouppermission_id
-                        }),
+                    GroupsModel.createClass({
+                        group_id: group_id
+                    }, {
+                        title: title,
+                        description: description,
+                        cansendnotification: cansendnotification,
+                        requiremanagerapproval: requiremeanagerapproval,
+                        grouppermission_id: grouppermission_id
+                    }),
                     function createTypeSuccess(result) {
                         updateUserInfo(success, result);
                     },
@@ -177,15 +216,16 @@ angular.module('scheduling-app.services')
 
             this.editType = function editType(group_id, type_id, title, description, cansendnotification, requiremeanagerapproval, grouppermission_id, success, error) {
                 andThen(
-                    Restangular.one('groups', group_id)
-                        .one('classes', type_id)
-                        .patch({
-                            title: title,
-                            description: description,
-                            cansendnotification: cansendnotification,
-                            requiremanagerapproval: requiremeanagerapproval,
-                            grouppermission_id: grouppermission_id
-                        }),
+                    GroupsModel.updateClass({
+                        group_id: group_id,
+                        class_id: type_id
+                    }, {
+                        title: title,
+                        description: description,
+                        cansendnotification: cansendnotification,
+                        requiremanagerapproval: requiremeanagerapproval,
+                        grouppermission_id: grouppermission_id
+                    }),
                     function editTypeSuccess(result) {
                         updateUserInfo(success, result);
                     },
@@ -195,9 +235,10 @@ angular.module('scheduling-app.services')
 
             this.deleteType = function deleteType(group_id, type_id, success, error) {
                 andThen(
-                    Restangular.one('groups', group_id)
-                        .one('classes', type_id)
-                        .remove(),
+                    GroupsModel.removeClass({
+                        group_id: group_id,
+                        class_id: type_id
+                    }),
                     function deleteTypeSuccess(result) {
                         updateUserInfo(success, result);
                     },
@@ -207,9 +248,9 @@ angular.module('scheduling-app.services')
 
             this.getGroupPermissions = function getGroupPermissions(group_id, success, error) {
                 andThen(
-                    Restangular.one('groups', group_id)
-                        .all('permissions')
-                        .getList(),
+                    GroupsModel.permissions({
+                        group_id: group_id
+                    }),
                     success,
                     error
                 )
@@ -217,9 +258,9 @@ angular.module('scheduling-app.services')
 
             this.getGroupMembers = function getGroupMembers(group_id, success, error) {
                 andThen(
-                    Restangular.one('groups', group_id)
-                        .all('users')
-                        .getList(),
+                    GroupsModel.users({
+                        group_id: group_id
+                    }),
                     success,
                     error
                 );
@@ -227,12 +268,11 @@ angular.module('scheduling-app.services')
 
             this.getGroupMembersSlice = function getGroupMembersSlice(group_id, start, end, success, error) {
                 andThen(
-                    Restangular.one('groups', group_id)
-                        .all('users')
-                        .all('search')
-                        .one('start', start)
-                        .one('end', end)
-                        .get(),
+                    GroupsModel.usersStagger({
+                        group_id: group_id,
+                        start: start,
+                        end: end
+                    }),
                     success,
                     error
                 );
@@ -240,14 +280,13 @@ angular.module('scheduling-app.services')
 
             this.getGroupMembersSliceSearch = function getGroupMembersSliceSearch(group_id, start, end, query, success, error) {
                 andThen(
-                    Restangular.one('groups', group_id)
-                        .all('users')
-                        .all('search')
-                        .one('start', start)
-                        .one('end', end)
-                        .customPOST({
-                            query: query
-                        }),
+                    GroupsModel.searchUsersStagger({
+                        group_id: group_id,
+                        start: start,
+                        end: end,
+                    }, {
+                        query: query
+                    }),
                     success,
                     error
                 );
@@ -255,9 +294,10 @@ angular.module('scheduling-app.services')
 
             this.getGroupMember = function getGroupMember(group_id, user_id, success, error) {
                 andThen(
-                    Restangular.one('groups', group_id)
-                        .one('users', user_id)
-                        .get(),
+                    GroupsModel.user({
+                        group_id: group_id,
+                        user_id: user_id
+                    }),
                     success,
                     error
                 )
@@ -271,21 +311,23 @@ angular.module('scheduling-app.services')
                     emails = [emails];
                 }
                 andThen(
-                    Restangular.one('groups', group_id)
-                        .all('users')
-                        .all('invite')
-                        .customPOST({
-                            emails: emails,
-                            grouppermission_id: grouppermission_id,
-                            userclasses: userclasses,
-                            message: message
-                        }),
+                    GroupsModel.inviteUser({
+                        group_id: group_id
+                    }, {
+                        emails: emails,
+                        grouppermission_id: grouppermission_id,
+                        userclasses: userclasses,
+                        message: message
+                    }),
                     success,
                     error
                 );
             };
 
             function andThen(promise, success, error) {
+                if (promise.hasOwnProperty("$promise")) {
+                    promise = promise.$promise;
+                }
                 promise.then(function resourceServiceSuccess(result) {
                     if (success) {
                         success(result);

@@ -3,11 +3,11 @@ angular.module('scheduling-app.services')
     .service('RemoteUserSettingsService', [
         '$rootScope',
         '$controller',
-        'UserSettingsModel',
+        'ResourceService',
         'GENERAL_EVENTS',
         function($rootScope,
                  $controller,
-                 UserSettingsModel,
+                 ResourceService,
                  GENERAL_EVENTS
         ) {
             this.getSetting = function getSetting(settingName) {
@@ -24,10 +24,9 @@ angular.module('scheduling-app.services')
                 if (settings === undefined) {
                     settings = $rootScope.UserSettings;
                 }
-                Restangular.all('users')
-                    .all('settings')
-                    .customPOST(settings)
-                    .then(function(result) {
+                ResourceService.updateSettings(
+                    settings,
+                    function(result) {
                         lastUserSettingsFromServer = angular.copy(result);
                         $rootScope.$emit(GENERAL_EVENTS.UPDATES.RESOURCE,
                             'UserSettings',
@@ -36,12 +35,14 @@ angular.module('scheduling-app.services')
                             $rootScope
                         );
                         successCallback(result);
-                    }, function(response) {
+                    },
+                    function(response) {
                         // failure
                         console.log("FAIL");
                         $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);
                         errorCallback(response, angular.copy(lastUserSettingsFromServer));
-                    });
+                    }
+                );
             };
 
             $rootScope.$on(GENERAL_EVENTS.UPDATES.RESOURCE, function resourceUpdated(env, resource, newValue, oldValue) {

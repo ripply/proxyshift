@@ -43,17 +43,16 @@ angular.module('scheduling-app.controllers')
 
             $scope.fetch = function () {
                 angular.forEach($scope._models, function(objectMap, objectName) {
-                    var addFunction = objectMap.add;
+                    var method = objectMap.method;
                     var subRouteFunction = objectMap.subRoute;
                     var object = objectMap.object;
 
                     if (!objectMap.pendingFetch ||
-                        (objectMap.pendingFetch && objectMap.pendingFetch.isPending && !objectMap.pendingFetch.isPending())) {
+                        (objectMap.pendingFetch && !objectMap.pendingFetch.$resolved)) {
                         // object is currently not pending or the pending fetch is finished
                         setPending(objectName);
-                        objectMap.pendingFetch = subRouteFunction(object);
-                        objectMap.pendingFetch.then(function(result) {
-                            result = result.plain();
+                        objectMap.pendingFetch = subRouteFunction(object, method);
+                        objectMap.pendingFetch.$promise.then(function(result) {
                             // check if result is an empty array or empty object
                             // if it is, then delete the variable from scope
                             // this makes it easy to ng-show in templates
@@ -169,11 +168,11 @@ angular.module('scheduling-app.controllers')
             $scope.$on('$ionicView.leave', leaveEvent);
             $scope.$on('$ionicNavView.leave', leaveEvent);
 
-            function register(modelName, modelObject, addFunction, subRouteFetchFunction) {
+            function register(modelName, modelObject, method, subRouteFetchFunction) {
                 if (arguments.length <= 2) {
                     // assume 2nd argument is addFunction
                     // get 2nd argument via modelName
-                    addFunction = modelObject;
+                    method = modelObject;
                     modelObject = $injector.get(modelName);
                 }
                 $scope.pending[modelName] = false;
@@ -182,16 +181,19 @@ angular.module('scheduling-app.controllers')
                     $scope.unregister(modelName);
                 }
                 if (subRouteFetchFunction === undefined) {
-                    subRouteFetchFunction = function(model) {
+                    subRouteFetchFunction = function(model, method) {
+                        return model[method]();
+                        /*
                         if ($scope.hasOwnProperty('isList') && $scope.isList == false) {
                             return model.one().get();
                         } else {
                             return model.getList();
                         }
+                        */
                     }
                 }
                 $scope._models[modelName] = {
-                    add: addFunction,
+                    method: method,
                     subRoute: subRouteFetchFunction,
                     object: modelObject
                 };
