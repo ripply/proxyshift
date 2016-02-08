@@ -25,74 +25,112 @@ module.exports = function(grunt) {
 
         browserify: {
             vendor: {
-                src: ['client/requires/**/*.js'],
-                dest: 'build/vendor.js',
+                src: ['ionic/www/js/**/*.js'],
+                dest: 'ionic/www/libs.js',
                 options: {
                     transform: [
                         'deamdify'
                     ],
                     shim: {
+                        ionic: {
+                            path: 'ionic/lib/ionic/release/js/ionic.bundle.min.js',
+                            exports: 'angular'
+                        },
                         jquery: {
-                            path: 'client/requires/jquery/js/jquery.js',
+                            path: 'ionic/lib/jquery/dist/jquery.js',
                             exports: '$'
                         },
-                        jquerycookie: {
-                            path: 'client/requires/jquery-cookie/jquery.cookie.js',
-                            exports: '$',
-                            depends: {
-                                jquery: '$'
-                            }
-                        },
-                        underscore: {
-                            path: 'client/requires/underscore/js/underscore.js',
+                        lodash: {
+                            path: 'ionic/lib/lodash/lodash.js',
                             exports: '_'
                         },
-                        backbone: {
-                            path: 'client/requires/backbone/js/backbone.js',
-                            exports: 'Backbone',
+                        'angular-cookies': {
+                            path: 'ionic/lib/angular-cookies/angular-cookies.min.js',
                             depends: {
-                                jquery: '$',
-                                underscore: 'underscore'
-                            }
+                                ionic: 'angular'
+                            },
+                            exports: null
                         },
-                        moment: {
-                            path: 'client/requires/moment/js/moment.min.js',
+                        'httpauth': {
+                            path: 'ionic/lib/angular-http-auth/src/http-auth-interceptor.js',
+                            depends: {
+                                ionic: 'angular'
+                            },
+                            exports: null
+                        },
+                        'angular-messages': {
+                            path: 'ionic/lib/angular-http-auth/src/http-auth-interceptor.js',
+                            depends: {
+                                ionic: 'angular'
+                            },
+                            exports: null
+                        },
+                        momentjs: {
+                            path: 'ionic/lib/moment/min/moment.min.js',
                             exports: 'moment',
                             depends: {
                                 jquery: '$'
                             }
                         },
-                        'backbone.marionette': {
-                            path: 'client/requires/backbone.marionette/js/backbone.marionette.js',
-                            exports: 'Marionette',
+                        tzdetect: {
+                            path: 'ionic/lib/tzdetect/tzdetect.js',
                             depends: {
-                                jquery: '$',
-                                backbone: 'Backbone',
-                                underscore: '_'
-                            }
+                                momentjs: 'moment'
+                            },
+                            exports: null
                         },
-                        'fullcalendar-browser': {
-                            path: 'client/requires/fullcalendar/js/fullcalendar.js',
-                            exports: 'fullcalendar',
+                        'ui-grid': {
+                            path: 'ionic/lib/angular-ui-grid/ui-grid.js',
                             depends: {
-                                jquery: '$',
-                                moment: 'moment'
-                            }
+                                ionic: 'angular'
+                            },
+                            exports: null
+                        },/*
+                        validator: {
+                            path: 'ionic/lib/validator-js/validator.js',
+                            exports: null
+                        },*/
+                        'angular-gettext': {
+                            path: 'ionic/lib/angular-gettext/dist/angular-gettext.js',
+                            depends: {
+                                ionic: 'angular'
+                            },
+                            exports: null
                         },
-                        'gcal': {
-                            path: 'client/requires/fullcalendar/js/gcal.js',
-                            exports: 'gcal',
+                        'angular-local-storage': {
+                            path: 'ionic/lib/angular-local-storage/dist/angular-local-storage.js',
                             depends: {
-                                jquery: '$',
-                                'fullcalendar-browser': 'fullcalendar'
-                            }
+                                ionic: 'angular'
+                            },
+                            exports: null
                         },
-                        'bootstrap': {
-                            path: 'client/requires/bootstrap/bootstrap.js',
-                            exports: 'bootstrap',
+                        'ionic-fancy-select': {
+                            path: 'ionic/lib/ionic-fancy-select/src/ionic-fancy-select.js',
                             depends: {
-                                jquery: 'jQuery'
-                            }
+                                ionic: 'angular'
+                            },
+                            exports: null
+                        },
+                        'angular-resource': {
+                            path: 'ionic/lib/angular-resource/angular-resource.js',
+                            depends: {
+                                ionic: 'angular'
+                            },
+                            exports: null
+                        },
+                        'ionic-timepicker': {
+                            path: 'ionic/lib/ionic-timepicker/dist/ionic-timepicker.bundle.min.js',
+                            depends: {
+                                ionic: 'angular'
+                            },
+                            exports: null
+                        },
+                        'ionic-datepicker': {
+                            path: 'ionic/lib/ionic-datepicker/dist/ionic-datepicker.bundle.min.js',
+                            depends: {
+                                ionic: 'angular'
+                            },
+                            exports: null
                         }
                     }
                 }
@@ -169,12 +207,33 @@ module.exports = function(grunt) {
         uglify: {
             compile: {
                 options: {
-                    compress: true,
-                    verbose: true
+                    //compress: true,
+                    verbose: true,
+                    mangle: false
                 },
                 files: [{
-                    src: 'build/<%= pkg.name %>.js',
-                    dest: 'dist/js/<%= pkg.name %>.js'
+                    'ionic/www/libs.js': [
+                        <!-- In windows apps this fixes dynamic content errors -->
+                        'ionic/lib/ionic/release/js/ionic.bundle.js',
+                        'ionic/lib/jquery/dist/jquery.js',
+                        'ionic/lib/lodash/lodash.js',
+                        'ionic/lib/angular-cookies/angular-cookies.min.js',
+                        'ionic/lib/angular-http-auth/src/http-auth-interceptor.js',
+                        'ionic/lib/angular-messages/angular-messages.js',
+                        'ionic/lib/moment/min/moment.min.js',
+                        'ionic/lib/moment-timezone/builds/moment-timezone-with-data.js',
+                        'ionic/lib/tzdetect/tzdetect.js',
+                        'ionic/lib/jstz/jstz.js',
+                        'ionic/lib/angular-ui-grid/ui-grid.js',
+                        //'ionic/lib/validator-js/validator.min.js',
+                        'ionic/lib/angular-gettext/dist/angular-gettext.js',
+                        'ionic/lib/angular-local-storage/dist/angular-local-storage.js',
+                        'ionic/lib/ionic-fancy-select/src/ionic-fancy-select.js',
+                        'ionic/lib/angular-resource/angular-resource.js',
+                        'ionic/lib/ionic-timepicker/dist/ionic-timepicker.bundle.min.js',
+                        'ionic/lib/ionic-datepicker/dist/ionic-datepicker.bundle.min.js',
+                        //'ionic/www/js/**/*.js'
+                    ]
                 }]
             }
         },
@@ -288,7 +347,7 @@ module.exports = function(grunt) {
     //grunt.registerTask('init:dev', ['clean', 'bower', 'browserify:vendor']);
     grunt.registerTask('init:dev', ['bower']);
 
-    grunt.registerTask('build:dev', ['clean:dev', 'browserify:vendor', 'browserify:app', 'browserify:test', 'jshint:dev', 'less:transpile', 'concat', 'copy:dev']);
+    grunt.registerTask('build:dev', ['clean:dev', 'browserify:vendor', 'browserify:app', 'browserify:test', 'jshint:dev', 'less:transpile', 'uglify', 'concat', 'copy:dev']);
     grunt.registerTask('build:prod', ['clean:prod', 'browserify:vendor', 'browserify:app', 'jshint:all', 'less:transpile', 'concat', 'cssmin', 'uglify', 'copy:prod']);
 
     grunt.registerTask('heroku', ['init:dev', 'build:dev']);
