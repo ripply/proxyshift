@@ -24,6 +24,11 @@ angular.module('scheduling-app.controllers')
                 if (name == $scope.name) {
                     $scope.show = true;
                     $scope.shift = shift;
+                    $scope.waiting = true;
+                    setTimeout(function() {
+                        $scope.waiting = false;
+                        $scope.apply();
+                    }, 100);
                 }
             });
 

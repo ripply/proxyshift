@@ -18,21 +18,21 @@ angular.module('scheduling-app.directives')
             });
 
             function link(scope, element, attributes) {
-                if ($scope.toggle == 'true') {
-                    $document.bind('click', function (event) {
-                        if (scope.show) {
-                            var isClickedElementChildOfPopup = element
-                                    .find(event.target)
-                                    .length > 0;
+                $document.bind('click', function (event) {
+                    if (scope.show && !scope.waiting) {
+                        var isClickedElementChildOfPopup = element
+                                .find(event.target)
+                                .length > 0;
 
-                            if (isClickedElementChildOfPopup)
-                                return;
+                        if (isClickedElementChildOfPopup)
+                            return;
 
-                            $rootScope.$emit('events:shift:description:hide', $scope.name);
-                            $rootScope.$apply();
-                        }
-                    });
-                }
+                        //$rootScope.$broadcast('events:shift:description:hide', scope.name);
+                        scope.show = false;
+                        event.stopPropagation();
+                        scope.$apply();
+                    }
+                });
             }
         }
     ]

@@ -1941,3 +1941,12 @@ body,
   width: 50%;
   border-radius: 0px;
 }
+.shiftDescription {
+  z-index: 2000;
+  position: absolute;
+  width: 80%;
+  left: 10%;
+  top: 40%;
+  background: #2d2d3a;
+  max-height: 80%;
+}
