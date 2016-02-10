@@ -24,14 +24,15 @@ angular.module('scheduling-app.controllers')
             $scope.fetch = function() {
                 var deferred = $q.defer();
 
-                console.log("TRYING $ALL");
-                AllShiftsModel.all(function(wat) {
-                    console.log(wat);
-                });
-                console.log("TRIED ALL");
-                $http.get('/api/shifts/all').success(function(data) {
+                AllShiftsModel.all(function(data) {
                     $scope.Model = data;
-                    console.log("!@#$!@#$!@#$!@#$!@#$");
+                    setTimeout(function() {
+                        alert("WAT");
+                        AllShiftsModel.all(function(data) {
+                            alert("updated");
+                            $scope.Model = data;
+                        });
+                    }, 5000);
                     deferred.resolve(data);
                 });
 

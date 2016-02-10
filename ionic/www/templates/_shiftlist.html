@@ -39,7 +39,6 @@
             <button class="button button-outline button-positive shift-accept shift-left">Accept</button>
             <button class="button button-outline button-assertive shift-decline shift-right">Decline</button>
         </div>
-        </div>
     </ion-item>
     <ion-item
         ng-hide="Model"
@@ -50,6 +49,5 @@
         ng-show="ignorableShiftsExist()">
         {{declinedshifttitle}}
     </div>
-
-
 </ion-list>
+<shift-description name="{{$scope.name}}"></shift-description>

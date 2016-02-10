@@ -438,7 +438,8 @@ angular.module('scheduling-app.controllers')
             };
 
             $scope.clicked = function(shift) {
-                shift.expanded = !shift.expanded;
+                //shift.expanded = !shift.expanded;
+                $rootScope.$emit('events:shift:description:show', shift, $scope.attributes.name);
             };
 
             $scope.getReadableLocalShiftStartTime = ShiftProcessingService.getReadableLocalShiftStartTime;
