@@ -4,7 +4,9 @@ var slack;
 
 if (config.has('slack.webhook')) {
     var url = config.get('slack.webhook');
-    slack = new Slack(url);
+    if (url && url.length > 0) {
+        slack = new Slack(url);
+    }
 }
 
 var username = 'server';
