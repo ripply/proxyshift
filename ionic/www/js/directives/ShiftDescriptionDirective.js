@@ -27,10 +27,10 @@ angular.module('scheduling-app.directives')
                         if (isClickedElementChildOfPopup)
                             return;
 
-                        //$rootScope.$broadcast('events:shift:description:hide', scope.name);
-                        scope.show = false;
                         event.stopPropagation();
-                        scope.$apply();
+                        scope.$apply(function() {
+                            scope.show = false;
+                        });
                     }
                 });
             }

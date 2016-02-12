@@ -1664,6 +1664,14 @@ body,
   .login-container {
     height: 100%;
     margin-bottom: 10%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .login-container .logo {
+    width: 100%;
+  }
+  .shift-description {
+    width: 100%;
   }
 }
 @media only screen and (min-width: 301px) and (max-width: 350px) {
@@ -1674,8 +1682,16 @@ body,
     margin-left: 2%;
     margin-right: 2%;
   }
+  .login-container .logo {
+    margin-top: 30%;
+    margin-bottom: 10%;
+    width: 100%;
+  }
+  .shift-description {
+    width: 98%;
+  }
 }
-@media only screen and (max-width: 700px) and (min-width: 351px) {
+@media only screen and (min-width: 351px) and (max-width: 400px) {
   /*  */
   .login-container {
     height: 100%;
@@ -1683,16 +1699,32 @@ body,
     margin-left: 10%;
     margin-right: 10%;
   }
-}
-@media only screen and (max-width: 700px) {
-  /* Move the logo down a little bit and set proper width */
   .login-container .logo {
     margin-top: 30%;
     margin-bottom: 10%;
     width: 100%;
   }
+  .shift-description {
+    width: 97%;
+  }
 }
-@media only screen and (min-width: 701px) {
+@media only screen and (min-width: 401px) and (max-width: 500px) {
+  .login-container {
+    height: 100%;
+    margin-bottom: 10%;
+    margin-left: 10%;
+    margin-right: 10%;
+  }
+  .login-container .logo {
+    margin-top: 30%;
+    margin-bottom: 10%;
+    width: 100%;
+  }
+  .shift-description {
+    width: 80%;
+  }
+}
+@media only screen and (min-width: 501px) {
   /*  */
   .login-container {
     height: 80%;
@@ -1700,11 +1732,14 @@ body,
     margin-left: auto;
     margin-right: auto;
   }
-  /* Move the logo down a little bit and set proper width */
   .login-container .logo {
+    /* Move the logo down a little bit and set proper width */
     margin-top: 30%;
     width: 100%;
     vertical-align: 50%;
+  }
+  .shift-description {
+    width: 80%;
   }
 }
 /* A Previous button in calendar */
@@ -1907,7 +1942,6 @@ body,
 }
 .shift-collapsed {
   max-height: 65px;
-  transition: max-height 0.15s ease-out;
   overflow: hidden;
 }
 .shift-collapsed .shift-info {
@@ -1918,7 +1952,6 @@ body,
 .shift-expanded {
   max-height: 1000px;
   overflow: hidden;
-  transition: max-height 1.25s ease-in;
   border-bottom-width: 0px;
 }
 .shift-expanded .shift-info p {
@@ -1941,12 +1974,43 @@ body,
   width: 50%;
   border-radius: 0px;
 }
-.shiftDescription {
+.shift-description {
   z-index: 2000;
   position: absolute;
-  width: 80%;
-  left: 10%;
-  top: 40%;
   background: #2d2d3a;
   max-height: 80%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  box-shadow: 4px 4px 80px #000;
+  border: solid;
+  border-width: 1px;
+  border-color: #575761;
+}
+.ng-modal-close {
+  position: absolute;
+  top: 3px;
+  right: 5px;
+  padding: 5px;
+  cursor: pointer;
+  font-size: 120%;
+  display: inline-block;
+  font-weight: bold;
+  font-family: 'arial', 'sans-serif';
+}
+#modal {
+  background: white;
+  position: fixed;
+  width: 50%;
+  top: 50%;
+  left: 50%;
+  margin: -25% 0 0 -25%;
+  /* Embiggen */
+  transform: scale(1.5);
+  /* prefix me */
+  /* Hidden */
+  opacity: 0;
+  pointer-events: none;
 }

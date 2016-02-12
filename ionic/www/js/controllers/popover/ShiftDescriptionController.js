@@ -17,17 +17,17 @@ angular.module('scheduling-app.controllers')
             $rootScope.$on('events:shift:description:hide', function(name) {
                 if (name == $scope.name) {
                     $scope.show = false;
+                    $scope.$apply();
                 }
             });
 
             $rootScope.$on('events:shift:description:show', function(state, shift, name) {
-                if (name == $scope.name) {
+                if (!$scope.show && name == $scope.name && !$scope.waiting) {
                     $scope.show = true;
                     $scope.shift = shift;
                     $scope.waiting = true;
                     setTimeout(function() {
                         $scope.waiting = false;
-                        $scope.apply();
                     }, 100);
                 }
             });

@@ -28,6 +28,11 @@
 @button-color: #312e3f;
 */
 
+@width-small: 300px;
+@width-medium: 350px;
+@width-big: 400px;
+@width-massive: 500px;
+
 body, .pane, .scroll-content, .list, .logo {
     background: @background
 }
@@ -138,16 +143,26 @@ body, .pane, .scroll-content, .list, .logo {
     border-radius: 5px;
 }
 
-@media only screen and (max-width: 300px) {
+@media only screen and (max-width: @width-small) {
 
     .login-container {
         height: 100%;
         margin-bottom: 10%;
+        margin-left: auto;
+        margin-right: auto;
+
+        .logo {
+            width: 100%;
+        }
+    }
+
+    .shift-description {
+        width: 100%;
     }
 
 }
 
-@media only screen and (min-width: 301px) and (max-width: 350px) {
+@media only screen and (min-width: (@width-small + 1)) and (max-width: @width-medium) {
 
     .login-container {
         height: 100%;
@@ -155,11 +170,21 @@ body, .pane, .scroll-content, .list, .logo {
         /* iPod has a small screen and a big logo pushes up against right side */
         margin-left: 2%;
         margin-right: 2%;
+
+        .logo {
+            margin-top: 30%;
+            margin-bottom: 10%;
+            width: 100%;
+        }
+    }
+
+    .shift-description {
+        width: 98%;
     }
 
 }
 
-@media only screen and (max-width: 700px) and (min-width: 351px) {
+@media only screen and (min-width: (@width-medium + 1)) and (max-width: @width-big) {
 
     /*  */
     .login-container {
@@ -167,20 +192,42 @@ body, .pane, .scroll-content, .list, .logo {
         margin-bottom: 10%;
         margin-left: 10%;
         margin-right: 10%;
+
+        .logo {
+            margin-top: 30%;
+            margin-bottom: 10%;
+            width: 100%;
+        }
     }
+
+    .shift-description {
+        width: 97%;
+    }
+
 }
 
-@media only screen and (max-width: 700px) {
+@media only screen and (min-width: (@width-big + 1)) and (max-width: @width-massive) {
 
-    /* Move the logo down a little bit and set proper width */
-    .login-container .logo {
-        margin-top: 30%;
+    .login-container {
+        height: 100%;
         margin-bottom: 10%;
-        width: 100%;
+        margin-left: 10%;
+        margin-right: 10%;
+
+        .logo {
+            margin-top: 30%;
+            margin-bottom: 10%;
+            width: 100%;
+        }
     }
+
+    .shift-description {
+        width: 80%;
+    }
+
 }
 
-@media only screen and (min-width: 701px) {
+@media only screen and (min-width: (@width-massive + 1)) {
 
     /*  */
     .login-container {
@@ -188,14 +235,19 @@ body, .pane, .scroll-content, .list, .logo {
         width: 350px;
         margin-left: auto;
         margin-right: auto;
+
+        .logo {
+            /* Move the logo down a little bit and set proper width */
+            margin-top: 30%;
+            width: 100%;
+            vertical-align: 50%;
+        }
+    }
+    
+    .shift-description {
+        width: 80%;
     }
 
-    /* Move the logo down a little bit and set proper width */
-    .login-container .logo {
-        margin-top: 30%;
-        width: 100%;
-        vertical-align: 50%;
-    }
 }
 
 @calendar-day-height: 40px;
@@ -480,7 +532,7 @@ body, .pane, .scroll-content, .list, .logo {
 
 .shift-collapsed {
     max-height: 65px;
-    transition: max-height 0.15s ease-out;
+    //transition: max-height 0.15s ease-out;
     overflow: hidden;
 
     .shift-info {
@@ -493,7 +545,7 @@ body, .pane, .scroll-content, .list, .logo {
 .shift-expanded {
     max-height: 1000px;
     overflow: hidden;
-    transition: max-height 1.25s ease-in;
+    //transition: max-height 1.25s ease-in;
     border-bottom-width: 0px;
 
     .shift-info p {
@@ -526,12 +578,52 @@ body, .pane, .scroll-content, .list, .logo {
     border-radius: 0px;
 }
 
-.shiftDescription {
+.shift-description {
     z-index: 2000;
     position: absolute;
-    width: 80%;
-    left: 10%;
-    top: 40%;
+    //left: 10%;
+    //top: 40%;
     background: @settings-background;
     max-height: 80%;
+
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+
+    box-shadow: 4px 4px 80px #000;
+
+    border: solid;
+    border-width: 1px;
+    border-color: @settings-offset-color;
+}
+
+.ng-modal-close {
+    position: absolute;
+    top: 3px;
+    right: 5px;
+    padding: 5px;
+    cursor: pointer;
+    font-size: 120%;
+    display: inline-block;
+    font-weight: bold;
+    font-family: 'arial', 'sans-serif';
+}
+
+#modal {
+    background: white;
+
+    position: fixed;
+    width: 50%;
+    top: 50%;
+    left: 50%;
+    margin: -25% 0 0 -25%;
+
+    /* Embiggen */
+    transform: scale(1.5); /* prefix me */
+
+    /* Hidden */
+    opacity: 0;
+    pointer-events: none;
 }

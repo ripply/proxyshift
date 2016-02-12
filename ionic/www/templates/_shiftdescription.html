@@ -1,6 +1,7 @@
-<div class="shiftDescription shift-expanded" ng-show="show">
+<div class="shift-description shift-expanded" ng-show="show">
     <div class="shift-item list-padding" ng-if="shift">
         <div class="shift-left-icon"><i class="icon ion-ios-checkmark-outline"></i></div>
+        <div class='ng-modal-close' ng-click='hideModal()'>X</div>
         <div>
             <div class="shift-right">
                 <p class="shift-star" ng-hide="{{userIsInDifferentTimeZone(shift)}}">{{getReadableLocalShiftEndTime(shift)}}</p>
@@ -15,8 +16,6 @@
             </div>
         </div>
     </div>
-    <div class="shift-bottom" ng-show="shift.expanded">
-        <button class="button button-outline button-positive shift-accept shift-left">Accept</button>
-        <button class="button button-outline button-assertive shift-decline shift-right">Decline</button>
-    </div>
+    <button class="button button-outline button-positive shift-accept shift-left">Accept</button>
+    <button class="button button-outline button-assertive shift-decline shift-right">Decline</button>
 </div>
