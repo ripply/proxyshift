@@ -42,5 +42,8 @@
         "interval": {
             "reset": "EMAIL_INTERVAL_RESET"
         }
+    },
+    "slack": {
+        "webhook": "SLACK_WEBHOOK"
     }
 }

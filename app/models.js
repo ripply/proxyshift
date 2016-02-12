@@ -21,6 +21,7 @@ var Schema = require('./schema').Schema,
 // TODO: move encryption file to this folder if encrypting with bookshelf events turns out to work well
     encryptKey = require('../controllers/encryption/encryption').encryptKey,
     time = require('./time'),
+    slack = require('./slack'),
     SALT_WORK_FACTOR = 10;
 
 var master = cluster.isMaster && process.env.WEB;
@@ -460,6 +461,7 @@ function initDb(dropAllTables) {
                     if (err) {
                         console.log("***Error populating tables***");
                         console.log(err);
+                        slack.serious('ERROR POPULATING TABLES', err);
                     }
                     tablesPopulatedResolve();
                 });
@@ -564,6 +566,7 @@ function populateTables(t, next) {
                     .catch(function(err) {
                         console.log("Failed to create timezones");
                         console.log(err);
+                        slack.serious('FAILED TO CREATE TIMEZONES', err);
                         next(err);
                     });
             } else {
@@ -573,6 +576,7 @@ function populateTables(t, next) {
         .catch(function(err) {
             console.log("Failed to populate timezones");
             console.log(err);
+            slack.serious('FAILED TO POPULATE TIMEZONES', err);
             next(err);
         });
 }
@@ -615,6 +619,7 @@ function onDatabaseReady(fn) {
             .catch(function(err) {
                 console.log("onDatabaseReady() error");
                 console.log(err);
+                slack.serious('onDatabaseReady() error', err);
                 return fn(err);
             });
     }

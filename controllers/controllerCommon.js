@@ -3,6 +3,7 @@ var schema = require('../app/schema').Schema,
     Promise = require('bluebird'),
     moment = require('moment'),
     ShiftShared = require('../ionic/www/js/shared/ShiftShared'),
+    slack = require('../app/slack'),
     _ = require('underscore');
 
 var Bookshelf = models.Bookshelf;
@@ -261,7 +262,10 @@ function createSelectQueryForAllColumns(modelName, tablename, bannedKeys) {
 }
 
 function error(req, res, err, message) {
-    console.log(req.originalUrl + " => " + err + "\n" + err.stack);
+    slack.error(req, message, err);
+    if (err.stack) {
+        console.log(req.originalUrl + " => " + err + "\n" + err.stack);
+    }
     if (res !== undefined && res !== null) {
         if (message === undefined) {
             message = err.message;

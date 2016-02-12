@@ -6,6 +6,7 @@ var config = require('config');
 var mailer = require('./mailer');
 var events = require('./events');
 var time = require('./time');
+var slack = require('./slack');
 var notifications = require('./notifications');
 var Notifications = new notifications.Notifications();
 
@@ -311,6 +312,7 @@ App.prototype.handleEmailJob = function(job, ack) {
             if (error) {
                 console.log("error");
                 console.log(error);
+                slack.alert("Failed to send email to: " + job.to, error);
             } else {
                 console.log("Mail successfully sent: " + info.response);
             }

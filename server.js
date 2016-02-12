@@ -22,8 +22,10 @@ var express = require('express'),
     I18n = require('i18n-js'),
     app = express();
 require('./app/handlebarTranslations');
+var slack;
 
 if (cluster.isMaster) {
+    slack = require('./app/slack');
     if (process.env.WORKERS) {
         numCPUs = parseInt(process.env.WORKERS);
     } else {
@@ -35,11 +37,15 @@ if (cluster.isMaster) {
             throw new Error("NODE_ENV == 'PROD' AND FIXTURES ARE SET TO BE LOADED, THIS IS A CONFIGURATION ERROR");
         }
         global.okToDropTables = process.env.CAN_DROP_TABLES == 'true';
-        console.log("Resetting database and loading fixtures");
+        var resettingDatabase = "Resetting database and loading fixtures";
+        console.log(resettingDatabase);
+        slack.info(resettingDatabase);
         var fixtureshelper = require('./spec/fixtureshelper');
         fixtureshelper.setFixtures(fixtureshelper.fixtures.base);
         fixtureshelper.databaseReady(function() {
-            console.log("Fixtures loaded, starting server");
+            var fixturesLoaded = "Fixtures loaded, starting server";
+            console.log(fixturesLoaded);
+            slack.info(fixturesLoaded);
             return launchServer();
         });
     } else {
@@ -194,6 +200,9 @@ function launchServer() {
         http.createServer(app).listen(app.get('port'), '0.0.0.0', function () {
             if (cluster.isMaster) {
                 console.log('Server up: http://localhost:' + app.get('port'));
+                if (slack) {
+                    slack.info("Server initialized");
+                }
             } else {
                 console.log('Worker up');
             }
