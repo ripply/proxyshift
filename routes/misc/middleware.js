@@ -37,14 +37,15 @@ function ensureCsrf(err, req, res, next) {
 }
 
 function logout(req, res) {
-    if ('remember_me' in req.cookies) {
+    var authToken = req.get('Authorization');
+    if ('remember_me' in req.cookies || authToken) {
         models.checkRememberMeToken(req.cookies.remember_me, true, function(err, next) {
-            if (req.headers.Authentication && req.cookies.remember_me != req.headers.Authentication) {
-                models.checkRememberMeToken(req.headers.Authentication, true, function(err, next) {
-                    console.log("User logged out: Purged token");
+            if (authToken && req.cookies.remember_me != authToken) {
+                models.checkRememberMeToken(authToken, true, function(err, next) {
+                    console.log("User logged out: Purged token auth token");
                 });
             } else {
-                console.log("User logged out: Purged token");
+                console.log("User logged out: Purged token remember me");
             }
         });
     }
