@@ -1,21 +1,25 @@
-<div class="shift-description shift-expanded" ng-show="show">
-    <div class="shift-item list-padding" ng-if="shift">
+<div class="shift-description shift-expanded fade-in-scale" ng-show="show">
+    <div class="shift-item list-padding" id="shift-scroll-content" ng-if="shift">
         <div class="shift-left-icon"><i class="icon ion-ios-checkmark-outline"></i></div>
         <div class='ng-modal-close' ng-click='hideModal()'>X</div>
-        <div>
-            <div class="shift-right">
-                <p class="shift-star" ng-hide="{{userIsInDifferentTimeZone(shift)}}">{{getReadableLocalShiftEndTime(shift)}}</p>
-                <p class="shift-star" ng-show="{{userIsInDifferentTimeZone(shift)}}">{{getReadableLocalShiftEndTime(shift)}} (local)</p>
-                <p class="shift-duration">{{getReadableShiftDuration(shift)}}</p>
+        <ion-content>
+            <div id="shift-description-scroll-content">
+                <div class="shift-right">
+                    <p class="shift-star" ng-hide="{{userIsInDifferentTimeZone(shift)}}">{{getReadableLocalShiftEndTime(shift)}}</p>
+                    <p class="shift-star" ng-show="{{userIsInDifferentTimeZone(shift)}}">{{getReadableLocalShiftEndTime(shift)}} (local)</p>
+                    <p class="shift-duration">{{getReadableShiftDuration(shift)}}</p>
+                </div>
+                <div class="shift-info">
+                    <p class="shift-location" ng-show="{{!shift.sublocation_id}}">{{getShiftsLocation(shift).address}}</p>
+                    <p class="shift-location shift-location-floor" ng-show="{{shift.sublocation_id}}">{{getShiftsLocation(shift).address}} - {{getShiftsSublocation(shift).title}}</p>
+                    <p class="shift-title">{{shift.title}}</p>
+                    <p class="shift-desc">{{shift.description}}</p>
+                </div>
             </div>
-            <div class="shift-info">
-                <p class="shift-location" ng-show="{{!shift.sublocation_id}}">{{getShiftsLocation(shift).address}}</p>
-                <p class="shift-location shift-location-floor" ng-show="{{shift.sublocation_id}}">{{getShiftsLocation(shift).address}} - {{getShiftsSublocation(shift).title}}</p>
-                <p class="shift-title">{{shift.title}}</p>
-                <p class="shift-desc">{{shift.description}}</p>
-            </div>
-        </div>
+        </ion-content>
     </div>
-    <button class="button button-outline button-positive shift-accept shift-left">Accept</button>
-    <button class="button button-outline button-assertive shift-decline shift-right">Decline</button>
+    <div class="shift-buttons">
+        <button class="button button-outline button-positive shift-accept shift-left">Accept</button>
+        <button class="button button-outline button-assertive shift-decline shift-right">Decline</button>
+    </div>
 </div>
