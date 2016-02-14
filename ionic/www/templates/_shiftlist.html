@@ -11,7 +11,7 @@
     <ion-item
         class="item clear-padding"
         collection-repeat="shift in Model"
-        item-height="shift.isDivider ? 37 : (shift.expanded ? 200 : 65)"
+        item-height="shift.isDivider ? 37 : (64 + (4 * 2) + 12)"
         ng-show="Model"
         ng-hide="shift.canceled || ignoredShift(shift)"
         ng-click="clicked(shift)">

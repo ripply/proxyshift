@@ -24,19 +24,33 @@ angular.module('scheduling-app.controllers')
             });
 
             $rootScope.$on('events:shift:description:show', function(state, shift, name) {
+                showAndResize(true, shift, name);
+            });
+
+            $scope.hideModal = function() {
+                $scope.show = false;
+                $scope.waiting = false;
+            };
+
+            $scope.showAndResize = showAndResize;
+
+            function showAndResize(hide, shift, name) {
                 if (!$scope.show && name == $scope.name && !$scope.waiting) {
                     $scope.show = true;
                     $scope.shift = shift;
                     $scope.waiting = true;
-                    //$ionicScrollDelegate.scrollTop(false);
                     var shiftScrollContent = document.getElementById('shift-scroll-content');
                     if (shiftScrollContent != null) {
-                        shiftScrollContent.setAttribute("style", "height: 0px");
+                        if (hide) {
+                            shiftScrollContent.setAttribute("style", "height: 0px");
+                        }
                     }
 
                     var shiftDescriptions = document.getElementsByClassName('shift-description');
                     angular.forEach(shiftDescriptions, function(shiftDescription) {
-                        shiftDescription.setAttribute('style', 'opacity: 0;');
+                        if (hide) {
+                            shiftDescription.setAttribute('style', 'opacity: 0;');
+                        }
                     });
 
                     setTimeout(function() {
@@ -46,9 +60,10 @@ angular.module('scheduling-app.controllers')
                             var buttonHeight = 47;
                             var outerBottomPadding = 1;
                             var outerTopPadding = 1;
+                            var titleAndLocation = 96; // .shift-description .scroll-content top:
                             var maxHeight = (browserHeight() * 0.75) - buttonHeight - outerBottomPadding;
                             var shiftScrollContent = document.getElementById('shift-scroll-content');
-                            var height = Math.min((scrollContent.clientHeight + topPadding), maxHeight) - outerBottomPadding - outerTopPadding;
+                            var height = Math.min((scrollContent.clientHeight + topPadding + titleAndLocation), maxHeight) - outerBottomPadding - outerTopPadding;
                             shiftScrollContent.setAttribute("style", "height: " + height + 'px');
                             $ionicScrollDelegate.resize();
                             angular.forEach(shiftDescriptions, function(shiftDescription) {
@@ -58,7 +73,7 @@ angular.module('scheduling-app.controllers')
                         $scope.waiting = false;
                     }, 0);
                 }
-            });
+            }
 
             $scope.getReadableLocalShiftStartTime = ShiftProcessingService.getReadableLocalShiftStartTime;
             $scope.getReadableLocalShiftEndTime = ShiftProcessingService.getReadableLocalShiftEndTime;

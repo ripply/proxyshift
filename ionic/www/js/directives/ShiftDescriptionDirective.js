@@ -2,9 +2,11 @@ angular.module('scheduling-app.directives')
     .directive('shiftDescription', [
         '$rootScope',
         '$document',
+        '$window',
         function(
             $rootScope,
-            $document
+            $document,
+            $window
         ) {
             return ({
                 controller: 'ShiftDescriptionController',
@@ -18,6 +20,12 @@ angular.module('scheduling-app.directives')
             });
 
             function link(scope, element, attributes) {
+                $window.addEventListener('resize', function(event) {
+                    if (scope.show) {
+                        scope.show = false;
+                        scope.showAndResize(false, scope.shift, scope.name);
+                    }
+                });
                 $document.bind('click', function (event) {
                     if (scope.show && !scope.waiting) {
                         var isClickedElementChildOfPopup = element

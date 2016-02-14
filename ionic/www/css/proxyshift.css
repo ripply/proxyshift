@@ -1911,16 +1911,26 @@ body,
   color: #ffffff;
 }
 .shift-info {
-  padding-left: 20px;
+  padding-left: 30px;
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
-#shift-description-scroll-content {
-  padding-right: 20px;
+.item .shift-info .shift-right {
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
-#shift-description-scroll-content .shift-info {
-  padding-top: 20px;
+#shift-description-content {
+  padding-right: 30px;
 }
-#shift-description-scroll-content .shift-right {
-  padding-top: 20px;
+#shift-description-content .shift-info {
+  padding-top: 15px;
+}
+#shift-description-content .shift-right {
+  padding-top: 15px;
+}
+#shift-description-content .shift-desc {
+  padding-left: 19px;
+  padding-right: 19px;
 }
 .shift-left {
   display: block;
@@ -1930,6 +1940,9 @@ body,
   display: block;
   float: right;
 }
+.shift-right p {
+  text-align: right;
+}
 .shift-duration {
   float: right;
 }
@@ -1937,8 +1950,8 @@ body,
   position: absolute;
   float: left;
   color: green;
-  top: 38px;
-  left: 10px;
+  top: 30.5px;
+  left: 7.5px;
 }
 .shift-left-icon i {
   font-size: 23px;
@@ -1949,15 +1962,19 @@ body,
 .shift-bottom p {
   text-align: center;
 }
+/*
 .shift-collapsed {
-  max-height: 65px;
-  overflow: hidden;
+    max-height: 65px;
+    //transition: max-height 0.15s ease-out;
+    overflow: hidden;
+
+    .shift-info {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 }
-.shift-collapsed .shift-info {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+*/
 .shift-expanded {
   max-height: 1000px;
   overflow: hidden;
@@ -1973,7 +1990,7 @@ body,
   padding: 0;
 }
 .list-padding {
-  padding: 16px;
+  padding: 4px;
 }
 .shift-accept {
   width: 50%;
@@ -2002,6 +2019,7 @@ body,
   background: #2d2d3a;
 }
 .shift-description .scroll-content {
+  top: 84px;
   bottom: 49px;
 }
 .ng-modal-close {

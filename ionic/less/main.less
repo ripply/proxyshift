@@ -492,21 +492,41 @@ body, .pane, .scroll-content, .list, .logo {
     color: @text-color;
 }
 
-@shift-padding: 20px;
+@shift-padding: 30px;
+@shift-padding-top-bottom: @shift-padding / 5;
 
 .shift-info {
     padding-left: @shift-padding;
+    padding-top: @shift-padding-top-bottom;
+    padding-bottom: @shift-padding-top-bottom;
 }
 
-#shift-description-scroll-content {
+.item {
+    .shift-info {
+        .shift-right {
+            padding-top: @shift-padding-top-bottom;
+            padding-bottom: @shift-padding-top-bottom;
+        }
+    }
+}
+
+@list-padding: 4px;
+@list-item: 64px;
+
+#shift-description-content {
     padding-right: @shift-padding;
 
     .shift-info {
-        padding-top: @shift-padding;
+        padding-top: @shift-padding / 2;
     }
 
     .shift-right {
-        padding-top: @shift-padding;
+        padding-top: @shift-padding / 2;
+    }
+
+    .shift-desc {
+        padding-left: (@shift-padding / 2) + @list-padding;
+        padding-right: (@shift-padding / 2) + @list-padding;
     }
 }
 
@@ -518,18 +538,25 @@ body, .pane, .scroll-content, .list, .logo {
 .shift-right {
     display: block;
     float: right;
+
+    p {
+        text-align: right;
+    }
 }
 
 .shift-duration {
     float: right;
 }
 
+@shift-left-icon-left: @shift-padding / 4;
+@shift-left-icon-top: ((@shift-info-height / 2) - (23/2) + 1) + @shift-padding-top-bottom;
+
 .shift-left-icon {
     position: absolute;
     float: left;
     color: green;
-    top: 38px;
-    left: 10px;
+    top: @shift-left-icon-top;
+    left: @shift-left-icon-left;
 
     i {
         font-size: 23px;
@@ -544,6 +571,7 @@ body, .pane, .scroll-content, .list, .logo {
     }
 }
 
+/*
 .shift-collapsed {
     max-height: 65px;
     //transition: max-height 0.15s ease-out;
@@ -555,6 +583,7 @@ body, .pane, .scroll-content, .list, .logo {
         text-overflow: ellipsis;
     }
 }
+*/
 
 .shift-expanded {
     max-height: 1000px;
@@ -575,7 +604,7 @@ body, .pane, .scroll-content, .list, .logo {
 }
 
 .list-padding {
-    padding: 16px;
+    padding: @list-padding;
 }
 
 .shift-accept {
@@ -591,6 +620,9 @@ body, .pane, .scroll-content, .list, .logo {
     //border-color: blueviolet;
     border-radius: 0;
 }
+
+@shift-info-height: 70px;
+@ionic-p-margin: 10px;
 
 .shift-description {
     z-index: 2000;
@@ -617,6 +649,8 @@ body, .pane, .scroll-content, .list, .logo {
     }
 
     .scroll-content {
+        //top: 100px;
+        top: @shift-info-height + @list-padding + @ionic-p-margin;
         bottom: 49px;
     }
 }
