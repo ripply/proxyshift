@@ -203,17 +203,27 @@ App.prototype.init = function() {
 
 App.prototype.startHandlingEmails = function() {
     if (this.connections) {
-        console.log("Started handling emails from RabbitMQ");
-        this.connections.email.consume(this.handleEmailJob.bind(this));
+        if (mailer) {
+            var started = "Started handling emails from RabbitMQ";
+            console.log(started);
+            slack.info(started);
+            this.connections.email.consume(this.handleEmailJob.bind(this));
+        } else {
+            slack.alert("Email is not configured so not going to consume email events from RabbitMQ");
+        }
     } else {
-        console.log("Not handling emails from RabbitMQ as it is not configured");
+        var notConfigured = "Not handling emails from RabbitMQ as it is not configured";
+        console.log(notConfigured);
+        slack.info(notConfigured);
     }
     return this;
 };
 
 App.prototype.startHandlingNotifications = function() {
     if (this.connections) {
-        console.log("Started handling notifications from RabbitMQ");
+        var started = "Started handling notifications from RabbitMQ";
+        console.log(started);
+        slack.info(started);
         this.connections.notifications.consume(this.handleNotificationJob.bind(this));
     } else {
         console.log("Not handling notifications from RabbitMQ as it is not configured");
@@ -300,28 +310,30 @@ App.prototype.sendEmail = function(from, to, subject, text, html) {
 App.prototype.handleEmailJob = function(job, ack) {
     console.log("GOT EMAIL JOB");
     console.log(job);
-    if (mailer) {
-        // setup
-        if (job.to.endsWith("@example.com")) {
-            console.log("Not sending email to " + job.to + " as it is example.com (FIXTURE DATA)");
-            ack();
-            return;
-        }
-        mailer.sendMail(job, function sendMailCallback(error, info) {
-            ack();
-            if (error) {
-                console.log("error");
-                console.log(error);
-                slack.alert("Failed to send email to: " + job.to, error);
-            } else {
-                console.log("Mail successfully sent: " + info.response);
-                slack.info("Sent mail to: " + job.to, '#email');
-            }
-        });
+    // setup
+    if (job.to.endsWith("@example.com")) {
+        console.log("Not sending email to " + job.to + " as it is example.com (FIXTURE DATA)");
+        ack();
     } else {
-        // not setup
-        console.log("Cannot send email as email is not configured properly");
-        slack.alert("Email not configured: " + job.to + "\n" + JSON.stringify(job));
+        if (mailer) {
+            mailer.sendMail(job, function sendMailCallback(error, info) {
+                ack();
+                if (error) {
+                    console.log("error");
+                    console.log(error);
+                    slack.alert("Failed to send email to: " + job.to, error);
+                } else {
+                    console.log("Mail successfully sent: " + info.response);
+                    slack.info("Sent mail to: " + job.to, '#email');
+                }
+            });
+        } else {
+            // not setup
+            console.log("Cannot send email as email is not configured properly");
+            slack.alert("Email not configured, will not consume from RabbitMQ");
+            // not ack()ing here will cause us to block and not fetch next items in the queue
+            // which should be the intended so that we do not consume all emails
+        }
     }
 };
 

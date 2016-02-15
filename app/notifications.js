@@ -7,6 +7,7 @@ var config = require('config'),
     fs = require('fs'),
     time = require('./time'),
     Promise = require('bluebird'),
+    slack = require('./slack'),
     _ = require('underscore');
 var apiKeys = {};
 var apnConfig = {};
@@ -85,6 +86,9 @@ if (config.has('push.wns.secret')) {
     }
     apiKeys['wns']['secret'] = config.get('push.wns.secret');
     wnsConfig['client_secret'] = apiKeys['wns']['secret'];
+    slack.info('PUSH: WNS secret configured');
+} else {
+    slack.info('PUSH: WNS secret NOT configured');
 }
 
 var apnConnection = new apn.Connection(apnConfig);
@@ -111,53 +115,48 @@ function doApnCertsExist() {
 }
 
 function Notifications() {
-    if (cluster.isMaster) {
-        var self = this;
-        Object.keys(cluster.workers).forEach(function iterateOverWorkers(id) {
-            cluster.workers[id].on('sendNotification', function parseClusterMessage(message, args) {
-                console.log("Got sendNotification");
-                console.log(args);
-                self.send.apply(self, args);
-            });
-        });
-        this.platformMap = platformMap;
-        this.gcm = this.initGcm();
-        this.sendMap = {};
-        // https://github.com/argon/node-apn#setting-up-the-feedback-service
-        this.apnCertsExist = filesExistFinished;
-        this.apnCertsExist.then(function setupAPNFeedbackService() {
-            if (doApnCertsExist()) {
-                self.apnCertsExist = true;
+    var self = this;
+    this.platformMap = platformMap;
+    this.gcm = this.initGcm();
+    this.sendMap = {};
+    // https://github.com/argon/node-apn#setting-up-the-feedback-service
+    this.apnCertsExist = filesExistFinished;
+    this.apnCertsExist.then(function setupAPNFeedbackService() {
+        if (doApnCertsExist()) {
+            self.apnCertsExist = true;
 
-                self.feedback = new apn.Feedback(apnConfig);
-                self.feedback.on('feedback', function handleApnFeedback(devices) {
-                    _.forEach(devices, function handlingApnFeedback(item) {
-                        console.log("APN Feedback");
-                        console.log(item);
-                        // Buffer object containing device token
-                        // item.device
-                        //
-                        // item.time
-                    });
+            self.feedback = new apn.Feedback(apnConfig);
+            self.feedback.on('feedback', function handleApnFeedback(devices) {
+                _.forEach(devices, function handlingApnFeedback(item) {
+                    console.log("APN Feedback");
+                    console.log(item);
+                    // Buffer object containing device token
+                    // item.device
+                    //
+                    // item.time
                 });
-            } else {
-                self.apnCertsExist = false;
-                console.log("Not initializing APN feedback service as certificates are not setup properly");
-            }
-        });
-        _.each(platformMethodMap, function iterateOverPlatforms(method, serviceName) {
-            self.sendMap[platformMap[serviceName]] = _.bind(self[method], self);
-        });
-    } else {
-        // slave just will send messages to the master so that we only keep one connection open to notification services
-    }
+            });
+            slack.info('PUSH: Initialized APN feedback service');
+        } else {
+            self.apnCertsExist = false;
+            var apnServiceNotConfigured = 'Not initializing APN feedback service as certificates are not setup properly';
+            console.log(apnServiceNotConfigured);
+            slack.alert(apnServiceNotConfigured);
+        }
+    });
+    _.each(platformMethodMap, function iterateOverPlatforms(method, serviceName) {
+        self.sendMap[platformMap[serviceName]] = _.bind(self[method], self);
+    });
 }
 
 Notifications.prototype.initGcm = function() {
     if (apiKeys.gcm !== undefined && apiKeys.gcm !== null && apiKeys.gcm != '') {
+        slack.info('PUSH: GCM looks to be configured');
         return new gcm.Sender(apiKeys.gcm);
     } else {
-        console.log("Api key for GCM service not specified");
+        var gcmNotConfigured = 'Api key for GCM service not specified';
+        console.log(gcmNotConfigured);
+        slack.alert('PUSH: ' + gcmNotConfigured);
     }
 };
 
@@ -275,17 +274,6 @@ Notifications.prototype.send = function send(service, endpoints, expires, messag
             console.log("Push: Unknown service: " + service);
             return false;
         }
-    /*
-    } else {
-        console.log("sending sendNotification");
-        process.send('sendNotification', [
-            service,
-            endpoints,
-            expires,
-            message
-        ]);
-    }
-    */
 };
 /*
 // Send to a topic, with no retry this time
