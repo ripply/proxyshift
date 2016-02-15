@@ -14,7 +14,7 @@ var username = 'server';
 module.exports = {
     error: function(req, message, err) {
         if (slack) {
-            slack.send({
+            return slack.send({
                 text: message + "\nroute: " + req.originalUrl +
                 "\nreq.body = " + JSON.stringify(req.body) +
                 "\nuserid: " + (req.user ? req.user.id:'none') +
@@ -26,7 +26,7 @@ module.exports = {
     },
     alert: function(message, err) {
         if (slack) {
-            slack.send({
+            return slack.send({
                 text: message + "\n" + JSON.stringify(err),
                 channel: "#alerts",
                 username: username
@@ -35,7 +35,7 @@ module.exports = {
     },
     serious: function(message, err) {
         if (slack) {
-            slack.send({
+            return slack.send({
                 text: message + "\n" + JSON.stringify(err),
                 channel: "#alerts",
                 username: username
@@ -46,7 +46,7 @@ module.exports = {
         if (!channel) {
             channel = '#server';
         }
-        send({
+        return send({
             channel: channel,
             text: message,
             username: username
@@ -58,6 +58,6 @@ module.exports = {
 function send(message) {
     if (slack) {
         console.log("Trying to send message...");
-        slack.send(message);
+        return slack.send(message);
     }
 }

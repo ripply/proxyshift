@@ -63,21 +63,35 @@ if (cluster.isMaster) {
 }
 
 function gracefulExit(reason) {
-    try {
-        if (cluster.isMaster) {
-            // send slack message notifying that server is shutting down
-            if (!reason) {
-                reason = 'UNKNOWN';
-            }
-            var shuttingDown = 'Shutting down: ' + reason;
-            slack.info(shuttingDown);
-            console.log(shuttingDown);
-        } else {
-            // do nothing for now
-            console.log("worker exiting...");
+    var promise;
+    if (cluster.isMaster) {
+        // send slack message notifying that server is shutting down
+        if (!reason) {
+            reason = 'UNKNOWN';
         }
-    } finally {
-        process.exit();
+        var shuttingDown = 'Shutting down: ' + reason;
+        promise = slack.info(shuttingDown);
+        console.log(shuttingDown);
+    } else {
+        // do nothing for now
+        console.log("worker exiting...");
+    }
+    if (promise) {
+        promise.then(function() {
+            console.log("Successfully notified slack of shutdown");
+            exit(0);
+        }, function(reason) {
+            console.log("Failed to notify slack of shutdown: " + reason);
+            exit(1);
+        });
+    } else {
+        console.log("Slack not configured so cannot notify of shutdown");
+        exit(0);
+    }
+
+    function exit(code) {
+        console.log("Bye!");
+        process.exit(code);
     }
 }
 
