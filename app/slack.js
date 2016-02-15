@@ -42,9 +42,12 @@ module.exports = {
             });
         }
     },
-    info: function(message) {
+    info: function(message, channel) {
+        if (!channel) {
+            channel = '#server';
+        }
         send({
-            channel: '#server',
+            channel: channel,
             text: message,
             username: username
         });

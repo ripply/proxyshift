@@ -315,11 +315,13 @@ App.prototype.handleEmailJob = function(job, ack) {
                 slack.alert("Failed to send email to: " + job.to, error);
             } else {
                 console.log("Mail successfully sent: " + info.response);
+                slack.info("Sent mail to: " + job.to, '#email');
             }
         });
     } else {
         // not setup
         console.log("Cannot send email as email is not configured properly");
+        slack.alert("Email not configured: " + job.to + "\n" + JSON.stringify(job));
     }
 };
 
