@@ -1,4 +1,5 @@
 var config = require('config');
+var moment = require('moment');
 var Slack = require('node-slack');
 var slack;
 
@@ -56,8 +57,11 @@ module.exports = {
 };
 
 function send(message) {
-    if (slack) {
-        console.log("Trying to send message...");
+    if (slack && message) {
+        if (message.text) {
+            message.text = moment().format() + ': ' + message.text;
+            console.log(message);
+        }
         return slack.send(message);
     }
 }
