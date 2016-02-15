@@ -32,9 +32,18 @@ if (cluster.isMaster) {
         numCPUs = 1;
     }
 
+    process.on('SIGINT', function() {
+        gracefulExit('Received SIGINT');
+    });
+    process.on('SIGTERM', function() {
+        gracefulExit('Received SIGTERM');
+    });
+
     if (process.env.LOAD_FIXTURES !== undefined && process.env.LOAD_FIXTURES == 'true') {
         if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === "PROD") {
-            throw new Error("NODE_ENV == 'PROD' AND FIXTURES ARE SET TO BE LOADED, THIS IS A CONFIGURATION ERROR");
+            var misconfigured = "NODE_ENV == 'PROD' AND FIXTURES ARE SET TO BE LOADED, THIS IS A CONFIGURATION ERROR";
+            slack.alert(misconfigured);
+            throw new Error(misconfigured);
         }
         global.okToDropTables = process.env.CAN_DROP_TABLES == 'true';
         var resettingDatabase = "Resetting database and loading fixtures";
@@ -50,6 +59,25 @@ if (cluster.isMaster) {
         });
     } else {
         launchServer();
+    }
+}
+
+function gracefulExit(reason) {
+    try {
+        if (cluster.isMaster) {
+            // send slack message notifying that server is shutting down
+            if (!reason) {
+                reason = 'UNKNOWN';
+            }
+            var shuttingDown = 'Shutting down: ' + reason;
+            slack.info(shuttingDown);
+            console.log(shuttingDown);
+        } else {
+            // do nothing for now
+            console.log("worker exiting...");
+        }
+    } finally {
+        process.exit();
     }
 }
 
