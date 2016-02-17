@@ -20,11 +20,15 @@ var express = require('express'),
     errorHandler = require('errorhandler'),
     numCPUs = require('os').cpus().length,
     I18n = require('i18n-js'),
+    moment = require('moment'),
     app = express();
 require('./app/handlebarTranslations');
 var slack;
 
+var timeStarted;
+
 if (cluster.isMaster) {
+    timeStarted = moment();
     slack = require('./app/slack');
     if (process.env.WORKERS) {
         numCPUs = parseInt(process.env.WORKERS);
@@ -70,6 +74,9 @@ function gracefulExit(reason) {
             reason = 'UNKNOWN';
         }
         var shuttingDown = 'Shutting down: ' + reason;
+        if (timeStarted) {
+            shuttingDown += '\nUptime: ' + uptime();
+        }
         promise = slack.info(shuttingDown);
         console.log(shuttingDown);
     } else {
@@ -93,6 +100,10 @@ function gracefulExit(reason) {
         console.log("Bye!");
         process.exit(code);
     }
+}
+
+function uptime() {
+    return moment.duration(moment() - timeStarted).humanize();
 }
 
 function launchServer() {
