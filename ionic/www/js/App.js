@@ -10,6 +10,7 @@ var sessionHack = [];
 angular.module('scheduling-app', [
     'ionic',
     'ngCookies',
+    'ng-mfb',
     'gettext',
     'LocalStorageModule',
     'ionic-fancy-select',

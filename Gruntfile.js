@@ -164,6 +164,7 @@ module.exports = function(grunt) {
                         'ionic/www/css/style.css',
                         'ionic/www/css/*/css/*',
                         'ionic/www/lib/angular-ui-grid/ui-grid.min.css',
+                        'ionic/www/lib/ng-material-floating-button/mfb/dist/mfb.css',
                         'ionic/less/main.less'
                     ]
                 }
