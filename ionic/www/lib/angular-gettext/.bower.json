@@ -27,6 +27,5 @@
   },
   "_source": "git://github.com/rubenv/angular-gettext.git",
   "_target": "^2.2.1",
-  "_originalSource": "angular-gettext",
-  "_direct": true
+  "_originalSource": "angular-gettext"
 }
