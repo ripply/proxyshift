@@ -6,6 +6,7 @@ angular.module('scheduling-app.controllers')
         '$timeout',
         '$rootScope',
         '$state',
+        'CreateShiftService',
         'STATES',
         'GENERAL_EVENTS',
         function($scope,
@@ -13,10 +14,15 @@ angular.module('scheduling-app.controllers')
                  $timeout,
                  $rootScope,
                  $state,
+                 CreateShiftService,
                  STATES,
                  GENERAL_EVENTS) {
             // Form data for the login modal
             $scope.loginData = {};
+
+            $scope.createShift = function() {
+                CreateShiftService.showModal($scope);
+            };
 
             // Create the login modal that we will use later
             $ionicModal.fromTemplateUrl('templates/_login.html', {
