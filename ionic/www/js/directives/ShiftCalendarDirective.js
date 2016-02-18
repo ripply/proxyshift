@@ -15,6 +15,9 @@ angular.module('scheduling-app.directives')
             });
 
             function link(scope, element, attributes) {
+                scope.name = attributes.name;
+                scope.show = attributes.show;
+                scope.clickable = attributes.clickable;
                 scope.attributes = attributes;
 
                 if (attributes['toggle'] == 'true') {

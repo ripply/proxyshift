@@ -15,7 +15,7 @@
             </tr>
             <tr class="calendar-week" ng-repeat="week in calendarData">
                 <td class="calendar-day" ng-repeat="day in week" ng-class="{'calendar-day-currentmonth': day.thisMonth, 'calendar-day-othermonth': !day.thisMonth, 'calendar-day-today': day.today}">
-                    <p ng-class="{'shift': day.shifts, 'noshift': !day.shifts}">{{day.number}}<span></span></p>
+                    <p ng-class="{'shift': day.shifts, 'noshift': !day.shifts, 'calendar-day-selected': day.selected}" ng-click="dayClicked(day)">{{day.number}}<span></span></p>
                 </td>
             </tr>
         </table>

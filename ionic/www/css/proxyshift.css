@@ -1109,6 +1109,9 @@ body,
   -webkit-box-shadow: 0 0 3px #283154;
   box-shadow: 0 0 3px #283154;
 }
+.calendar-month .calendar-day-selected {
+  background: #ff0000;
+}
 #settings-page .bar-header {
   background-color: #575761;
   color: #ffffff;

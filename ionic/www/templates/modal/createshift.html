@@ -8,7 +8,7 @@
     <ion-content class="has-header">
         <div class="forms" id="create-shift-calendar">
             <div class="create-shift-content">
-                calendar
+                <shift-calendar toggle="false" show="true" name="create-shift-calendar" clickable="true"></shift-calendar>
                 <div class="create-shift-nav-next">
                     <button class="button ion-chevron-down" ng-click="slideTo('create-shift-time')"></button>
                 </div>
@@ -17,7 +17,9 @@
         <div class="forms" id="create-shift-time">
             <button class="button create-shift-nav-prev ion-chevron-up" ng-click="slideTo('create-shift-calendar')"></button>
             <div class="create-shift-content">
-                time
+                <div class="shift-date">
+                    {{getReadableDate()}}
+                </div>
                 <div class="create-shift-nav-next">
                     <button class="button ion-chevron-down" ngclick="slideTo('create-shift-location')"></button>
                 </div>

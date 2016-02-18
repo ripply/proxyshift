@@ -16,6 +16,7 @@ angular.module('scheduling-app.controllers')
                  GENERAL_EVENTS
         ) {
             $controller('BaseModelController', {$scope: $scope});
+            $scope.selected = {};
 
             createCalendarHeaderData();
             calculateCalendar();
@@ -50,6 +51,13 @@ angular.module('scheduling-app.controllers')
                 if (isHidable()) {
                     $scope.show = !$scope.show;
                     $rootScope.calendarShown = $scope.show;
+                }
+            });
+
+            $rootScope.$on(GENERAL_EVENTS.CALENDAR.RESET, function(state, name) {
+                if (name == $scope.name) {
+                    $scope.selected = {};
+                    calculateCalendar();
                 }
             });
 
@@ -182,6 +190,26 @@ angular.module('scheduling-app.controllers')
                 return calendarBounds;
             }
 
+            $scope.dayClicked = dayClicked;
+
+            function dayClicked(day) {
+                var selected;
+                if ($scope.clickable) {
+                    selected = $scope.selected;
+                    $scope.selected.month = day.month;
+                    $scope.selected.year = day.year;
+                    $scope.selected.day = day.number;
+                    calculateCalendar();
+                } else {
+                    selected = {
+                        month: day.month,
+                        year: day.year,
+                        day: day.number
+                    };
+                }
+                $rootScope.$emit(GENERAL_EVENTS.CALENDAR.CLICKED, $scope.name, angular.copy(selected));
+            }
+
             function initialShowOrHide() {
                 if ($scope.attributes['show'] == 'true') {
                     $scope.show = true;
@@ -267,6 +295,11 @@ angular.module('scheduling-app.controllers')
                     today.number = countingDays.date();
                     today.thisMonth = countingDays.month() === month;
                     today.today = countingDays.isSame(actualNow, 'day');
+                    today.month = countingDays.month();
+                    today.year = countingDays.year();
+                    today.selected = (today.year == $scope.selected.year &&
+                                      today.month == $scope.selected.month &&
+                                      today.number == $scope.selected.day);
 
                     calendarDateMap[countingDays.startOf("day").unix()] = today;
                     countingDays = countingDays.add(1, 'day');

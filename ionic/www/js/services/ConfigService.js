@@ -73,6 +73,9 @@ var config_data = {
         'POPUP': {
             'REQUESTED': 'events:popup:requested'
         },
+        'MODAL': {
+            'REQUESTED': 'events:modal:requested'
+        },
         'CALENDAR': {
             // events for controlling calendar from outside calendar scope
             'NEXTMONTH': 'events:calendar:nextmonthe',
@@ -86,6 +89,8 @@ var config_data = {
                 'RANGE': 'events:calendar:update:range',
                 'DATASETUPDATED': 'events:calendar:update:datasetupdated'
             },
+            'CLICKED': 'events:calendar:clicked',
+            'RESET': 'events:calendar:reset',
             'SHOW': 'events:calendar:show',
             'HIDE': 'events:calendar:hide',
             'TOGGLE': 'events:calendar:toggle',

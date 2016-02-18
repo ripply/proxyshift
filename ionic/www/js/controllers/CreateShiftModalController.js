@@ -12,14 +12,37 @@ angular.module('scheduling-app.controllers')
             $timeout,
             $location
         ) {
+            var calendarName = 'create-shift-calendar';
             $scope.$on('modal:createshift:reset', function() {
                 console.log('reset');
                 $ionicScrollDelegate.scrollTop(false);
+                $rootScope.$broadcast('events:calendar:reset', calendarName);
             });
+
+            $rootScope.$on('events:calendar:clicked', function(state, name, selected) {
+                if (name == calendarName) {
+                    var date = moment();
+                    date.year(selected.year);
+                    date.month(selected.month);
+                    date.date(selected.day);
+                    $scope.date = date;
+                    slideTo('create-shift-time');
+                }
+            });
+
+            $scope.getReadableDate = function() {
+                if ($scope.date) {
+                    return $scope.date.format("L");
+                } else {
+                    return "Select a date";
+                }
+            };
 
             $scope.sliding = false;
 
-            $scope.slideTo = function(location) {
+            $scope.slideTo = slideTo;
+
+            function slideTo(location) {
                 if ($scope.sliding) {
                     return;
                 }

@@ -11,6 +11,7 @@ angular.module('scheduling-app.loading', [
         '$ionicLoading',
         '$ionicPopover',
         '$ionicPopup',
+        '$ionicModal',
         'GENERAL_EVENTS',
         'GENERAL_CONFIG',
         function(
@@ -18,6 +19,7 @@ angular.module('scheduling-app.loading', [
             $ionicLoading,
             $ionicPopover,
             $ionicPopup,
+            $ionicModal,
             GENERAL_EVENTS,
             GENERAL_CONFIG
         ) {
