@@ -5,12 +5,14 @@ angular.module('scheduling-app.controllers')
         '$ionicScrollDelegate',
         '$timeout',
         '$location',
+        '$window',
         function(
             $rootScope,
             $scope,
             $ionicScrollDelegate,
             $timeout,
-            $location
+            $location,
+            $window
         ) {
             var calendarName = 'create-shift-calendar';
 
@@ -47,6 +49,8 @@ angular.module('scheduling-app.controllers')
                 console.log('reset');
                 $ionicScrollDelegate.scrollTop(false);
                 $rootScope.$broadcast('events:calendar:reset', calendarName);
+                $rootScope.$broadcast('events:calendar:show', calendarName);
+                $rootScope.$broadcast('events:calendar:currentmonth', calendarName);
                 resetSteps();
             });
 
@@ -97,8 +101,6 @@ angular.module('scheduling-app.controllers')
                     $scope.step = 0;
                     $scope.steps[steps[0]].show = true;
                 }
-                console.log(location);
-                console.log($scope.step);
                 hideOtherSteps();
                 $timeout(function() {
                     blockInput(false);

@@ -17,6 +17,9 @@ angular.module('scheduling-app.directives')
             function link(scope, element, attributes) {
                 scope.name = attributes.name;
                 scope.show = attributes.show;
+                if (scope.show == 'false') {
+                    scope.show = false;
+                }
                 scope.clickable = attributes.clickable;
                 scope.attributes = attributes;
 
@@ -30,7 +33,7 @@ angular.module('scheduling-app.directives')
                             if (isClickedElementChildOfPopup)
                                 return;
 
-                            $rootScope.$emit('events:calendar:hide');
+                            $rootScope.$emit('events:calendar:hide', scope.name);
                             //$scope.isPopupVisible = false;
                             $rootScope.$apply();
                         }

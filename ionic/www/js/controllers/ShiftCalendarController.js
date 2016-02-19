@@ -33,22 +33,22 @@ angular.module('scheduling-app.controllers')
             $scope.$on(GENERAL_EVENTS.CALENDAR.UPDATE.DONE, loadingComplete);
 
             $scope.show = false;
-            $rootScope.$on(GENERAL_EVENTS.CALENDAR.SHOW, function() {
-                if (isHidable()) {
+            $rootScope.$on(GENERAL_EVENTS.CALENDAR.SHOW, function(state, name) {
+                if (isHidable() && $scope.name == name) {
                     $scope.show = true;
                     $rootScope.calendarShown = true;
                 }
             });
 
-            $rootScope.$on(GENERAL_EVENTS.CALENDAR.HIDE, function() {
-                if (isHidable()) {
+            $rootScope.$on(GENERAL_EVENTS.CALENDAR.HIDE, function(state, name) {
+                if (isHidable() && $scope.name == name) {
                     $scope.show = false;
                     $rootScope.calendarShown = false;
                 }
             });
 
-            $rootScope.$on(GENERAL_EVENTS.CALENDAR.TOGGLE, function() {
-                if (isHidable()) {
+            $rootScope.$on(GENERAL_EVENTS.CALENDAR.TOGGLE, function(state, name) {
+                if (isHidable() && $scope.name == name) {
                     $scope.show = !$scope.show;
                     $rootScope.calendarShown = $scope.show;
                 }
