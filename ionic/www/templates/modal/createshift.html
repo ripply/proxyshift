@@ -5,28 +5,34 @@
             <button class="button button-icon ion-close" ng-click="closeModal()"></button>
         </ion-nav-buttons>
     </ion-nav-bar>
+    <div class="create-shift-steps">
+        <ul id="progressbar">
+            <li ng-class="{'active': step >= 0, 'locked': steps['create-shift-date'].locked}" ng-click="navigateTo('create-shift-date')">DATE</li>
+            <li ng-class="{'active': step >= 1, 'locked': steps['create-shift-when'].locked}" ng-click="navigateTo('create-shift-when')">WHEN</li>
+            <li ng-class="{'active': step >= 2, 'locked': steps['create-shift-where'].locked}" ng-click="navigateTo('create-shift-where')">WHERE</li>
+            <li ng-class="{'active': step >= 2, 'locked': steps['create-shift-who'].locked}" ng-click="navigateTo('create-shift-who')">WHO</li>
+            <li ng-class="{'active': step >= 3, 'locked': steps['create-shift-review'].locked}" ng-click="navigateTo('create-shift-review')">Review</li>
+        </ul>
+    </div>
     <ion-content class="has-header">
-        <div class="forms" id="create-shift-calendar">
+        <div class="forms" id="create-shift-date" ng-class="{'create-shift-form-hide': steps.create-shift-date.show}">
             <div class="create-shift-content">
                 <shift-calendar toggle="false" show="true" name="create-shift-calendar" clickable="true"></shift-calendar>
-                <div class="create-shift-nav-next">
-                    <button class="button ion-chevron-down" ng-click="slideTo('create-shift-time')"></button>
-                </div>
             </div>
         </div>
-        <div class="forms" id="create-shift-time">
-            <button class="button create-shift-nav-prev ion-chevron-up" ng-click="slideTo('create-shift-calendar')"></button>
+        <div class="forms" id="create-shift-when" ng-class="{'create-shift-form-hide': steps.create-shift-when.show}">
+            <button class="button create-shift-nav-prev ion-chevron-up" ng-click="slideTo('create-shift-date')"></button>
             <div class="create-shift-content">
                 <div class="shift-date">
                     {{getReadableDate()}}
                 </div>
                 <div class="create-shift-nav-next">
-                    <button class="button ion-chevron-down" ngclick="slideTo('create-shift-location')"></button>
+                    <button class="button ion-chevron-down" ngclick="slideTo('create-shift-where')"></button>
                 </div>
             </div>
         </div>
-        <div class="forms" id="create-shift-location">
-            <button class="button create-shift-nav-prev ion-chevron-up" ng-click="slideTo('create-shift-time')"></button>
+        <div class="forms" id="create-shift-where" ng-class="{'create-shift-form-hide': steps.create-shift-where.show}">
+            <button class="button create-shift-nav-prev ion-chevron-up" ng-click="slideTo('create-shift-when')"></button>
             <div class="create-shift-content">
                 location
                 <div class="create-shift-nav-next">
@@ -34,16 +40,16 @@
                 </div>
             </div>
         </div>
-        <div class="forms" id="create-shift-description">
-            <button class="button create-shift-nav-prev ion-chevron-up" ng-click="slideTo('create-shift-location')"></button>
+        <div class="forms" id="create-shift-description" ng-class="{'create-shift-form-hide': steps.create-shift-description.show}">
+            <button class="button create-shift-nav-prev ion-chevron-up" ng-click="slideTo('create-shift-where')"></button>
             <div class="create-shift-content">
                 description
                 <div class="create-shift-nav-next">
-                    <button class="button ion-chevron-down" ng-click="slideTo('create-shift-confirm')"></button>
+                    <button class="button ion-chevron-down" ng-click="slideTo('create-shift-review')"></button>
                 </div>
             </div>
         </div>
-        <div class="forms" id="create-shift-confirm">
+        <div class="forms" id="create-shift-review" ng-class="{'create-shift-form-hide': steps.create-shift-review.show}">
             <button class="button create-shift-nav-prev ion-chevron-up" ng-click="slideTo('create-shift-description')"></button>
             <div class="create-shift-content">
                 confirm

@@ -1328,6 +1328,9 @@ body,
   width: 100%;
   position: relative;
 }
+.create-shift-form-hide {
+  opacity: 0;
+}
 .create-shift-nav-prev {
   margin: auto;
   display: block;
@@ -1339,4 +1342,66 @@ body,
   left: 50%;
   -webkit-transform: translateX(-50%);
   transform: translateX(-50%);
+}
+.create-shift-steps {
+  width: 100%;
+  position: absolute;
+  z-index: 1000;
+  bottom: 0;
+  left: 0;
+}
+/*progressbar*/
+#progressbar {
+  width: 100%;
+  margin-bottom: 30px;
+  overflow: hidden;
+  counter-reset: step;
+  /*CSS counters to number the steps*/
+}
+#progressbar li {
+  list-style-type: none;
+  text-transform: uppercase;
+  font-size: 10px;
+  width: 20%;
+  float: left;
+  position: relative;
+  text-align: center;
+}
+#progressbar li:before {
+  content: counter(step);
+  counter-increment: step;
+  width: 20px;
+  line-height: 20px;
+  display: block;
+  font-size: 10px;
+  color: #333;
+  background: white;
+  border-radius: 3px;
+  margin: 0 auto 5px auto;
+}
+/*progressbar connectors*/
+#progressbar li:after {
+  content: '';
+  width: 100%;
+  height: 2px;
+  background: white;
+  position: absolute;
+  left: -50%;
+  top: 9px;
+  z-index: -1;
+  /*put it behind the numbers*/
+}
+#progressbar li:first-child:after {
+  content: none;
+  /*connector not needed before the first step*/
+}
+/*marking active/completed steps nhlbi red*/
+/*The number of the step and the connector before it = nhlbi red*/
+#progressbar li.active:before,
+#progressbar li.active:after {
+  background: #900;
+  color: white;
+}
+#progressbar .locked:before {
+  background: #3468af;
 }
