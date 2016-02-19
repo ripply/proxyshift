@@ -45,6 +45,10 @@ angular.module('scheduling-app.controllers')
                 }
             }
 
+            $scope.timePickerObject = {
+
+            };
+
             $scope.$on('modal:createshift:reset', function() {
                 console.log('reset');
                 $ionicScrollDelegate.scrollTop(false);
@@ -67,7 +71,7 @@ angular.module('scheduling-app.controllers')
 
             $scope.getReadableDate = function() {
                 if ($scope.date) {
-                    return $scope.date.format("L");
+                    return $scope.date.format('dddd') + ", " + $scope.date.format('LL');
                 } else {
                     return "Select a date";
                 }

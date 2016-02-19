@@ -17,6 +17,9 @@
     <ion-content class="has-header">
         <div class="forms" id="create-shift-date" ng-class="{'create-shift-form-hide': steps.create-shift-date.show}">
             <div class="create-shift-content">
+                <div class="header-extend">
+                    <h3>Select a date</h3>
+                </div>
                 <shift-calendar toggle="false" show="true" name="create-shift-calendar" clickable="true"></shift-calendar>
             </div>
         </div>
@@ -24,8 +27,9 @@
             <button class="button create-shift-nav-prev ion-chevron-up" ng-click="slideTo('create-shift-date')"></button>
             <div class="create-shift-content">
                 <div class="shift-date">
-                    {{getReadableDate()}}
+                    <i class="ion-calendar icon"></i>{{getReadableDate()}}
                 </div>
+                <ionic-timepicker-embed input-obj="timePickerObject"></ionic-timepicker-embed>
                 <div class="create-shift-nav-next">
                     <button class="button ion-chevron-down" ngclick="slideTo('create-shift-where')"></button>
                 </div>

@@ -1017,8 +1017,8 @@ body,
 }
 .calendar-month .arrow-btn .icon {
   display: block;
-  font-size: 22px;
-  line-height: 60px;
+  font-size: 15px;
+  line-height: 35px;
   text-align: center;
 }
 .calendar-month .arrow-btn .calendar-back .icon {
@@ -1034,7 +1034,7 @@ body,
 }
 .calendar-month .titler {
   display: block;
-  line-height: 60px;
+  line-height: 35px;
   margin: 0;
   text-align: center;
   color: #ffffff;
@@ -1048,7 +1048,7 @@ body,
 .calendar-month .calendar-day .the-day {
   margin: 0;
   text-align: center;
-  font-size: 146px;
+  font-size: 17px;
 }
 .calendar-month .add-event.button {
   background: #4fc4f6;
@@ -1404,4 +1404,11 @@ body,
 }
 #progressbar .locked:before {
   background: #3468af;
+}
+.header-extend {
+  background-color: #159deb;
+  height: 40px;
+}
+.header-extend h3 {
+  color: #ffffff;
 }

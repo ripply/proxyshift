@@ -11,6 +11,8 @@
 @text-color: #fff;
 @text-bright: #4fc4f6;
 
+@header-color: #159DEB;
+
 @settings-background: #2d2d3a;
 @settings-offset-color: #575761;
 @background: @settings-background;
@@ -250,12 +252,15 @@ body, .pane, .scroll-content, .list, .logo {
 
 }
 
+@header-font-size: 17px;
+
 @calendar-day-height: 40px;
 @calendar-shift-dot-height: 5px;
 @calendar-shift-x-pos: round((@calendar-day-height / 2) - (@calendar-shift-dot-height / 2));
 @calendar-shift-y-pos: (0 - ((@calendar-day-height / 2) - ((@calendar-shift-dot-height / 2) + (@calendar-day-height / 5))));
 @calendar-arrow-height: @calendar-day-height * 1.5;
-@calendar-header-line-height: 60px;
+@calendar-header-line-height: 35px;
+@calendar-header-font-size: @header-font-size - 2;
 
 /* A Previous button in calendar */
 .calendar-month {
@@ -280,7 +285,7 @@ body, .pane, .scroll-content, .list, .logo {
 
         .icon {
             display: block;
-            font-size: 22px;
+            font-size: @calendar-header-font-size;
             //border: 2px solid #fff;
             //border-radius: 100%;
             //line-height: 17px;
@@ -333,7 +338,7 @@ body, .pane, .scroll-content, .list, .logo {
         .the-day {
             margin: 0;
             text-align: center;
-            font-size: 146px;
+            font-size: 17px;
         }
     }
 
@@ -801,4 +806,13 @@ body, .pane, .scroll-content, .list, .logo {
 }
 #progressbar .locked:before {
     background: @background-light;
+}
+
+.header-extend {
+    background-color: @header-color;
+    height: 40px;
+
+    h3 {
+        color: @text-color;
+    }
 }
