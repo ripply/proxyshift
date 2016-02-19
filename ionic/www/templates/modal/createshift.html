@@ -10,8 +10,8 @@
             <li ng-class="{'active': step >= 0, 'locked': steps['create-shift-date'].locked}" ng-click="navigateTo('create-shift-date')">DATE</li>
             <li ng-class="{'active': step >= 1, 'locked': steps['create-shift-when'].locked}" ng-click="navigateTo('create-shift-when')">WHEN</li>
             <li ng-class="{'active': step >= 2, 'locked': steps['create-shift-where'].locked}" ng-click="navigateTo('create-shift-where')">WHERE</li>
-            <li ng-class="{'active': step >= 2, 'locked': steps['create-shift-who'].locked}" ng-click="navigateTo('create-shift-who')">WHO</li>
-            <li ng-class="{'active': step >= 3, 'locked': steps['create-shift-review'].locked}" ng-click="navigateTo('create-shift-review')">Review</li>
+            <li ng-class="{'active': step >= 3, 'locked': steps['create-shift-who'].locked}" ng-click="navigateTo('create-shift-who')">WHO</li>
+            <li ng-class="{'active': step >= 4, 'locked': steps['create-shift-review'].locked}" ng-click="navigateTo('create-shift-review')">Review</li>
         </ul>
     </div>
     <ion-content class="has-header">
@@ -29,9 +29,13 @@
                 <div class="shift-date">
                     <i class="ion-calendar icon"></i>{{getReadableDate()}}
                 </div>
-                <ionic-timepicker-embed input-obj="timePickerObject"></ionic-timepicker-embed>
+                <div>
+                    This will always be in local time
+                </div>
+                <ionic-timepicker-embed input-obj="timePickerObjectTime"></ionic-timepicker-embed>
+                <ionic-timepicker-hours-embed input-obj="timePickerObjectLength"></ionic-timepicker-hours-embed>
                 <div class="create-shift-nav-next">
-                    <button class="button ion-chevron-down" ngclick="slideTo('create-shift-where')"></button>
+                    <button class="button ion-chevron-down" ng-click="slideTo('create-shift-where')"></button>
                 </div>
             </div>
         </div>
@@ -40,11 +44,11 @@
             <div class="create-shift-content">
                 location
                 <div class="create-shift-nav-next">
-                    <button class="button ion-chevron-down" ng-click="slideTo('create-shift-description')"></button>
+                    <button class="button ion-chevron-down" ng-click="slideTo('create-shift-who')"></button>
                 </div>
             </div>
         </div>
-        <div class="forms" id="create-shift-description" ng-class="{'create-shift-form-hide': steps.create-shift-description.show}">
+        <div class="forms" id="create-shift-who" ng-class="{'create-shift-form-hide': steps.create-shift-who.show}">
             <button class="button create-shift-nav-prev ion-chevron-up" ng-click="slideTo('create-shift-where')"></button>
             <div class="create-shift-content">
                 description
@@ -54,7 +58,7 @@
             </div>
         </div>
         <div class="forms" id="create-shift-review" ng-class="{'create-shift-form-hide': steps.create-shift-review.show}">
-            <button class="button create-shift-nav-prev ion-chevron-up" ng-click="slideTo('create-shift-description')"></button>
+            <button class="button create-shift-nav-prev ion-chevron-up" ng-click="slideTo('create-shift-who')"></button>
             <div class="create-shift-content">
                 confirm
             </div>

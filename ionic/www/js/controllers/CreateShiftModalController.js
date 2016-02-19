@@ -45,9 +45,8 @@ angular.module('scheduling-app.controllers')
                 }
             }
 
-            $scope.timePickerObject = {
-
-            };
+            $scope.timePickerObjectTime = {};
+            $scope.timePickerObjectLength = {};
 
             $scope.$on('modal:createshift:reset', function() {
                 console.log('reset');
@@ -89,6 +88,7 @@ angular.module('scheduling-app.controllers')
             }
 
             function slideTo(location) {
+                console.log("slideTO: " + location);
                 if ($scope.sliding) {
                     return;
                 }
