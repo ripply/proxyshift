@@ -6,13 +6,17 @@ angular.module('scheduling-app.controllers')
         '$timeout',
         '$location',
         '$window',
+        'GENERAL_EVENTS',
+        'UserInfoService',
         function(
             $rootScope,
             $scope,
             $ionicScrollDelegate,
             $timeout,
             $location,
-            $window
+            $window,
+            GENERAL_EVENTS,
+            UserInfoService
         ) {
             var calendarName = 'create-shift-calendar';
 
@@ -47,6 +51,7 @@ angular.module('scheduling-app.controllers')
 
             $scope.timePickerObjectTime = {};
             $scope.timePickerObjectLength = {};
+            getLocations();
 
             $scope.$on('modal:createshift:reset', function() {
                 console.log('reset');
@@ -54,6 +59,8 @@ angular.module('scheduling-app.controllers')
                 $rootScope.$broadcast('events:calendar:reset', calendarName);
                 $rootScope.$broadcast('events:calendar:show', calendarName);
                 $rootScope.$broadcast('events:calendar:currentmonth', calendarName);
+                getLocations();
+                $scope.selected = null;
                 resetSteps();
             });
 
@@ -88,7 +95,6 @@ angular.module('scheduling-app.controllers')
             }
 
             function slideTo(location) {
-                console.log("slideTO: " + location);
                 if ($scope.sliding) {
                     return;
                 }
@@ -121,6 +127,29 @@ angular.module('scheduling-app.controllers')
             $scope.closeModal = function() {
                 $rootScope.createShiftModal.hide();
             };
+
+            $rootScope.$on(GENERAL_EVENTS.UPDATES.USERINFO.PROCESSED, function() {
+                getLocations();
+            });
+
+            $scope.clicked = function(location) {
+                angular.forEach($scope.locations, function(location) {
+                    location.selected = false;
+                });
+                location.selected = true;
+                $scope.selected = location;
+                console.log(location);
+            };
+
+            function getLocations() {
+                $scope.locationsObject = UserInfoService.getLocationList();
+                $scope.locations = [];
+
+                angular.forEach($scope.locationsObject, function(location, locationid) {
+                    $scope.locations.push(angular.copy(location));
+                });
+                console.log($scope.locations);
+            }
         }
     ]
 );

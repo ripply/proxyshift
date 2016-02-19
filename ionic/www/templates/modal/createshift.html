@@ -42,7 +42,38 @@
         <div class="forms" id="create-shift-where" ng-class="{'create-shift-form-hide': steps.create-shift-where.show}">
             <button class="button create-shift-nav-prev ion-chevron-up" ng-click="slideTo('create-shift-when')"></button>
             <div class="create-shift-content">
-                location
+                <i class="icon ion-search placeholder-icon"></i>
+                <input type="text" ng-model="query" ng-style="{'width' : '100%'}"
+                       placeholder="Search by name, email or phone">
+                <div>
+                <ion-list
+                    show-delete="false"
+                    show-reorder="false"
+                    can-swipe="false">
+                    <ion-item
+                        class="item clear-padding"
+                        ng-class="{'location-selected': location.selected}"
+                        ng-click="clicked(location)"
+                        collection-repeat="location in locations | filter:query">
+                        {{location.address}}
+                    </ion-item>
+                </ion-list>
+                </div>
+                <div>
+                    <ion-list
+                        show-delete="false"
+                        show-reorder="false"
+                        can-swipe="false">
+                        <ion-item
+                            class="item clear-padding"
+                            ng-class="{'location-selected': location.selected}"
+                            ng-click="clicked(location)"
+                            collection-repeat="location in locations | filter:query">
+                            {{location.address}}
+                        </ion-item>
+                    </ion-list>
+                </div>
+                
                 <div class="create-shift-nav-next">
                     <button class="button ion-chevron-down" ng-click="slideTo('create-shift-who')"></button>
                 </div>
