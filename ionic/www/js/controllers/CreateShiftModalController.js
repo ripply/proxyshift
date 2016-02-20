@@ -20,12 +20,25 @@ angular.module('scheduling-app.controllers')
         ) {
             var calendarName = 'create-shift-calendar';
 
+            $window.addEventListener('resize', function(event) {
+                $location.hash($scope.steps[$scope.step]);
+                $ionicScrollDelegate.anchorScroll(false);
+            });
+
             var steps = [
                 'create-shift-date',
                 'create-shift-when',
                 'create-shift-where',
                 'create-shift-who',
                 'create-shift-review'
+            ];
+
+            var headers = [
+                'Select a date',
+                'Start time/length',
+                'Where',
+                'Who',
+                'Review'
             ];
 
             $scope.steps = {};
@@ -39,6 +52,13 @@ angular.module('scheduling-app.controllers')
                         show: true,
                         locked: i != 0
                     };
+                }
+            }
+
+            function showAllSteps() {
+                for (var i = 0, length = steps.length; i < length; i++) {
+                    var id = steps[i];
+                    $scope.steps[id].show = true;
                 }
             }
 
@@ -111,12 +131,14 @@ angular.module('scheduling-app.controllers')
                     $scope.step = 0;
                     $scope.steps[steps[0]].show = true;
                 }
-                hideOtherSteps();
+                $scope.header = headers[$scope.step];
+                showAllSteps();
                 $timeout(function() {
                     blockInput(false);
                     $location.hash(location);
                     $ionicScrollDelegate.anchorScroll(false);
                     $scope.sliding = false;
+                    hideOtherSteps();
                 }, 500);
             }
 

@@ -744,10 +744,12 @@ body, .pane, .scroll-content, .list, .logo {
     }
 }
 
+@modal-top-z-index: 1000;
+
 .create-shift-steps {
     width: 100%;
     position: absolute;
-    z-index: 1000;
+    z-index: @modal-top-z-index;
     bottom: 0;
     left: 0;
 }
@@ -808,9 +810,17 @@ body, .pane, .scroll-content, .list, .logo {
     background: @background-light;
 }
 
+@header-extended-height: 50px;
+@header-height: 44px;
+@header-offset: 2px;
+
 .header-extend {
     background-color: @header-color;
-    height: 40px;
+    height: @header-extended-height;
+    position: relative;
+    top: @header-height - @header-offset; // aligns to top of header
+    z-index: @modal-top-z-index;
+    left: 0;
 
     h3 {
         color: @text-color;
