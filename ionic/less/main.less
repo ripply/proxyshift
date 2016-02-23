@@ -206,6 +206,15 @@ body, .pane, .scroll-content, .list, .logo {
         width: 97%;
     }
 
+    // vertical align calendar in popup
+    .forms {
+        table {
+            .create-shift-content {
+                padding-top: 30px;
+            }
+        }
+    }
+
 }
 
 @media only screen and (min-width: (@width-big + 1)) and (max-width: @width-massive) {
@@ -225,6 +234,15 @@ body, .pane, .scroll-content, .list, .logo {
 
     .shift-description {
         width: 80%;
+    }
+
+    // vertical align calendar in popup
+    .forms {
+        table {
+            .create-shift-content {
+                padding-top: 60px;
+            }
+        }
     }
 
 }
@@ -700,6 +718,16 @@ body, .pane, .scroll-content, .list, .logo {
 
 .forms {
     height: 100% !important;
+
+    table {
+        height: 100%;
+        width: 100%;
+/*
+        .create-shift-content {
+            vertical-align: middle;
+        }
+        */
+    }
 }
 
 .create-shift-modal .scroll {
@@ -723,6 +751,13 @@ body, .pane, .scroll-content, .list, .logo {
     height: 100%;
     width: 100%;
     position: relative;
+}
+
+.sub-subheader {
+    //margin: auto;
+    color: @text-color;
+    //text-align: center;
+    height: 22px;
 }
 
 .create-shift-form-hide {
@@ -757,9 +792,9 @@ body, .pane, .scroll-content, .list, .logo {
 /*progressbar*/
 #progressbar {
     width: 100%;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     overflow: hidden;
-    counter-reset: step;
+    //counter-reset: step;
     /*CSS counters to number the steps*/
 }
 #progressbar li {
@@ -770,17 +805,19 @@ body, .pane, .scroll-content, .list, .logo {
     float: left;
     position: relative;
     text-align: center;
+    color: @text-color;
 }
 #progressbar li:before {
-    content: counter(step);
-    counter-increment: step;
+    //content: counter(step);
+    content: "\00a0";
+    //counter-increment: step;
     width: 20px;
     line-height: 20px;
     display: block;
     font-size: 10px;
     color: #333;
     background: white;
-    border-radius: 3px;
+    border-radius: 100%;
     margin: 0 auto 5px auto;
 }
 /*progressbar connectors*/
@@ -829,4 +866,26 @@ body, .pane, .scroll-content, .list, .logo {
 
 .location-selected {
     background-color: #FF0000;
+}
+
+/*
+.calendarWrapper {
+    margin-bottom: 30px;
+}
+
+*/
+
+.bar.bar-dark {
+    background-color: @settings-background;
+    border-image-width: 0;
+    background-size: 0;
+}
+
+.tabs-background-dark .tabs {
+    background-color: @settings-background;
+    color: @text-color;
+
+    h3 {
+        color: @text-color;
+    }
 }

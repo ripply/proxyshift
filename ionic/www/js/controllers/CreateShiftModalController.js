@@ -34,12 +34,14 @@ angular.module('scheduling-app.controllers')
             ];
 
             var headers = [
-                'Select a date',
+                'Select date(s)',
                 'Start time/length',
                 'Where',
                 'Who',
                 'Review'
             ];
+
+            $scope.header = headers[0];
 
             $scope.steps = {};
             resetSteps();
