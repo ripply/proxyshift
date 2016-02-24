@@ -31,9 +31,15 @@ function App() {
     }
 }
 
+function pushNotificationsExpiresIn(now) {
+    return now + 100000;
+}
+
 App.prototype = Object.create(EventEmitter.prototype);
 _.extend(App.prototype, events);
 _.bindAll.apply(this, _.flatten([App.prototype, Object.keys(events)]));
+
+App.prototype.pushNotificationsExpiresIn = pushNotificationsExpiresIn;
 
 App.prototype.getUserSettings = function getUserSettings(user_ids, next) {
     if (!user_ids instanceof Array) {
@@ -151,7 +157,7 @@ App.prototype.sendToUsers = function sendToUsers(user_ids, messages, args, test)
                     if (foundPushToken) {
                         var message = messages.push(args);
                         _.each(serviceTokens, function (tokens, service) {
-                            self.sendNotification(service, tokens, now + 100000, message);
+                            self.sendNotification(service, tokens, pushNotificationsExpiresIn(now), message);
                         });
                     }
                 }

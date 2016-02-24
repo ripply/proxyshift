@@ -22,6 +22,7 @@ var Schema = require('./schema').Schema,
     encryptKey = require('../controllers/encryption/encryption').encryptKey,
     time = require('./time'),
     slack = require('./slack'),
+    appLogic = require('./')
     SALT_WORK_FACTOR = 10;
 
 var master = cluster.isMaster && process.env.WEB;
@@ -1027,6 +1028,51 @@ function checkRememberMeToken(token, consume, next) {
         });
 }
 
+function purgeExpiredTokens(transacting, next) {
+    // transaction, fetch expired tokens, then delete them and send push if necessary
+    if (transacting) {
+        var now = time.nowInUtc();
+        return models.Token.query(function purgeExpiredTokensFindTokens(q) {
+            q.select()
+                .from('tokens')
+                .where('date', '<', now);
+        })
+            .fetchAll({
+                withRelated: [
+                    'pushtokens'
+                ],
+                transacting: transacting
+            })
+            .tap(function purgeExpiredTokensNotifyUsers(expiredTokens) {
+                if (expiredTokens) {
+                    _.each(expiredTokens.toJSON(), function (expiredToken) {
+                        if (expiredToken.pushtokens) {
+                            appLogic.loggedOut(expiredToken.pushtokens);
+                        }
+                    });
+                }
+                return models.Token.query(function purgeExpiredTokensDeleteTokens(q) {
+                    q.select()
+                        .from('tokens')
+                        .where('date', '<', now)
+                        .del();
+                })
+                    .fetchAll({
+                        transacting: transacting
+                    })
+                    .tap(function purgeExpiredTokensDeleted(numRows) {
+                        if (numRows > 0) {
+                            console.log('Purged ' + numRows + ' expired tokens.');
+                        }
+                        return next();
+                    });
+            });
+    } else {
+        return Bookshelf.transaction(function(t) {
+            return purgeExpiredTokens(t, next);
+        });
+    }
+}
 
 var max_tokens = 2;
 var tokens_expire_in_x_days = 14;
@@ -1037,39 +1083,36 @@ function saveRememberMeToken(token, uid, next) {
         uid == '') {
         return next("Cannot save token without a userid");
     }
-    models.User.forge({id: uid})
-        .fetch({require: true})
-        .then(function(foundUser) {
-            var expires = new moment().add(tokens_expire_in_x_days, 'days').unix();
+    return Bookshelf.transaction(function(t) {
+        return models.User.forge({id: uid})
+            .fetch({
+                require: true,
+                transacting: t
+            })
+            .tap(function(foundUser) {
+                var expires = new moment().add(tokens_expire_in_x_days, 'days').unix();
 
-            Bookshelf.knex('tokens')
-                .where('date', '<', time.nowInUtc())
-                .del()
-                .then(function(numRows) {
-                    if (numRows > 0) {
-                        console.log('Purged ' + numRows + ' expired tokens.');
-                    }
-                })
-                .catch(function(err) {
-                    console.log('Failed to purge tokens.' + err);
+                return purgeExpiredTokens(t, function(err) {
+                    var newToken = new models.Token({
+                        user_id: foundUser.get('id'),
+                        token: token,
+                        date: expires
+                    });
+
+                    return newToken
+                        .save(undefined, {
+                            transacting: t
+                        })
+                        .tap(function(savedToken) {
+                            var token_id = savedToken.get('id');
+                            next(undefined, token_id);
+                        });
                 });
-
-            var newToken = new models.Token({
-                user_id: foundUser.get('id'),
-                token: token,
-                date: expires
             });
-
-            newToken
-                .save()
-                .then(function(savedToken) {
-                    var token_id = savedToken.get('id');
-                    next(undefined, token_id);
-                });
-        })
+})
         .catch(function(err) {
             return next(err);
-        })
+        });
 }
 
 function registerDeviceIdForUser(user_id, device_id, platformstr, expires, sessionToken, next) {
@@ -1087,7 +1130,9 @@ function registerDeviceIdForUser(user_id, device_id, platformstr, expires, sessi
                 }
             }
             if (platform_id === 0) {
-                console.log("Unknown platform type received: " + platformstr);
+                var message = 'userid: ' + user_id + ' - unknown platform type received: ' + platformstr;
+                console.log(message);
+                slack.info(message);
             }
         }
         Bookshelf.transaction(function (t) {

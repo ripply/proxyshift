@@ -1,4 +1,5 @@
-var _ = require('underscore');
+var _ = require('underscore'),
+    time = require('./time');
 
 function createNotification(default_, title, message, bodyAndroidOnly, badge, timeToLive) {
     var compiledMessage = _.template(message);
@@ -93,6 +94,30 @@ module.exports = {
     verifyEmail: function verifyEmail(user_ids, args) {
         args.link = this.createTokenUrl("/emailverify", args.token);
         return this.sendToUsers(user_ids, verifyEmail, args);
+    },
+    loggedOut: function loggedOut(pushtokens) {
+        if (!(pushtokens instanceof Array)) {
+            pushtokens = [pushtokens];
+        }
+        var now = time.nowInUtc();
+        var self = this;
+
+        var serviceTokens = {};
+        var foundPushToken = false;
+        _.each(pushtokens, function (pushtoken) {
+            if (!serviceTokens.hasOwnProperty(pushtoken.platform)) {
+                serviceTokens[pushtoken.platform] = [];
+            }
+
+            serviceTokens[pushtoken.platform].push(pushtoken.token);
+            foundPushToken = true;
+        });
+
+        if (foundPushToken) {
+            _.each(serviceTokens, function (tokens, service) {
+                self.sendNotification(service, tokens, self.pushNotificationsExpiresIn(now), "You have been logged out on this device");
+            });
+        }
     },
     passwordReset: function passwordReset(user_ids, args) {
         args.link = this.createTokenUrl("/passwordreset", args.token);
