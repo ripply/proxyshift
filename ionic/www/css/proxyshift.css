@@ -960,7 +960,7 @@ body,
   .shift-description {
     width: 97%;
   }
-  .forms table .create-shift-content {
+  .forms .form-offset .create-shift-content {
     padding-top: 30px;
   }
 }
@@ -979,7 +979,7 @@ body,
   .shift-description {
     width: 80%;
   }
-  .forms table .create-shift-content {
+  .forms .form-offset .create-shift-content {
     padding-top: 60px;
   }
 }
@@ -1315,14 +1315,14 @@ body,
 .forms {
   height: 100% !important;
 }
-.forms table {
-  height: 100%;
-  width: 100%;
-  /*
-        .create-shift-content {
-            vertical-align: middle;
-        }
-        */
+.unclickable {
+  z-index: -1;
+}
+.next-button {
+  margin: 15px;
+  text-align: center;
+  font-size: 250%;
+  color: #ffffff;
 }
 .create-shift-modal .scroll {
   height: 100%;
@@ -1342,6 +1342,13 @@ body,
   height: 100%;
   width: 100%;
   position: relative;
+}
+.forms .create-shift-content .row {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.forms .create-shift-content .col {
+  padding-bottom: 0;
 }
 .sub-subheader {
   color: #ffffff;
@@ -1454,4 +1461,13 @@ body,
 }
 .tabs-background-dark .tabs h3 {
   color: #ffffff;
+}
+.ipBoxes {
+  color: #ffffff;
+}
+.timePickerColon {
+  color: #ffffff;
+}
+.row-no-padding {
+  padding: 0;
 }

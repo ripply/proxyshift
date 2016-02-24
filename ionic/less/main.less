@@ -208,7 +208,7 @@ body, .pane, .scroll-content, .list, .logo {
 
     // vertical align calendar in popup
     .forms {
-        table {
+        .form-offset {
             .create-shift-content {
                 padding-top: 30px;
             }
@@ -238,7 +238,7 @@ body, .pane, .scroll-content, .list, .logo {
 
     // vertical align calendar in popup
     .forms {
-        table {
+        .form-offset {
             .create-shift-content {
                 padding-top: 60px;
             }
@@ -718,16 +718,20 @@ body, .pane, .scroll-content, .list, .logo {
 
 .forms {
     height: 100% !important;
+}
 
-    table {
-        height: 100%;
-        width: 100%;
-/*
-        .create-shift-content {
-            vertical-align: middle;
-        }
-        */
-    }
+.unclickable {
+    z-index: -1;
+}
+
+.next-button {
+    //position: absolute;
+    //bottom: @progress-bar-computed-height;
+    //right: @progress-bar-height / 4;
+    margin: @progress-bar-height / 3;
+    text-align: center;
+    font-size: 250%;
+    color: @text-color;
 }
 
 .create-shift-modal .scroll {
@@ -747,10 +751,23 @@ body, .pane, .scroll-content, .list, .logo {
     z-index: 10000;
 }
 
+@progress-bar-height: 45px;
+@progress-bar-margin-bottom: 20px;
+@progress-bar-computed-height: @progress-bar-height + @progress-bar-margin-bottom;
+
 .forms .create-shift-content {
     height: 100%;
     width: 100%;
     position: relative;
+
+    .row {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .col {
+        padding-bottom: 0;
+    }
 }
 
 .sub-subheader {
@@ -792,7 +809,7 @@ body, .pane, .scroll-content, .list, .logo {
 /*progressbar*/
 #progressbar {
     width: 100%;
-    margin-bottom: 20px;
+    margin-bottom: @progress-bar-margin-bottom;
     overflow: hidden;
     //counter-reset: step;
     /*CSS counters to number the steps*/
@@ -888,4 +905,16 @@ body, .pane, .scroll-content, .list, .logo {
     h3 {
         color: @text-color;
     }
+}
+
+.ipBoxes {
+    color: @text-color;
+}
+
+.timePickerColon {
+    color: @text-color;
+}
+
+.row-no-padding {
+    padding: 0;
 }

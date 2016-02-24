@@ -33,6 +33,9 @@ angular.module('scheduling-app.controllers')
                 'create-shift-review'
             ];
 
+            $scope.next = true;
+            $scope.prev = true;
+
             var headers = [
                 'Select date(s)',
                 'Start time/length',

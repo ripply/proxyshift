@@ -9,6 +9,18 @@
             <h3 class="title">{{header}}</h3>
     </div>
     <div class="create-shift-steps">
+        <div class="row row-no-padding">
+            <div class="col-20 unclickable"></div>
+            <div class="col-20 unclickable"></div>
+            <div class="col-20 unclickable"></div>
+            <div class="col-20 unclickable"></div>
+            <div class="col-20 unclickable">
+                <div ng-show="prev"
+                     class="icon ion-chevron-up next-button"></div>
+                <div ng-show="next"
+                     class="icon ion-chevron-down next-button"></div>
+            </div>
+        </div>
         <ul id="progressbar">
             <li ng-class="{'active': step >= 0, 'locked': steps['create-shift-date'].locked}" ng-click="navigateTo('create-shift-date')">DATE(S)</li>
             <li ng-class="{'active': step >= 1, 'locked': steps['create-shift-when'].locked}" ng-click="navigateTo('create-shift-when')">WHEN</li>
@@ -19,20 +31,29 @@
     </div>
     <ion-content class="has-subheader">
         <div class="forms" id="create-shift-date" ng-class="{'create-shift-form-hide': !steps['create-shift-date'].show}">
-            <table>
-                <tr>
-                    <td class="create-shift-content">
-                        <shift-calendar toggle="false" show="true" name="create-shift-calendar" clickable="true"></shift-calendar>
-                    </td>
-                </tr>
-            </table>
+            <div class="form-offset">
+                <div class="create-shift-content">
+                    <shift-calendar toggle="false" show="true" name="create-shift-calendar" clickable="true"></shift-calendar>
+                </div>
+            </div>
         </div>
         <div class="forms" id="create-shift-when" ng-class="{'create-shift-form-hide': !steps['create-shift-when'].show}">
-            <div class="create-shift-content">
-                <h4 class="sub-subheader">When does the shift start?</h4>
-                <h5 class="sub-subheader">(The locations local time)</h5>
-                <ionic-timepicker-embed input-obj="timePickerObjectTime"></ionic-timepicker-embed>
-                <ionic-timepicker-hours-embed input-obj="timePickerObjectLength"></ionic-timepicker-hours-embed>
+            <div class="form-offset">
+                <div class="create-shift-content">
+                    <div class="row">
+                        <div class="col">
+                            <h4 class="sub-subheader">When does the shift start?</h4>
+                            <h5 class="sub-subheader">(The locations local time)</h5>
+                        </div>
+                    </div>
+                    <ionic-timepicker-embed input-obj="timePickerObjectTime"></ionic-timepicker-embed>
+                    <div class="row">
+                        <div class="col">
+                            <h4 class="sub-subheader">How long is this shift?</h4>
+                        </div>
+                    </div>
+                    <ionic-timepicker-hours-embed input-obj="timePickerObjectLength"></ionic-timepicker-hours-embed>
+                </div>
             </div>
         </div>
         <div class="forms" id="create-shift-where" ng-class="{'create-shift-form-hide': !steps['create-shift-where'].show}">
