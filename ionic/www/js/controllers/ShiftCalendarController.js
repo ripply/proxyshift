@@ -54,6 +54,10 @@ angular.module('scheduling-app.controllers')
                 }
             });
 
+            function getSelectedKey(year, month, day) {
+                return '' + ('0000' + year).slice(-4) + '-' + ('00' + month).slice(-2) + '-' + ('00' + day).slice(-2);
+            }
+
             $rootScope.$on(GENERAL_EVENTS.CALENDAR.RESET, function(state, name) {
                 if (name == $scope.name) {
                     $scope.selected = {};
@@ -195,17 +199,31 @@ angular.module('scheduling-app.controllers')
             function dayClicked(day) {
                 var selected;
                 if ($scope.clickable) {
-                    selected = $scope.selected;
-                    $scope.selected.month = day.month;
-                    $scope.selected.year = day.year;
-                    $scope.selected.day = day.number;
-                    calculateCalendar();
-                } else {
-                    selected = {
+                    var selectedKey = getSelectedKey(day.year, day.month, day.number);
+                    var value = {
                         month: day.month,
                         year: day.year,
                         day: day.number
                     };
+                    if ($scope.multiple) {
+                        if ($scope.selected.hasOwnProperty(selectedKey)) {
+                            delete $scope.selected[selectedKey];
+                        } else {
+                            $scope.selected[selectedKey] = value;
+                        }
+                    } else {
+                        if (!$scope.selected.hasOwnProperty(selectedKey)) {
+                            $scope.selected = {};
+                            $scope.selected[selectedKey] = value;
+                        } else {
+                            $scope.selected = {};
+                        }
+                    }
+                    selected = $scope.selected;
+                    calculateCalendar();
+                } else {
+                    selected = {};
+                    selected[selectedKey] = value;
                 }
                 $rootScope.$emit(GENERAL_EVENTS.CALENDAR.CLICKED, $scope.name, angular.copy(selected));
             }
@@ -297,9 +315,8 @@ angular.module('scheduling-app.controllers')
                     today.today = countingDays.isSame(actualNow, 'day');
                     today.month = countingDays.month();
                     today.year = countingDays.year();
-                    today.selected = (today.year == $scope.selected.year &&
-                                      today.month == $scope.selected.month &&
-                                      today.number == $scope.selected.day);
+                    var selectedKey = getSelectedKey(today.year, today.month, today.number);
+                    today.selected = $scope.selected.hasOwnProperty(selectedKey);
 
                     calendarDateMap[countingDays.startOf("day").unix()] = today;
                     countingDays = countingDays.add(1, 'day');

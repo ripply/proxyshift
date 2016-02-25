@@ -16,9 +16,10 @@
             <div class="col-20"></div>
             <div class="col-20">
                 <div ng-show="prev"
+                     ng-click="prevClicked()"
                      class="icon ion-chevron-up next-button"></div>
                 <div ng-show="next"
-                     ng-click="wat()"
+                     ng-click="nextClicked()"
                      class="icon ion-chevron-down next-button"></div>
             </div>
         </div>
@@ -34,16 +35,19 @@
         <div class="forms" id="create-shift-date" ng-class="{'create-shift-form-hide': !steps['create-shift-date'].show}">
             <div class="form-offset">
                 <div class="create-shift-content">
-                    <shift-calendar toggle="false" show="true" name="create-shift-calendar" clickable="true"></shift-calendar>
+                    <shift-calendar toggle="false" show="true" name="create-shift-calendar" multiple="true" clickable="true"></shift-calendar>
                 </div>
             </div>
         </div>
-        <div class="forms" id="create-shift-when" ng-class="{'create-shift-form-hide': !steps['create-shift-when'].show}">
+        <div class="forms"
+             ng-attr-id="{{'create-shift-when-' + date.key}}"
+             ng-repeat="date in substeps['create-shift-when']"
+             ng-class="{'create-shift-form-hide': !steps['create-shift-when'].show}">
             <div class="form-offset">
                 <div class="create-shift-content">
                     <div class="row">
                         <div class="col">
-                            <h4 class="sub-subheader">When does the shift start?</h4>
+                            <h4 class="sub-subheader">When does the shift start?{{date.key}}</h4>
                             <h5 class="sub-subheader">(The locations local time)</h5>
                         </div>
                     </div>

@@ -21,6 +21,7 @@ angular.module('scheduling-app.directives')
                     scope.show = false;
                 }
                 scope.clickable = attributes.clickable;
+                scope.multiple = attributes.multiple;
                 scope.attributes = attributes;
 
                 if (attributes['toggle'] == 'true') {
