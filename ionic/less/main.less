@@ -721,7 +721,11 @@ body, .pane, .scroll-content, .list, .logo {
 }
 
 .unclickable {
-    z-index: -1;
+    pointer-events: none;
+}
+
+.clickable {
+    pointer-events: auto;
 }
 
 .next-button {
@@ -732,6 +736,7 @@ body, .pane, .scroll-content, .list, .logo {
     text-align: center;
     font-size: 250%;
     color: @text-color;
+    pointer-events: auto;
 }
 
 .create-shift-modal .scroll {
@@ -811,6 +816,7 @@ body, .pane, .scroll-content, .list, .logo {
     width: 100%;
     margin-bottom: @progress-bar-margin-bottom;
     overflow: hidden;
+    pointer-events: none;
     //counter-reset: step;
     /*CSS counters to number the steps*/
 }
@@ -822,6 +828,7 @@ body, .pane, .scroll-content, .list, .logo {
     float: left;
     position: relative;
     text-align: center;
+    pointer-events: auto;
     color: @text-color;
 }
 #progressbar li:before {

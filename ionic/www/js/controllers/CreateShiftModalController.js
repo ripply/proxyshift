@@ -36,6 +36,10 @@ angular.module('scheduling-app.controllers')
             $scope.next = true;
             $scope.prev = true;
 
+            $scope.wat = function() {
+                alert('wat');
+            };
+
             var headers = [
                 'Select date(s)',
                 'Start time/length',

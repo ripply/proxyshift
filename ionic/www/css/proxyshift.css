@@ -1316,13 +1316,17 @@ body,
   height: 100% !important;
 }
 .unclickable {
-  z-index: -1;
+  pointer-events: none;
+}
+.clickable {
+  pointer-events: auto;
 }
 .next-button {
   margin: 15px;
   text-align: center;
   font-size: 250%;
   color: #ffffff;
+  pointer-events: auto;
 }
 .create-shift-modal .scroll {
   height: 100%;
@@ -1381,6 +1385,7 @@ body,
   width: 100%;
   margin-bottom: 20px;
   overflow: hidden;
+  pointer-events: none;
   /*CSS counters to number the steps*/
 }
 #progressbar li {
@@ -1391,6 +1396,7 @@ body,
   float: left;
   position: relative;
   text-align: center;
+  pointer-events: auto;
   color: #ffffff;
 }
 #progressbar li:before {
