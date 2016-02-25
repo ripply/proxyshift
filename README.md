@@ -122,4 +122,22 @@ export WEB_URL="https://www.proxyshift.com"
 export CLOUDAMQP_URL="url_to_rabbitmq_server"
 # spawn 4 workers per worker that gets ran
 export RABBIT_WORKERS="4"
+# Interval between sending password reset emails (in seconds)
+export EMAIL_INTERVAL_RESET="12341234"
+```
+
+## Slack
+```bash
+# Slack webhook
+export SLACK_WEBHOOK="https://slack........"
+```
+
+## Configure how long tokens are issued and when they are refreshed
+```bash
+# How long a token will last for (in seconds)
+# (default 2 weeks)
+export TOKENS_EXPIRE_IN_X_SECONDS="12341234"
+# How old does a token have to be before using it causes the expiration to reset
+# (default 1 week)
+export TOKENS_REFRESH_AFTER_X_SECONDS="12341234"
 ```

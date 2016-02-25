@@ -993,14 +993,28 @@ function getValidationOptionsForModelName(modelName) {
     return undefined;
 }
 
+var tokens = {
+    refresh: 1 * 24 * 60 * 60, // 1 week
+    expires: 2 * 24 * 60 * 60 // 2 weeks
+};
+
+if (config.has('tokens.expires')) {
+    tokens.expires = parseInt(config.get('tokens.expires'));
+}
+
+if (config.has('tokens.refresh')) {
+    tokens.refresh = parseInt(config.get('tokens.refresh'));
+}
+
 function checkRememberMeToken(token, consume, next) {
+    var now = time.nowInUtc();
     return models.Token.query(function(q) {
         q.select('tokens.*')
             .innerJoin('users', function () {
                 this.on('tokens.user_id', '=', 'users.id');
             })
             .where('tokens.token', '=', token)
-            .andWhere('tokens.date', '>', time.nowInUtc());
+            .andWhere('tokens.date', '>', now);
     })
         .fetch()
         .then(function(foundToken) {
@@ -1019,7 +1033,24 @@ function checkRememberMeToken(token, consume, next) {
                         return next(null, null);
                     });
             } else {
-                return next(null, user_id);
+                var tokenIssuedAt = foundToken.get('date') - tokens.expires;
+                if ((foundToken.get('date') - tokenIssuedAt) > tokens.refresh) {
+                    // refresh token
+                    return models.Token.query(function(q) {
+                        q.select()
+                            .from('tokens')
+                            .where('tokens.id', '=', foundToken.get('id'))
+                            .update({
+                                date: now + tokens.expires
+                            });
+                    })
+                        .fetch()
+                        .tap(function() {
+                            return next(null, user_id);
+                        });
+                } else {
+                    return next(null, user_id);
+                }
             }
         })
         .catch(function(err) {
@@ -1084,13 +1115,14 @@ function saveRememberMeToken(token, uid, next) {
         return next("Cannot save token without a userid");
     }
     return Bookshelf.transaction(function(t) {
+        var now = time.nowInUtc();
         return models.User.forge({id: uid})
             .fetch({
                 require: true,
                 transacting: t
             })
             .tap(function(foundUser) {
-                var expires = new moment().add(tokens_expire_in_x_days, 'days').unix();
+                var expires = now + tokens.expires;
 
                 return purgeExpiredTokens(t, function(err) {
                     var newToken = new models.Token({

@@ -45,5 +45,9 @@
     },
     "slack": {
         "webhook": "SLACK_WEBHOOK"
+    },
+    "tokens": {
+        "expires": "TOKENS_EXPIRE_IN_X_SECONDS",
+        "refresh": "TOKENS_REFRESH_AFTER_X_SECONDS"
     }
 }
