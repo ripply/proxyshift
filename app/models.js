@@ -475,19 +475,6 @@ function initDb(dropAllTables) {
         //initDbPromise = tablesPopulatedPromise;
         tablesPopulatedPromise.tap(function initDbPromiseTap() {
             console.log("Database has been initialized");
-            if (cluster.isMaster) {
-                var pruneInterval = 60 * 60 * 1000; // 1 hour
-                if (config.has('tokens.pruneInterval')) {
-                    pruneInterval *= parseFloat(config.get('tokens.pruneInterval'));
-                }
-                timers.setInterval(function pruneDatabaseEverySoOften() {
-                        // purges expired session tokens and notifies user
-                        console.log("Pruning expired tokens");
-                        purgeExpiredTokens();
-                    },
-                    pruneInterval
-                );
-            }
             if (shouldWeLaunchMessageBrokerInThisProcess()) {
                 console.log("Launching message broker in this process");
                 return launchMessageBroker()
@@ -1367,6 +1354,7 @@ var exports = {
     onDatabaseReady: onDatabaseReady,
     databaseReadyMiddleware: databaseReadyMiddleware,
     sendNotificationToUsers: sendNotificationToUsers,
+    purgeExpiredTokens: purgeExpiredTokens,
     Notifications: Notifications,
     usersColumns: usersColumns
 };

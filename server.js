@@ -4,6 +4,7 @@ var express = require('express'),
     cluster = require('cluster'),
     http = require('http'),
     path = require('path'),
+    timers = require('timers'),
     routes = require('./app/routes'),
     exphbs = require('express-handlebars'),
     seeder = require('./app/seeder'),
@@ -21,11 +22,13 @@ var express = require('express'),
     numCPUs = require('os').cpus().length,
     I18n = require('i18n-js'),
     moment = require('moment'),
+    PeriodicEvents = require('./app/periodic').PeriodicEvents,
     app = express();
 require('./app/handlebarTranslations');
 var slack;
 
 var timeStarted;
+var periodicEvents;
 
 if (cluster.isMaster) {
     timeStarted = moment();
@@ -35,6 +38,9 @@ if (cluster.isMaster) {
     } else {
         numCPUs = 1;
     }
+
+    periodicEvents = new PeriodicEvents();
+    periodicEvents.start();
 
     process.on('SIGINT', function() {
         gracefulExit('Received SIGINT');
@@ -69,6 +75,7 @@ if (cluster.isMaster) {
 function gracefulExit(reason) {
     var promise;
     if (cluster.isMaster) {
+        periodicEvents.stop();
         // send slack message notifying that server is shutting down
         if (!reason) {
             reason = 'UNKNOWN';
@@ -85,7 +92,7 @@ function gracefulExit(reason) {
     }
     if (promise) {
         promise.then(function() {
-            console.log("Successfully notified slack of shutdown");
+            console.log("Successfully notified slack of shutdown, waiting for IO events to finish");
             exit(0);
         }, function(reason) {
             console.log("Failed to notify slack of shutdown: " + reason);
@@ -97,8 +104,10 @@ function gracefulExit(reason) {
     }
 
     function exit(code) {
-        console.log("Bye!");
-        process.exit(code);
+        timers.setImmediate(function exit() {
+            console.log("Bye!");
+            process.exit(code);
+        });
     }
 }
 

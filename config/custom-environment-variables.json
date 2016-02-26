@@ -48,7 +48,9 @@
     },
     "tokens": {
         "expires": "TOKENS_EXPIRE_IN_X_SECONDS",
-        "refresh": "TOKENS_REFRESH_AFTER_X_SECONDS",
-        "pruneInterval": "TOKENS_PRUNE_INTERVAL_IN_HOURS"
+        "refresh": "TOKENS_REFRESH_AFTER_X_SECONDS"
+    },
+    "periodic": {
+        "interval": "PERIODICALLY_CLEANUP_EVERY_X_SECONDS"
     }
 }
