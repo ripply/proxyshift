@@ -17,6 +17,7 @@ var Schema = require('./schema').Schema,
     Validator = require('bookshelf-validator'),
     ValidationError = Validator.ValidationError,
     moment = require('moment'),
+    timers = require('timers'),
     momentTimezone = require('moment-timezone'),
 // TODO: move encryption file to this folder if encrypting with bookshelf events turns out to work well
     encryptKey = require('../controllers/encryption/encryption').encryptKey,
@@ -474,6 +475,19 @@ function initDb(dropAllTables) {
         //initDbPromise = tablesPopulatedPromise;
         tablesPopulatedPromise.tap(function initDbPromiseTap() {
             console.log("Database has been initialized");
+            if (cluster.isMaster) {
+                var pruneInterval = 60 * 60 * 1000; // 1 hour
+                if (config.has('tokens.pruneInterval')) {
+                    pruneInterval *= parseFloat(config.get('tokens.pruneInterval'));
+                }
+                timers.setInterval(function pruneDatabaseEverySoOften() {
+                        // purges expired session tokens and notifies user
+                        console.log("Pruning expired tokens");
+                        purgeExpiredTokens();
+                    },
+                    pruneInterval
+                );
+            }
             if (shouldWeLaunchMessageBrokerInThisProcess()) {
                 console.log("Launching message broker in this process");
                 return launchMessageBroker()
@@ -1095,7 +1109,9 @@ function purgeExpiredTokens(transacting, next) {
                         if (numRows > 0) {
                             console.log('Purged ' + numRows + ' expired tokens.');
                         }
-                        return next();
+                        if (next) {
+                            return next();
+                        }
                     });
             });
     } else {

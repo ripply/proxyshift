@@ -140,4 +140,7 @@ export TOKENS_EXPIRE_IN_X_SECONDS="12341234"
 # How old does a token have to be before using it causes the expiration to reset
 # (default 1 week)
 export TOKENS_REFRESH_AFTER_X_SECONDS="12341234"
+# Prune expired tokens from the database every 6.5 hours (default every hour)
+# and send push notifications if a token is pruned and it has a device attached to it
+export TOKENS_PRUNE_INTERVAL_IN_HOURS="6.5"
 ```
