@@ -251,7 +251,20 @@ App.prototype.fireEvent = function fireEvent(event, user_id, args) {
     if (!args) {
         args = {};
     }
-    return this[event](user_id, args);
+    try {
+        return this[event](user_id, args);
+    } catch (err) {
+        slack.error({
+            body: {
+                event: event,
+                args: args
+            },
+            user: {
+                id: user_id
+            }
+        }, 'Error firing event: ' + event, err);
+        console.error(err.stack);
+    }
 };
 
 App.prototype.notifyGroupPromoted = function(user_id, inviter_user, group_id) {
