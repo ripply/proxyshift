@@ -465,8 +465,6 @@ module.exports = function(app, settings){
                 });
             });
         })(req, res, next);
-    }, function(req, res, next) {
-        next();
     });
 
     app.post('/session/logout', ensureCsrf, ensureAuthenticated, function(req, res, next) {

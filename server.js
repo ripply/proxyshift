@@ -16,6 +16,7 @@ var express = require('express'),
     morgan = require('morgan'),
     bodyParser = require('body-parser'),
     methodOverride = require('method-override'),
+    error = require('./controllers/controllerCommon').error,
     cookieParser = require('cookie-parser'),
     session = require('express-session'),
     errorHandler = require('errorhandler'),
@@ -257,6 +258,11 @@ function launchServer() {
 
         //routes list:
         routes.initialize(app);
+
+        app.use(function errorHandler(err, req,res,next) {
+            error(req, res, error, next);
+            console.error(err.stack);
+        });
 
         //finally boot up the server:
         http.createServer(app).listen(app.get('port'), '0.0.0.0', function () {
