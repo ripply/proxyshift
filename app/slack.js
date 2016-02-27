@@ -20,7 +20,7 @@ module.exports = {
                 "\nreq.body = " + JSON.stringify(req.body) +
                 "\nuserid: " + (req.user ? req.user.id:'none') +
                 (err.stack ? ("\nstack trace:\n -" + JSON.stringify(err.stack).replace(/\\n/g, '\n -')):'\nno stacktrace'),
-                channel: '#alerts',
+                channel: '#crashes',
                 username: username
             });
         }
