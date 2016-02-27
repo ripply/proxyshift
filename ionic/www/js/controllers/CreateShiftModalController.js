@@ -21,7 +21,7 @@ angular.module('scheduling-app.controllers')
             var calendarName = 'create-shift-calendar';
 
             $window.addEventListener('resize', function(event) {
-                $location.hash($scope.steps[$scope.step]);
+                $location.hash($scope.location);
                 $ionicScrollDelegate.anchorScroll(false);
             });
 
@@ -37,119 +37,370 @@ angular.module('scheduling-app.controllers')
 
             $scope.next = true;
             $scope.prev = true;
+            $scope.date = [];
 
-            $scope.wat = function() {
-                alert('wat');
-            };
+            function defaultGoNext(index, next) {
+                return next.id;
+            }
 
-            var defaultArrows = {
-                'create-shift-date': {
+            function defaultGoPrev(index, prev) {
+                return prev.id;
+            }
+
+            var actions = [
+                {
+                    id: 'create-shift-date',
                     next: function() {
-                        return Object.keys($scope.date).length > 0;
+                        return $scope.date.length > 0;
                     },
-                    gonext: function() {
-                        slideTo('create-shift-when');
-                    }
-                },
-                'create-shift-when': {
                     calc: function() {
-                        console.log('calcd');
-                        if (!$scope.substeps['create-shift-when']) {
-                            $scope.substeps['create-shift-when'] = [];
-                        }
-                        angular.forEach($scope.date, function(value, key) {
-                            // check if this is already a part of the array
-                            if (alreadyExists(value.key)) {
-                                // do nothing
-                            } else {
-                                $scope.substeps['create-shift-when'].push(
-                                    angular.extend({
-                                        key: value.key,
-                                        id: 'create-shift-when-' + value.key
-                                    }, value)
-                                );
-                                console.log("ADDEDDDDDDDDDDDDDDD");
-                            }
-                        });
-                        console.log("laksjdflkasldjkflaksjd");
-                        console.log($scope.substeps['create-shift-when']);
 
-                        $scope.substeps['create-shift-when'].sort(function(left, right) {
-                            if (left == right) {
+                    },
+                    gonext: defaultGoNext
+                },
+                {
+                    id: 'create-shift-when',
+                    calc: function() {
+                        var substeps = [];
+                        angular.forEach($scope.date, function(value, key) {
+                            substeps.push(
+                                angular.extend({
+                                    key: value.key,
+                                    prev: function(index, substeps) {
+                                        // show previous button on anything but the first shift
+                                        return index != 0;
+                                    },
+                                    title: function() {
+                                        return value.key;
+                                    },
+                                    goprev: defaultGoNext,
+                                    gonext: defaultGoNext,
+                                    id: 'create-shift-when-' + value.key
+                                }, value)
+                            );
+                        });
+
+                        substeps.sort(function(left, right) {
+                            if (left.key == right.key) {
                                 return 0;
                             } else {
-                                console.log("comparing..");
-                                return left > right ? -1:1;
+                                return left.key < right.key ? -1:1;
                             }
                         });
 
-                        console.log("sorted");
-                        console.log($scope.substeps['create-shift-when']);
+                        return substeps;
+                    },
+                    next: function() {
+                        return true;
+                    }
+                },
+                {
+                    id: 'create-shift-where',
+                    calc: function() {
 
-                        function alreadyExists(key) {
-                            var substeps = $scope.substeps['create-shift-when'];
-                            for (var i = 0, length = substeps.length; i < length; i++) {
-                                if (substeps[i].key == key) {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        }
                     },
                     prev: function() {
-                        return ($scope.location != $scope.substeps['create-shift-when'][0].id);
+                        return true;
                     },
-                    next: true,
-                    goprev: function() {
-                        var last;
-                        for (var i = 0; i < $scope.substeps['create-shift-when'].length; i++) {
-                            var substep = $scope.substeps['create-shift-when'][i];
-                            if ($scope.location == substep.id) {
-                                slideTo(last);
-                                last = null;
-                                break;
-                            } else {
-                                last = substep.id;
-                            }
-                        }
-
-                        if (!last) {
-                            slideTo(steps[0]);
-                        }
+                    next: function() {
+                        return true;
                     },
-                    gonext: function() {
-                        var next = false;
-                        for (var i = 0; i < $scope.substeps['create-shift-when'].length; i++) {
-                            var substep = $scope.substeps['create-shift-when'][i];
-                            if (next) {
-                                slideTo(substep.id);
-                                next = false;
-                                break;
-                            } else if ($scope.location == substep.id) {
-                                next = true;
-                            }
-                        }
+                    goprev: defaultGoPrev,
+                    gonext: defaultGoNext
+                },
+                {
+                    id: 'create-shift-who',
+                    calc: function() {
 
-                        if (next) {
-                            slideTo(steps[2]);
+                    },
+                    prev: function() {
+                        return true;
+                    },
+                    next: function() {
+                        return true;
+                    },
+                    goprev: defaultGoPrev,
+                    gonext: defaultGoNext
+                },
+                {
+                    id: 'create-shift-review',
+                    calc: function() {
+
+                    },
+                    prev: function() {
+                        return false;
+                    },
+                    next: function() {
+                        return false;
+                    },
+                    goprev: defaultGoPrev
+                }
+            ];
+
+            $scope.index = 0;
+            $scope.subindex = -1;
+            $scope.computedState = {};
+            $scope.state = [];
+
+            calc();
+
+            function calc(index, subindex) {
+                var persist = false;
+                if (index === undefined) {
+                    index = $scope.index;
+                    persist = true;
+                }
+                if (subindex === undefined) {
+                    subindex = $scope.subindex;
+                    persist = true;
+                }
+                // determine which major page we are at
+                // that should be index
+                var major = actions[index];
+                var majorId = major.id;
+                var computedState = $scope.computedState;
+                // run this major page's calc to see if it has any children pages
+                var childrenPages;
+                if (major.hasOwnProperty('calc')) {
+                    childrenPages = major.calc();
+                }
+                if (!computedState.hasOwnProperty(majorId)) {
+                    computedState[majorId] = {};
+                }
+                var showPrev;
+                var showNext;
+                var goPrev;
+                var goNext;
+                if (childrenPages) {
+                    angular.forEach(childrenPages, function(childPage) {
+                        if (!childPage.hasOwnProperty('calc')) {
+                            childPage.calc = major.calc;
+                        }
+                    });
+                    // children pages exist
+                    // this will be an array of state like objects of the same format of major
+                    // just outright replace what is currently computed as they should not contain state
+                    computedState[majorId].children = childrenPages;
+                    // if we are currently on a child page
+                    // we need to also run calc for that
+                    if (subindex >= 0) {
+                        var child = childrenPages[subindex];
+                        if (child.hasOwnProperty('calc')) {
+                            child.calc();
+                        }
+                        // prefer child's prev/next if it exists
+                        if (child.hasOwnProperty('prev')) {
+                            showPrev = child.prev(subindex);
+                        }
+                        if (child.hasOwnProperty('next')) {
+                            showNext = child.next(subindex);
+                        }
+                        if (child.hasOwnProperty('goprev')) {
+                            goPrev = child.goprev;
+                        }
+                        if (child.hasOwnProperty('gonext')) {
+                            goNext = child.gonext;
+                        }
+                    }
+                } else {
+                    computedState[majorId].children = [];
+                }
+                // if child did not have any preference for showing/hiding buttons
+                // check the parent
+                if (showPrev === undefined && major.hasOwnProperty('prev')) {
+                    showPrev = major.prev();
+                }
+                if (showNext === undefined && major.hasOwnProperty('next')) {
+                    showNext = major.next();
+                }
+                if (major.hasOwnProperty('goprev')) {
+                    goPrev = major.goprev;
+                }
+                if (major.hasOwnProperty('gonext')) {
+                    goNext = major.gonext;
+                }
+                // defaults if parent has no preference
+                if (showPrev === undefined) {
+                    showPrev = false;
+                }
+                if (showNext === undefined) {
+                    showNext = false;
+                }
+
+                if (persist) {
+                    $scope.prev = showPrev;
+                    $scope.next = showNext;
+                    $scope.goprev = goPrev;
+                    $scope.gonext = goNext;
+                }
+            }
+
+            function recalculateSteps() {
+                var existingSteps = $scope.steps;
+                $scope.steps = {};
+                console.log($scope.steps);
+                angular.forEach($scope.computedState, function(state, id) {
+                    $scope.steps[id] = {
+                        show: true,
+                        locked: existingSteps[id] ? existingSteps[id].locked:true
+                    };
+                    if (state.children) {
+                        angular.forEach(state.children, function(child) {
+                            $scope.steps[child.id] = {
+                                show: true,
+                                locked: existingSteps[id] ? existingSteps[id].locked:true
+                            };
+                        });
+                    }
+                });
+                angular.forEach(actions, function(action) {
+                    var id = action.id;
+                    if (!$scope.steps.hasOwnProperty(id)) {
+                        $scope.steps[id] = {
+                            show: true,
+                            locked: true
+                        };
+                    }
+                });
+                console.log($scope.steps);
+            }
+
+            function getCurrentScreen(index, subindex) {
+                var recurse = false;
+                if (index === undefined) {
+                    index = $scope.index;
+                    recurse = true;
+                }
+                if (subindex === undefined) {
+                    subindex = $scope.subindex;
+                    recurse = true;
+                }
+                var major = actions[index];
+                var majorId = major.id;
+                calc(index, subindex);
+                var state = $scope.computedState[majorId];
+                var prev;
+                var next;
+                var nextIndex = 0;
+                var nextSubindex = -1;
+                var prevIndex = 0;
+                var prevSubindex = -1;
+                var current = major;
+                if (state.children.length > 0) {
+                    if (subindex < 0) {
+                        subindex = 0;
+                    }
+                    if (subindex > 0) {
+                        prev = state.children[subindex - 1];
+                        prevIndex = index;
+                        prevSubindex = subindex - 1;
+                    }
+                    current = state.children[subindex];
+                    if (state.children.length - subindex > 1) {
+                        nextIndex = index;
+                        nextSubindex = subindex + 1;
+                        next = state.children[subindex + 1];
+                    } else {
+                        // no next subindex
+                        // next should be the next index
+                        if (actions.length - index > 1) {
+                            next = actions[index + 1];
+                            nextIndex = index + 1;
+                            nextSubindex = -1;
+                            if (subindex <= 0) {
+                                prevIndex = index - 1;
+                                prevSubindex = -1 ;
+                            }
+                        } else {
+                            // no next
                         }
                     }
                 }
-            };
+                if (prev === undefined) {
+                    if (index > 0) {
+                        prevIndex = index - 1;
+                        prev = actions[index - 1];
+                    } else {
+                        // no previous
+                    }
+                }
+                if (next === undefined) {
+                    if (actions.length - index > 0) {
+                        nextIndex = index + 1;
+                        next = actions[index + 1];
+                    } else {
+                        // no next, at end
+                    }
+                }
+                if (recurse) {
+                    if (next) {
+                        var nextScreen = getCurrentScreen(nextIndex, nextSubindex);
+                        next = nextScreen.current;
+                        nextIndex = nextScreen.scopeIndex;
+                        nextSubindex = nextScreen.scopeSubindex;
+                    }
+                    if (prev) {
+                        var prevScreen = getCurrentScreen(prevIndex, prevSubindex);
+                        prev = prevScreen.current;
+                        prevIndex = prevScreen.scopeIndex;
+                        prevSubindex = prevScreen.scopeSubindex;
+                    }
+                    var result = getCurrentScreen(index, subindex);
+                    result.next = next;
+                    result.nextIndex = nextIndex;
+                    result.nextSubindex = nextSubindex;
+                    result.prev = prev;
+                    result.prevIndex = prevIndex;
+                    result.prevSubindex = prevSubindex;
+                    return result;
+                } else {
+                    return {
+                        index: subindex > 0 ? index : subindex,
+                        scopeIndex: index,
+                        scopeSubindex: subindex,
+                        children: current.hasOwnProperty('children') ? current.children : undefined,
+                        prev: prev,
+                        prevIndex: prevIndex,
+                        prevSubindex: prevSubindex,
+                        current: current,
+                        next: next,
+                        nextIndex: nextIndex,
+                        nextSubindex: nextSubindex
+                    };
+                }
+            }
 
             $scope.nextClicked = function() {
+                calc();
+                var current = getCurrentScreen();
                 if ($scope.gonext) {
-                    $scope.gonext();
+                    if (current.next) {
+                        current.next.calc();
+                        current = getCurrentScreen();
+                    }
+                    var id = $scope.gonext(current.index, current.next, current.children);
+                    /*$scope.index = current.nextIndex;
+                    $scope.subindex = current.nextSubindex;
+                    calc();*/
+                    slideTo(id);
                 }
             };
 
             $scope.prevClicked = function() {
+                calc();
+                var current = getCurrentScreen();
                 if ($scope.goprev) {
-                    $scope.goprev();
+                    if (current.prev) {
+                        current.prev.calc();
+                        current = getCurrentScreen();
+                    }
+                    var id = $scope.goprev(current.index, current.prev, current.children);
+                    /*$scope.index = current.prevIndex;
+                    $scope.subindex = current.prevSubindex;
+                    calc();*/
+                    slideTo(id);
                 }
             };
-
-            var arrows = angular.copy(defaultArrows);
 
             var headers = [
                 'Select date(s)',
@@ -161,7 +412,7 @@ angular.module('scheduling-app.controllers')
 
             $scope.header = headers[0];
 
-            $scope.steps = {};
+            $scope.steps = [];
             $scope.substeps = {};
             $scope.substep = undefined;
             resetSteps();
@@ -182,9 +433,7 @@ angular.module('scheduling-app.controllers')
                         }
                     }
                 }
-                arrows = angular.copy(defaultArrows);
                 resetSubsteps();
-                showHideArrows();
             }
 
             function resetSubsteps() {
@@ -198,16 +447,16 @@ angular.module('scheduling-app.controllers')
             }
 
             function showAllSteps() {
-                for (var i = 0, length = steps.length; i < length; i++) {
-                    var id = steps[i];
-                    $scope.steps[id].show = true;
+                for (var i = 0, length = Object.keys($scope.steps).length; i < length; i++) {
+                    var otherId = Object.keys($scope.steps)[i];
+                    $scope.steps[otherId].show = true;
                 }
             }
 
-            function hideOtherSteps() {
-                for (var i = 0, length = steps.length; i < length; i++) {
-                    var id = steps[i];
-                    $scope.steps[id].show = i == $scope.step;
+            function hideOtherSteps(id) {
+                for (var i = 0, length = Object.keys($scope.steps).length; i < length; i++) {
+                    var otherId = Object.keys($scope.steps)[i];
+                    $scope.steps[otherId].show = otherId == id;
                 }
             }
 
@@ -242,8 +491,18 @@ angular.module('scheduling-app.controllers')
                             console.log("pushed...");
                         });
                         console.log($scope.date);
-                        slideTo('create-shift-when');
+                        $scope.date.sort(function(left, right) {
+                            if (left.key == right.key) {
+                                return 0;
+                            } else {
+                                return left.key < right.key ? -1:1;
+                            }
+                        });
+                        //slideTo('create-shift-when');
+                    } else {
+                        $scope.date = [];
                     }
+                    calc();
                 }
             });
 
@@ -267,80 +526,83 @@ angular.module('scheduling-app.controllers')
             }
 
             function slideTo(location) {
+                console.log("Sliding: " + location);
                 if ($scope.sliding) {
                     return;
                 }
+                var index, subindex;
+                var state = $scope.computedState;
+                var parentId;
+                var object;
+                for (var i = 0; i < Object.keys(state).length; i++) {
+                    var id = Object.keys(state)[i];
+                    var computedState = state[id];
+                    var stateIndex;
+                    for (var k = 0; k < actions.length; k++) {
+                        if (actions[k].id === id) {
+                            stateIndex = k;
+                            object = actions[k];
+                            break;
+                        }
+                    }
+                    if (id === location) {
+                        index = stateIndex;
+                        if (computedState.children && computedState.children.length > 0) {
+                            object = computedState.children[0];
+                            location = computedState.children[0].id;
+                            subindex = 0;
+                        } else {
+                            object = actions[stateIndex];
+                            subindex = -1;
+                        }
+                        break;
+                    }
+                    if (computedState.children) {
+                        for (var j = 0; j < computedState.children.length; j++) {
+                            var child = computedState.children[j];
+                            if (child.id == location) {
+                                parentId = id;
+                                index = stateIndex;
+                                subindex = j;
+                                object = child;
+                                break;
+                            }
+                        }
+                    }
+                    if (subindex !== undefined) {
+                        break;
+                    }
+                }
+                $scope.index = index;
+                $scope.subindex = subindex;
+                calc();
+                recalculateSteps();
+                if (parentId) {
+                    $scope.steps[parentId].locked = false;
+                    console.log("Unlocking " + parentId);
+                }
+                $scope.steps[location].locked = false;
+                console.log("Unlocking" + location);
+
+
                 $scope.sliding = true;
                 $ionicScrollDelegate.freezeScroll(true);
                 blockInput(true);
-                $scope.prev = false;
-                $scope.next = false;
-                $scope.goprev = undefined;
-                $scope.gonext = undefined;
-                if ($scope.steps.hasOwnProperty(location)) {
-                    $scope.step = steps.indexOf(location);
-                    $scope.steps[location].locked = false;
-                    var newLocation;
-                    if ($scope.substeps.hasOwnProperty(location)) {
-                        newLocation = $scope.substeps[location][0].id;
-                    }
-                    if (newLocation) {
-                        $scope.location = newLocation;
-                    }
-                    if (arrows.hasOwnProperty(location)) {
-                        if (arrows[location].hasOwnProperty('calc')) {
-                            arrows[location].calc();
-                        }
-                        if ($scope.substeps.hasOwnProperty(location)) {
-                            newLocation = $scope.substeps[location][0].id;
-                        }
-                        if (newLocation) {
-                            $scope.location = newLocation;
-                        }
-                        if (arrows[location].hasOwnProperty('prev')) {
-                            var prev = arrows[location]['prev'];
-                            if (prev === true) {
-                                $scope.prev = true;
-                            } else {
-                                $scope.prev = prev();
-                            }
-
-                            if ($scope.prev && arrows[location].hasOwnProperty('goprev')) {
-                                $scope.goprev = arrows[location]['goprev'];
-                            }
-                        }
-                        if (arrows[location].hasOwnProperty('next')) {
-                            var next = arrows[location]['next'];
-                            if (next === true) {
-                                $scope.next = true;
-                            } else {
-                                $scope.next = next();
-                            }
-
-                            if ($scope.next && arrows[location].hasOwnProperty('gonext')) {
-                                $scope.gonext = arrows[location]['gonext'];
-                            }
-                        }
-                    }
-                    if (newLocation) {
-                        location = newLocation;
-                    }
-                } else {
-                    // unknown, show first
-                    $scope.step = 0;
-                    $scope.steps[steps[0]].show = true;
-                }
                 $scope.location = location;
                 $location.hash(location);
                 $ionicScrollDelegate.anchorScroll(true);
-                $scope.header = headers[$scope.step];
+                if (object.hasOwnProperty('title')) {
+                    $scope.header = object.title();
+                } else {
+                    $scope.header = headers[index];
+                }
                 showAllSteps();
                 $timeout(function() {
                     blockInput(false);
                     $location.hash(location);
                     $ionicScrollDelegate.anchorScroll(false);
                     $scope.sliding = false;
-                    hideOtherSteps();
+                    hideOtherSteps(location);
                 }, 500);
             }
 

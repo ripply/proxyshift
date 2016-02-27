@@ -24,11 +24,11 @@
             </div>
         </div>
         <ul id="progressbar">
-            <li ng-class="{'active': step >= 0, 'locked': steps['create-shift-date'].locked}" ng-click="navigateTo('create-shift-date')">DATE(S)</li>
-            <li ng-class="{'active': step >= 1, 'locked': steps['create-shift-when'].locked}" ng-click="navigateTo('create-shift-when')">WHEN</li>
-            <li ng-class="{'active': step >= 2, 'locked': steps['create-shift-where'].locked}" ng-click="navigateTo('create-shift-where')">WHERE</li>
-            <li ng-class="{'active': step >= 3, 'locked': steps['create-shift-who'].locked}" ng-click="navigateTo('create-shift-who')">WHO</li>
-            <li ng-class="{'active': step >= 4, 'locked': steps['create-shift-review'].locked}" ng-click="navigateTo('create-shift-review')">Review</li>
+            <li ng-class="{'active': index >= 0, 'locked': steps['create-shift-date'].locked}" ng-click="navigateTo('create-shift-date')">DATE(S)</li>
+            <li ng-class="{'active': index >= 1, 'locked': steps['create-shift-when'].locked}" ng-click="navigateTo('create-shift-when')">WHEN</li>
+            <li ng-class="{'active': index >= 2, 'locked': steps['create-shift-where'].locked}" ng-click="navigateTo('create-shift-where')">WHERE</li>
+            <li ng-class="{'active': index >= 3, 'locked': steps['create-shift-who'].locked}" ng-click="navigateTo('create-shift-who')">WHO</li>
+            <li ng-class="{'active': index >= 4, 'locked': steps['create-shift-review'].locked}" ng-click="navigateTo('create-shift-review')">Review</li>
         </ul>
     </div>
     <ion-content class="has-subheader">
@@ -40,14 +40,14 @@
             </div>
         </div>
         <div class="forms"
-             ng-attr-id="{{'create-shift-when-' + date.key}}"
-             ng-repeat="date in substeps['create-shift-when']"
-             ng-class="{'create-shift-form-hide': !steps['create-shift-when'].show}">
+             ng-attr-id="{{'create-shift-when-' + day.key}}"
+             ng-repeat="day in date"
+             ng-class="{'create-shift-form-hide': !steps['create-shift-when-' + day.key].show}">
             <div class="form-offset">
                 <div class="create-shift-content">
                     <div class="row">
                         <div class="col">
-                            <h4 class="sub-subheader">When does the shift start?{{date.key}}</h4>
+                            <h4 class="sub-subheader">When does the shift start?{{day.key}}</h4>
                             <h5 class="sub-subheader">(The locations local time)</h5>
                         </div>
                     </div>
@@ -75,7 +75,7 @@
                             class="item clear-padding"
                             ng-class="{'location-selected': location.selected}"
                             ng-click="clicked(location)"
-                            collection-repeat="location in locations | filter:query">
+                            ng-repeat="location in locations | filter:query">
                             {{location.address}}
                         </ion-item>
                     </ion-list>
