@@ -23,8 +23,10 @@ var Schema = require('./schema').Schema,
     encryptKey = require('../controllers/encryption/encryption').encryptKey,
     time = require('./time'),
     slack = require('./slack'),
-    appLogic = require('./')
     SALT_WORK_FACTOR = 10;
+
+// hack so that models gets exported as appLogic requires this file so has a circular dependency
+appLogic = {};
 
 var master = cluster.isMaster && process.env.WEB;
 
@@ -1079,7 +1081,7 @@ function purgeExpiredTokens(transacting, next) {
                 if (expiredTokens) {
                     _.each(expiredTokens.toJSON(), function (expiredToken) {
                         if (expiredToken.pushtokens) {
-                            appLogic.loggedOut(expiredToken.pushtokens);
+                            appLogic.appLogic.loggedOut(expiredToken.pushtokens);
                         }
                     });
                 }
@@ -1362,4 +1364,4 @@ var exports = {
 exports = _.extend(exports, models);
 
 module.exports = exports;
-
+appLogic.appLogic = require('./');
