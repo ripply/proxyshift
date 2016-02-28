@@ -1406,7 +1406,7 @@ body,
   display: block;
   font-size: 10px;
   color: #333;
-  background: white;
+  background: #ffffff;
   border-radius: 100%;
   margin: 0 auto 5px auto;
 }
@@ -1415,7 +1415,7 @@ body,
   content: '';
   width: 100%;
   height: 2px;
-  background: white;
+  background: #ffffff;
   position: absolute;
   left: -50%;
   top: 9px;
@@ -1430,8 +1430,13 @@ body,
 /*The number of the step and the connector before it = nhlbi red*/
 #progressbar li.active:before,
 #progressbar li.active:after {
-  background: #900;
-  color: white;
+  background: #990000;
+  color: #ffffff;
+}
+#progressbar li.review:before,
+#progressbar li.review:after {
+  background: #009900;
+  color: #ffffff;
 }
 #progressbar .locked:before {
   background: #3468af;
@@ -1476,4 +1481,16 @@ body,
 }
 .row-no-padding {
   padding: 0;
+}
+.nowrap {
+  white-space: nowrap;
+}
+.row .col.uniform-padding {
+  padding-bottom: 5px;
+  position: relative;
+}
+.col .sub-subheader {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
 }

@@ -68,12 +68,13 @@ angular.module('scheduling-app.controllers')
                                     key: value.key,
                                     prev: function(index, substeps) {
                                         // show previous button on anything but the first shift
-                                        return index != 0;
+                                        //return index != 0;
+                                        return true;
                                     },
                                     title: function() {
                                         return value.key;
                                     },
-                                    goprev: defaultGoNext,
+                                    goprev: defaultGoPrev,
                                     gonext: defaultGoNext,
                                     id: 'create-shift-when-' + value.key
                                 }, value)
@@ -128,7 +129,7 @@ angular.module('scheduling-app.controllers')
 
                     },
                     prev: function() {
-                        return false;
+                        return true;
                     },
                     next: function() {
                         return false;
@@ -486,7 +487,8 @@ angular.module('scheduling-app.controllers')
                             date.date(value.day);
                             $scope.date.push(angular.extend({
                                 key: key,
-                                moment: date
+                                moment: date,
+                                requiredEmployees: 1
                             }, value));
                             console.log("pushed...");
                         });
@@ -618,13 +620,32 @@ angular.module('scheduling-app.controllers')
                 getLocations();
             });
 
-            $scope.clicked = function(location) {
-                angular.forEach($scope.locations, function(location) {
-                    location.selected = false;
-                });
+            $scope.locationClicked = function(location) {
+                unselect($scope.locations);
+                unselect($scope.sublocations);
                 location.selected = true;
                 $scope.selected = location;
+                $scope.sublocations = location.sublocations;
                 console.log(location);
+            };
+
+            function unselect(list) {
+                if (list) {
+                    angular.forEach(list, function (item) {
+                        item.selected = false;
+                    });
+                }
+            }
+
+            $scope.sublocationClicked = function(clickedSublocation) {
+                if (clickedSublocation.selected) {
+                    unselect($scope.sublocations);
+                } else {
+                    unselect($scope.sublocations);
+                    $scope.sublocation = clickedSublocation;
+                    clickedSublocation.selected = true;
+                    console.log("SELECTE");
+                }
             };
 
             function getLocations() {
