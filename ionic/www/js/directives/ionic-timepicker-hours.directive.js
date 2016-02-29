@@ -23,7 +23,6 @@
                 //set up base variables and options for customization
                 scope.inputEpochTime = scope.inputObj.inputEpochTime ? scope.inputObj.inputEpochTime : currentEpoch;
                 scope.step = scope.inputObj.step ? scope.inputObj.step : 15;
-                //scope.format = scope.inputObj.format ? scope.inputObj.format : 24;
                 scope.format = scope.inputObj.format ? scope.inputObj.format : 12;
                 scope.titleLabel = scope.inputObj.titleLabel ? scope.inputObj.titleLabel : 'Time Picker';
                 scope.setLabel = scope.inputObj.setLabel ? scope.inputObj.setLabel : 'Set';

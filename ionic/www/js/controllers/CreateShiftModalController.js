@@ -104,7 +104,7 @@ angular.module('scheduling-app.controllers')
                         return true;
                     },
                     next: function() {
-                        return true;
+                        return $scope.locationSelected;
                     },
                     goprev: defaultGoPrev,
                     gonext: defaultGoNext
@@ -476,10 +476,28 @@ angular.module('scheduling-app.controllers')
                 resetSteps();
             });
 
+            $scope.dateState = {};
+
             $rootScope.$on('events:calendar:clicked', function(state, name, selected) {
                 if (name == calendarName) {
                     if (Object.keys(selected).length != 0) {
                         $scope.date = [];
+                        var hours = (new Date()).getHours();
+                        var minutes = (new Date()).getMinutes();
+                        if (minutes > 15) {
+                            if (minutes <= 30) {
+                                minutes = 30;
+                            } else if (minutes < 45) {
+                                minutes = 30;
+                            } else {
+                                hours += 1;
+                                minutes = 0;
+                            }
+                        } else {
+                            minutes = 0;
+                        }
+                        hours = hours * 60 * 60;
+                        minutes *= 60;
                         angular.forEach(selected, function(value, key) {
                             var date = moment();
                             date.year(value.year);
@@ -487,12 +505,20 @@ angular.module('scheduling-app.controllers')
                             date.date(value.day);
                             $scope.date.push(angular.extend({
                                 key: key,
-                                moment: date,
-                                requiredEmployees: 1
+                                moment: date
                             }, value));
-                            console.log("pushed...");
+                            $scope.dateState[key] = angular.extend({
+                                counter: 1,
+                                time: {
+                                    inputEpochTime: hours + minutes,
+                                    step: 5
+                                },
+                                hours: {
+                                    inputEpochTime: 8 * 60 * 60, // 8 hours by default
+                                    step: 5
+                                }
+                            }, $scope.dateState[key]);
                         });
-                        console.log($scope.date);
                         $scope.date.sort(function(left, right) {
                             if (left.key == right.key) {
                                 return 0;
@@ -500,7 +526,6 @@ angular.module('scheduling-app.controllers')
                                 return left.key < right.key ? -1:1;
                             }
                         });
-                        //slideTo('create-shift-when');
                     } else {
                         $scope.date = [];
                     }
@@ -508,11 +533,31 @@ angular.module('scheduling-app.controllers')
                 }
             });
 
+            function convertToLocationTime(time) {
+                return time;
+            }
+
             $scope.getReadableDate = function() {
                 if ($scope.date) {
                     return $scope.date.format('dddd') + ", " + $scope.date.format('LL');
                 } else {
                     return "Select a date";
+                }
+            };
+
+            $scope.incrementEmployees = function(day) {
+                if ($scope.dateState.hasOwnProperty(day)) {
+                    $scope.dateState[day].counter += 1;
+                }
+            };
+
+            $scope.decrementEmployees = function(day) {
+                if ($scope.dateState.hasOwnProperty(day)) {
+                    if ($scope.dateState[day].counter <= 0) {
+                        $scope.dateState[day].counter = 0;
+                    } else {
+                        $scope.dateState[day].counter -= 1;
+                    }
                 }
             };
 
@@ -626,10 +671,14 @@ angular.module('scheduling-app.controllers')
                 location.selected = true;
                 $scope.selected = location;
                 $scope.sublocations = location.sublocations;
-                console.log(location);
+                if (!location.sublocations || location.sublocations.length === 0) {
+                    $scope.locationSelected = true;
+                    $scope.nextClicked();
+                }
             };
 
             function unselect(list) {
+                $scope.locationSelected = false;
                 if (list) {
                     angular.forEach(list, function (item) {
                         item.selected = false;
@@ -644,7 +693,8 @@ angular.module('scheduling-app.controllers')
                     unselect($scope.sublocations);
                     $scope.sublocation = clickedSublocation;
                     clickedSublocation.selected = true;
-                    console.log("SELECTE");
+                    $scope.locationSelected = true;
+                    $scope.nextClicked();
                 }
             };
 
