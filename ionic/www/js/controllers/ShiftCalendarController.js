@@ -205,6 +205,13 @@ angular.module('scheduling-app.controllers')
                         year: day.year,
                         day: day.number
                     };
+                    if ($scope.cantClickYesterday) {
+                        var startOfToday = moment().startOf('day');
+                        var clicked = moment().year(day.year).day(day.number).month(day.month - 1);
+                        if (clicked <= startOfToday) {
+                            return;
+                        }
+                    }
                     if ($scope.multiple) {
                         if ($scope.selected.hasOwnProperty(selectedKey)) {
                             delete $scope.selected[selectedKey];

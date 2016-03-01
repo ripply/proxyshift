@@ -16,12 +16,10 @@ angular.module('scheduling-app.directives')
 
             function link(scope, element, attributes) {
                 scope.name = attributes.name;
-                scope.show = attributes.show;
-                if (scope.show == 'false') {
-                    scope.show = false;
-                }
+                scope.show = attributes.show == 'true';
                 scope.clickable = attributes.clickable;
                 scope.multiple = attributes.multiple;
+                scope.cantClickYesterday = attributes.cantClickYesterday == 'true';
                 scope.attributes = attributes;
 
                 if (attributes['toggle'] == 'true') {
