@@ -93,12 +93,17 @@
             </div>
         </div>
         <div class="forms" id="create-shift-where" ng-class="{'create-shift-form-hide': !steps['create-shift-where'].show}">
-            <div class="create-shift-content">
-                <i class="icon ion-search placeholder-icon"></i>
-                <input type="text" ng-model="query" ng-style="{'width' : '100%'}"
-                       placeholder="Search by name, email or phone">
+            <div class="create-shift-content centered-input">
+                <div class="list list-inset">
+                    <label class="item item-input">
+                        <i class="icon ion-search placeholder-icon"></i>
+                        <input type="text" ng-model="query" ng-style="{'width' : '100%'}"
+                               placeholder="Search by name, email or phone">
+                    </label>
+                </div>
                 <div>
                     <ion-list
+                        type="list-inset"
                         show-delete="false"
                         show-reorder="false"
                         can-swipe="false">
@@ -112,8 +117,9 @@
                     </ion-list>
                 </div>
                 <div>
-                    list2
+                    Floor
                     <ion-list
+                        type="list-inset"
                         show-delete="false"
                         show-reorder="false"
                         can-swipe="false">

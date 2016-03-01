@@ -313,7 +313,7 @@ angular.module('scheduling-app.controllers')
                     today.number = countingDays.date();
                     today.thisMonth = countingDays.month() === month;
                     today.today = countingDays.isSame(actualNow, 'day');
-                    today.month = countingDays.month();
+                    today.month = parseInt(countingDays.format("M"));
                     today.year = countingDays.year();
                     var selectedKey = getSelectedKey(today.year, today.month, today.number);
                     today.selected = $scope.selected.hasOwnProperty(selectedKey);

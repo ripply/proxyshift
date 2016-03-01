@@ -420,31 +420,29 @@ angular.module('scheduling-app.controllers')
 
             function resetSteps() {
                 $scope.step = 0;
-                for (var i = 0, length = steps.length; i < length; i++) {
-                    var id = steps[i];
+                angular.forEach($scope.computedState, function(state, id) {
                     $scope.steps[id] = {
                         show: true,
-                        locked: i != 0
+                        locked: true
                     };
-                    if ($scope.substeps[id]) {
-                        for (var j = 0, jlength = $scope.substeps[id].length; j < jlength; j++) {
-                            $scope.substeps[id][j] = {
-                                show: true
-                            }
-                        }
+                    if (state.children) {
+                        angular.forEach(state.children, function(child) {
+                            $scope.steps[child.id] = {
+                                show: true,
+                                locked: true
+                            };
+                        });
                     }
-                }
-                resetSubsteps();
-            }
-
-            function resetSubsteps() {
-                substeps = {
-                    'create-shift-when': []
-                };
-            }
-
-            function showHideArrows() {
-                // todo
+                });
+                angular.forEach(actions, function(action) {
+                    var id = action.id;
+                    if (!$scope.steps.hasOwnProperty(id)) {
+                        $scope.steps[id] = {
+                            show: true,
+                            locked: true
+                        };
+                    }
+                });
             }
 
             function showAllSteps() {
@@ -503,10 +501,12 @@ angular.module('scheduling-app.controllers')
                             date.year(value.year);
                             date.month(value.month);
                             date.date(value.day);
-                            $scope.date.push(angular.extend({
-                                key: key,
-                                moment: date
-                            }, value));
+                            $scope.date.push(
+                                angular.extend({
+                                    key: key,
+                                    moment: date
+                                }, value)
+                            );
                             $scope.dateState[key] = angular.extend({
                                 counter: 1,
                                 time: {
@@ -528,6 +528,7 @@ angular.module('scheduling-app.controllers')
                         });
                     } else {
                         $scope.date = [];
+                        resetSteps();
                     }
                     calc();
                 }

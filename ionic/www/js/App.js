@@ -366,21 +366,7 @@ angular.module('scheduling-app', [
 
                 .state('settings', {
                     url: "/settings",
-                    onEnter: [
-                        '$scope',
-                        '$ionicModal',
-                        function(
-                            $scope,
-                            $ionicModal
-                        ) {
-                            $ionicModal.fromTemplateUrl('templates/_login.html', {
-                                scope: $scope
-                            }).then(function(modal) {
-                                alert("showing?");
-                            });
-                        }
-                    ],
-                    //templateUrl: "templates/settings/settings.html",
+                    templateUrl: "templates/settings/settings.html",
                     controller: 'SettingsController',
                     abstract: true,
                     resolve: {
@@ -390,19 +376,14 @@ angular.module('scheduling-app', [
 
                 .state('settings.user', {
                     url: "/user",
-                    onEnter: [
-                        function() {
-                            alert('settings.user?');
-                        }
-                    ],
-                    //templateUrl: "templates/usersettings.html",
-                    //controller: 'SettingsController',
-                    /*views: {
+                    templateUrl: "templates/usersettings.html",
+                    controller: 'SettingsController',
+                    views: {
                         'content': {
                             templateUrl: "templates/usersettings.html",
                             controller: 'SettingsController'
                         }
-                    },*/
+                    },
                     resolve: {
                         //TODO: Check /userinfo
                     }

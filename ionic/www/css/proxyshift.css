@@ -839,31 +839,6 @@ body,
 .login-container {
   display: table;
 }
-.login-container input {
-  text-align: center;
-  color: #ffffff;
-}
-.login-container input ::-webkit-input-placeholder {
-  /* WebKit browsers */
-  color: #ffffff;
-}
-.login-container input :-moz-input-placeholder {
-  /* Mozilla Firefox 4 to 18 */
-  color: #ffffff;
-}
-.login-container input ::-moz-input-placeholder {
-  /* Mozilla Firefox 19+ */
-  color: #ffffff;
-}
-.login-container input :-ms-input-placeholder {
-  /* Internet Explorer 10+ */
-  color: #ffffff;
-}
-.login-container input :focus {
-  outline: none;
-  /* removes the default orange border when focus */
-  border: 1px solid #11a8ab;
-}
 .login-container p {
   color: #9099b7;
 }
@@ -909,6 +884,31 @@ body,
   margin-right: auto;
   text-align: center;
   width: 100%;
+}
+.centered-input input {
+  text-align: center;
+  color: #ffffff;
+}
+.centered-input input ::-webkit-input-placeholder {
+  /* WebKit browsers */
+  color: #ffffff;
+}
+.centered-input input :-moz-input-placeholder {
+  /* Mozilla Firefox 4 to 18 */
+  color: #ffffff;
+}
+.centered-input input ::-moz-input-placeholder {
+  /* Mozilla Firefox 19+ */
+  color: #ffffff;
+}
+.centered-input input :-ms-input-placeholder {
+  /* Internet Explorer 10+ */
+  color: #ffffff;
+}
+.centered-input input :focus {
+  outline: none;
+  /* removes the default orange border when focus */
+  border: 1px solid #11a8ab;
 }
 .button {
   border-radius: 5px;

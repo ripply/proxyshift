@@ -5,10 +5,12 @@
                 Locations
             </div>
             <div class="item-indent">
-                <i class="icon ion-search placeholder-icon"></i>
-                <div class="list">
-                    <input type="text" ng-model="query" ng-style="{'width' : '100%'}"
-                           placeholder="Search by address, city, state, zipcode or phone">
+                <div class="list list-inset centered-input">
+                    <label class="item item-input">
+                        <i class="icon ion-search placeholder-icon"></i>
+                        <input type="text" ng-model="query" ng-style="{'width' : '100%'}"
+                               placeholder="Search by address, city, state, zipcode or phone">
+                    </label>
                     <ion-toggle ng-repeat="location in locations | filter:query"
                                 ng-model="location.subscribed"
                                 ng-click="saveLocations()"

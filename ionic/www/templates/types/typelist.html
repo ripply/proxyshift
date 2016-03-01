@@ -1,6 +1,6 @@
 <ion-view view-title="Job Types">
     <ion-content class="has-header" hide-back-button="false">
-        <div class="list">
+        <div class="list list-inset centered-input">
             <div class="item item-divider">
                 Manage
             </div>
@@ -13,9 +13,11 @@
                 Existing Job types
             </div>
             <div class="item-indent">
-                <i class="icon ion-search placeholder-icon"></i>
-                <input type="text" ng-model="query" ng-style="{'width' : '100%'}"
-                       placeholder="Search by name, email or phone">
+                <label class="item item-input">
+                    <i class="icon ion-search placeholder-icon"></i>
+                    <input type="text" ng-model="query" ng-style="{'width' : '100%'}"
+                           placeholder="Search by name, email or phone">
+                </label>
                 <div class="list">
                     <ion-item ng-repeat="type in types | filter:query"
                         href="#/settings/group/{{group_id}}/type/{{type.id}}">
