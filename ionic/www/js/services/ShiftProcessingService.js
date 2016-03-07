@@ -54,6 +54,10 @@ angular.module('scheduling-app.services')
                         list.push(count + string + (!string.startsWith(' ') ? '' : (count > 1 ? 's':'')));
                     }
                 });
+                if (list.length == 0) {
+                    var seconds = duration.get('s');
+                    list.push(seconds + 's');
+                }
                 return list.join(' ');
             };
 
