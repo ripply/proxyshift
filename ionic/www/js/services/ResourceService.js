@@ -64,6 +64,30 @@ angular.module('scheduling-app.services')
                 );
             };
 
+            this.getLocationsSlice = function getLocationsSlice(start, end, success, error) {
+                andThen(
+                    LocationsModel.listStagger({
+                        start: start,
+                        end: end
+                    }),
+                    success,
+                    error
+                );
+            };
+
+            this.getLocationsSearchSlice = function getLocationsSearchSlice(query, start, end, success, error) {
+                andThen(
+                    LocationsModel.listSearchStagger({
+                        start: start,
+                        end: end
+                    }, {
+                        query: query
+                    }),
+                    success,
+                    error
+                );
+            };
+
             this.getLocation = function getLocation(group_id, location_id, success, error) {
                 andThen(
                     GroupsModel.location({

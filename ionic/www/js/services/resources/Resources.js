@@ -286,7 +286,8 @@ angular.forEach({
         }
     },
     'Locations': function(url) {
-        var base = url + '/locations/:location_id';
+        var locations = '/locations';
+        var base = url + locations + '/:location_id';
         return {
             route: base,
             params: {
@@ -295,7 +296,7 @@ angular.forEach({
             actions: {
                 list: {
                     method: GET,
-                    url: url + '/locations',
+                    url: url + locations,
                     isArray: true
                 },
                 subscribe: {
@@ -356,6 +357,14 @@ angular.forEach({
                 removeSublocation: {
                     method: DELETE,
                     url: base + '/sublocations'
+                },
+                listStagger: {
+                    method: GET,
+                    url: url + locations + '/search/start/:start/end/:end'
+                },
+                listSearchStagger: {
+                    method: POST,
+                    url: url + locations + '/search/start/:start/end/:end'
                 }
             }
         }

@@ -371,6 +371,20 @@ module.exports = {
                     })
             }
         }
+    },
+    '/search/start/:start/end/:end': {
+        'get': {
+            //auth: 'anyone',
+            route: function(req, res) {
+                filterableSearchGroupLocationsList(req, res);
+            }
+        },
+        'post': {
+            //auth: 'anyone',
+            route: function(req, res) {
+                filterableSearchGroupLocationsList(req, res);
+            }
+        }
     }
 };
 
@@ -476,4 +490,90 @@ function locationSubscribeUpdate(req, res, subscribed) {
                 }
             });
     });
+}
+
+function filterableSearchGroupLocationsList(req, res) {
+    var start = parseInt(req.params.start);
+    var end = parseInt(req.params.end);
+    if (start < 0) {
+        start = 0;
+    }
+
+    if (end < 0) {
+        end = 0;
+    }
+
+    if (end < start) {
+        res.sendStatus(400);
+    }
+
+    searchLocations(req, res, function searchLocationsLimitCallback(json) {
+        if (start > json.length) {
+            start = json.length;
+        }
+
+        if (end > json.length) {
+            end = json.length;
+        }
+        res.json({
+            start: start,
+            end: end,
+            size: json.length,
+            after: json.length - end,
+            result: json.slice(start, end + 1)
+        });
+    });
+}
+
+function searchLocations(req, res, next) {
+    var query = req.body.query;
+    var likeQuery = null;
+    if (query) {
+        // force query to be a string
+        query = "" + query.toLowerCase();
+        likeQuery = "%" + query + "%";
+    }
+
+    function filter(q) {
+        if (query) {
+            return q.andWhere('locations.state', 'like', likeQuery)
+                .orWhere('locations.city', 'like', likeQuery)
+                .orWhere('locations.address', 'like', likeQuery)
+                .orWhere('locations.zipcode', 'like', likeQuery)
+                .orWhere('locations.phonenumber', 'like', likeQuery);
+        } else {
+            return q;
+        }
+    }
+
+    return models.Location.query(function(q) {
+        filter(
+            q.select()
+                .from('locations')
+                .innerJoin('groups', function () {
+                    this.on('groups.id', '=', 'locations.group_id');
+                })
+                .where('groups.user_id', '=', req.user.id)
+        )
+            .union(function () {
+                filter(
+                    this.select()
+                        .from('locations')
+                        .innerJoin('groups', function () {
+                            this.on('groups.id', '=', 'locations.group_id');
+                        })
+                        .innerJoin('usergroups', function() {
+                            this.on('usergroups.group_id', '=', 'groups.id')
+                                .andOn('usergroups.user_id', '=', user_id);
+                        })
+                );
+            });
+    })
+        .fetchAll()
+        .then(function (locations) {
+            next(locations.toJSON());
+        })
+        .catch(function (err) {
+            error(req, res, err);
+        });
 }
