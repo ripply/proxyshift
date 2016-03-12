@@ -64,7 +64,7 @@ if (cluster.isMaster) {
         var fixtureshelper = require('./spec/fixtureshelper');
         fixtureshelper.setFixtures(fixtureshelper.fixtures.base);
         var utcBeforeWaiting = Date.now();
-        var notifyInterval = 5;
+        var notifyInterval = 5 * 60; // 5 mins
         var ready = {
             ready: false,
             notified: false,
