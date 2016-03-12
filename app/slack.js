@@ -1,5 +1,6 @@
 var config = require('config');
 var moment = require('moment');
+var cluster = require('cluster');
 var Slack = require('node-slack');
 var slack;
 
@@ -16,10 +17,12 @@ module.exports = {
     error: function(req, message, err) {
         if (slack) {
             return slack.send({
-                text: message + "\nroute: " + req.originalUrl +
-                "\nreq.body = " + JSON.stringify(req.body) +
-                "\nuserid: " + (req.user ? req.user.id:'none') +
-                (err.stack ? ("\nstack trace:\n -" + JSON.stringify(err.stack).replace(/\\n/g, '\n -')):'\nno stacktrace'),
+                text: prefixCluster(
+                    message + "\nroute: " + req.originalUrl +
+                    "\nreq.body = " + JSON.stringify(req.body) +
+                    "\nuserid: " + (req.user ? req.user.id:'none') +
+                    (err.stack ? ("\nstack trace:\n -" + JSON.stringify(err.stack).replace(/\\n/g, '\n -')):'\nno stacktrace')
+                ),
                 channel: '#crashes',
                 username: username
             });
@@ -28,7 +31,7 @@ module.exports = {
     alert: function(message, err) {
         if (slack) {
             return slack.send({
-                text: message + "\n" + JSON.stringify(err),
+                text: prefixCluster(message + stringify("\n", JSON.stringify(err))),
                 channel: "#alerts",
                 username: username
             })
@@ -37,7 +40,7 @@ module.exports = {
     serious: function(message, err) {
         if (slack) {
             return slack.send({
-                text: message + "\n" + JSON.stringify(err),
+                text: prefixCluster(message + stringify("\n", JSON.stringify(err))),
                 channel: "#alerts",
                 username: username
             });
@@ -49,12 +52,29 @@ module.exports = {
         }
         return send({
             channel: channel,
-            text: message,
+            text: prefixCluster(message),
             username: username
         });
     },
     send: send
 };
+
+function stringify(prefix, object) {
+    if (object) {
+        return prefix + JSON.stringify(object);
+    } else {
+        return '';
+    }
+}
+
+function prefixCluster(message) {
+    return whichCluster() + ': ' + message;
+}
+
+function whichCluster() {
+    return cluster.isMaster ?
+        'master' : 'worker#' + cluster.worker.id;
+}
 
 function send(message) {
     if (slack && message) {
