@@ -30,6 +30,7 @@ var slack;
 
 var timeStarted;
 var periodicEvents;
+var serverIsUp = false;
 
 if (cluster.isMaster) {
     timeStarted = moment();
@@ -62,8 +63,43 @@ if (cluster.isMaster) {
         slack.info(resettingDatabase);
         var fixtureshelper = require('./spec/fixtureshelper');
         fixtureshelper.setFixtures(fixtureshelper.fixtures.base);
+        var utcBeforeWaiting = Date.now();
+        var notifyInterval = 5;
+        var ready = {
+            ready: false,
+            notified: false,
+            notifyAfter: notifyInterval,
+            interval: notifyInterval
+        };
+        var databaseReadyPrinterInterval = timers.setInterval(function() {
+            if (ready.finishTime) {
+                timers.clearInterval(databaseReadyPrinterInterval);
+                if (ready.notified) {
+                    if (serverIsUp) {
+                        slack.alert("False alarm, database is just slow, it fixed it's self after " + ready.finishTime + " seconds, server is up now");
+                    } else {
+                        slack.serious('WARNING: DATABASE SEEMS FINE NOW AFTER ' + ready.finishTime + ' SECONDS BUT SERVER DID *NOT* TOGGLE FLAG INDICATING THAT IT IS UP, PLEASE VERIFY THAT SERVER IS UP');
+                    }
+                }
+            } else {
+                var seconds = Math.floor((Date.now() - utcBeforeWaiting) / 1000);
+                console.log('Waiting for database to be ready to listen for traffic, have waited: ' + seconds + ' seconds');
+                if (seconds >= ready.notifyAfter) {
+                    ready.notifyAfter += ready.interval;
+                    ready.notified = true;
+                    notifyLongWait(seconds);
+                }
+            }
+        }, 5000);
+
+        function notifyLongWait(seconds) {
+            ready.notified = true;
+            slack.alert('Still waiting for database to become ready (' + seconds + ' seconds)');
+        }
+
         fixtureshelper.databaseReady(function() {
-            var fixturesLoaded = "Fixtures loaded, starting server";
+            ready.finishTime = Math.floor((Date.now() - utcBeforeWaiting) / 1000);
+            var fixturesLoaded = "Fixtures loaded after " + ready.finishTime + " seconds, starting server";
             console.log(fixturesLoaded);
             slack.info(fixturesLoaded);
             return launchServer();
@@ -265,7 +301,9 @@ function launchServer() {
         });
 
         //finally boot up the server:
+        console.log('Trying to listen on port: ' + app.get('port'));
         http.createServer(app).listen(app.get('port'), '0.0.0.0', function () {
+            serverIsUp = true;
             if (cluster.isMaster) {
                 console.log('Server up: http://localhost:' + app.get('port'));
                 if (slack) {
