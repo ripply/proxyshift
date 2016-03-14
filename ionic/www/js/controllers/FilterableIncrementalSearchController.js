@@ -41,7 +41,7 @@ angular.module('scheduling-app.controllers')
             function init() {
                 $scope.fetching = undefined;
                 $scope.filteredUsers = {};
-                $scope.users = [loading];
+                //$scope.users = [loading];
                 $scope.init();
             }
 

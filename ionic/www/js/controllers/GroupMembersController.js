@@ -1,8 +1,12 @@
 angular.module('scheduling-app.controllers')
     .controller('GroupMembersController', [
         '$scope',
+        '$controller',
+        '$stateParams',
         'ResourceService',
         function($scope,
+                 $controller,
+                 $stateParams,
                  ResourceService
         ) {
             $controller('FilterableIncrementalSearchController', {$scope: $scope});

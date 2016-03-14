@@ -31,7 +31,7 @@ module.exports = {
     alert: function(message, err) {
         if (slack) {
             return slack.send({
-                text: prefixCluster(message + stringify("\n", JSON.stringify(err))),
+                text: prefixCluster(message + stringify("\n", prettifyError(err))),
                 channel: "#alerts",
                 username: username
             })
@@ -40,7 +40,7 @@ module.exports = {
     serious: function(message, err) {
         if (slack) {
             return slack.send({
-                text: prefixCluster(message + stringify("\n", JSON.stringify(err))),
+                text: prefixCluster(message + stringify("\n", prettifyError(err))),
                 channel: "#alerts",
                 username: username
             });
@@ -61,10 +61,14 @@ module.exports = {
 
 function stringify(prefix, object) {
     if (object) {
-        return prefix + JSON.stringify(object);
+        return prefix + object;
     } else {
         return '';
     }
+}
+
+function prettifyError(err) {
+    return (err.stack ? ("\nstack trace:\n -" + JSON.stringify(err.stack).replace(/\\n/g, '\n -')):stringify('\n', JSON.stringify(err)));
 }
 
 function prefixCluster(message) {

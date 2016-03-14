@@ -116,6 +116,9 @@ module.exports = {
                 })
                     .fetchAll({
                         withRelated: [
+                            // in sqlite, if there are a lot of shifts, this will fail with a sqlite error
+                            // TODO: Check that this is not an issue with postgres
+                            // https://github.com/tgriesser/bookshelf/issues/707
                             'ignoreshifts',
                             'timezone'
                         ],
