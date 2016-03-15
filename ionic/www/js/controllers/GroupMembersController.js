@@ -3,10 +3,12 @@ angular.module('scheduling-app.controllers')
         '$scope',
         '$controller',
         '$stateParams',
+        '$q',
         'ResourceService',
         function($scope,
                  $controller,
                  $stateParams,
+                 $q,
                  ResourceService
         ) {
             $controller('FilterableIncrementalSearchController', {$scope: $scope});
@@ -24,11 +26,13 @@ angular.module('scheduling-app.controllers')
                 getGroupUserAndPermissions(success, error);
             };
             $scope.states.someGroupUsers = function(query, start, end, success, error) {
-                getSomeGroupUsers(0, $scope.fetchIncrement);
+                getSomeGroupUsers(query, start, end, success, error);
             };
 
             var loading = {firstname: 'Loading...'};
             var error = {firstname: 'Error'};
+            $scope.loading = loading;
+            $scope.error = error;
             $scope.permissionsDirty = true;
 
             function init() {
@@ -128,7 +132,7 @@ angular.module('scheduling-app.controllers')
                 $scope.fetching = deferred.promise;
 
                 function getAllGroupUsersSuccess(result) {
-                    updateFetchingState(state, result, result.start, result.end, result.size);
+                    $scope.updateFetchingState(state, result, result.start, result.end, result.size);
                     deferred.resolve();
                     delete $scope.fetching;
                     if (success) {

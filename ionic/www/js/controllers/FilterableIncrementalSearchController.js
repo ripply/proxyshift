@@ -18,6 +18,8 @@ angular.module('scheduling-app.controllers')
         ) {
             $controller('BaseModelController', {$scope: $scope});
 
+            $scope.loading = {};
+
             $scope.beforeEnter = init;
             $scope.afterLeave = function() {
                 function cleanup() {
@@ -32,6 +34,7 @@ angular.module('scheduling-app.controllers')
             };
             $scope.fetchIncrement = 2;
             $scope.states = {};
+            $scope.fetchState = {};
 
             $scope.queryChanged = function queryChanged(value) {
                 $scope.query = value;
@@ -109,7 +112,7 @@ angular.module('scheduling-app.controllers')
                         if (previousInterval.to < fetchStateAll.total) {
                             return {
                                 from: previousInterval.to + 1,
-                                to: previousInterval.to + 1 + fetchIncrement
+                                to: previousInterval.to + 1 + $scope.fetchIncrement
                             };
                         } else {
                             // includes the end
@@ -151,7 +154,7 @@ angular.module('scheduling-app.controllers')
                 }
 
                 if (existingUsers.length == 1 &&
-                    (existingUsers.indexOf(loading) >= 0 || existingUsers.indexOf(error) >= 0)) {
+                    (existingUsers.indexOf($scope.loading) >= 0 || existingUsers.indexOf(error) >= 0)) {
                     existingUsers.length = 0;
                 }
 
