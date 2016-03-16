@@ -101,7 +101,7 @@
                                placeholder="Search by name, email or phone">
                     </label>
                 </div>
-                <div>
+                <ion-scroll delegate-handle="small" style="height: 100px;">
                     <ion-list
                         type="list-inset"
                         show-delete="false"
@@ -115,7 +115,12 @@
                             {{location.address}}
                         </ion-item>
                     </ion-list>
-                </div>
+                    <ion-infinite-scroll
+                        ng-if="moreToLoad()"
+                        on-infinite="loadMore()"
+                        distance="20%">
+                    </ion-infinite-scroll>
+                </ion-scroll>
                 <div>
                     Floor
                     <ion-list
