@@ -68,7 +68,7 @@ function stringify(prefix, object) {
 }
 
 function prettifyError(err) {
-    return (err.stack ? ("\nstack trace:\n -" + JSON.stringify(err.stack).replace(/\\n/g, '\n -')):stringify('\n', JSON.stringify(err)));
+    return err ? (err.stack ? ("\nstack trace:\n -" + JSON.stringify(err.stack).replace(/\\n/g, '\n -')):stringify('\n', JSON.stringify(err))):'';
 }
 
 function prefixCluster(message) {
