@@ -79,7 +79,7 @@ angular.module('scheduling-app.controllers')
                 } else if (status == 404) {
                     error = "Issue contacting server";
                 } else if (statusType == 5) {
-                    error = "Internal Server Error";
+                    error = "An internal server error occurred";
                 } else if (status == 0) {
                     error = "Cannot contact server";
                 } else {

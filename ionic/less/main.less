@@ -63,6 +63,7 @@ ion-header-bar.bar.bar-positive {
     background: @background-input;
 }
 
+// make icon bigger in bottom right button (ios + is very tiny)
 .mfb-component--br i {
     font-size: 48px;
 }
@@ -71,6 +72,7 @@ ion-header-bar.bar.bar-positive {
     color: @offtext-color;
 }
 
+// makes bottom right button transparent and have no shadow
 .mfb-component__button--main,
 .mfb-component__button--child {
     background-color: transparent;
@@ -177,6 +179,10 @@ ion-header-bar.bar.bar-positive {
         margin-right: auto;
         text-align: center;
         width: 100%;
+    }
+
+    .login-error-message {
+        text-align: center;
     }
 }
 
