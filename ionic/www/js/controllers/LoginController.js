@@ -157,6 +157,7 @@ angular.module('scheduling-app.controllers')
             });
 
             $scope.login = function() {
+                $rootScope.user.remember_me = true;
                 AuthenticationService.login($rootScope.user)
                     .then(function() {
                         console.log("Logged in!");
