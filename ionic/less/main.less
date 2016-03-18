@@ -1,12 +1,12 @@
 //@background: #394264;
-@background-input: #50597b;
+@background-input: #fff;
 @background-softer: #283154;
 @background-light: #3468af;
 @placeholder-color: #fff;
 @input-text-color: #fff;
-@offtext-color: #9099b7;
+@offtext-color: #fff;
 @offtext-link-color: #746d97;
-@button-color: #e64c65;
+@button-color: #D64541;
 @color-assertive: #f00;
 @text-color: #fff;
 @text-bright: #4fc4f6;
@@ -45,6 +45,40 @@ body, .pane, .scroll-content, .list, .logo {
 
 .item {
     background: @background-input;
+}
+
+@gradient-top: #1C74BC;
+@gradient-bottom: #51C4CC;
+
+.placeholder-icon {
+    color: @offtext-color;
+}
+
+.gradient-color {
+    background-image: -webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        color-stop(0, @gradient-top),
+        color-stop(1, @gradient-bottom)
+    );
+    background-image: -o-linear-gradient(bottom, @gradient-top 0%, @gradient-bottom 100%);
+    background-image: -moz-linear-gradient(bottom, @gradient-top 0%, @gradient-bottom 100%);
+    background-image: -webkit-linear-gradient(bottom, @gradient-top 0%, @gradient-bottom 100%);
+    background-image: -ms-linear-gradient(bottom, @gradient-top 0%, @gradient-bottom 100%);
+    background-image: linear-gradient(to bottom, @gradient-top 0%, @gradient-bottom 100%);
+
+    .list {
+        background-color: transparent;
+    }
+
+    .list-inset {
+        background-color: transparent;
+    }
+
+    img {
+        background-color: transparent;
+    }
 }
 
 .login-container .forgot-password {

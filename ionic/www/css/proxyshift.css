@@ -829,10 +829,30 @@ body,
   background: #2d2d3a;
 }
 .item {
-  background: #50597b;
+  background: #ffffff;
+}
+.placeholder-icon {
+  color: #ffffff;
+}
+.gradient-color {
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #1c74bc), color-stop(1, #51c4cc));
+  background-image: -o-linear-gradient(bottom, #1c74bc 0%, #51c4cc 100%);
+  background-image: -moz-linear-gradient(bottom, #1c74bc 0%, #51c4cc 100%);
+  background-image: -webkit-linear-gradient(bottom, #1c74bc 0%, #51c4cc 100%);
+  background-image: -ms-linear-gradient(bottom, #1c74bc 0%, #51c4cc 100%);
+  background-image: linear-gradient(to bottom, #1c74bc 0%, #51c4cc 100%);
+}
+.gradient-color .list {
+  background-color: transparent;
+}
+.gradient-color .list-inset {
+  background-color: transparent;
+}
+.gradient-color img {
+  background-color: transparent;
 }
 .login-container .forgot-password {
-  color: #9099b7;
+  color: #ffffff;
   margin-left: auto;
   margin-right: auto;
 }
@@ -840,7 +860,7 @@ body,
   display: table;
 }
 .login-container p {
-  color: #9099b7;
+  color: #ffffff;
 }
 .login-container a {
   color: #746d97;
@@ -849,7 +869,7 @@ body,
   height: 100%;
 }
 .login-container > div form .button {
-  background: #e64c65;
+  background: #d64541;
   color: #ffffff;
   margin: 10px auto;
   border-radius: 0;
@@ -1102,7 +1122,7 @@ body,
   left: 18px;
 }
 .calendar-month .calendar .calendar-day-othermonth > p {
-  color: #9099b7;
+  color: #ffffff;
 }
 .calendar-month .calendar .days-week {
   color: #4fc4f6;
