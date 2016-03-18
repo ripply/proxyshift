@@ -77,11 +77,13 @@ angular.module('scheduling-app.controllers')
                 if (status == 401) {
                     error = "Invalid Username or Password.";
                 } else if (status == 404) {
-                    error = "Issue contacting server"
+                    error = "Issue contacting server";
                 } else if (statusType == 5) {
-                    error = "Internal Server Error"
+                    error = "Internal Server Error";
+                } else if (status == 0) {
+                    error = "Cannot contact server";
                 } else {
-                    error = error + ": code " + status
+                    error = error + ": code " + status;
                 }
                 $rootScope.message = error;
             });
