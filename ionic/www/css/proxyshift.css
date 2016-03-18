@@ -826,29 +826,45 @@ body,
 .scroll-content,
 .list,
 .logo {
-  background: #2d2d3a;
+  background: #3298da;
+}
+/* Header Title */
+ion-header-bar.bar.bar-positive {
+  background-color: #3298da;
+}
+/* Header Tabs */
+.tabs-striped.tabs-background-positive .tabs {
+  background-color: #3298da;
 }
 .item {
   background: #ffffff;
 }
+.mfb-component--br i {
+  font-size: 48px;
+}
 .placeholder-icon {
   color: #ffffff;
 }
-.gradient-color {
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #1c74bc), color-stop(1, #51c4cc));
-  background-image: -o-linear-gradient(bottom, #1c74bc 0%, #51c4cc 100%);
-  background-image: -moz-linear-gradient(bottom, #1c74bc 0%, #51c4cc 100%);
-  background-image: -webkit-linear-gradient(bottom, #1c74bc 0%, #51c4cc 100%);
-  background-image: -ms-linear-gradient(bottom, #1c74bc 0%, #51c4cc 100%);
-  background-image: linear-gradient(to bottom, #1c74bc 0%, #51c4cc 100%);
+.mfb-component__button--main,
+.mfb-component__button--child {
+  background-color: transparent;
+  box-shadow: none;
 }
-.gradient-color .list {
+.gradient-colorr {
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #3298da), color-stop(1, #51c4cc));
+  background-image: -o-linear-gradient(bottom, #3298da 30%, #51c4cc 100%);
+  background-image: -moz-linear-gradient(bottom, #3298da 30%, #51c4cc 100%);
+  background-image: -webkit-linear-gradient(bottom, #3298da 30%, #51c4cc 100%);
+  background-image: -ms-linear-gradient(bottom, #3298da 30%, #51c4cc 100%);
+  background-image: linear-gradient(to bottom, #3298da 30%, #51c4cc 100%);
+}
+.gradient-colorr .list {
   background-color: transparent;
 }
-.gradient-color .list-inset {
+.gradient-colorr .list-inset {
   background-color: transparent;
 }
-.gradient-color img {
+.gradient-colorr img {
   background-color: transparent;
 }
 .login-container .forgot-password {
@@ -1024,7 +1040,7 @@ body,
 /* A Previous button in calendar */
 .calendar-month {
   display: block;
-  background-color: #2d2d3a;
+  background-color: #3298da;
   color: #ffffff;
 }
 .calendar-month .arrow-btn-container {
@@ -1131,27 +1147,30 @@ body,
   display: block;
   background: #3468af;
   border-radius: 100%;
-  -moz-box-shadow: 0 0 3px #283154;
-  -webkit-box-shadow: 0 0 3px #283154;
-  box-shadow: 0 0 3px #283154;
+  -moz-box-shadow: 0 0 3px #3298da;
+  -webkit-box-shadow: 0 0 3px #3298da;
+  box-shadow: 0 0 3px #3298da;
 }
 .calendar-month .calendar-day-selected {
   background: #ff0000;
 }
 #settings-page .bar-header {
-  background-color: #575761;
+  background-color: #ffffff;
   color: #ffffff;
 }
+.tabs {
+  border-color: #3298da;
+}
 .list {
-  background-color: #2d2d3a;
+  background-color: #3298da;
 }
 .list .activated {
-  background-color: #575761;
+  background-color: #ffffff;
 }
 .list .item-indent {
   background-color: inherit;
   border-top-width: 0;
-  border-bottom-color: #575761;
+  border-bottom-color: #ffffff;
   border-bottom-width: 0;
   margin: 0;
   padding-left: 20px;
@@ -1173,12 +1192,12 @@ body,
 .list .item {
   background-color: inherit;
   border-top-width: 0;
-  border-bottom-color: #575761;
-  border-bottom-width: 1px;
+  border-bottom-color: #ffffff;
+  border-bottom-width: 0px;
   border-left-width: 0;
   border-right-width: 0;
   margin: 0;
-  color: #575761;
+  color: #ffffff;
 }
 .list .item a {
   background-color: inherit;
@@ -1231,7 +1250,7 @@ body,
 .shift-left-icon {
   position: absolute;
   float: left;
-  color: green;
+  color: #d64541;
   top: 30.5px;
   left: 7.5px;
 }
@@ -1285,7 +1304,7 @@ body,
 .shift-description {
   z-index: 2000;
   position: absolute;
-  background: #2d2d3a;
+  background: #3298da;
   max-height: 75%;
   top: 50%;
   left: 50%;
@@ -1295,10 +1314,10 @@ body,
   box-shadow: 4px 4px 80px #000;
   border: solid;
   border-width: 1px;
-  border-color: #575761;
+  border-color: #ffffff;
 }
 .shift-description .shift-buttons {
-  background: #2d2d3a;
+  background: #3298da;
 }
 .shift-description .scroll-content {
   top: 84px;
@@ -1482,12 +1501,12 @@ body,
 
 */
 .bar.bar-dark {
-  background-color: #2d2d3a;
+  background-color: #3298da;
   border-image-width: 0;
   background-size: 0;
 }
 .tabs-background-dark .tabs {
-  background-color: #2d2d3a;
+  background-color: #3298da;
   color: #ffffff;
 }
 .tabs-background-dark .tabs h3 {

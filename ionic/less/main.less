@@ -1,6 +1,12 @@
 //@background: #394264;
+
+////@gradient-top: #1C74BC;
+//@gradient-top: #0c60ee;
+@gradient-top: #3298DA;
+@gradient-middle: #3794BC;
+@gradient-bottom: #51C4CC;
 @background-input: #fff;
-@background-softer: #283154;
+@background-softer: @gradient-top;
 @background-light: #3468af;
 @placeholder-color: #fff;
 @input-text-color: #fff;
@@ -14,11 +20,12 @@
 @progress-bar-active: #900;
 @progress-bar-locked: @background-light;
 @progress-bar-unlocked: #fff;
+@shift-left-icon-color: @button-color;
 
 @header-color: #159DEB;
 
-@settings-background: #2d2d3a;
-@settings-offset-color: #575761;
+@settings-background: @gradient-top;
+@settings-offset-color: #fff;
 @background: @settings-background;
 /*
 //@background: #373447;
@@ -43,18 +50,34 @@ body, .pane, .scroll-content, .list, .logo {
     background: @background
 }
 
+/* Header Title */
+ion-header-bar.bar.bar-positive {
+    background-color: @background;
+}
+/* Header Tabs */
+.tabs-striped.tabs-background-positive .tabs {
+    background-color: @background;
+}
+
 .item {
     background: @background-input;
 }
 
-@gradient-top: #1C74BC;
-@gradient-bottom: #51C4CC;
+.mfb-component--br i {
+    font-size: 48px;
+}
 
 .placeholder-icon {
     color: @offtext-color;
 }
 
-.gradient-color {
+.mfb-component__button--main,
+.mfb-component__button--child {
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.gradient-colorr {
     background-image: -webkit-gradient(
         linear,
         left top,
@@ -62,11 +85,11 @@ body, .pane, .scroll-content, .list, .logo {
         color-stop(0, @gradient-top),
         color-stop(1, @gradient-bottom)
     );
-    background-image: -o-linear-gradient(bottom, @gradient-top 0%, @gradient-bottom 100%);
-    background-image: -moz-linear-gradient(bottom, @gradient-top 0%, @gradient-bottom 100%);
-    background-image: -webkit-linear-gradient(bottom, @gradient-top 0%, @gradient-bottom 100%);
-    background-image: -ms-linear-gradient(bottom, @gradient-top 0%, @gradient-bottom 100%);
-    background-image: linear-gradient(to bottom, @gradient-top 0%, @gradient-bottom 100%);
+    background-image: -o-linear-gradient(bottom, @gradient-top 30%, @gradient-bottom 100%);
+    background-image: -moz-linear-gradient(bottom, @gradient-top 30%, @gradient-bottom 100%);
+    background-image: -webkit-linear-gradient(bottom, @gradient-top 30%, @gradient-bottom 100%);
+    background-image: -ms-linear-gradient(bottom, @gradient-top 30%, @gradient-bottom 100%);
+    background-image: linear-gradient(to bottom, @gradient-top 30%, @gradient-bottom 100%);
 
     .list {
         background-color: transparent;
@@ -492,6 +515,10 @@ body, .pane, .scroll-content, .list, .logo {
 
 }
 
+.tabs {
+    border-color: @gradient-top;
+}
+
 .list {
     background-color: @settings-background;
 
@@ -533,7 +560,7 @@ body, .pane, .scroll-content, .list, .logo {
         background-color: inherit;
         border-top-width: 0;
         border-bottom-color: @settings-offset-color;
-        border-bottom-width: 1px;
+        border-bottom-width: 0px;
         border-left-width: 0;
         border-right-width: 0;
         margin: 0;
@@ -621,7 +648,7 @@ body, .pane, .scroll-content, .list, .logo {
 .shift-left-icon {
     position: absolute;
     float: left;
-    color: green;
+    color: @shift-left-icon-color;
     top: @shift-left-icon-top;
     left: @shift-left-icon-left;
 
