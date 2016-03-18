@@ -207,7 +207,7 @@ angular.module('scheduling-app.controllers')
                     };
                     if ($scope.cantClickYesterday) {
                         var startOfToday = moment().startOf('day');
-                        var clicked = moment().year(day.year).day(day.number).month(day.month - 1);
+                        var clicked = moment(day.year + '-' + day.month + '-' + day.number, 'YYYY-MM-DD');
                         if (clicked <= startOfToday) {
                             return;
                         }
