@@ -5,20 +5,74 @@ angular.module('scheduling-app.controllers')
         '$ionicScrollDelegate',
         '$timeout',
         '$location',
+        '$controller',
         '$window',
+        '$q',
         'GENERAL_EVENTS',
         'UserInfoService',
+        'ResourceService',
         function(
             $rootScope,
             $scope,
             $ionicScrollDelegate,
             $timeout,
             $location,
+            $controller,
             $window,
+            $q,
             GENERAL_EVENTS,
-            UserInfoService
+            UserInfoService,
+            ResourceService
         ) {
+            $controller('FilterableIncrementalSearchController', {$scope: $scope});
             var calendarName = 'create-shift-calendar';
+
+            $scope.get = ResourceService.getLocationsSlice;
+            $scope.getSearch = ResourceService.getLocationsSearchSlice;
+
+            $scope.init = init;
+            $scope.states.loading = function(query, start, end, success, error) {
+
+            };
+            $scope.states.locations = function(query, start, end, success, error) {
+                var queries = [];
+                if ($scope.permissionsDirty) {
+                    queries.push(getLocations(start, end));
+                }
+                $q.all(queries)
+                    .then(success, error);
+            };
+
+            function getLocations(start, end) {
+                var deferred = $q.defer();
+                var state = $scope.getFetchingState();
+                ResourceService.getLocationsSlice(start, end, function getGroupPermissionsSuccess(result) {
+                    $scope.permissions = result;
+                    $scope.permissionsDirty = false;
+                    $scope.updateFetchingState(state, result, 0, result.size, result.size);
+                    deferred.resolve();
+                }, function getGroupPermissionsError() {
+                    deferred.reject();
+                });
+
+                return deferred.promise;
+            }
+
+            var loading = {firstname: 'Loading...'};
+            var error = {firstname: 'Error'};
+            $scope.loading = loading;
+            $scope.error = error;
+            $scope.permissionsDirty = true;
+
+            function init() {
+                    //getAllGroupUsers()
+                $scope.users = [];
+                $scope.currentSearchState = 'locations';
+                $scope.loadMore();
+                    //getSomeGroupUsers(0, fetchIncrement);
+            }
+
+            init();
 
             $window.addEventListener('resize', function(event) {
                 $location.hash($scope.location);
@@ -461,7 +515,7 @@ angular.module('scheduling-app.controllers')
 
             $scope.timePickerObjectTime = {};
             $scope.timePickerObjectLength = {};
-            getLocations();
+            //getLocations();
 
             $scope.$on('modal:createshift:reset', function() {
                 console.log('reset');
@@ -469,9 +523,10 @@ angular.module('scheduling-app.controllers')
                 $rootScope.$broadcast('events:calendar:reset', calendarName);
                 $rootScope.$broadcast('events:calendar:show', calendarName);
                 $rootScope.$broadcast('events:calendar:currentmonth', calendarName);
-                getLocations();
+                //getLocations();
                 $scope.selected = null;
                 resetSteps();
+                $scope.init();
             });
 
             $scope.dateState = {};
@@ -663,7 +718,7 @@ angular.module('scheduling-app.controllers')
             };
 
             $rootScope.$on(GENERAL_EVENTS.UPDATES.USERINFO.PROCESSED, function() {
-                getLocations();
+                //getLocations();
             });
 
             $scope.locationClicked = function(location) {
@@ -699,7 +754,7 @@ angular.module('scheduling-app.controllers')
                 }
             };
 
-            function getLocations() {
+            function getLocationsOld() {
                 $scope.locationsObject = UserInfoService.getLocationList();
                 $scope.locations = [];
 

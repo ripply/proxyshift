@@ -72,7 +72,7 @@ angular.module('scheduling-app.controllers')
             }
 
             function fetchThings(query, from, to, success, error) {
-                $scope.states[$scope.currentState](query, from, to, success, error);
+                $scope.states[$scope.currentSearchState](query, from, to, success, error);
             }
 
             function getFetchableRange() {

@@ -111,7 +111,7 @@
                             class="item clear-padding"
                             ng-class="{'location-selected': location.selected}"
                             ng-click="locationClicked(location)"
-                            ng-repeat="location in locations | filter:query">
+                            ng-repeat="location in users | filter:query">
                             {{location.address}}
                         </ion-item>
                     </ion-list>

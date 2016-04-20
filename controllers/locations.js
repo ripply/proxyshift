@@ -525,6 +525,8 @@ function filterableSearchGroupLocationsList(req, res) {
     });
 }
 
+var locationSearchSelect = controllerCommon.createSelectQueryForAllColumns('Location', 'locations');
+
 function searchLocations(req, res, next) {
     var query = req.body.query;
     var likeQuery = null;
@@ -548,7 +550,7 @@ function searchLocations(req, res, next) {
 
     return models.Location.query(function(q) {
         filter(
-            q.select()
+            q.select(locationSearchSelect)
                 .from('locations')
                 .innerJoin('groups', function () {
                     this.on('groups.id', '=', 'locations.group_id');
@@ -557,20 +559,21 @@ function searchLocations(req, res, next) {
         )
             .union(function () {
                 filter(
-                    this.select()
+                    this.select(locationSearchSelect)
                         .from('locations')
                         .innerJoin('groups', function () {
                             this.on('groups.id', '=', 'locations.group_id');
                         })
                         .innerJoin('usergroups', function() {
                             this.on('usergroups.group_id', '=', 'groups.id')
-                                .andOn('usergroups.user_id', '=', user_id);
+                                .andOn('usergroups.user_id', '=', req.user.id);
                         })
                 );
             });
     })
         .fetchAll()
         .then(function (locations) {
+            console.log(locations.toJSON());
             next(locations.toJSON());
         })
         .catch(function (err) {

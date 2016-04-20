@@ -41,16 +41,16 @@ angular.module('scheduling-app.controllers')
                 $scope.location_id = getLocationId();
                 $scope.user_id = getGroupUserId();
                 if ($scope.location_id) {
-                    $scope.currentState = 'location';
+                    $scope.currentSearchState = 'location';
                 } else if ($scope.group_id !== null &&
                     $scope.group_id !== undefined &&
                     $scope.user_id !== null &&
                     $scope.user_id !== undefined) {
                     $scope.permissionsDirty = true;
-                    $scope.currentState = 'groupUserWithPermission'
+                    $scope.currentSearchState = 'groupUserWithPermission'
                 } else {
                     //getAllGroupUsers()
-                    $scope.currentState = 'someGroupUsers';
+                    $scope.currentSearchState = 'someGroupUsers';
                     $scope.loadMore();
                     //getSomeGroupUsers(0, fetchIncrement);
                 }

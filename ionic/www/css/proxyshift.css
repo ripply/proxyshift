@@ -921,6 +921,9 @@ ion-header-bar.bar.bar-positive {
   text-align: center;
   width: 100%;
 }
+.login-container .login-error-message {
+  text-align: center;
+}
 .centered-input input {
   text-align: center;
   color: #ffffff;
