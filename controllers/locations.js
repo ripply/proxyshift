@@ -571,7 +571,9 @@ function searchLocations(req, res, next) {
                 );
             });
     })
-        .fetchAll()
+        .fetchAll({
+            withRelated: 'sublocations'
+        })
         .then(function (locations) {
             console.log(locations.toJSON());
             next(locations.toJSON());
