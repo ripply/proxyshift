@@ -25,7 +25,7 @@ angular.module('scheduling-app.controllers')
                 Model,
                 undefined
             );
-            $scope.shifttitle = 'Open shifts';
+            $scope.shifttitle = 'April 29th';
             $scope.declinedshifttitle = 'Declined shifts';
             $scope.Model = $rootScope[ModelVariableName];
             $scope.data = {};

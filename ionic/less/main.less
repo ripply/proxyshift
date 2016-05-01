@@ -2,16 +2,17 @@
 
 ////@gradient-top: #1C74BC;
 //@gradient-top: #0c60ee;
-@gradient-top: #3298DA;
+@gradient-top: #38414e;
 @gradient-middle: #3794BC;
-@gradient-bottom: #51C4CC;
+@gradient-bottom: #38414e;
 @background-input: #fff;
 @background-softer: @gradient-top;
-@background-light: #3468af;
+@background-light: #38414e;
 @placeholder-color: #fff;
 @input-text-color: #fff;
 @offtext-color: #fff;
 @offtext-link-color: #746d97;
+@tab-color: #17c7d1;
 @button-color: #D64541;
 @color-assertive: #f00;
 @text-color: #fff;
@@ -52,11 +53,11 @@ body, .pane, .scroll-content, .list, .logo {
 
 /* Header Title */
 ion-header-bar.bar.bar-positive {
-    background-color: @background;
+    background-color: @tab-color;
 }
 /* Header Tabs */
 .tabs-striped.tabs-background-positive .tabs {
-    background-color: @background;
+    background-color: @tab-color;
 }
 
 .item {
@@ -79,7 +80,7 @@ ion-header-bar.bar.bar-positive {
     box-shadow: none;
 }
 
-.gradient-colorr {
+.gradient-colorrr {
     background-image: -webkit-gradient(
         linear,
         left top,
@@ -592,7 +593,7 @@ ion-header-bar.bar.bar-positive {
     color: @text-color;
 }
 
-@shift-padding: 30px;
+@shift-padding: 10px;
 @shift-padding-top-bottom: @shift-padding / 5;
 
 .shift-info {
@@ -610,7 +611,8 @@ ion-header-bar.bar.bar-positive {
     }
 }
 
-@list-padding: 4px;
+@list-padding-top-bottom: 4px;
+@list-padding: 20px;
 @list-item: 64px;
 
 #shift-description-content {
@@ -648,12 +650,21 @@ ion-header-bar.bar.bar-positive {
     float: right;
 }
 
+.left-buttons {
+    padding-left: 6px;
+}
+
+.right-buttons {
+    padding-right: 6px;
+}
+
 @shift-left-icon-left: @shift-padding / 4;
 @shift-left-icon-top: ((@shift-info-height / 2) - (23/2) + 1) + @shift-padding-top-bottom;
 
 .shift-left-icon {
     position: absolute;
     float: left;
+    display:none;
     color: @shift-left-icon-color;
     top: @shift-left-icon-top;
     left: @shift-left-icon-left;
@@ -704,7 +715,10 @@ ion-header-bar.bar.bar-positive {
 }
 
 .list-padding {
-    padding: @list-padding;
+    padding-top: @list-padding-top-bottom;
+    padding-bottom: @list-padding-top-bottom;
+    padding-right: @list-padding;
+    padding-left: @list-padding;
 }
 
 .shift-accept {

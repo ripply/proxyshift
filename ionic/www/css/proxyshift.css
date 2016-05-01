@@ -826,15 +826,15 @@ body,
 .scroll-content,
 .list,
 .logo {
-  background: #3298da;
+  background: #38414e;
 }
 /* Header Title */
 ion-header-bar.bar.bar-positive {
-  background-color: #3298da;
+  background-color: #17c7d1;
 }
 /* Header Tabs */
 .tabs-striped.tabs-background-positive .tabs {
-  background-color: #3298da;
+  background-color: #17c7d1;
 }
 .item {
   background: #ffffff;
@@ -850,21 +850,21 @@ ion-header-bar.bar.bar-positive {
   background-color: transparent;
   box-shadow: none;
 }
-.gradient-colorr {
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #3298da), color-stop(1, #51c4cc));
-  background-image: -o-linear-gradient(bottom, #3298da 30%, #51c4cc 100%);
-  background-image: -moz-linear-gradient(bottom, #3298da 30%, #51c4cc 100%);
-  background-image: -webkit-linear-gradient(bottom, #3298da 30%, #51c4cc 100%);
-  background-image: -ms-linear-gradient(bottom, #3298da 30%, #51c4cc 100%);
-  background-image: linear-gradient(to bottom, #3298da 30%, #51c4cc 100%);
+.gradient-colorrr {
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #38414e), color-stop(1, #38414e));
+  background-image: -o-linear-gradient(bottom, #38414e 30%, #38414e 100%);
+  background-image: -moz-linear-gradient(bottom, #38414e 30%, #38414e 100%);
+  background-image: -webkit-linear-gradient(bottom, #38414e 30%, #38414e 100%);
+  background-image: -ms-linear-gradient(bottom, #38414e 30%, #38414e 100%);
+  background-image: linear-gradient(to bottom, #38414e 30%, #38414e 100%);
 }
-.gradient-colorr .list {
+.gradient-colorrr .list {
   background-color: transparent;
 }
-.gradient-colorr .list-inset {
+.gradient-colorrr .list-inset {
   background-color: transparent;
 }
-.gradient-colorr img {
+.gradient-colorrr img {
   background-color: transparent;
 }
 .login-container .forgot-password {
@@ -1043,7 +1043,7 @@ ion-header-bar.bar.bar-positive {
 /* A Previous button in calendar */
 .calendar-month {
   display: block;
-  background-color: #3298da;
+  background-color: #38414e;
   color: #ffffff;
 }
 .calendar-month .arrow-btn-container {
@@ -1102,7 +1102,7 @@ ion-header-bar.bar.bar-positive {
   background: #35aadc;
 }
 .calendar-month .titler {
-  background: #3468af;
+  background: #38414e;
 }
 .calendar-month .calendar-month .arrow-btn:hover {
   background: #1a4e95;
@@ -1148,11 +1148,11 @@ ion-header-bar.bar.bar-positive {
 }
 .calendar-month .calendar .calendar-day-currentmonth.calendar-day-today {
   display: block;
-  background: #3468af;
+  background: #38414e;
   border-radius: 100%;
-  -moz-box-shadow: 0 0 3px #3298da;
-  -webkit-box-shadow: 0 0 3px #3298da;
-  box-shadow: 0 0 3px #3298da;
+  -moz-box-shadow: 0 0 3px #38414e;
+  -webkit-box-shadow: 0 0 3px #38414e;
+  box-shadow: 0 0 3px #38414e;
 }
 .calendar-month .calendar-day-selected {
   background: #ff0000;
@@ -1162,10 +1162,10 @@ ion-header-bar.bar.bar-positive {
   color: #ffffff;
 }
 .tabs {
-  border-color: #3298da;
+  border-color: #38414e;
 }
 .list {
-  background-color: #3298da;
+  background-color: #38414e;
 }
 .list .activated {
   background-color: #ffffff;
@@ -1215,26 +1215,26 @@ ion-header-bar.bar.bar-positive {
   color: #ffffff;
 }
 .shift-info {
-  padding-left: 30px;
-  padding-top: 6px;
-  padding-bottom: 6px;
+  padding-left: 10px;
+  padding-top: 2px;
+  padding-bottom: 2px;
 }
 .item .shift-info .shift-right {
-  padding-top: 6px;
-  padding-bottom: 6px;
+  padding-top: 2px;
+  padding-bottom: 2px;
 }
 #shift-description-content {
-  padding-right: 30px;
+  padding-right: 10px;
 }
 #shift-description-content .shift-info {
-  padding-top: 15px;
+  padding-top: 5px;
 }
 #shift-description-content .shift-right {
-  padding-top: 15px;
+  padding-top: 5px;
 }
 #shift-description-content .shift-desc {
-  padding-left: 19px;
-  padding-right: 19px;
+  padding-left: 25px;
+  padding-right: 25px;
 }
 .shift-left {
   display: block;
@@ -1250,12 +1250,19 @@ ion-header-bar.bar.bar-positive {
 .shift-duration {
   float: right;
 }
+.left-buttons {
+  padding-left: 6px;
+}
+.right-buttons {
+  padding-right: 6px;
+}
 .shift-left-icon {
   position: absolute;
   float: left;
+  display: none;
   color: #d64541;
-  top: 30.5px;
-  left: 7.5px;
+  top: 26.5px;
+  left: 2.5px;
 }
 .shift-left-icon i {
   font-size: 23px;
@@ -1294,7 +1301,10 @@ ion-header-bar.bar.bar-positive {
   padding: 0;
 }
 .list-padding {
-  padding: 4px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-right: 20px;
+  padding-left: 20px;
 }
 .shift-accept {
   width: 50%;
@@ -1307,7 +1317,7 @@ ion-header-bar.bar.bar-positive {
 .shift-description {
   z-index: 2000;
   position: absolute;
-  background: #3298da;
+  background: #38414e;
   max-height: 75%;
   top: 50%;
   left: 50%;
@@ -1320,10 +1330,10 @@ ion-header-bar.bar.bar-positive {
   border-color: #ffffff;
 }
 .shift-description .shift-buttons {
-  background: #3298da;
+  background: #38414e;
 }
 .shift-description .scroll-content {
-  top: 84px;
+  top: 100px;
   bottom: 49px;
 }
 .ng-modal-close {
@@ -1481,7 +1491,7 @@ ion-header-bar.bar.bar-positive {
   color: #ffffff;
 }
 #progressbar .locked:before {
-  background: #3468af;
+  background: #38414e;
 }
 .header-extend {
   background-color: #159deb;
@@ -1504,12 +1514,12 @@ ion-header-bar.bar.bar-positive {
 
 */
 .bar.bar-dark {
-  background-color: #3298da;
+  background-color: #38414e;
   border-image-width: 0;
   background-size: 0;
 }
 .tabs-background-dark .tabs {
-  background-color: #3298da;
+  background-color: #38414e;
   color: #ffffff;
 }
 .tabs-background-dark .tabs h3 {
