@@ -36,9 +36,7 @@ angular.module('scheduling-app.controllers')
             };
             $scope.states.locations = function(query, start, end, success, error) {
                 var queries = [];
-                if ($scope.permissionsDirty) {
-                    queries.push(getLocations(start, end));
-                }
+                queries.push(getLocations(start, end));
                 $q.all(queries)
                     .then(success, error);
             };
@@ -48,8 +46,7 @@ angular.module('scheduling-app.controllers')
                 var state = $scope.getFetchingState();
                 ResourceService.getLocationsSlice(start, end, function getGroupPermissionsSuccess(result) {
                     $scope.permissions = result;
-                    $scope.permissionsDirty = false;
-                    $scope.updateFetchingState(state, result, 0, result.size, result.size);
+                    $scope.updateFetchingState(state, result, result.start, result.end, result.size);
                     deferred.resolve();
                 }, function getGroupPermissionsError() {
                     deferred.reject();
@@ -62,7 +59,6 @@ angular.module('scheduling-app.controllers')
             var error = {firstname: 'Error'};
             $scope.loading = loading;
             $scope.error = error;
-            $scope.permissionsDirty = true;
 
             function init() {
                     //getAllGroupUsers()
@@ -74,9 +70,16 @@ angular.module('scheduling-app.controllers')
 
             init();
 
+            function recalculateDivHeight() {
+                if ($scope.currentStepDiv) {
+                    $scope.currentStepDivHeight = $scope.currentStepDiv.height();
+                }
+            }
+
             $window.addEventListener('resize', function(event) {
                 $location.hash($scope.location);
                 $ionicScrollDelegate.anchorScroll(false);
+                recalculateDivHeight();
             });
 
             var steps = [
@@ -196,6 +199,8 @@ angular.module('scheduling-app.controllers')
             $scope.subindex = -1;
             $scope.computedState = {};
             $scope.state = [];
+            $scope.currentId = undefined;
+            $scope.currentStepDiv = undefined;
 
             calc();
 
@@ -213,6 +218,12 @@ angular.module('scheduling-app.controllers')
                 // that should be index
                 var major = actions[index];
                 var majorId = major.id;
+                var differentId = $scope.currentId != majorId;
+                $scope.currentId = majorId;
+                if (differentId) {
+                    $scope.currentStepDiv = angular.element( document.querySelector( '#' + majorId ) );
+                    recalculateDivHeight();
+                }
                 var computedState = $scope.computedState;
                 // run this major page's calc to see if it has any children pages
                 var childrenPages;
