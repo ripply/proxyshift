@@ -1381,7 +1381,7 @@ ion-header-bar.bar.bar-positive {
   pointer-events: auto;
 }
 .create-shift-modal {
-  color: #38414e;
+  background-color: #38414e;
 }
 .create-shift-modal .scroll {
   height: 100%;
