@@ -100,8 +100,7 @@ angular.module('scheduling-app.push', [
                             200
                         );
                     } catch (err) {
-                        errorOccured = true;
-                        alert("Error");
+                        alert("Error initializing push notifications");
                         alert(err);
                         console.log(err);
                         // push notification plugin was most likely not included with build

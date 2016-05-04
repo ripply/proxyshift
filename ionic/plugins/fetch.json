@@ -21,7 +21,9 @@
             "id": "phonegap-plugin-push"
         },
         "is_top_level": true,
-        "variables": {}
+        "variables": {
+            "SENDER_ID": "635706604728"
+        }
     },
     "org.apache.cordova.dialogs": {
         "source": {
