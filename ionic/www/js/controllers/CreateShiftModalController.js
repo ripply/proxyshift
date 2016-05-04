@@ -157,6 +157,12 @@ angular.module('scheduling-app.controllers')
                     calc: function() {
 
                     },
+                    visible: function() {
+                        $ionicScrollDelegate.$getByHandle('shift-where').scrollTop();
+                    },
+                    anchored: function() {
+                        $ionicScrollDelegate.$getByHandle('shift-where').scrollTop();
+                    },
                     prev: function() {
                         return true;
                     },
@@ -710,6 +716,9 @@ angular.module('scheduling-app.controllers')
                 } else {
                     $scope.header = headers[index];
                 }
+                if (actions[index].hasOwnProperty('visible')) {
+                    actions[index].visible(index, subindex);
+                }
                 showAllSteps();
                 $timeout(function() {
                     blockInput(false);
@@ -717,6 +726,11 @@ angular.module('scheduling-app.controllers')
                     $ionicScrollDelegate.anchorScroll(false);
                     $scope.sliding = false;
                     hideOtherSteps(location);
+                    if (actions[index].hasOwnProperty('anchored')) {
+                        $timeout(function() {
+                            actions[index].anchored(index, subindex);
+                        });
+                    }
                 }, 500);
             }
 
