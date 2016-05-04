@@ -386,7 +386,827 @@ module.exports = {
                 address: 'test_address2',
                 zipcode: 123456,
                 phonenumber: 124356
-            }
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+            {
+                group_id: '@groups:name:membershiptest',
+                timezone_id: defaultTimezone(),
+                state: 'membershiptest',
+                city: 'test_city2',
+                address: 'test_address2',
+                zipcode: 123456,
+                phonenumber: 124356
+            },
+
         ],
         sublocations: [
             {
