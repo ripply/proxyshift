@@ -42,7 +42,7 @@
         <div class="forms"
              ng-attr-id="{{'create-shift-when-' + day.key}}"
              ng-repeat="day in date"
-             ng-class="{'create-shift-form-hide': !steps['create-shift-when-' + day.key].show}">
+             ng-class="{'create-shift-form-hide': !steps['create-shift-when-' + day.key].show, 'create-shift-form-visible': !sliding && steps['create-shift-when-' + day.key].show}">
             <div class="form-offset">
                 <div class="create-shift-content">
                     <div class="row">
@@ -92,7 +92,7 @@
                 </div>
             </div>
         </div>
-        <div class="forms" id="create-shift-where" ng-class="{'create-shift-form-hide': !steps['create-shift-where'].show}">
+        <div class="forms" id="create-shift-where" ng-class="{'create-shift-form-hide': !steps['create-shift-where'].show, 'create-shift-form-visible': !sliding && steps['create-shift-where'].show}">
             <div class="create-shift-content centered-input">
                 <div class="list list-inset">
                     <label class="item item-input">
@@ -139,12 +139,12 @@
                 </div>
             </div>
         </div>
-        <div class="forms" id="create-shift-who" ng-class="{'create-shift-form-hide': !steps['create-shift-who'].show}">
+        <div class="forms" id="create-shift-who" ng-class="{'create-shift-form-hide': !steps['create-shift-who'].show, 'create-shift-form-visible': !sliding && steps['create-shift-who'].show}">
             <div class="create-shift-content">
                 description
             </div>
         </div>
-        <div class="forms" id="create-shift-review" ng-class="{'create-shift-form-hide': !steps['create-shift-review'].show}">
+        <div class="forms" id="create-shift-review" ng-class="{'create-shift-form-hide': !steps['create-shift-review'].show, 'create-shift-form-visible': !sliding && steps['create-shift-review'].show}">
             <div class="create-shift-content">
                 <div ng-repeat="day in dates">
                 </div>

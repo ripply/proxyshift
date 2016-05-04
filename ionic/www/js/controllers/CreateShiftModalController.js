@@ -774,6 +774,8 @@ angular.module('scheduling-app.controllers')
                 });
                 console.log($scope.locations);
             }
+
+            slideTo(actions[0].id);
         }
     ]
 );

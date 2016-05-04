@@ -1410,6 +1410,12 @@ ion-header-bar.bar.bar-positive {
   color: #ffffff;
   height: 22px;
 }
+.create-shift-form-visible {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
 .create-shift-form-hide {
   opacity: 0;
 }
