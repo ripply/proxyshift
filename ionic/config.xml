@@ -87,14 +87,6 @@
         <splash src="resources/windows/splash/splashscreen.png" width="620" height="300"/>
     </platform>
     <gap:plugin name="cordova-plugin-splashscreen" source="npm" />
-    <!--
-      1.6.0 requires cordova-ios > 4.0.0 which as of 5/4/2016 build.phonegap.com does not support
-      It also introduces the changes requiring SENDER_ID to have the GCM value
-      so for now, limit it to 1.5.3, the latest non breaking version
-      cordova plugin add phonegap-plugin-push --variable SENDER_ID=123456789
-      Sets the variable in plugins/fetch.json
-      See https://github.com/phonegap/phonegap-plugin-push/issues/711
-      -->
     <gap:plugin name="phonegap-plugin-push" source="npm" spec="1.5.3">
         <param name="SENDER_ID" value="635706604728"/>
     </gap:plugin>
