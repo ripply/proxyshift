@@ -575,7 +575,7 @@ function searchLocations(req, res, next) {
             withRelated: 'sublocations'
         })
         .then(function (locations) {
-            console.log(locations.toJSON());
+            //console.log(locations.toJSON());
             next(locations.toJSON());
         })
         .catch(function (err) {

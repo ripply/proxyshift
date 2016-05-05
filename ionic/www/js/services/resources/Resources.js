@@ -161,6 +161,11 @@ angular.forEach({
                     url: base + '/classes',
                     isArray: true
                 },
+                allClasses: {
+                    method: GET,
+                    url: url + '/groups/allclasses',
+                    isArray: true
+                },
                 createClass: {
                     method: POST,
                     url: base + '/classes'

@@ -71,10 +71,33 @@ module.exports = {
             }
         }
     },
+    '/allclasses': {
+        'get': {
+            //auth: ['anyone']
+            route: function getAllClassesForGroups(req, res) {
+                models.GroupUserClass.query(function (q) {
+                    q.select('groupuserclasses.*')
+                        .innerJoin('usergroups', function() {
+                            this.on('usergroups.group_id', '=', 'groupuserclasses.group_id');
+                        })
+                        .where('usergroups.user_id', '=', req.user.id)
+                        .distinct();
+                })
+                    .fetchAll()
+                    .then(function getAllClassesForGroupSuccess(groupuserclasses) {
+                        console.log(groupuserclasses.toJSON());
+                        res.json(groupuserclasses.toJSON());
+                    })
+                    .catch(function getAllClassesForGroupsError(err) {
+                        error(req, res, err);
+                    });
+            }
+        }
+    },
     '/:group_id': {
         'get': {
             auth: ['group owner or group member'],
-            route: function (req, res) {
+            route: function getGroupById(req, res) {
                 var user_id = req.user.id;
                 models.Group.query(function (q) {
                     q.select('groups.*').innerJoin('usergroups', function () {

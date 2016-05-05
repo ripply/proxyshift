@@ -65,6 +65,14 @@ angular.module('scheduling-app.controllers')
                 $scope.users = [];
                 $scope.currentSearchState = 'locations';
                 $scope.loadMore();
+                ResourceService.getAllJobs(
+                    function(result) {
+                        $scope.allJobs = result;
+                    }, function() {
+                        // error....
+                        // TODO: We need this information
+                    }
+                );
                     //getSomeGroupUsers(0, fetchIncrement);
             }
 
@@ -752,6 +760,7 @@ angular.module('scheduling-app.controllers')
                 location.selected = true;
                 $scope.selected = location;
                 $scope.sublocations = location.sublocations;
+                setupJobTypesForLocationOrSublocation();
                 if (!location.sublocations || location.sublocations.length === 0) {
                     $scope.locationSelected = true;
                     $scope.nextClicked();
@@ -778,6 +787,18 @@ angular.module('scheduling-app.controllers')
                     $scope.nextClicked();
                 }
             };
+
+            function setupJobTypesForLocationOrSublocation() {
+                var group_id = $scope.selected.group_id;
+                $scope.jobTypes = $scope.allJobs.filter(function(value) {
+                    if (value.hasOwnProperty('group_id')) {
+                        return value.group_id == group_id;
+                    } else {
+                        return false;
+                    }
+                });
+                console.log($scope.jobTypes);
+            }
 
             function getLocationsOld() {
                 $scope.locationsObject = UserInfoService.getLocationList();

@@ -210,6 +210,14 @@ angular.module('scheduling-app.services')
                 )
             };
 
+            this.getAllJobs = function getAllJobs(success, error) {
+                andThen(
+                    GroupsModel.allClasses(),
+                    success,
+                    error
+                );
+            };
+
             this.getJobsAtGroup = function getJobsAtGroup(group_id, success, error) {
                 andThen(
                     GroupsModel.classes({
