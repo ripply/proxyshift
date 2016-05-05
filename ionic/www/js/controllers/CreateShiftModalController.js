@@ -169,7 +169,9 @@ angular.module('scheduling-app.controllers')
                         $ionicScrollDelegate.$getByHandle('shift-where').scrollTop();
                     },
                     anchored: function() {
-                        $ionicScrollDelegate.$getByHandle('shift-where').scrollTop();
+                        var scroll = $ionicScrollDelegate.$getByHandle('shift-where');
+                        scroll.resize();
+                        scroll.scrollTop();
                     },
                     prev: function() {
                         return true;
@@ -189,7 +191,9 @@ angular.module('scheduling-app.controllers')
                         $ionicScrollDelegate.$getByHandle('shift-who').scrollTop();
                     },
                     anchored: function() {
-                        $ionicScrollDelegate.$getByHandle('shift-who').scrollTop();
+                        var scroll = $ionicScrollDelegate.$getByHandle('shift-who');
+                        scroll.resize();
+                        scroll.scrollTop();
                     },
                     prev: function() {
                         return true;
@@ -204,6 +208,12 @@ angular.module('scheduling-app.controllers')
                     id: 'create-shift-review',
                     calc: function() {
 
+                    },
+                    visible: function() {
+                        $ionicScrollDelegate.$getByHandle('shift-review').freezeScroll(false);
+                    },
+                    anchored: function() {
+                        $ionicScrollDelegate.$getByHandle('shift-review').resize();
                     },
                     prev: function() {
                         return true;
