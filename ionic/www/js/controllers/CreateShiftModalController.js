@@ -185,11 +185,17 @@ angular.module('scheduling-app.controllers')
                     calc: function() {
 
                     },
+                    visible: function() {
+                        $ionicScrollDelegate.$getByHandle('shift-who').scrollTop();
+                    },
+                    anchored: function() {
+                        $ionicScrollDelegate.$getByHandle('shift-who').scrollTop();
+                    },
                     prev: function() {
                         return true;
                     },
                     next: function() {
-                        return true;
+                        return $scope.selectedJobType !== undefined;
                     },
                     goprev: defaultGoPrev,
                     gonext: defaultGoNext
@@ -757,9 +763,13 @@ angular.module('scheduling-app.controllers')
             $scope.locationClicked = function(location) {
                 unselect($scope.locations);
                 unselect($scope.sublocations);
+                if ($scope.selected == location) {
+                    clearClickedJobType();
+                }
                 location.selected = true;
                 $scope.selected = location;
                 $scope.sublocations = location.sublocations;
+                $scope.sublocation = undefined;
                 setupJobTypesForLocationOrSublocation();
                 if (!location.sublocations || location.sublocations.length === 0) {
                     $scope.locationSelected = true;
@@ -781,11 +791,28 @@ angular.module('scheduling-app.controllers')
                     unselect($scope.sublocations);
                 } else {
                     unselect($scope.sublocations);
+                    if ($scope.sublocation == clickedSublocation) {
+                        clearClickedJobType();
+                    }
                     $scope.sublocation = clickedSublocation;
                     clickedSublocation.selected = true;
                     $scope.locationSelected = true;
                     $scope.nextClicked();
                 }
+            };
+
+            function clearClickedJobType() {
+                angular.forEach($scope.jobTypes, function(item) {
+                    item.selected = false;
+                });
+                $scope.selectedJobType = undefined;
+            }
+
+            $scope.jobTypeClicked = function(jobType) {
+                clearClickedJobType();
+                $scope.selectedJobType = jobType;
+                jobType.selected = true;
+                calc();
             };
 
             function setupJobTypesForLocationOrSublocation() {
@@ -797,6 +824,7 @@ angular.module('scheduling-app.controllers')
                         return false;
                     }
                 });
+                $scope.selectedJobType = undefined;
                 console.log($scope.jobTypes);
             }
 
