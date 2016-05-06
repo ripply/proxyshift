@@ -210,6 +210,12 @@ module.exports = {
                         error(req, res, err);
                     })
             }
+        },
+        'post': {
+            //auth: ['anyone'],
+            route: function postNewShifts(req, res) {
+
+            }
         }
     },
     '/managing': {
@@ -1140,6 +1146,15 @@ function createNewShift(req, res) {
                         if (!otherArgs.timezone_id) {
                             clientError(req, res, 400, 'No timezone sent and no timezone found for location');
                         } else {
+                            return createShiftsInTransaction(req, res, [
+                                {
+                                    safe: otherArgs,
+                                    unsafe: req.body,
+                                    validate: {}
+                                },
+                                t
+                            ]);
+                            /*
                             return postModel(
                                 'Shift',
                                 otherArgs,
@@ -1158,6 +1173,7 @@ function createNewShift(req, res) {
                                     transacting: t
                                 }
                             );
+                            */
                         }
                     } else {
                         // unknown sub/location_id
@@ -1169,6 +1185,69 @@ function createNewShift(req, res) {
                 });
         });
     }
+}
+
+function createShifts(req, res, shifts) {
+    Bookshelf.transaction(function(t) {
+        return createShiftsInTransaction(req, res, shifts, t);
+    });
+}
+
+function createShiftsInTransaction(req, res, shifts, transaction) {
+    return createShiftsInTransactionIndex(req, res, shifts, transaction, 0);
+}
+
+const createShiftUntrustedKeys = _.keys(
+    getModelKeys('Shift',
+        [
+            'id',
+            'user_id',
+            'location_id',
+            'sublocation_id',
+            'groupuserclass_id',
+            'timezone_id',
+            'notify'
+        ]
+    )
+);
+
+function createShiftsInTransactionIndex(req, res, shifts, transaction, index) {
+    if (index >= shifts.length) {
+        return;
+    }
+    var shift;
+    // first filter unsafe input
+    if (index == 0) {
+        // only validate data on the first one
+        // we don't want to make separate database queries for each shift
+        // what do we need to validate...
+        // that the user has access to each group for each location/sublocation
+        // and has access to create shifts there
+
+        // first grab all the location_ids
+        var locationIds = {};
+        var sublocationIds = {};
+        for (var i = 0; i < shifts.length; i++) {
+            shift = shifts[i];
+            var shiftLocationId = shift.location_id;
+            var shiftSublocationId = shift.sublocation_id;
+            if (shiftLocationId) {
+                if (!locationIds.hasOwnProperty(shiftLocationId)) {
+                    locationIds[shiftLocationId] = [];
+                }
+                locationIds[shiftLocationId].push(shift);
+            } else if (shiftSublocationId) {
+                if (!sublocationIds.hasOwnProperty(shiftSublocationId)) {
+                    sublocationIds[shiftSublocationId] = [];
+                }
+                locationIds[shiftSublocationId].push(shift);
+            } else {
+                return clientError(req, res, 400, 'Missing location/sublocation for shift');
+            }
+        }
+        // now grab the timezone for each location and
+    }
+    shift = shifts[index];
 }
 
 /**
