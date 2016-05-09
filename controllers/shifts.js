@@ -1226,7 +1226,9 @@ function createShiftsInTransactionIndex(req, res, shifts, transaction, index) {
 
         // first grab all the location_ids
         var locationIds = {};
+        var hasLocations = false;
         var sublocationIds = {};
+        var hasSublocations = false;
         for (var i = 0; i < shifts.length; i++) {
             shift = shifts[i];
             var shiftLocationId = shift.location_id;
@@ -1236,16 +1238,41 @@ function createShiftsInTransactionIndex(req, res, shifts, transaction, index) {
                     locationIds[shiftLocationId] = [];
                 }
                 locationIds[shiftLocationId].push(shift);
+                hasLocations = true;
             } else if (shiftSublocationId) {
                 if (!sublocationIds.hasOwnProperty(shiftSublocationId)) {
                     sublocationIds[shiftSublocationId] = [];
                 }
-                locationIds[shiftSublocationId].push(shift);
+                sublocationIds[shiftSublocationId].push(shift);
+                hasSublocations = true;
             } else {
                 return clientError(req, res, 400, 'Missing location/sublocation for shift');
             }
         }
-        // now grab the timezone for each location and
+        // now grab the timezone for each location and sublocation
+        return models.Groups.query(function(q) {
+            q = q.select('groups.id as id')
+                .leftJoin('locations', function() {
+                    this.on('locations.group_id', '=', 'groups.id');
+                })
+                .leftJoin('sublocations', function() {
+                    this.on('sublocations.location_id', '=', 'locations.id');
+                });
+            if (hasLocations) {
+                q = q.whereIn('locations.id', Object.keys(locationIds));
+                if (hasSublocations) {
+                    q = q.whereIn('sublocations.id', Object.keys(sublocationIds))
+                }
+            } else if (hasSublocations) {
+                q = q.whereIn('sublocations.id', Object.keys(sublocationIds))
+            }
+        })
+            .fetchAll({
+                transacting: t
+            })
+            .then(function() {
+
+            });
     }
     shift = shifts[index];
 }
