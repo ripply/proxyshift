@@ -1194,7 +1194,7 @@ function createShifts(req, res, shifts) {
 }
 
 function createShiftsInTransaction(req, res, shifts, transaction) {
-    return createShiftsInTransactionIndex(req, res, shifts, transaction, 0);
+    return createShiftsInTransactionRecurse(req, res, shifts, transaction, -1, {}, {});
 }
 
 const createShiftUntrustedKeys = _.keys(
@@ -1211,13 +1211,13 @@ const createShiftUntrustedKeys = _.keys(
     )
 );
 
-function createShiftsInTransactionIndex(req, res, shifts, transaction, index) {
+function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, locationTimezoneMap, sublocationTimezoneMap) {
     if (index >= shifts.length) {
         return;
     }
     var shift;
     // first filter unsafe input
-    if (index == 0) {
+    if (index < 0) {
         // only validate data on the first one
         // we don't want to make separate database queries for each shift
         // what do we need to validate...
@@ -1225,6 +1225,7 @@ function createShiftsInTransactionIndex(req, res, shifts, transaction, index) {
         // and has access to create shifts there
 
         // first grab all the location_ids
+
         var locationIds = {};
         var hasLocations = false;
         var sublocationIds = {};
@@ -1250,11 +1251,8 @@ function createShiftsInTransactionIndex(req, res, shifts, transaction, index) {
             }
         }
         // now grab the timezone for each location and sublocation
-        return models.Groups.query(function(q) {
-            q = q.select('groups.id as id')
-                .leftJoin('locations', function() {
-                    this.on('locations.group_id', '=', 'groups.id');
-                })
+        return models.Locations.query(function(q) {
+            q = q.select('locations.id as id, locations.timezone_id as timezone_id, sublocations.id as sublocations_id')
                 .leftJoin('sublocations', function() {
                     this.on('sublocations.location_id', '=', 'locations.id');
                 });
@@ -1268,11 +1266,30 @@ function createShiftsInTransactionIndex(req, res, shifts, transaction, index) {
             }
         })
             .fetchAll({
-                transacting: t
+                transacting: transaction
             })
-            .then(function() {
+            .tap(function(locationsWithTimezones) {
+                if (locationsWithTimezones) {
+                    _.each(locationsWithTimezones.toJSON(), function(locationWithTimezone) {
+                        if (locationWithTimezone.sublocation_id) {
+                            sublocationTimezoneMap[locationWithTimezone.sublocation_id] = locationWithTimezone.timezone_id;
+                        } else if (locationWithTimezone.location_id) {
+                            locationTimezoneMap[locationWithTimezone.location_id] = locationWithTimezone.timezone_id;
+                        }
+                    });
 
+                    return createShiftsInTransactionRecurse(req, res, shifts, transaction, 0, locationTimezoneMap, sublocationTimezoneMap);
+                } else {
+                    // no locations found...
+                    return clientError('Unknown locations');
+                }
             });
+    } else {
+        // now we have timezoneIds for each location/sublocation
+        // there should not be a case where a user cannot create a shift
+        // so we do not need to do any kind of permission checking here
+        // we will treat people like adults and let administrative processes handle things
+        
     }
     shift = shifts[index];
 }
