@@ -73,6 +73,10 @@ angular.forEach({
                     url: url + '/shifts/new',
                     isArray: true
                 },
+                create: {
+                    method: POST,
+                    url: url + '/shifts/create',
+                },
                 managing: {
                     method: GET,
                     url: url + '/shifts/managing',

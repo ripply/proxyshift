@@ -217,6 +217,7 @@ module.exports = {
             //auth: ['anyone'],
             route: function postCreateShifts(req, res) {
                 /*
+                // req.body.shifts come in as this
                 [
                     {
                         location_id: '',
@@ -226,10 +227,26 @@ module.exports = {
                         start: '',
                         end: '',
                         groupuserclass_id: '',
+                        timezone_id: '', // optional
                         count: ''
                     }
                 ]
+                // transform it into what we want
+                [
+                    {
+                        unsafe: {...}
+                    }
+                ]
                 */
+                var shifts = [];
+                if (req.body.shifts && req.body.shifts instanceof Array) {
+                    _.each(req.body.shifts, function(shift) {
+                        shifts.push({
+                            unsafe: shift
+                        });
+                    });
+                }
+                createShifts(req, res, shifts);
             }
         }
     },
@@ -1237,7 +1254,7 @@ const createShiftUntrustedKeysAllowLocationSublocationGroupclass = _.keys(
 );
 
 function rejectTransaction(t) {
-    t.rollback;
+    t.rollback();
     return true;
 }
 

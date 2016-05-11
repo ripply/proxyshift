@@ -29,6 +29,7 @@ var password = 'secret';
 // DELETE /api/shifts/:shift_id/register
 // DELETE /api/shifts/shiftapplication/:shiftapplication_id
 // GET /api/shifts/mine
+// POST /api/shifts/create
 
 // MODIFY:
 // Creation of shifts has new field: utcoffset
@@ -94,6 +95,23 @@ describe("#/shifts", function() {
                     request(app)
                         .post('/api/locations/1/shifts')
                         .send(newShift)
+                        .expect(401, done);
+
+                });
+
+            });
+
+        });
+
+        describe.only('- /create', function() {
+
+            describe('- anonymous user', function() {
+
+                it('- returns 401', function(done) {
+
+                    request(app)
+                        .post(parse('/api/shifts/create'))
+                        .send()
                         .expect(401, done);
 
                 });

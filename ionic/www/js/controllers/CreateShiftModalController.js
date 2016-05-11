@@ -811,6 +811,10 @@ angular.module('scheduling-app.controllers')
                 }
             };
 
+            $scope.create = function() {
+                alert("!!!");
+            };
+
             function clearClickedJobType() {
                 angular.forEach($scope.jobTypes, function(item) {
                     item.selected = false;

@@ -356,6 +356,14 @@ angular.module('scheduling-app.services')
                 );
             };
 
+            this.createMultipleShifts = function createMultipleShifts(shifts, success, error) {
+                andThen(
+                    ShiftsModel.create(shifts),
+                    success,
+                    error
+                )
+            };
+
             function andThen(promise, success, error) {
                 if (promise.hasOwnProperty("$promise")) {
                     promise = promise.$promise;
