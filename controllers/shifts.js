@@ -1226,6 +1226,21 @@ const createShiftUntrustedKeys = _.keys(
     )
 );
 
+const createShiftUntrustedKeysAllowLocationSublocationGroupclass = _.keys(
+    getModelKeys('Shift',
+        [
+            'id',
+            'user_id',
+            'notify'
+        ]
+    )
+);
+
+function rejectTransaction(t) {
+    t.rollback;
+    return true;
+}
+
 function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, locationMap, sublocationMap) {
     if (index >= shifts.length) {
         return;
@@ -1274,7 +1289,7 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
                 hasSublocations = true;
                 creatingShiftsInSublocations[sublocation_id] = true;
             } else{
-                return clientError(req, res, 400, 'Missing location/sublocation for shift');
+                return rejectTransaction(transaction) && clientError(req, res, 400, 'Missing location/sublocation for shift');
             }
         });
 
@@ -1330,7 +1345,7 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
                     return createShiftsInTransactionRecurse(req, res, shifts, transaction, 0, locationMap, sublocationMap);
                 } else {
                     // no locations found...
-                    return clientError(req, res, 400, 'Unknown locations');
+                    return rejectTransaction(transaction) && clientError(req, res, 400, 'Unknown locations');
                 }
             });
     } else {
@@ -1347,8 +1362,52 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
             }
         });
 
-        validatedShift = _.clone(shift.safe);
-        return models.Shift.forge()
+        validatedShift = _.pick(shift.unsafe, createShiftUntrustedKeysAllowLocationSublocationGroupclass);
+        validatedShift = _.extend(validatedShift, shift.safe);
+
+        // sublocation_id overrides location_id
+        var shiftsLocationInfo = validatedShift.sublocation_id ?
+            locationMap[validatedShift.sublocation_id] : locationMap[validatedShift.location_id];
+        if (validatedShift.sublocation_id) {
+            shiftsLocationInfo = locationMap[validatedShift.sublocation_id];
+            validatedShift.location_id = undefined;
+        } else if (validatedShift.location_id) {
+            shiftsLocationInfo = locationMap[validatedShift.location_id];
+            validatedShift.sublocation_id = undefined;
+        } else {
+            // this should have been validated before here anyway
+            return rejectTransaction(transaction) && clientError(req, res, 400, 'Missing location/sublocation for shift');
+        }
+
+        if (validatedShift.groupuserclass_id) {
+            // validate that this groupuserclass_id is proper for this location/sublocation
+
+            if (shiftsLocationInfo) {
+                if (!shiftsLocationInfo.groupuserclasses.hasOwnProperty(validatedShift.groupuserclass_id)) {
+                    return rejectTransaction(transaction) && clientError(req, res, 400, 'Unknown groupuserclass for shift');
+                }
+            } else {
+                // user does not have access, or invalid input
+                return rejectTransaction(transaction) && clientError(req, res, 400, 'Unknown location/sublocation for shift');
+            }
+
+            // groupuserclass_id is valid for this location/sublocation
+        }
+
+        if (!validatedShift.timezone_id) {
+            // there must be a timezone_id for each shift
+            // assume local time
+            // if the user submitted an invalid timezone_id, it should be rejected by the database
+            validatedShift.timezone_id = shiftsLocationInfo.timezone_id;
+        }
+
+        return models.Shift.forge(validatedShift)
+            .save(undefined, {
+                transacting: transaction
+            })
+            .tap(function (saved) {
+                return createShiftsInTransactionRecurse(req, res, shifts, transaction, index + 1, locationMap, sublocationMap);
+            })
     }
 
 }
