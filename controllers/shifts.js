@@ -211,10 +211,25 @@ module.exports = {
                     })
             }
         },
+    },
+    '/create': {
         'post': {
             //auth: ['anyone'],
-            route: function postNewShifts(req, res) {
-
+            route: function postCreateShifts(req, res) {
+                /*
+                [
+                    {
+                        location_id: '',
+                        sublocation_id: '',
+                        title: '',
+                        description: '',
+                        start: '',
+                        end: '',
+                        groupuserclass_id: '',
+                        count: ''
+                    }
+                ]
+                */
             }
         }
     },
@@ -1211,11 +1226,12 @@ const createShiftUntrustedKeys = _.keys(
     )
 );
 
-function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, locationTimezoneMap, sublocationTimezoneMap) {
+function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, locationMap, sublocationMap) {
     if (index >= shifts.length) {
         return;
     }
     var shift;
+    var safeUnsafe = ['unsafe', 'safe'];
     // first filter unsafe input
     if (index < 0) {
         // only validate data on the first one
@@ -1224,45 +1240,62 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
         // that the user has access to each group for each location/sublocation
         // and has access to create shifts there
 
-        // first grab all the location_ids
-
-        var locationIds = {};
+        // first grab all the location_ids/sublocation_ids that are applicable to these shifts
+        var creatingShiftsInLocations = {};
+        var creatingShiftsInSublocations = {};
         var hasLocations = false;
-        var sublocationIds = {};
         var hasSublocations = false;
-        for (var i = 0; i < shifts.length; i++) {
-            shift = shifts[i];
-            var shiftLocationId = shift.location_id;
-            var shiftSublocationId = shift.sublocation_id;
-            if (shiftLocationId) {
-                if (!locationIds.hasOwnProperty(shiftLocationId)) {
-                    locationIds[shiftLocationId] = [];
+
+        _.each(shifts, function(shiftInformation) {
+            var location_id;
+            var location_id_is_safe;
+            var sublocation_id;
+            var sublocation_id_is_safe;
+
+            _.each(safeUnsafe, function(key) {
+                var shiftMap = shiftInformation[key];
+                if (shiftMap) {
+                    if (shiftMap.location_id) {
+                        location_id = shiftMap.location_id;
+                        sublocation_id = undefined;
+                        location_id_is_safe = key == 'safe';
+                    } else if (shiftMap.sublocation_id) {
+                        sublocation_id = shiftMap.sublocation_id;
+                        location_id = undefined;
+                        sublocation_id_is_safe = key == 'safe';
+                    }
                 }
-                locationIds[shiftLocationId].push(shift);
+            });
+
+            if (location_id) {
+                creatingShiftsInLocations[location_id] = true;
                 hasLocations = true;
-            } else if (shiftSublocationId) {
-                if (!sublocationIds.hasOwnProperty(shiftSublocationId)) {
-                    sublocationIds[shiftSublocationId] = [];
-                }
-                sublocationIds[shiftSublocationId].push(shift);
+            } else if (sublocation_id) {
                 hasSublocations = true;
-            } else {
+                creatingShiftsInSublocations[sublocation_id] = true;
+            } else{
                 return clientError(req, res, 400, 'Missing location/sublocation for shift');
             }
-        }
+        });
+
         // now grab the timezone for each location and sublocation
         return models.Locations.query(function(q) {
-            q = q.select('locations.id as id, locations.timezone_id as timezone_id, sublocations.id as sublocations_id')
+            q = q.select('locations.id as id, locations.timezone_id as timezone_id, sublocations.id as sublocation_id, groupuserclasses.id as groupuserclass_id')
                 .leftJoin('sublocations', function() {
                     this.on('sublocations.location_id', '=', 'locations.id');
+                })
+                .leftJoin('groupuserclasses', function() {
+                    this.on('groupuserclasses.group_id', '=', 'locations.group_id');
                 });
+            // TODO: Inner join with groupmembership and group ownership
+            // filter to those locations/sublocations that user is trying to create shifts in
             if (hasLocations) {
-                q = q.whereIn('locations.id', Object.keys(locationIds));
+                q = q.whereIn('locations.id', Object.keys(creatingShiftsInLocations));
                 if (hasSublocations) {
-                    q = q.whereIn('sublocations.id', Object.keys(sublocationIds))
+                    q = q.orWhereIn('sublocations.id', Object.keys(creatingShiftsInSublocations));
                 }
             } else if (hasSublocations) {
-                q = q.whereIn('sublocations.id', Object.keys(sublocationIds))
+                q = q.whereIn('sublocations.id', Object.keys(creatingShiftsInSublocations));
             }
         })
             .fetchAll({
@@ -1271,17 +1304,33 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
             .tap(function(locationsWithTimezones) {
                 if (locationsWithTimezones) {
                     _.each(locationsWithTimezones.toJSON(), function(locationWithTimezone) {
+                        var map;
+                        var key;
                         if (locationWithTimezone.sublocation_id) {
-                            sublocationTimezoneMap[locationWithTimezone.sublocation_id] = locationWithTimezone.timezone_id;
+                            map = sublocationMap;
+                            key = locationWithTimezone.sublocation_id;
                         } else if (locationWithTimezone.location_id) {
-                            locationTimezoneMap[locationWithTimezone.location_id] = locationWithTimezone.timezone_id;
+                            map = locationMap;
+                            key = locationWithTimezone.location_id;
+                            //value = locationMap[locationWithTimezone.location_id]; // = locationWithTimezone.timezone_id;
+                        }
+                        if (!map[key]) {
+                            map[key] = {
+                                groupuserclasses: {}
+                            };
+                        }
+                        var value = map[key];
+                        value.timezone_id = locationWithTimezone.timezone_id;
+                        var groupuserclass_id = locationWithTimezone.groupuserclass_id;
+                        if (groupuserclass_id) {
+                            value.groupuserclasses[groupuserclass_id] = true;
                         }
                     });
 
-                    return createShiftsInTransactionRecurse(req, res, shifts, transaction, 0, locationTimezoneMap, sublocationTimezoneMap);
+                    return createShiftsInTransactionRecurse(req, res, shifts, transaction, 0, locationMap, sublocationMap);
                 } else {
                     // no locations found...
-                    return clientError('Unknown locations');
+                    return clientError(req, res, 400, 'Unknown locations');
                 }
             });
     } else {
@@ -1289,9 +1338,19 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
         // there should not be a case where a user cannot create a shift
         // so we do not need to do any kind of permission checking here
         // we will treat people like adults and let administrative processes handle things
-        
+        shift = shifts[index];
+        var validatedShift;
+
+        _.each(safeUnsafe, function(key) {
+            if (!shift[key]) {
+                shift[key] = {};
+            }
+        });
+
+        validatedShift = _.clone(shift.safe);
+        return models.Shift.forge()
     }
-    shift = shifts[index];
+
 }
 
 /**
