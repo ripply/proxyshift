@@ -50,16 +50,17 @@
                             <h4 class="sub-subheader">Start:</h4>
                         </div>
                         <div class="col col-80">
-                            <ionic-timepicker-embed input-obj="dateState[day.key].time"></ionic-timepicker-embed>
+                            <input ng-model="dateState[day.key].time" type="time">
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col col-20 uniform-padding">
-                            <h4 class="sub-subheader">Length:</h4>
+                            <h4 class="sub-subheader">End:</h4>
                         </div>
                         <div class="col col-80">
-                            <ionic-timepicker-hours-embed input-obj="dateState[day.key].hours"></ionic-timepicker-hours-embed>
+                            <input ng-model="dateState[day.key].endtime" type="date">
+                            <input ng-model="dateState[day.key].hours" type="time">
                         </div>
                     </div>
 
@@ -69,23 +70,7 @@
                         </div>
                         <div class="col col-80">
                             <div class="row">
-                                <span class="button-small col col-25">
-                                    &nbsp;
-                                </span>
-                                <label class="col col-10">&nbsp;</label>
-                                <span class="button-small col col-25">
-                                    &nbsp;
-                                </span>
-                                <label class="col col-10">&nbsp;</label>
-                                <span class="button-small col col-25">
-                                    <button type="button" class="button button-clear button-small button-dark timePickerArrows marginBottom10"
-                                            ng-click="incrementEmployees(day.key)">
-                                        <i class="icon ion-chevron-up"></i></button>
-                                    <div ng-bind="dateState[day.key].counter" class="ipBoxes timePickerBoxText"></div>
-                                    <button type="button" class="button button-clear button-small button-dark timePickerArrows marginTop10"
-                                            ng-click="decrementEmployees(day.key)">
-                                        <i class="icon ion-chevron-down"></i></button>
-                                </span>
+                                <input ng-model="dateState[day.key].counter" min="1" type="number">
                             </div>
                         </div>
                     </div>

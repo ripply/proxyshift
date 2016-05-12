@@ -603,6 +603,7 @@ angular.module('scheduling-app.controllers')
                                     moment: date
                                 }, value)
                             );
+
                             $scope.dateState[key] = angular.extend({
                                 counter: 1,
                                 time: {
