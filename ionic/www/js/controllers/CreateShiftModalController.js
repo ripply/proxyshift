@@ -595,8 +595,9 @@ angular.module('scheduling-app.controllers')
                         angular.forEach(selected, function(value, key) {
                             var date = moment();
                             date.year(value.year);
-                            date.month(value.month);
+                            date.month(value.month - 1);
                             date.date(value.day);
+                            date.startOf('day');
                             $scope.date.push(
                                 angular.extend({
                                     key: key,
@@ -604,16 +605,21 @@ angular.module('scheduling-app.controllers')
                                 }, value)
                             );
 
+                            var now = moment();
+                            var nowHour = now.hour();
+                            var nowMinute = now.minute();
+                            if (nowMinute > 0) {
+                                nowHour += 1;
+                            }
+
+                            date.add(nowHour, 'hours');
+                            var end = moment(date).add(8, 'hours');
+
                             $scope.dateState[key] = angular.extend({
                                 counter: 1,
-                                time: {
-                                    inputEpochTime: hours + minutes,
-                                    step: 5
-                                },
-                                hours: {
-                                    inputEpochTime: 8 * 60 * 60, // 8 hours by default
-                                    step: 5
-                                }
+                                time: date.toDate(),
+                                hours: end.toDate(),
+                                endtime: end.toDate()
                             }, $scope.dateState[key]);
                         });
                         $scope.date.sort(function(left, right) {
@@ -798,6 +804,9 @@ angular.module('scheduling-app.controllers')
             }
 
             $scope.sublocationClicked = function(clickedSublocation) {
+                console.log("************8");
+                console.log(clickedSublocation);
+                console.log("************8");
                 if (clickedSublocation.selected) {
                     unselect($scope.sublocations);
                 } else {
@@ -813,7 +822,39 @@ angular.module('scheduling-app.controllers')
             };
 
             $scope.create = function() {
-                alert("!!!");
+                var shifts = [];
+                var location_id = $scope.location;
+                var sublocation_id = $scope.sublocation;
+                console.log($scope.selectedJobType);
+                var location = {
+                    title: 'text',
+                    description: $scope.description,
+                    groupuserclass_id: $scope.selectedJobType.id
+                };
+                if ($scope.sublocation) {
+                    location.sublocation_id = $scope.sublocation.id;
+                } else if ($scope.location) {
+                    location.location_id = $scope.selected.id;
+                } else {
+                    return;
+                }
+                angular.forEach($scope.dateState, function(value, key) {
+                    shifts.push(
+                        angular.extend({
+                            start: value.time,
+                            end: value.hours,
+                            count: value.counter
+                        }, location)
+                    );
+                });
+
+                ResourceService.createMultipleShifts(shifts, function(result) {
+                    console.log("SUCCESS");
+                    console.log(result);
+                }, function(err) {
+                    console.log("ERR");
+                    console.log(err);
+                });
             };
 
             function clearClickedJobType() {

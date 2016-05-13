@@ -239,8 +239,8 @@ module.exports = {
                 ]
                 */
                 var shifts = [];
-                if (req.body.shifts && req.body.shifts instanceof Array) {
-                    _.each(req.body.shifts, function(shift) {
+                if (req.body && req.body instanceof Array) {
+                    _.each(req.body, function(shift) {
                         shifts.push({
                             unsafe: shift
                         });
@@ -1220,9 +1220,20 @@ function createNewShift(req, res) {
 }
 
 function createShifts(req, res, shifts) {
-    Bookshelf.transaction(function(t) {
+    return Bookshelf.transaction(function(t) {
         return createShiftsInTransaction(req, res, shifts, t);
-    });
+    })
+        .catch(function(err) {
+            var code = 500;
+            var message = 'error';
+            if (err.hasOwnProperty('code') && err.hasOwnProperty('message')) {
+                code = err.code;
+                message = err.message;
+                clientError(req, res, code, message);
+            } else {
+                error(req, res, err);
+            }
+        });
 }
 
 function createShiftsInTransaction(req, res, shifts, transaction) {
@@ -1253,15 +1264,23 @@ const createShiftUntrustedKeysAllowLocationSublocationGroupclass = _.keys(
     )
 );
 
-function rejectTransaction(t) {
-    t.rollback();
-    return true;
+function rejectTransaction(t, code, message) {
+    console.log('rollingback');
+    return t.rollback({
+        code: code,
+        message: message
+    });
 }
 
 function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, locationMap, sublocationMap) {
+    if (shifts.length == 0) {
+        return rejectTransaction(transaction, 400, 'No shifts sent');
+    }
     if (index >= shifts.length) {
+        res.send(200);
         return;
     }
+    console.log('recurse');
     var shift;
     var safeUnsafe = ['unsafe', 'safe'];
     // first filter unsafe input
@@ -1277,8 +1296,11 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
         var creatingShiftsInSublocations = {};
         var hasLocations = false;
         var hasSublocations = false;
+        console.log('iterating over shifts');
+        console.log(shifts);
+        for (var i = 0; i < shifts.length; i++) {
+            var shiftInformation = shifts[i];
 
-        _.each(shifts, function(shiftInformation) {
             var location_id;
             var location_id_is_safe;
             var sublocation_id;
@@ -1306,13 +1328,15 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
                 hasSublocations = true;
                 creatingShiftsInSublocations[sublocation_id] = true;
             } else{
-                return rejectTransaction(transaction) && clientError(req, res, 400, 'Missing location/sublocation for shift');
+                console.log('recureseteeee');
+                return rejectTransaction(transaction, 400, 'Missing location/sublocation for shift');
             }
-        });
+            console.log(">?ASDF>?A?SDF");
+        }
 
         // now grab the timezone for each location and sublocation
-        return models.Locations.query(function(q) {
-            q = q.select('locations.id as id, locations.timezone_id as timezone_id, sublocations.id as sublocation_id, groupuserclasses.id as groupuserclass_id')
+        return models.Location.query(function(q) {
+            q = q.select(['locations.id as id', 'locations.timezone_id as timezone_id', 'sublocations.id as sublocation_id', 'groupuserclasses.id as groupuserclass_id'])
                 .leftJoin('sublocations', function() {
                     this.on('sublocations.location_id', '=', 'locations.id');
                 })
@@ -1335,15 +1359,16 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
             })
             .tap(function(locationsWithTimezones) {
                 if (locationsWithTimezones) {
+                    console.log(locationsWithTimezones.toJSON());
                     _.each(locationsWithTimezones.toJSON(), function(locationWithTimezone) {
                         var map;
                         var key;
                         if (locationWithTimezone.sublocation_id) {
                             map = sublocationMap;
                             key = locationWithTimezone.sublocation_id;
-                        } else if (locationWithTimezone.location_id) {
+                        } else {
                             map = locationMap;
-                            key = locationWithTimezone.location_id;
+                            key = locationWithTimezone.id;
                             //value = locationMap[locationWithTimezone.location_id]; // = locationWithTimezone.timezone_id;
                         }
                         if (!map[key]) {
@@ -1362,7 +1387,7 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
                     return createShiftsInTransactionRecurse(req, res, shifts, transaction, 0, locationMap, sublocationMap);
                 } else {
                     // no locations found...
-                    return rejectTransaction(transaction) && clientError(req, res, 400, 'Unknown locations');
+                    return rejectTransaction(transaction, 400, 'Unknown locations');
                 }
             });
     } else {
@@ -1393,7 +1418,7 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
             validatedShift.sublocation_id = undefined;
         } else {
             // this should have been validated before here anyway
-            return rejectTransaction(transaction) && clientError(req, res, 400, 'Missing location/sublocation for shift');
+            return rejectTransaction(transaction, 400, 'Missing location/sublocation for shift');
         }
 
         if (validatedShift.groupuserclass_id) {
@@ -1401,11 +1426,12 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
 
             if (shiftsLocationInfo) {
                 if (!shiftsLocationInfo.groupuserclasses.hasOwnProperty(validatedShift.groupuserclass_id)) {
-                    return rejectTransaction(transaction) && clientError(req, res, 400, 'Unknown groupuserclass for shift');
+                    return rejectTransaction(transaction, 400, 'Unknown groupuserclass for shift');
                 }
             } else {
+                console.log(locationMap);
                 // user does not have access, or invalid input
-                return rejectTransaction(transaction) && clientError(req, res, 400, 'Unknown location/sublocation for shift');
+                return rejectTransaction(transaction, 400, 'Unknown location/sublocation for shift');
             }
 
             // groupuserclass_id is valid for this location/sublocation
@@ -1423,6 +1449,7 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
                 transacting: transaction
             })
             .tap(function (saved) {
+                console.log('created...');
                 return createShiftsInTransactionRecurse(req, res, shifts, transaction, index + 1, locationMap, sublocationMap);
             })
     }
