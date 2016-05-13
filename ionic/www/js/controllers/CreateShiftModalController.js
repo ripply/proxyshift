@@ -806,7 +806,7 @@ angular.module('scheduling-app.controllers')
             $scope.sublocationClicked = function(clickedSublocation) {
                 console.log("************8");
                 console.log(clickedSublocation);
-                console.log("************8");
+                console.log("*************");
                 if (clickedSublocation.selected) {
                     unselect($scope.sublocations);
                 } else {

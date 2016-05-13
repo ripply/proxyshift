@@ -1331,18 +1331,39 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
                 console.log('recureseteeee');
                 return rejectTransaction(transaction, 400, 'Missing location/sublocation for shift');
             }
-            console.log(">?ASDF>?A?SDF");
         }
 
         // now grab the timezone for each location and sublocation
-        return models.Location.query(function(q) {
-            q = q.select(['locations.id as id', 'locations.timezone_id as timezone_id', 'sublocations.id as sublocation_id', 'groupuserclasses.id as groupuserclass_id'])
+        return Bookshelf.knex.raw(
+        //return models.Location.query(function(q) {
+            //q = q.select(['locations.id as id', 'locations.timezone_id as timezone_id', 'sublocations.id as sublocation_id', 'groupuserclasses.id as groupuserclass_id'])
+            //q.raw(
+            'select ' +
+                'locations.id as id, ' +
+                'locations.timezone_id as timezone_id, ' +
+                'sublocations.id as sublocation_id, ' +
+                'groupuserclasses.id as groupuserclass_id ' +
+                'from locations ' +
+                'left join sublocations on sublocations.location_id = locations.id ' +
+                'left join groupuserclasses on groupuserclasses.group_id = locations.group_id ' +
+                'where sublocations.id in (?)',
+                [Object.keys(creatingShiftsInSublocations)]
+            )
+            .transacting(transaction)
+            /*
+            q = q.select(Bookshelf.knex.raw(
+                'locations.id as id, ' +
+                'locations.timezone_id as timezone_id, ' +
+                'sublocations.id as sublocation_id, ' +
+                'groupuserclasses.id as groupuserclass_id'
+            ))
+                .from('locations')
                 .leftJoin('sublocations', function() {
                     this.on('sublocations.location_id', '=', 'locations.id');
                 })
                 .leftJoin('groupuserclasses', function() {
                     this.on('groupuserclasses.group_id', '=', 'locations.group_id');
-                });
+                });g
             // TODO: Inner join with groupmembership and group ownership
             // filter to those locations/sublocations that user is trying to create shifts in
             if (hasLocations) {
@@ -1351,12 +1372,13 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
                     q = q.orWhereIn('sublocations.id', Object.keys(creatingShiftsInSublocations));
                 }
             } else if (hasSublocations) {
-                q = q.whereIn('sublocations.id', Object.keys(creatingShiftsInSublocations));
+                //q = q.whereIn('sublocations.id', Object.keys(creatingShiftsInSublocations));
             }
-        })
-            .fetchAll({
+            */
+        //})
+            /*.fetchAll({
                 transacting: transaction
-            })
+            })*/
             .tap(function(locationsWithTimezones) {
                 if (locationsWithTimezones) {
                     console.log(locationsWithTimezones.toJSON());
