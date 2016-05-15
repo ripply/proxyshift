@@ -51,7 +51,28 @@ angular.module('scheduling-app.push', [
                             ios: {
                                 alert: true,
                                 badge: true,
-                                sound: true
+                                sound: true,
+                                "categories": {
+                                    "invite": {
+                                        "yes": {
+                                            "callback": "app.accept", "title": "Accept", "foreground": true, "destructive": false
+                                        },
+                                        "no": {
+                                            "callback": "app.reject", "title": "Reject", "foreground": true, "destructive": false
+                                        },
+                                        "maybe": {
+                                            "callback": "app.maybe", "title": "Maybe", "foreground": true, "destructive": false
+                                        }
+                                    },
+                                    "delete": {
+                                        "yes": {
+                                            "callback": "app.doDelete", "title": "Delete", "foreground": true, "destructive": true
+                                        },
+                                        "no": {
+                                            "callback": "app.cancel", "title": "Cancel", "foreground": true, "destructive": false
+                                        }
+                                    }
+                                }
                             },
                             windows: {
 

@@ -11,7 +11,8 @@ function createNotification(default_, title, message, bodyAndroidOnly, badge, ti
         var ios = {
             alert: title,
             payload: {
-                message: interpolatedMessage
+                message: interpolatedMessage,
+                category: 'invite'
             }
         };
         if (badge) {
@@ -25,11 +26,14 @@ function createNotification(default_, title, message, bodyAndroidOnly, badge, ti
                 title: 'test',
                 message: interpolatedMessage,
                 style: 'inbox',
-                summaryText: 'There are %n% notifications'
-            },
-            notification: {
-                title: title,
-                body: interpolatedBody
+                summaryText: 'There are %n% notifications',
+                actions: [
+                    { "icon": "emailGuests", "title": "EMAIL GUESTS", "callback": "app.emailGuests", "foreground": true},
+                    { "icon": "snooze", "title": "SNOOZE", "callback": "app.snooze", "foreground": false}
+                ],
+                priority: 2,
+                'content-available': '1',
+                "vibrationPattern": [2000, 1000, 500, 500]
             }
         };
 
