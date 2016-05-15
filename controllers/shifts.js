@@ -1401,7 +1401,8 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
         // so we do not need to do any kind of permission checking here
         // we will treat people like adults and let administrative processes handle things
         var newShifts = [];
-        _.each(shifts, function(shift) {
+        for (var j = index; j < shifts.length; j++) {
+            shift = shifts[j];
             var validatedShift;
 
             _.each(safeUnsafe, function(key) {
@@ -1451,6 +1452,7 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
 
             // convert input type of start/end if needed
             // Eg: user supplied UNIX time instead of Z encoded time
+            var datesOk = true;
             _.each(['start', 'end'], function(key) {
                 var value = validatedShift[key];
                 if ((value + '').indexOf('Z') >= 0) {
@@ -1460,9 +1462,13 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
                     // ok unix time, this will NOOP until we transition away from storing times in UNIX time in database
                     validatedShift[key] = time.unixToDate(value, shiftsLocationInfo.timezone_name);
                 } else {
-                    return rejectTransaction(transaction, 400, 'Unknown date format');
+                    datesOk = false;
                 }
             });
+
+            if (!datesOk) {
+                return rejectTransaction(transaction, 400, 'Unknown date format');
+            }
 
             var count = 1;
             _.each(safeUnsafe, function(key) {
@@ -1488,7 +1494,7 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
             } else {
                 newShifts.push(validatedShift);
             }
-        });
+        }
 
         var shiftInserts = models.Shifts.forge(newShifts);
         return Promise.all(shiftInserts.invoke('save', undefined, {transacting: transaction}))
