@@ -12,8 +12,8 @@ function createNotification(default_, title, message, bodyAndroidOnly, badge, ti
             alert: title,
             payload: {
                 message: interpolatedMessage,
-                category: 'invite'
-            }
+            },
+            category: 'invite'
         };
         if (badge) {
             ios.badge = badge;
