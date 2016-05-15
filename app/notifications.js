@@ -260,6 +260,10 @@ Notifications.prototype._sendToWns = function(expires, message, endpoint) {
 };
 
 Notifications.prototype.send = function send(service, endpoints, expires, message) {
+    console.log('Sending push notification... contents:');
+    console.log('**************************************');
+    console.log(message);
+    console.log('**************************************');
     //if (cluster.isMaster) {
         if (!this.sendMap.hasOwnProperty(service) && platformMap.hasOwnProperty(service)) {
             // allow addressing service by name instead of just index
