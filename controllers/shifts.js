@@ -1336,6 +1336,7 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
                 // NOTE: BOOKSHELF ISSUE, IF YOU DO 'AS ID' THEN BOOKSHELF GETS CONFUSED, DO NOT DO, OUTPUTS DUPLICATE THINGS
                 'locations.id as location_id',
                 'locations.timezone_id as timezone_id',
+                'timezones.name as timezone_name',
                 'sublocations.id as sublocation_id',
                 'groupuserclasses.id as groupuserclass_id']
             )
@@ -1344,6 +1345,9 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
                 })
                 .leftJoin('groupuserclasses', function() {
                     this.on('groupuserclasses.group_id', '=', 'locations.group_id');
+                })
+                .leftJoin('timezones', function() {
+                    this.on('timezones.id', '=', 'locations.timezone_id');
                 });
             // TODO: Inner join with groupmembership and group ownership
             // filter to those locations/sublocations that user is trying to create shifts in
@@ -1378,6 +1382,7 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
                         }
                         var value = map[key];
                         value.timezone_id = locationWithTimezone.timezone_id;
+                        value.timezone_name = locationWithTimezone.timezone_name;
                         var groupuserclass_id = locationWithTimezone.groupuserclass_id;
                         if (groupuserclass_id) {
                             value.groupuserclasses[groupuserclass_id] = true;
@@ -1443,6 +1448,21 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
                 // if the user submitted an invalid timezone_id, it should be rejected by the database
                 validatedShift.timezone_id = shiftsLocationInfo.timezone_id;
             }
+
+            // convert input type of start/end if needed
+            // Eg: user supplied UNIX time instead of Z encoded time
+            _.each(['start', 'end'], function(key) {
+                var value = validatedShift[key];
+                if ((value + '').indexOf('Z') >= 0) {
+                    // for now not ok, javascript date, this will NOOP when we transition to storing times in database like this
+                    validatedShift[key] = time.dateToUnix(value, shiftsLocationInfo.timezone_name);
+                } else if (typeof(value) == 'number') {
+                    // ok unix time, this will NOOP until we transition away from storing times in UNIX time in database
+                    validatedShift[key] = time.unixToDate(value, shiftsLocationInfo.timezone_name);
+                } else {
+                    return rejectTransaction(transaction, 400, 'Unknown date format');
+                }
+            });
 
             var count = 1;
             _.each(safeUnsafe, function(key) {
