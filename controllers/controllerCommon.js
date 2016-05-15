@@ -295,6 +295,8 @@ function clientStatus(req, res, status) {
 function clientCreate(req, res, status, id) {
     if (id == null) {
         res.sendStatus(status);
+    } else if(id instanceof Array) {
+        res.status(status).json(id);
     } else {
         res.status(status).json({id: id});
     }
