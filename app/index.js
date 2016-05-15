@@ -288,10 +288,12 @@ App.prototype.sendNotification = function sendNotification(service, endpoints, e
     if (!this.connections) {
         console.log("RabbitMQ not configured, sending push notification in web process");
         this.handleNotificationJob(notification, function() {});
+        this.handleNotificationJob(notification, function() {});
     } else {
         console.log("Sending push notification to queue...");
         console.log(push);
 
+        this.connections.queue.default().publish(notification, {key: NOTIFICATION_QUEUE});
         this.connections.queue.default().publish(notification, {key: NOTIFICATION_QUEUE});
     }
 };

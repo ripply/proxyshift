@@ -22,7 +22,9 @@ function createNotification(default_, title, message, bodyAndroidOnly, badge, ti
             contentAvailable: true,
             timeToLive: timeToLive,
             data: {
-                message: interpolatedMessage
+                message: interpolatedMessage,
+                style: 'inbox',
+                summaryText: 'There are %n% notifications'
             },
             notification: {
                 title: title,
