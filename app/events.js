@@ -22,6 +22,7 @@ function createNotification(default_, title, message, bodyAndroidOnly, badge, ti
 
         var ios = {
             alert: message,
+            'content-available': 1,
             payload: {
                 message: interpolatedMessage,
             }
@@ -45,7 +46,7 @@ function createNotification(default_, title, message, bodyAndroidOnly, badge, ti
                 //summaryText: 'There are %n% notifications',
 
                 //priority: 2,
-                'content-available': '1',
+
                 //"vibrationPattern": [2000, 1000, 500, 500]
             }
         };

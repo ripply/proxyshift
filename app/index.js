@@ -106,7 +106,7 @@ App.prototype.sendToUsers = function sendToUsers(user_ids, messages, args, test)
     if (!args.order) {
         args.order = sendToUsersDefaultOrdering;
     }
-    if (args.limit !== undefined && args.limit !== null) {
+    if (args.limit === undefined || args.limit === null) {
         args.limit = args.order.length;
     }
     if (hasLocationId) {
