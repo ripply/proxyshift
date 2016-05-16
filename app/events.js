@@ -137,6 +137,7 @@ function newShift(shift_location, shift_sublocation, shift_start, shift_end, tim
 }
 
 module.exports = {
+    newShift: newShift,
     invitedToGroup: function eventInvitedToGroup(user_ids, args) {
         // TODO: MODIFY THIS TO ACCEPT A TO EMAIL
         // send email and notification
