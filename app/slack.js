@@ -20,7 +20,7 @@ module.exports = {
                 text: prefixCluster(
                     message + "\nroute: " + (req ? req.originalUrl : 'undefined') +
                     "\nreq.body = " + JSON.stringify(req ? req.body : 'undefined') +
-                    "\nuserid: " + req ? (req.user ? req.user.id:'none') : 'undefined' +
+                    "\nuserid: " + (req ? (req.user ? req.user.id:'none') : 'undefined') +
                     (err.stack ? ("\nstack trace:\n -" + JSON.stringify(err.stack).replace(/\\n/g, '\n -')):'\nno stacktrace')
                 ),
                 channel: '#crashes',
