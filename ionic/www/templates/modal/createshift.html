@@ -148,7 +148,7 @@
         <div class="forms" id="create-shift-review" ng-class="{'create-shift-form-hide': !steps['create-shift-review'].show, 'create-shift-form-visible': !sliding && steps['create-shift-review'].show}">
             <div class="create-shift-content">
                 {{description}}
-                <ion-scroll delegate-handle="shift-review" ng-style="{'height': currentStepDivHeight * 0.8}">
+                <ion-scroll delegate-handle="shift-review" ng-style="{'height': currentStepDivHeight * 0.5}">
                     <div ng-repeat="day in date">
                         <p>Shift {{date.indexOf(day) + 1}}</p>
                         <p>Date: {{day.key}}</p>
