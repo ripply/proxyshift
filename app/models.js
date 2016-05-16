@@ -774,6 +774,9 @@ var customModelRelations = {
         },
         pushTokens: function() {
             return this.hasMany(models['PushToken']).through(models['Token']);
+        },
+        subscriptions: function() {
+            return this.hasMany(models['UserPermission']);
         }
     },
     Group: {

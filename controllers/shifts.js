@@ -8,6 +8,7 @@ var time = require('../app/time.js');
 var controllerCommon = require('./controllerCommon');
 var _ = require('underscore');
 var grabNormalShiftRange = controllerCommon.grabNormalShiftRange;
+var appLogic = require('../app');
 
 var variables = require('./variables');
 
@@ -1500,9 +1501,12 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
         return Promise.all(shiftInserts.invoke('save', undefined, {transacting: transaction}))
             .tap(function (createdShifts) {
                 var results = [];
+                var shift_ids = [];
                 _.each(createdShifts, function(individualCreatedShift) {
                     results.push(individualCreatedShift.toJSON());
+                    shift_ids.push(individualCreatedShift.get('id'));
                 });
+                appLogic.fireEvent('shiftsCreated', req.user.id, shift_ids);
                 clientCreate(req, res, 201, results);
             })
     }

@@ -53,23 +53,12 @@ angular.module('scheduling-app.push', [
                                 badge: true,
                                 sound: true,
                                 "categories": {
-                                    "invite": {
+                                    "newShift": {
                                         "yes": {
-                                            "callback": "app.accept", "title": "Accept", "foreground": true, "destructive": false
+                                            "callback": "app.apply", "title": "Apply", "foreground": true, "destructive": false
                                         },
                                         "no": {
-                                            "callback": "app.reject", "title": "Reject", "foreground": true, "destructive": false
-                                        },
-                                        "maybe": {
-                                            "callback": "app.maybe", "title": "Maybe", "foreground": true, "destructive": false
-                                        }
-                                    },
-                                    "delete": {
-                                        "yes": {
-                                            "callback": "app.doDelete", "title": "Delete", "foreground": true, "destructive": true
-                                        },
-                                        "no": {
-                                            "callback": "app.cancel", "title": "Cancel", "foreground": true, "destructive": false
+                                            "callback": "app.ignore", "title": "Ignore", "foreground": true, "destructive": false
                                         }
                                     }
                                 }

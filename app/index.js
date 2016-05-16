@@ -114,7 +114,7 @@ App.prototype.sendToUsers = function sendToUsers(user_ids, messages, args, test)
                 usersetting.textnotifications ||
                 usersetting.emailnotifications) {
                 if (hasLocationId) {
-                    var subscriptions = user.get('subscriptions');
+                    var subscriptions = user.subscriptions;
                     for (var i = 0; i < subscriptions.length; i++) {
                         var subscription = subscriptions[i];
                         if (subscription.location_id == args.location_id) {
