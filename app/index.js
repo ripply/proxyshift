@@ -12,8 +12,9 @@ var Notifications = new notifications.Notifications();
 
 var connections = require('./connections');
 
-var EMAIL_QUEUE = 'jobs.email';
-var NOTIFICATION_QUEUE = 'jobs.notification';
+const EMAIL_QUEUE = 'jobs.email';
+const NOTIFICATION_QUEUE = 'jobs.notification';
+const NEW_SHIFT_QUEUE = 'jobs.new_shifts';
 
 function App() {
     EventEmitter.call(this);
@@ -188,6 +189,7 @@ App.prototype.sendToUsers = function sendToUsers(user_ids, messages, args, test)
 App.prototype.onConnected = function() {
     this.connections.email = this.connections.queue.default().queue({name: EMAIL_QUEUE});// , { prefetch: 5 }, onCreate.bind(this));
     this.connections.notifications = this.connections.queue.default().queue({name: NOTIFICATION_QUEUE});
+    this.connections.new_shifts = this.connections.queue.default().queue({name: NEW_SHIFT_QUEUE});
     this.onReady();
 };
 
@@ -205,6 +207,7 @@ App.prototype.onLost = function() {
 App.prototype.init = function() {
     this.startHandlingEmails();
     this.startHandlingNotifications();
+    this.startHandlingNewShifts();
 };
 
 App.prototype.startHandlingEmails = function() {
@@ -233,6 +236,17 @@ App.prototype.startHandlingNotifications = function() {
         this.connections.notifications.consume(this.handleNotificationJob.bind(this));
     } else {
         console.log("Not handling notifications from RabbitMQ as it is not configured");
+    }
+};
+
+App.prototype.startHandlingNewShifts = function() {
+    if (this.connections) {
+        var started = "Started handling new shifts from RabbitMQ";
+        console.log(started);
+        slack.info(started);
+        this.connections.new_shifts.consume(this.handleNewShiftJob.bind(this));
+    } else {
+        console.log("Not handling new shifts from RabbitMQ as it is not configured");
     }
 };
 
@@ -353,6 +367,198 @@ App.prototype.handleEmailJob = function(job, ack) {
             // not ack()ing here will cause us to block and not fetch next items in the queue
             // which should be the intended so that we do not consume all emails
         }
+    }
+};
+
+App.prototype.sendNewShifts = function sendNewShifts(user_id, shift_ids) {
+    if (!(shift_ids instanceof Array)) {
+        // unknown format, discard
+        slack.alert('Unknown sendNewShifts argument: ' + JSON.stringify(shift_ids));
+    } else {
+        var new_shifts = {
+            user_id: user_id,
+            shift_ids: shift_ids
+        };
+
+        if (!this.connections) {
+            console.log("RabbitMQ not configured, processing new shifts in web process");
+            this.handleNewShiftJob(new_shifts, function noop() {});
+        } else {
+            this.connections.queue.default().publish(new_shifts, {key: NEW_SHIFT_QUEUE});
+        }
+    }
+};
+
+App.prototype.handleNewShiftJob = function handleNewShiftJob(job, ack) {
+    console.log("GOT NEW SHIFT JOB");
+    console.log(job);
+
+    var user_id = job.user_id;
+    var shift_ids = job.shift_ids;
+    this.sendNotificationsAboutNewShifts(user_id, shift_ids);
+};
+
+App.prototype.sendNotificationsAboutNewShifts = function sendNotificationsAboutNewShifts(user_id, shift_ids) {
+    if (!(shift_ids instanceof Array)) {
+        // unknown format, discard
+        slack.alert('Unknown shiftsCreated argument: ' + JSON.stringify(shift_ids));
+        return;
+    }
+
+    var self = this;
+
+    return models.Shift.query(function(q) {
+        q.select([
+            'usersettings.pushnotifications as pushOk',
+            'usersettings.textnotifications as textOk',
+            'usersettings.emailnotifications as emailOk',
+            'shifts.title as title',
+            'shifts.start as start',
+            'shifts.end as end',
+            'shifts.location_id as location_id',
+            'sublocations.location_id as sublocation_location_id',
+            'locations.address as location_name',
+            'timezones.name as timezone',
+            'sublocations.title as sublocation_name',
+            'users.id as user_id',
+            'users.username as username',
+            'users.email as email',
+            'users.phonemobile as text',
+            'userpermissions.user_id as user_id',
+            'pushtokens.token as pushtoken',
+            'pushtokens.platform as service'
+        ])
+            .from('shifts')
+            .innerJoin('groupuserclasses', function() {
+                this.on('groupuserclasses.id', '=', 'shifts.groupuserclass_id')
+                    .andOn('groupuserclasses.id', '=', 'shifts.groupuserclass_id');
+            })
+            .innerJoin('groupuserclasstousers', function() {
+                this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id');
+            })
+            .innerJoin('users', function() {
+                this.on('users.id', '=', 'groupuserclasstousers.user_id');
+            })
+            .leftJoin('sublocations', function() {
+                this.on('sublocations.id', '=', 'shifts.sublocation_id');
+            })
+            .leftJoin('locations', function() {
+                this.on('locations.id', '=', 'sublocations.location_id')
+                    .orOn('locations.id', '=', 'shifts.location_id');
+            })
+            .leftJoin('timezones', function() {
+                this.on('timezones.id', '=', 'locations.timezone_id');
+            })
+            .leftJoin('userpermissions', function() {
+                this.on('userpermissions.user_id', '=', 'groupuserclasstousers.user_id')
+                    .andOn('userpermissions.user_id', '=', 'users.id');
+                //.andOn('userpermissions.subscribed', '!=', false); // TODO: FIX THIS, ADD IT BACK IT CRASHED IN HEROKU
+            })
+            // get user settings
+            .innerJoin('usersettings', function() {
+                this.on('usersettings.id', '=', 'users.usersetting_id');
+            })
+            .leftJoin('tokens', function() {
+                this.on('tokens.user_id', '=', 'users.id')
+            })
+            .leftJoin('pushtokens', function() {
+                this.on('pushtokens.token_id', '=', 'tokens.id')
+                    .andOn('pushtokens.expires', '<', time.nowInUtc())
+            })
+            .whereIn('shifts.id', shift_ids)
+            .andWhere(function() {
+                this.whereRaw('sublocations.location_id = userpermissions.location_id')
+                    .orWhereRaw('shifts.location_id = userpermissions.location_id');
+            })
+            .orderBy('pushtokens.platform');
+    })
+        .fetchAll()
+        .tap(function(interestedUsers) {
+            var user_ids = {};
+            var location_id;
+            var location_name;
+            var sublocation_name;
+            var timezone;
+            var start;
+            var end;
+            interestedUsers.each(function(interestedUser) {
+                // the same user_id can show up multiple times if the user has more than one login token
+                // we prefer to send push notifications
+                // if that is not possible we will send an email and a text message?
+                var user_id = interestedUser.get('user_id');
+                var pushOk = interestedUser.get('pushOk');
+                var textOk = interestedUser.get('textOk');
+                var emailOk = interestedUser.get('emailOk');
+                if (interestedUser.get('location_id')) {
+                    location_id = interestedUser.get('location_id');
+                }
+                if (interestedUser.get('sublocation_location_id')) {
+                    location_id = interestedUser.get('sublocation_location_id');
+                }
+                if (interestedUser.get('location_name')) {
+                    location_name = interestedUser.get('location_name');
+                }
+                if (interestedUser.get('sublocation_name')) {
+                    sublocation_name = interestedUser.get('sublocation_name');
+                }
+                if (interestedUser.get('start')) {
+                    start = interestedUser.get('start');
+                }
+                if (interestedUser.get('end')) {
+                    end = interestedUser.get('end');
+                }
+                if (interestedUser.get('timezone')) {
+                    timezone = interestedUser.get('timezone');
+                }
+                if (pushOk || textOk || emailOk) {
+                    user_ids[user_id] = true;
+                } else {
+                    // user wants to be in the dark, which is ok
+                }
+            });
+            var args = {};
+            if (location_id) {
+                args.location_id = location_id;
+            }
+            if (location_name) {
+                args.location_name = location_name;
+            }
+            if (sublocation_name) {
+                args.sublocation_name = sublocation_name;
+            }
+
+            if (start && moment(time.unknownTimeFormatToDate(start, timezone)) > moment()) {
+                self.sendToUsers(Object.keys(user_ids), newShift(location_name, sublocation_name, start, end, timezone), args);
+            } else {
+                // never send a notification for a shift created in the past
+            }
+        })
+        .catch(function(err) {
+            slack.error(undefined, 'Error notifying about new shift', err);
+            console.log(err.stack);
+        });
+};
+
+App.prototype.sendEmail = function(from, to, subject, text, html) {
+    if (to === null || to === undefined) {
+        throw new Error("Email recipient required (not specified)");
+    }
+    var email = {
+        from: from,
+        to: to,
+        subject: subject,
+        text: text,
+        html: html
+    };
+
+    if (!this.connections) {
+        console.log("RabbitMQ not configured, sending email now in web process");
+        this.handleEmailJob(email, function noop() {});
+    } else {
+        console.log("Sending email to queue...");
+        console.log(email);
+
+        this.connections.queue.default().publish(email, {key: EMAIL_QUEUE});
     }
 };
 
