@@ -21,7 +21,7 @@ function createNotification(default_, title, message, bodyAndroidOnly, badge, ti
         var interpolatedBody = compiledBody(args);
 
         var ios = {
-            alert: title,
+            alert: message,
             payload: {
                 message: interpolatedMessage,
             }
@@ -127,7 +127,7 @@ function newShift(shift_location, shift_sublocation, shift_start, shift_end, tim
         push: createNotification(
             {test: 'test'},
             'New Open Shift',
-            joinableLocation.join(' ') + ' has a ' + (joinableDisplayTime.join(' ')) + ' open shift starting at ' + time.prettyPrintStartTime(shift_start, timezone) + ' on ' + time.prettyPrintDate(shift_start, timezone),
+            joinableLocation.join(' ') + ' has a ' + (joinableDisplayTime.join(' ')) + 'open shift starting at ' + time.prettyPrintStartTime(shift_start, timezone) + ' on ' + time.prettyPrintDate(shift_start, timezone),
             'body android only',
             3,
             3,
@@ -186,7 +186,7 @@ module.exports = {
 
         var self = this;
 
-        return models.User.query(function(q) {
+        return models.Shift.query(function(q) {
             q.select([
                 'usersettings.pushnotifications as pushOk',
                 'usersettings.textnotifications as textOk',
@@ -207,15 +207,16 @@ module.exports = {
                 'pushtokens.token as pushtoken',
                 'pushtokens.platform as service'
             ])
-                .from('users')
+                .from('shifts')
                 .innerJoin('groupuserclasses', function() {
-                    this.on('groupuserclasses.id', '=', 'shifts.groupuserclass_id');
-                })
-                .innerJoin('shifts', function() {
-                    this.on('shifts.groupuserclass_id', '=', 'groupuserclasses.id');
+                    this.on('groupuserclasses.id', '=', 'shifts.groupuserclass_id')
+                        .andOn('groupuserclasses.id', '=', 'shifts.groupuserclass_id');
                 })
                 .innerJoin('groupuserclasstousers', function() {
                     this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id');
+                })
+                .innerJoin('users', function() {
+                    this.on('users.id', '=', 'groupuserclasstousers.user_id');
                 })
                 .leftJoin('sublocations', function() {
                     this.on('sublocations.id', '=', 'shifts.sublocation_id');
@@ -229,8 +230,8 @@ module.exports = {
                 })
                 .leftJoin('userpermissions', function() {
                     this.on('userpermissions.user_id', '=', 'groupuserclasstousers.user_id')
-                        .andOn('userpermissions.user_id', '=', 'users.id')
-                        .andOn('userpermissions.subscribed', '!=', false);
+                        .andOn('userpermissions.user_id', '=', 'users.id');
+                        //.andOn('userpermissions.subscribed', '!=', false); // TODO: FIX THIS, ADD IT BACK IT CRASHED IN HEROKU
                 })
                 // get user settings
                 .innerJoin('usersettings', function() {
