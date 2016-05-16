@@ -98,9 +98,17 @@ App.prototype.forEachUserSettingAndSubs = function forEachUserSettingsAndSubs(us
     });
 };
 
+const sendToUsersDefaultOrdering = ['push', 'email', 'text'];
+
 App.prototype.sendToUsers = function sendToUsers(user_ids, messages, args, test) {
     var hasLocationId = args.hasOwnProperty('location_id');
     var self = this;
+    if (!args.order) {
+        args.order = sendToUsersDefaultOrdering;
+    }
+    if (args.limit !== undefined && args.limit !== null) {
+        args.limit = args.order.length;
+    }
     if (hasLocationId) {
         return this.forEachUserSettingAndSubs(user_ids, sendToUsersForEach);
     } else {
@@ -136,48 +144,66 @@ App.prototype.sendToUsers = function sendToUsers(user_ids, messages, args, test)
                     // args.textForce = true;
                 }
 
-                if (args.pushForce || (usersetting.pushnotifications && messages['push'])) {
-                    var pushtokens = user.pushTokens;
-                    var now = time.nowInUtc();
-                    var serviceTokens = {};
-                    var expired = false;
-                    var foundPushToken = false;
-                    _.each(pushtokens, function (pushtoken) {
-                        if (pushtoken.expires <= now) {
-                            expired = true;
-                        } else {
-                            if (!serviceTokens.hasOwnProperty(pushtoken.platform)) {
-                                serviceTokens[pushtoken.platform] = [];
+                var successfulNotifications = 0;
+
+                var actions = {
+                    push: function sendToUsersActionPush() {
+                        if (args.pushForce || (usersetting.pushnotifications && messages['push'])) {
+                            var pushtokens = user.pushTokens;
+                            var now = time.nowInUtc();
+                            var serviceTokens = {};
+                            var expired = false;
+                            var foundPushToken = false;
+                            _.each(pushtokens, function (pushtoken) {
+                                if (pushtoken.expires <= now) {
+                                    expired = true;
+                                } else {
+                                    if (!serviceTokens.hasOwnProperty(pushtoken.platform)) {
+                                        serviceTokens[pushtoken.platform] = [];
+                                    }
+
+                                    serviceTokens[pushtoken.platform].push(pushtoken.token);
+                                    foundPushToken = true;
+                                }
+                            });
+
+                            if (foundPushToken) {
+                                var message = messages.push(args);
+                                _.each(serviceTokens, function (tokens, service) {
+                                    self.sendNotification(service, tokens, pushNotificationsExpiresIn(now), message);
+                                });
+                                successfulNotifications++;
                             }
-
-                            serviceTokens[pushtoken.platform].push(pushtoken.token);
-                            foundPushToken = true;
                         }
-                    });
 
-                    if (foundPushToken) {
-                        var message = messages.push(args);
-                        _.each(serviceTokens, function (tokens, service) {
-                            self.sendNotification(service, tokens, pushNotificationsExpiresIn(now), message);
-                        });
+                    },
+                    email: function sendToUsersActionEmail() {
+                        if (args.emailForce || (usersetting.emailnotifications && messages['email']) ) {
+                            var email = messages.email;
+                            var subject = email.subject(args);
+                            var text = email.text(args);
+                            var html = email.html(args);
+                            var from = email.from;
+                            if (!from && args.from) {
+                                from = args.from;
+                            }
+                            var to = user.email;
+                            console.log("Sending email.....");
+                            self.sendEmail(from, to, subject, text, html);
+                            successfulNotifications++;
+                        }
+                    },
+                    text: function sendToUsersActionText() {
+                        // TODO: TEXT MESSAGE
+                    }
+                };
+
+                for (var orderIndex = 0; orderIndex < args.order.length && successfulNotifications < args.limit; orderIndex++) {
+                    var orderKey = args.order[orderIndex];
+                    if (actions.hasOwnProperty(orderKey)) {
+                        actions[orderKey]();
                     }
                 }
-
-                if (args.emailForce || (usersetting.emailnotifications && messages['email']) ) {
-                    var email = messages.email;
-                    var subject = email.subject(args);
-                    var text = email.text(args);
-                    var html = email.html(args);
-                    var from = email.from;
-                    if (!from && args.from) {
-                        from = args.from;
-                    }
-                    var to = user.email;
-                    console.log("Sending email.....");
-                    self.sendEmail(from, to, subject, text, html);
-                }
-
-                // TODO: TEXT MESSAGE
             } else {
                 // this user has disabled all notifications
                 console.log("User has all notifications disabled");
@@ -516,7 +542,9 @@ App.prototype.sendNotificationsAboutNewShifts = function sendNotificationsAboutN
                     // user wants to be in the dark, which is ok
                 }
             });
-            var args = {};
+            var args = {
+                limit: 1 // limit to only sending one notification method (the first that works)
+            };
             if (location_id) {
                 args.location_id = location_id;
             }
