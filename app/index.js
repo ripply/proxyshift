@@ -528,7 +528,7 @@ App.prototype.sendNotificationsAboutNewShifts = function sendNotificationsAboutN
             }
 
             if (start && moment(time.unknownTimeFormatToDate(start, timezone)) > moment()) {
-                self.sendToUsers(Object.keys(user_ids), this.newShift(location_name, sublocation_name, start, end, timezone), args);
+                self.sendToUsers(Object.keys(user_ids), self.newShift(location_name, sublocation_name, start, end, timezone), args);
             } else {
                 // never send a notification for a shift created in the past
             }
