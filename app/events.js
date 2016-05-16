@@ -7,8 +7,8 @@ var _ = require('underscore'),
 var categories = {
     'newShift': {
         actions: [
-            { "icon": "ion-checkmark", "title": "Apply", "callback": "app.apply", "foreground": true},
-            { "icon": "snooze", "title": "Ignore", "callback": "app.ignore", "foreground": false}
+            { "icon": "ion-checkmark", "title": "Apply", "callback": "window.apply", "foreground": true},
+            { "icon": "snooze", "title": "Ignore", "callback": "window.ignore", "foreground": false}
         ]
     }
 };
