@@ -37,14 +37,13 @@ function createNotification(default_, title, message, bodyAndroidOnly, badge, ti
         }
 
         var android = {
-            contentAvailable: true,
             timeToLive: timeToLive,
             data: {
                 title: title,
                 message: interpolatedMessage,
                 //style: 'inbox',
                 //summaryText: 'There are %n% notifications',
-
+                "content-available": "1",
                 //priority: 2,
 
                 //"vibrationPattern": [2000, 1000, 500, 500]

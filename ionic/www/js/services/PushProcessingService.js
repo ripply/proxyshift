@@ -55,10 +55,10 @@ angular.module('scheduling-app.push', [
                                 "categories": {
                                     "newShift": {
                                         "yes": {
-                                            "callback": "app.apply", "title": "Apply", "foreground": true, "destructive": false
+                                            "callback": "window.apply", "title": "Apply", "foreground": true, "destructive": false
                                         },
                                         "no": {
-                                            "callback": "app.ignore", "title": "Ignore", "foreground": true, "destructive": false
+                                            "callback": "window.ignore", "title": "Ignore", "foreground": false, "destructive": false
                                         }
                                     }
                                 }

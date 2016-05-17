@@ -7,6 +7,7 @@ var mailer = require('./mailer');
 var events = require('./events');
 var time = require('./time');
 var slack = require('./slack');
+var moment = require('moment-timezone');
 var notifications = require('./notifications');
 var Notifications = new notifications.Notifications();
 
