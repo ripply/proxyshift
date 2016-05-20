@@ -5,7 +5,7 @@ angular.module('scheduling-app.controllers')
         '$controller',
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
-        //'Restangular',
+        'ResourceService',
         'ShiftProcessingService',
         'ModelVariableName',
         'Model',
@@ -14,7 +14,7 @@ angular.module('scheduling-app.controllers')
                  $controller,
                  GENERAL_CONFIG,
                  GENERAL_EVENTS,
-                 //Restangular,
+                 ResourceService,
                  ShiftProcessingService,
                  ModelVariableName,
                  Model
@@ -42,6 +42,14 @@ angular.module('scheduling-app.controllers')
             };
             // TODO: Remove and figurout why $ionivView.afterEnter does not trigger in super class
             //$scope.fetch();
+
+            $rootScope.$on(GENERAL_EVENTS.SHIFTS.ACCEPT, function(state, shift) {
+                $scope.applyForShift(shift.id);
+            });
+
+            $rootScope.$on(GENERAL_EVENTS.SHIFTS.DECLINE, function(state, shift) {
+                $scope.recindApplicationForAShift(shift.id, 'test');
+            });
 
             $scope.promptRecindShift = function(id) {
                 // TODO: Angular replacement for website
@@ -199,10 +207,9 @@ angular.module('scheduling-app.controllers')
                 } else {
                     // doesn't exist? server might have it...
                 }
-                Restangular.one('shifts', id)
-                    .all('ignore')
-                    .post()
-                    .then(function(result) {
+                ResourceService.ignoreShift(
+                    id,
+                    function(result) {
                         console.log(result);
                         var ignoredShift = addShiftToIgnoredShifts(id);
                         if (ignoredShift) {
@@ -233,10 +240,9 @@ angular.module('scheduling-app.controllers')
                 } else {
                     // doesn't exist? server might have it...
                 }
-                Restangular.one('shifts', id)
-                    .all('ignore')
-                    .remove()
-                    .then(function(result) {
+                ResourceService.unIgnoreShift(
+                    id,
+                    function(result) {
                         console.log(result);
                         var unIgnoredShift = removeShiftFromIgnoredShifts(id);
                         if (unIgnoredShift) {
@@ -271,10 +277,9 @@ angular.module('scheduling-app.controllers')
                 } else {
                     // doesn't exist? server might have it...
                 }
-                Restangular.one('shifts', id)
-                    .all('register')
-                    .post()
-                    .then(function(result) {
+                ResourceService.registerForShift(
+                    id,
+                    function(result) {
                         shift.busy = false;
                         shift.failed = false;
                         var registrationId = -1;
@@ -309,17 +314,10 @@ angular.module('scheduling-app.controllers')
                 } else {
                     // doesn't exist? server might have it...
                 }
-                // window.Restangular.one('shifts', 1).all('register').customOperation('remove', null, null, {'Content-Type': 'application/json'}, {reason: 'test'});
-                Restangular
-                    .one('shifts', id)
-                    .all('register')
-                    .customOperation('remove', null, null, {
-                        // content type must be set to json so that server will parse content, it is set to text without setting this
-                        'Content-Type': 'application/json'
-                    }, {
-                        reason: reason
-                    })
-                    .then(function(result) {
+                ResourceService.unregisterForShift(
+                    id,
+                    reason,
+                    function(result) {
                         shift.busy = false;
                         shift.failed = false;
                         shift.applied = undefined;

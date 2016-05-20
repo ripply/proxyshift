@@ -513,81 +513,13 @@ module.exports = {
                     });
             }
         },
+        'put': {
+            auth: ['mark groupuserclass options for shift', 'user can apply for shift'],
+            route: unregisterForShift
+        },
         'delete': {
             auth: ['mark groupuserclass options for shift', 'user can apply for shift'],
-            route: function(req, res) {
-                var reason = req.body.reason;
-                // TODO: Check for empty spaces etc
-                if (!reason || reason == '') {
-                    clientError(req, res, 400, 'reason: required');
-                    return;
-                }
-                // make sure that the user is already registered
-
-                // Transaction does not work with patchModel I think...
-                //return Bookshelf.transaction(function(t) {
-                return models.ShiftApplication.query(function(q) {
-                    q.select()
-                        .from('shiftapplications')
-                        .where('shiftapplications.user_id', '=', req.user.id)
-                        .andWhere('shiftapplications.shift_id', '=', req.params.shift_id)
-                        .andWhere(function() {
-                            this.where('shiftapplications.recinded', '!=', '1')
-                                .orWhereNull('shiftapplications.recinded');
-                        });
-                })
-                    .fetch({
-                        //transacting: t
-                    })
-                    .then(function(shiftapplication) {
-                        var shiftApplicationKeys = Object.keys(getModelKeys('ShiftApplication'));
-                        if (shiftapplication) {
-                            // user has registered for shift
-                            // recind it
-                            var date = getCurrentTimeForInsertionIntoDatabase();
-                            patchModel('ShiftApplication', {
-                                    id: shiftapplication.get('id')
-                                },
-                                {
-                                    recinded: true,
-                                    recindeddate: date
-                                },
-                                res,
-                                'Success',
-                                shiftApplicationKeys,
-                                {
-                                    //transacting: t
-                                },
-                                function() {
-                                    // TODO: Transaction
-                                    return models.ShiftRescissionReason.forge({
-                                        user_id: req.user.id,
-                                        shift_id: req.params.shift_id,
-                                        date: date,
-                                        reason: reason
-                                    })
-                                        .save()
-                                        .then(function(shiftrecissionreason) {
-                                            // shift has been recinded
-                                            // send notifications
-                                            return triggerShiftApplicationRecinsionNotification(shiftapplication.get('id'), shiftrecissionreason.get('id'));
-                                        })
-                                        .catch(function(err) {
-                                            // TODO: Transaction so can rollback on possible error
-                                            console.log(err);
-                                        })
-                                }
-                            )
-                        } else {
-                            // not even registered
-                            res.sendStatus(200);
-                        }
-                    })
-                    .catch(function(err) {
-                        error(req, res, err);
-                    });
-                //});
-            }
+            route: unregisterForShift
         }
     },
     '/:shift_id/cancel': {
@@ -1850,4 +1782,78 @@ function acceptOrDeclineShiftApplication(req, res, accept) {
                 }
             })
     });
+}
+
+function unregisterForShift(req, res) {
+    var reason = req.body.reason;
+    // TODO: Check for empty spaces etc
+    if (!reason || reason == '') {
+        clientError(req, res, 400, 'reason: required');
+        return;
+    }
+    // make sure that the user is already registered
+
+    // Transaction does not work with patchModel I think...
+    //return Bookshelf.transaction(function(t) {
+    return models.ShiftApplication.query(function(q) {
+        q.select()
+            .from('shiftapplications')
+            .where('shiftapplications.user_id', '=', req.user.id)
+            .andWhere('shiftapplications.shift_id', '=', req.params.shift_id)
+            .andWhere(function() {
+                this.where('shiftapplications.recinded', '!=', '1')
+                    .orWhereNull('shiftapplications.recinded');
+            });
+    })
+        .fetch({
+            //transacting: t
+        })
+        .then(function(shiftapplication) {
+            var shiftApplicationKeys = Object.keys(getModelKeys('ShiftApplication'));
+            if (shiftapplication) {
+                // user has registered for shift
+                // recind it
+                var date = getCurrentTimeForInsertionIntoDatabase();
+                patchModel('ShiftApplication', {
+                        id: shiftapplication.get('id')
+                    },
+                    {
+                        recinded: true,
+                        recindeddate: date
+                    },
+                    res,
+                    'Success',
+                    shiftApplicationKeys,
+                    {
+                        //transacting: t
+                    },
+                    function() {
+                        // TODO: Transaction
+                        return models.ShiftRescissionReason.forge({
+                            user_id: req.user.id,
+                            shift_id: req.params.shift_id,
+                            date: date,
+                            reason: reason
+                        })
+                            .save()
+                            .then(function(shiftrecissionreason) {
+                                // shift has been recinded
+                                // send notifications
+                                return triggerShiftApplicationRecinsionNotification(shiftapplication.get('id'), shiftrecissionreason.get('id'));
+                            })
+                            .catch(function(err) {
+                                // TODO: Transaction so can rollback on possible error
+                                console.log(err);
+                            })
+                    }
+                )
+            } else {
+                // not even registered
+                res.sendStatus(200);
+            }
+        })
+        .catch(function(err) {
+            error(req, res, err);
+        });
+    //});
 }

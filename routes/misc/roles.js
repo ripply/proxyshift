@@ -200,6 +200,7 @@ module.exports = function(app, roles) {
         'get',
         'post',
         'patch',
+        'put',
         'delete'
     ];
 

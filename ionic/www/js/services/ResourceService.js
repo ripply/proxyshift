@@ -361,7 +361,49 @@ angular.module('scheduling-app.services')
                     ShiftsModel.create(shifts),
                     success,
                     error
-                )
+                );
+            };
+
+            this.registerForShift = function registerForShift(shift_id, success, error) {
+                andThen(
+                    ShiftsModel.register({
+                        shift_id: shift_id
+                    }),
+                    success,
+                    error
+                );
+            };
+
+            this.unregisterForShift = function unregisterForShift(shift_id, reason, success, error) {
+                andThen(
+                    ShiftsModel.unregister({
+                        shift_id: shift_id
+                    }, {
+                        reason: reason
+                    }),
+                    success,
+                    error
+                );
+            };
+
+            this.ignoreShift = function ignoreShift(shift_id, success, error) {
+                andThen(
+                    ShiftsModel.ignore({
+                        shift_id: shift_id
+                    }),
+                    success,
+                    error
+                );
+            };
+
+            this.unIgnoreShift = function unIgnoreShift(shift_id, success, error) {
+                andThen(
+                    ShiftsModel.unignore({
+                        shift_id: shift_id
+                    }),
+                    success,
+                    error
+                );
             };
 
             function andThen(promise, success, error) {

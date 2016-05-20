@@ -8,6 +8,7 @@ var module = angular.module('scheduling-app.resources', [
 var GET = 'GET',
     POST = 'POST',
     PATCH = 'PATCH',
+    PUT = 'PUT',
     DELETE = 'DELETE';
 
 angular.forEach({
@@ -56,11 +57,11 @@ angular.forEach({
         }
     },
     'Shifts': function(url) {
-        var base = url + '/shifts/:id';
+        var base = url + '/shifts/:shift_id';
         return {
             route: base,
             params: {
-                id: '@id'
+                shift_id: '@shift_id'
             },
             actions: {
                 all: {
@@ -109,7 +110,7 @@ angular.forEach({
                     url: base + '/register'
                 },
                 unregister: {
-                    method: DELETE,
+                    method: PUT,
                     url: base + '/register'
                 },
                 cancel: {
@@ -391,11 +392,11 @@ angular.forEach({
                 console.log("CREATED CREATING SERVICE: " + modelName);
                 console.log(GENERAL_CONFIG.APP_URL);
                 var url = GENERAL_CONFIG.APP_URL + GENERAL_CONFIG.APP_URL_API;
-                var urldDefinition = definition(url);
+                var urlDefinition = definition(url);
                 return $resource(
-                    urldDefinition.route,
-                    urldDefinition.params,
-                    urldDefinition.actions
+                    urlDefinition.route,
+                    urlDefinition.params,
+                    urlDefinition.actions
                 );
             }
         ]

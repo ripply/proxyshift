@@ -99,6 +99,10 @@ var config_data = {
         },
         'RESOURCE': {
             'UNAUTHORIZED': 'events:resource:unauthorized'
+        },
+        'SHIFTS': {
+            'ACCEPT': 'events:shifts:accept',
+            'DECLINE': 'events:shifts:decline'
         }
     },
     'TOKENS': {

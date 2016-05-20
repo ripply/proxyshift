@@ -75,6 +75,14 @@ angular.module('scheduling-app.controllers')
                 }
             }
 
+            $scope.acceptClicked = function acceptClicked(shift) {
+                $rootScope.$broadcast(GENERAL_EVENTS.SHIFTS.ACCEPT, shift);
+            };
+
+            $scope.declineClicked = function declineClicked(shift) {
+                $rootScope.$broadcast(GENERAL_EVENTS.SHIFTS.DECLINE, shift);
+            };
+
             $scope.getReadableLocalShiftStartTime = ShiftProcessingService.getReadableLocalShiftStartTime;
             $scope.getReadableLocalShiftEndTime = ShiftProcessingService.getReadableLocalShiftEndTime;
             $scope.getReadableLocalShiftDiffTime = ShiftProcessingService.getReadableLocalShiftDiffTime;
