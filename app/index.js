@@ -7,15 +7,13 @@ var mailer = require('./mailer');
 var events = require('./events');
 var time = require('./time');
 var slack = require('./slack');
+var cluster = require('cluster');
+var workers = require('./workers');
 var moment = require('moment-timezone');
 var notifications = require('./notifications');
 var Notifications = new notifications.Notifications();
 
 var connections = require('./connections');
-
-const EMAIL_QUEUE = 'jobs.email';
-const NOTIFICATION_QUEUE = 'jobs.notification';
-const NEW_SHIFT_QUEUE = 'jobs.new_shifts';
 
 function App() {
     EventEmitter.call(this);
@@ -24,7 +22,21 @@ function App() {
     this.models = models;
     this.ready = false;
     if (config.has('rabbit.url')) {
-        this.connections = connections(config.get('rabbit.url'));
+        var subscribe = true;
+        if (cluster.isMaster) {
+            // master only subscribes to events if there are no workers
+            subscribe = workers.workers == 0;
+        } else {
+            // workers, always subscribe to events
+            subscribe = true;
+        }
+        if (subscribe) {
+            console.log('Subscribing to rabbit events in this thread');
+            this.init();
+        } else {
+            console.log('Not subscribing to rabbit events in this thread');
+        }
+        this.connections = connections.topology(config.get('rabbit.url'));
         this.connections.once('ready', this.onConnected.bind(this));
         this.connections.once('lost', this.onLost.bind(this));
     } else {
@@ -214,9 +226,6 @@ App.prototype.sendToUsers = function sendToUsers(user_ids, messages, args, test)
 };
 
 App.prototype.onConnected = function() {
-    this.connections.email = this.connections.queue.default().queue({name: EMAIL_QUEUE});// , { prefetch: 5 }, onCreate.bind(this));
-    this.connections.notifications = this.connections.queue.default().queue({name: NOTIFICATION_QUEUE});
-    this.connections.new_shifts = this.connections.queue.default().queue({name: NEW_SHIFT_QUEUE});
     this.onReady();
 };
 
@@ -238,43 +247,29 @@ App.prototype.init = function() {
 };
 
 App.prototype.startHandlingEmails = function() {
-    if (this.connections) {
-        if (mailer) {
-            var started = "Started handling emails from RabbitMQ";
-            console.log(started);
-            slack.info(started);
-            this.connections.email.consume(this.handleEmailJob.bind(this));
-        } else {
-            slack.alert("Email is not configured so not going to consume email events from RabbitMQ");
-        }
+    if (mailer) {
+        var started = "Started handling emails from RabbitMQ";
+        console.log(started);
+        slack.info(started);
+        connections.handle(connections.EMAIL_QUEUE, this.handleEmailJob.bind(this));
     } else {
-        var notConfigured = "Not handling emails from RabbitMQ as it is not configured";
-        console.log(notConfigured);
-        slack.info(notConfigured);
+        slack.alert("Email is not configured so not going to consume email events from RabbitMQ");
     }
     return this;
 };
 
 App.prototype.startHandlingNotifications = function() {
-    if (this.connections) {
-        var started = "Started handling notifications from RabbitMQ";
-        console.log(started);
-        slack.info(started);
-        this.connections.notifications.consume(this.handleNotificationJob.bind(this));
-    } else {
-        console.log("Not handling notifications from RabbitMQ as it is not configured");
-    }
+    var started = "Started handling notifications from RabbitMQ";
+    console.log(started);
+    slack.info(started);
+    connections.handle(connections.NOTIFICATION_QUEUE, this.handleNotificationJob.bind(this));
 };
 
 App.prototype.startHandlingNewShifts = function() {
-    if (this.connections) {
-        var started = "Started handling new shifts from RabbitMQ";
-        console.log(started);
-        slack.info(started);
-        this.connections.new_shifts.consume(this.handleNewShiftJob.bind(this));
-    } else {
-        console.log("Not handling new shifts from RabbitMQ as it is not configured");
-    }
+    var started = "Started handling new shifts from RabbitMQ";
+    console.log(started);
+    slack.info(started);
+    connections.handle(connections.NEW_SHIFT_QUEUE, this.handleNewShiftJob.bind(this));
 };
 
 App.prototype.createTokenUrl = function(base, token) {
