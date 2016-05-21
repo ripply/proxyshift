@@ -5,8 +5,10 @@ var express = require('express'),
     http = require('http'),
     path = require('path'),
     timers = require('timers'),
+    Promise = require('bluebird'),
     routes = require('./app/routes'),
     exphbs = require('express-handlebars'),
+    rabbit = require('wascally'),
     seeder = require('./app/seeder'),
     passport = require('passport'),
     passportLocal = require('passport-local').Strategy,
@@ -23,6 +25,7 @@ var express = require('express'),
     numCPUs = require('os').cpus().length,
     I18n = require('i18n-js'),
     moment = require('moment'),
+    workers = require('./app/workers'),
     PeriodicEvents = require('./app/periodic').PeriodicEvents,
     app = express();
 require('./app/handlebarTranslations');
@@ -35,11 +38,6 @@ var serverIsUp = false;
 if (cluster.isMaster) {
     timeStarted = moment();
     slack = require('./app/slack');
-    if (process.env.WORKERS) {
-        numCPUs = parseInt(process.env.WORKERS);
-    } else {
-        numCPUs = 1;
-    }
 
     periodicEvents = new PeriodicEvents();
     periodicEvents.start();
@@ -110,7 +108,9 @@ if (cluster.isMaster) {
 }
 
 function gracefulExit(reason) {
-    var promise;
+    var promises = [];
+    var slackConfigured = false;
+    promises.push(rabbit.closeAll(false));
     if (cluster.isMaster) {
         periodicEvents.stop();
         // send slack message notifying that server is shutting down
@@ -121,24 +121,31 @@ function gracefulExit(reason) {
         if (timeStarted) {
             shuttingDown += '\nUptime: ' + uptime();
         }
-        promise = slack.info(shuttingDown);
+        var slackPromise = slack.info(shuttingDown);
+        promises.push(slackPromise);
+        if (slackPromise) {
+            slackConfigured = true;
+        }
         console.log(shuttingDown);
     } else {
         // do nothing for now
         console.log("worker exiting...");
     }
-    if (promise) {
-        promise.then(function() {
+    setTimeout(function hardLimitToQuit() {
+        console.log('Waiting for slack and rabbit to finish taking too long, exiting now.');
+        exit(2);
+    }, 5 * 60 * 1000);
+    Promise.all(promises).then(function() {
+        if (slackConfigured) {
             console.log("Successfully notified slack of shutdown, waiting for IO events to finish");
-            exit(0);
-        }, function(reason) {
-            console.log("Failed to notify slack of shutdown: " + reason);
-            exit(1);
-        });
-    } else {
-        console.log("Slack not configured so cannot notify of shutdown");
+        } else {
+            console.log("Slack not configured so cannot notify of shutdown");
+        }
         exit(0);
-    }
+    }, function(reason) {
+        console.log("Failed to notify slack of shutdown: " + reason);
+        exit(1);
+    });
 
     function exit(code) {
         timers.setImmediate(function exit() {
@@ -153,10 +160,10 @@ function uptime() {
 }
 
 function launchServer() {
-    if (cluster.isMaster && numCPUs > 1) {
-        console.log("Forking " + numCPUs + " workers");
+    if (cluster.isMaster && numCPUs > 1 && workers.workers > 0) {
+        console.log("Forking " + workers.workers + " workers");
         // Fork workers.
-        for (var i = 0; i < numCPUs; i++) {
+        for (var i = 0; i < workers.workers; i++) {
             console.log("Forking worker #" + i);
             cluster.fork();
         }

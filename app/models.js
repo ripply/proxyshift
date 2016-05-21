@@ -60,7 +60,7 @@ if (process.env.DATABASE_URL !== undefined ||
     && config.get("dbConfig.url") !== null)
     && config.get("dbConfig.url") != '') {
     // running in heroku?
-    var re = /([^:]):\/\/([^:]*):([^@]*)@([^:]*):(\d*)\/(.*)/;
+    var re = /([^:]*):\/\/([^:]*):([^@]*)@([^:]*)(:(\d*))?\/(.*)/;
     var match;
 
     var url = process.env.DATABASE_URL;
@@ -88,8 +88,9 @@ if (process.env.DATABASE_URL !== undefined ||
         global.db_user = match[2];
         global.db_password = match[3];
         global.db_host = match[4];
-        global.db_port = match[5];
-        global.db_database = match[6];
+        // match[5] is :match[6]
+        global.db_port = match[6];
+        global.db_database = match[7];
         global.db_ssl = true;
     } else {
         console.log("WARNING: DATABASE_URL is of the INCORRECT FORMAT");

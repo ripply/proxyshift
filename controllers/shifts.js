@@ -438,7 +438,7 @@ module.exports = {
                                         transacting: t
                                     })
                                     .tap(function (model) {
-                                        triggerShiftApplicationNotification(req.params.shift_id);
+                                        triggerShiftApplicationNotification(req.params.shift_id, model.get('id'));
                                         clientCreate(req, res, 201, model.get('id'));
                                     });
                             }
@@ -634,12 +634,14 @@ function fetchIgnoredShifts(req, res, from, to) {
         });
 }
 
-function triggerShiftApplicationNotification(shift_id) {
+function triggerShiftApplicationNotification(shift_id, shift_application_id) {
     // TODO: NO-OP for now
     // if user that registered requires manager approval then we need to ping all managers
     // push notifications and emails
     // if the user does not require manager approval, we still need to ping managers and the owner of the shift
     // letting them know that someone registered
+    console.log('Triggering shift application notification...');
+    appLogic.sendNewShiftApplication(shift_id, shift_application_id);
 }
 
 function triggerShiftApplicationRecinsionNotification(shiftapplication_id) {
