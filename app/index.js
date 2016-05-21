@@ -32,7 +32,7 @@ function App() {
         }
         if (subscribe) {
             console.log('Subscribing to rabbit events in this thread');
-            this.init();
+            //this.init();
         } else {
             console.log('Not subscribing to rabbit events in this thread');
         }
@@ -321,22 +321,25 @@ App.prototype.sendNotification = function sendNotification(service, endpoints, e
         message: message
     };
 
-    if (!this.connections) {
+    if (this.connections !== null && this.connections !== undefined) {
         console.log("RabbitMQ not configured, sending push notification in web process");
-        this.handleNotificationJob(notification, function() {});
+        this.handleNotificationJob(forgeRabbitMessage(notification));
     } else {
         console.log("Sending push notification to queue...");
-        console.log(push);
 
-        this.connections.queue.default().publish(notification, {key: NOTIFICATION_QUEUE});
+        connections.publish(connections.JOB_EXCHANGE, {
+            type: connections.NOTIFICATION_QUEUE,
+            body: notification
+        });
     }
 };
 
-App.prototype.handleNotificationJob = function handleNotificationJob(job, ack) {
+App.prototype.handleNotificationJob = function handleNotificationJob(job) {
     console.log("GOT NOTIFICATION JOB");
-    console.log(job);
+    var body = job.body;
 
-    Notifications.send(job.service, job.endpoints, job.expires, job.message);
+    Notifications.send(body.service, body.endpoints, body.expires, body.message);
+    job.ack();
 };
 
 App.prototype.sendEmail = function(from, to, subject, text, html) {
@@ -353,33 +356,36 @@ App.prototype.sendEmail = function(from, to, subject, text, html) {
 
     if (!this.connections) {
         console.log("RabbitMQ not configured, sending email now in web process");
-        this.handleEmailJob(email, function noop() {});
+        this.handleEmailJob(forgeRabbitMessage(email));
     } else {
         console.log("Sending email to queue...");
         console.log(email);
 
-        this.connections.queue.default().publish(email, {key: EMAIL_QUEUE});
+        connections.publish(connections.JOB_EXCHANGE, {
+            type: connections.EMAIL_QUEUE,
+            body: email
+        });
     }
 };
 
-App.prototype.handleEmailJob = function(job, ack) {
+App.prototype.handleEmailJob = function(job) {
     console.log("GOT EMAIL JOB");
-    console.log(job);
+    var body = job.body;
     // setup
-    if (job.to.endsWith("@example.com")) {
-        console.log("Not sending email to " + job.to + " as it is example.com (FIXTURE DATA)");
-        ack();
+    if (body.to.endsWith("@example.com")) {
+        console.log("Not sending email to " + body.to + " as it is example.com (FIXTURE DATA)");
+        job.ack();
     } else {
         if (mailer) {
-            mailer.sendMail(job, function sendMailCallback(error, info) {
-                ack();
+            mailer.sendMail(body, function sendMailCallback(error, info) {
+                job.ack();
                 if (error) {
                     console.log("error");
                     console.log(error);
-                    slack.alert("Failed to send email to: " + job.to, error);
+                    slack.alert("Failed to send email to: " + body.to, error);
                 } else {
                     console.log("Mail successfully sent: " + info.response);
-                    slack.info("Sent mail to: " + job.to, '#email');
+                    slack.info("Sent mail to: " + body.to, '#email');
                 }
             });
         } else {
@@ -404,23 +410,26 @@ App.prototype.sendNewShifts = function sendNewShifts(user_id, shift_ids) {
 
         if (!this.connections) {
             console.log("RabbitMQ not configured, processing new shifts in web process");
-            this.handleNewShiftJob(new_shifts, function noop() {});
+            this.handleNewShiftJob(forgeRabbitMessage(new_shifts));
         } else {
-            this.connections.queue.default().publish(new_shifts, {key: NEW_SHIFT_QUEUE});
+            connections.publish(connections.JOB_EXCHANGE, {
+                type: connections.NEW_SHIFT_QUEUE,
+                body: new_shifts
+            });
         }
     }
 };
 
-App.prototype.handleNewShiftJob = function handleNewShiftJob(job, ack) {
+App.prototype.handleNewShiftJob = function handleNewShiftJob(job) {
     console.log("GOT NEW SHIFT JOB");
-    console.log(job);
+    var body = job.body;
 
-    var user_id = job.user_id;
-    var shift_ids = job.shift_ids;
-    this.sendNotificationsAboutNewShifts(user_id, shift_ids);
+    var user_id = body.user_id;
+    var shift_ids = body.shift_ids;
+    this.sendNotificationsAboutNewShifts(user_id, shift_ids, job.ack, job.reject);
 };
 
-App.prototype.sendNotificationsAboutNewShifts = function sendNotificationsAboutNewShifts(user_id, shift_ids) {
+App.prototype.sendNotificationsAboutNewShifts = function sendNotificationsAboutNewShifts(user_id, shift_ids, success, error) {
     if (!(shift_ids instanceof Array)) {
         // unknown format, discard
         slack.alert('Unknown shiftsCreated argument: ' + JSON.stringify(shift_ids));
@@ -556,34 +565,32 @@ App.prototype.sendNotificationsAboutNewShifts = function sendNotificationsAboutN
             } else {
                 // never send a notification for a shift created in the past
             }
+
+            if (success) {
+                success();
+            }
         })
         .catch(function(err) {
             slack.error(undefined, 'Error notifying about new shift', err);
             console.log(err.stack);
+            if (error) {
+                error(err);
+            }
         });
 };
 
-App.prototype.sendEmail = function(from, to, subject, text, html) {
-    if (to === null || to === undefined) {
-        throw new Error("Email recipient required (not specified)");
-    }
-    var email = {
-        from: from,
-        to: to,
-        subject: subject,
-        text: text,
-        html: html
-    };
+function noop() {
+    console.log("NOOOOOOOOOOPPPP");
+}
 
-    if (!this.connections) {
-        console.log("RabbitMQ not configured, sending email now in web process");
-        this.handleEmailJob(email, function noop() {});
-    } else {
-        console.log("Sending email to queue...");
-        console.log(email);
-
-        this.connections.queue.default().publish(email, {key: EMAIL_QUEUE});
+function forgeRabbitMessage(body) {
+    return {
+        body: body,
+        ack: noop,
+        nack: noop,
+        reject: noop,
+        reply: noop
     }
-};
+}
 
 module.exports = new App();

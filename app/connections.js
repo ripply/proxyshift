@@ -60,31 +60,31 @@ function Connector(rabbitUrl) {
         queues: [
             {
                 name: EMAIL_QUEUE,
-                autoDelete: false,
+                autoDelete: true,
                 durable: true,
                 subscribe: true
             },
             {
                 name: NOTIFICATION_QUEUE,
-                autoDelete: false,
+                autoDelete: true,
                 durable: true,
                 subscribe: true
             },
             {
                 name: NEW_SHIFT_QUEUE,
-                autoDelete: false,
+                autoDelete: true,
                 durable: true,
                 subscribe: true
             },
             {
                 name: NEW_SHIFT_APPLICATION_QUEUE,
-                autoDelete: false,
+                autoDelete: true,
                 durable: true,
                 subscribe: true
             },
             {
                 name: NEW_SHIFT_APPLICATION_WAIT_QUEUE,
-                autoDelete: false,
+                autoDelete: true,
                 durable: true,
                 subscribe: false,
                 deadLetter: DEAD_LETTER_EXCHANGE,
@@ -134,7 +134,10 @@ module.exports = {
     topology: function(rabbitUrl) {
         return new Connector(rabbitUrl);
     },
+    publish: rabbit.publish,
     handle: rabbit.handle,
+    JOB_EXCHANGE: JOB_EXCHANGE,
+    DEAD_LETTER_EXCHANGE: DEAD_LETTER_EXCHANGE,
     EMAIL_QUEUE: EMAIL_QUEUE,
     NOTIFICATION_QUEUE: NOTIFICATION_QUEUE,
     NEW_SHIFT_QUEUE: NEW_SHIFT_QUEUE,
