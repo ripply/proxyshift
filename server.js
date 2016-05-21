@@ -131,6 +131,10 @@ function gracefulExit(reason) {
         // do nothing for now
         console.log("worker exiting...");
     }
+    setTimeout(function hardLimitToQuit() {
+        console.log('Waiting for slack and rabbit to finish taking too long, exiting now.');
+        exit(2);
+    }, 5 * 60 * 1000);
     Promise.all(promises).then(function() {
         if (slackConfigured) {
             console.log("Successfully notified slack of shutdown, waiting for IO events to finish");

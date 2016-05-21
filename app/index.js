@@ -22,23 +22,10 @@ function App() {
     this.models = models;
     this.ready = false;
     if (config.has('rabbit.url')) {
-        var subscribe = true;
-        if (cluster.isMaster) {
-            // master only subscribes to events if there are no workers
-            subscribe = workers.workers == 0;
-        } else {
-            // workers, always subscribe to events
-            subscribe = true;
-        }
-        if (subscribe) {
-            console.log('Subscribing to rabbit events in this thread');
-            //this.init();
-        } else {
-            console.log('Not subscribing to rabbit events in this thread');
-        }
         this.connections = connections.topology(config.get('rabbit.url'));
         this.connections.once('ready', this.onConnected.bind(this));
         this.connections.once('lost', this.onLost.bind(this));
+        this.connections.once('fail', this.onFail.bind(this));
     } else {
         console.log("RabbitMQ not configured, will not use a message broker for emails/notifications, set CLOUDAMQP_URL");
         this.onReady();
@@ -240,10 +227,17 @@ App.prototype.onLost = function() {
     this.emit('lost');
 };
 
+App.prototype.onFail = function(err) {
+    console.log('Failed to connect to RabbitMQ\n' + JSON.stringify(err));
+    slack.error('Failed to connect to RabbitMQ', err);
+    // TODO: ERROR HANDLING HERE?
+};
+
 App.prototype.init = function() {
     this.startHandlingEmails();
     this.startHandlingNotifications();
     this.startHandlingNewShifts();
+    this.startHandlingNewShiftApplications();
 };
 
 App.prototype.startHandlingEmails = function() {
@@ -270,6 +264,14 @@ App.prototype.startHandlingNewShifts = function() {
     console.log(started);
     slack.info(started);
     connections.handle(connections.NEW_SHIFT_QUEUE, this.handleNewShiftJob.bind(this));
+};
+
+App.prototype.startHandlingNewShiftApplications = function() {
+    var started = "Started handling new shift applications from RabbitMQ";
+    console.log(started);
+    slack.info(started);
+    connections.handle(connections.NEW_SHIFT_APPLICATION_QUEUE, this.handleNewShiftApplication.bind(this));
+    connections.handle(connections.NEW_DELAYED_SHIFT_APPLICATION_QUEUE, this.handleNewDelayedShiftApplication.bind(this));
 };
 
 App.prototype.createTokenUrl = function(base, token) {
@@ -328,6 +330,7 @@ App.prototype.sendNotification = function sendNotification(service, endpoints, e
         console.log("Sending push notification to queue...");
 
         connections.publish(connections.JOB_EXCHANGE, {
+            routingKey: connections.NOTIFICATION_KEY,
             type: connections.NOTIFICATION_QUEUE,
             body: notification
         });
@@ -362,6 +365,7 @@ App.prototype.sendEmail = function(from, to, subject, text, html) {
         console.log(email);
 
         connections.publish(connections.JOB_EXCHANGE, {
+            routingKey: connections.EMAIL_KEY,
             type: connections.EMAIL_QUEUE,
             body: email
         });
@@ -413,11 +417,51 @@ App.prototype.sendNewShifts = function sendNewShifts(user_id, shift_ids) {
             this.handleNewShiftJob(forgeRabbitMessage(new_shifts));
         } else {
             connections.publish(connections.JOB_EXCHANGE, {
+                routingKey: connections.NEW_SHIFT_KEY,
                 type: connections.NEW_SHIFT_QUEUE,
                 body: new_shifts
             });
         }
     }
+};
+
+App.prototype.sendNewShiftApplication = function sendNewShiftApplication(shift_id, shift_application_id) {
+    var shift_application = {
+        id: shift_application_id,
+        shift_id: shift_id,
+        sleep: 10 * 1000
+    };
+
+    if (!this.connections) {
+        console.log("RabbitMQ not configured, processing new shift application INSTANTLY in web process");
+        this.handleNewShiftApplication(forgeRabbitMessage(shift_application));
+    } else {
+        console.log("sending new shift application to delayed job exchange....");
+        connections.publish(connections.DELAYED_JOB_EXCHANGE, {
+            routingKey: connections.NEW_DELAYED_SHIFT_APPLICATION_KEY,
+            type: connections.NEW_DELAYED_SHIFT_APPLICATION_QUEUE,
+            body: shift_application
+        });
+    }
+};
+
+App.prototype.handleNewShiftApplication = function handleNewShiftApplication(job) {
+    console.log("GOT NEW SHIFT APPLICATION");
+    var body = job.body;
+    console.log(job);
+    job.ack();
+};
+
+App.prototype.handleNewDelayedShiftApplication = function handleNewDelayedShiftApplication(job) {
+    var body = job.body;
+    var sleep = 10 * 1000; // 10 seconds
+    if (body.sleep) {
+        sleep = body.sleep;
+    }
+    var self = this;
+    setTimeout(function() {
+        self.handleNewShiftApplication(job);
+    }, sleep);
 };
 
 App.prototype.handleNewShiftJob = function handleNewShiftJob(job) {

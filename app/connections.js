@@ -1,18 +1,43 @@
 var _ = require('underscore');
 var rabbit = require('wascally');
+var cluster = require('cluster');
+var workers = require('./workers');
 var EventEmitter = require('events').EventEmitter;
 
 const JOB_EXCHANGE = 'job-requests-x';
-const DEAD_LETTER_EXCHANGE = 'dead-letter-exchange-x';
+const DELAYED_JOB_EXCHANGE = 'delayed-job-exchange-x';
+
+const JOB_ROUTING_KEY = 'job-rk';
+const DEAD_LETTER_ROUTING_KEY = 'dl-rk';
 
 const EMAIL_QUEUE = 'jobs-email-q';
+const EMAIL_KEY = 'email';
 const NOTIFICATION_QUEUE = 'jobs-notification-q';
+const NOTIFICATION_KEY = 'notification';
 const NEW_SHIFT_QUEUE = 'jobs-new_shifts-q';
-const NEW_SHIFT_APPLICATION_QUEUE = 'jobs-new_shift_application-q';
-const NEW_SHIFT_APPLICATION_WAIT_QUEUE = 'jobs-wait-new_shift_application-q';
+const NEW_SHIFT_KEY = 'new_shifts';
+const NEW_SHIFT_APPLICATION_QUEUE = 'jobs-new-shift-application-q';
+const NEW_SHIFT_APPLICATION_KEY = 'new_shift_application';
+const NEW_DELAYED_SHIFT_APPLICATION_QUEUE = 'jobs-delayed-new-shift-application-q';
+const NEW_DELAYED_SHIFT_APPLICATION_KEY = 'delayed_new_shift_application';
 
 function Connector(rabbitUrl) {
     EventEmitter.call(this);
+
+    var subscribe = true;
+    if (cluster.isMaster) {
+        // master only subscribes to events if there are no workers
+        subscribe = workers.workers == 0;
+    } else {
+        // workers, always subscribe to events
+        subscribe = true;
+    }
+
+    if (subscribe) {
+        console.log('Subscribing to rabbit events in this thread');
+    } else {
+        console.log('Not subscribing to rabbit events in this thread');
+    }
 
     var self = this;
     var readyCount = 0;
@@ -46,74 +71,82 @@ function Connector(rabbitUrl) {
         exchanges: [
             {
                 name: JOB_EXCHANGE,
-                type: 'fanout',
+                type: 'direct',
                 autoDelete: false,
                 durable: true,
             },
             {
-                name: DEAD_LETTER_EXCHANGE,
+                name: DELAYED_JOB_EXCHANGE,
                 type: 'direct',
                 autoDelete: false,
-                durable: true
+                durable: true,
             },
         ],
         queues: [
             {
                 name: EMAIL_QUEUE,
-                autoDelete: true,
-                durable: true,
-                subscribe: true
+                //durable: true,
+                subscribe: subscribe
             },
             {
                 name: NOTIFICATION_QUEUE,
-                autoDelete: true,
-                durable: true,
-                subscribe: true
+                //durable: true,
+                subscribe: subscribe
             },
             {
                 name: NEW_SHIFT_QUEUE,
-                autoDelete: true,
-                durable: true,
-                subscribe: true
+                //durable: true,
+                subscribe: subscribe
             },
             {
                 name: NEW_SHIFT_APPLICATION_QUEUE,
-                autoDelete: true,
-                durable: true,
-                subscribe: true
+                //durable: true,
+                subscribe: subscribe
             },
             {
-                name: NEW_SHIFT_APPLICATION_WAIT_QUEUE,
-                autoDelete: true,
-                durable: true,
-                subscribe: false,
-                deadLetter: DEAD_LETTER_EXCHANGE,
-                messageTtl: 10 * 1000 // 10 seconds
+                name: NEW_DELAYED_SHIFT_APPLICATION_QUEUE,
+                //durable: true,
+                subscribe: subscribe,
+                //deadLetter: JOB_EXCHANGE,
+                //messageTtl: 10 * 1000 // 10 seconds
             },
         ],
         bindings: [
             {
                 exchange: JOB_EXCHANGE,
                 target: EMAIL_QUEUE,
+                keys: EMAIL_KEY,
             },
             {
                 exchange: JOB_EXCHANGE,
                 target: NOTIFICATION_QUEUE,
+                keys: NOTIFICATION_KEY,
             },
             {
                 exchange: JOB_EXCHANGE,
                 target: NEW_SHIFT_QUEUE,
+                keys: NEW_SHIFT_KEY,
             },
             {
                 exchange: JOB_EXCHANGE,
                 target: NEW_SHIFT_APPLICATION_QUEUE,
+                keys: NEW_SHIFT_APPLICATION_KEY
             },
             {
                 exchange: JOB_EXCHANGE,
-                target: NEW_SHIFT_APPLICATION_WAIT_QUEUE
-            }
+                target: NEW_SHIFT_APPLICATION_QUEUE,
+                keys: NEW_DELAYED_SHIFT_APPLICATION_KEY
+            },
+            {
+                exchange: DELAYED_JOB_EXCHANGE,
+                target: NEW_DELAYED_SHIFT_APPLICATION_QUEUE,
+                keys: NEW_DELAYED_SHIFT_APPLICATION_KEY
+            },
         ]
     })
+        .catch(function(err) {
+            self.emit('fail', err);
+        })
         .done(function() {
             console.log('Connected to RabbitMQ: ' + rabbitConnection.server + '/' + rabbitConnection.vhost);
             self.emit('ready');
@@ -136,11 +169,19 @@ module.exports = {
     },
     publish: rabbit.publish,
     handle: rabbit.handle,
+    startSubscription: rabbit.startSubscription,
     JOB_EXCHANGE: JOB_EXCHANGE,
-    DEAD_LETTER_EXCHANGE: DEAD_LETTER_EXCHANGE,
+    DELAYED_JOB_EXCHANGE: DELAYED_JOB_EXCHANGE,
     EMAIL_QUEUE: EMAIL_QUEUE,
+    EMAIL_KEY: EMAIL_KEY,
     NOTIFICATION_QUEUE: NOTIFICATION_QUEUE,
+    NOTIFICATION_KEY: NOTIFICATION_KEY,
     NEW_SHIFT_QUEUE: NEW_SHIFT_QUEUE,
+    NEW_SHIFT_KEY: NEW_SHIFT_KEY,
     NEW_SHIFT_APPLICATION_QUEUE: NEW_SHIFT_APPLICATION_QUEUE,
-    NEW_SHIFT_APPLICATION_WAIT_QUEUE: NEW_SHIFT_APPLICATION_WAIT_QUEUE
+    NEW_SHIFT_APPLICATION_KEY: NEW_SHIFT_APPLICATION_KEY,
+    NEW_DELAYED_SHIFT_APPLICATION_QUEUE: NEW_DELAYED_SHIFT_APPLICATION_QUEUE,
+    NEW_DELAYED_SHIFT_APPLICATION_KEY: NEW_DELAYED_SHIFT_APPLICATION_KEY,
+    JOB_ROUTING_KEY: JOB_ROUTING_KEY,
+    DEAD_LETTER_ROUTING_KEY: DEAD_LETTER_ROUTING_KEY
 };

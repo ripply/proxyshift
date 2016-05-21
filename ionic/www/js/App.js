@@ -25,6 +25,14 @@ angular.module('scheduling-app', [
     'scheduling-app.services.initialize',
     'scheduling-app.validation'
 ])
+    .factory('timeoutHttpIntercept', function () {
+        return {
+            'request': function(config) {
+                config.timeout = 300000;
+                return config;
+            }
+        };
+    })
 
     .run([
         '$rootScope',
@@ -68,6 +76,7 @@ angular.module('scheduling-app', [
         '$provide',
         '$ionicConfigProvider',
         '$resourceProvider',
+        '$httpProvider',
         'localStorageServiceProvider',
         'STATES',
         'GENERAL_CONFIG',
@@ -79,6 +88,7 @@ angular.module('scheduling-app', [
                  $provide,
                  $ionicConfigProvider,
                  $resourceProvider,
+                 $httpProvider,
                  localStorageServiceProvider,
                  STATES,
                  GENERAL_CONFIG,
@@ -88,6 +98,7 @@ angular.module('scheduling-app', [
                  // of the previous and current state
                  //StateHistoryService
         ) {
+            $httpProvider.interceptors.push('timeoutHttpIntercept');
             // enables caching of calendar which takes 1-2 seconds to render initially
             $ionicConfigProvider.views.forwardCache(true);
             CORDOVA_SETTINGS.isWebView = ionic.Platform.isWebView();
