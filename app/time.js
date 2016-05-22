@@ -29,7 +29,7 @@ module.exports = {
         };
     },
     prettyPrintStartTime: function prettyPrintStartTime(start, timezone) {
-        var startMoment = moment(start).tz(timezone);
+        var startMoment = moment(unknownTimeFormatToDate(start, timezone)).tz(timezone);
         return startMoment.format('h:mm A');
     },
     prettyPrintDate: function prettyPrintDate(start, timezone) {

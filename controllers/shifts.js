@@ -12,6 +12,8 @@ var appLogic = require('../app');
 
 var variables = require('./variables');
 
+var managingPermissionLevel = require('./variables').managingLocationMember;
+
 
 var getMark = controllerCommon.getMark;
 var clearMarks = controllerCommon.clearMarks;
@@ -25,7 +27,6 @@ var error = controllerCommon.error;
 var clientError = controllerCommon.clientError;
 var clientCreate = controllerCommon.clientCreate;
 var clientStatus = controllerCommon.clientStatus;
-var controllerCommon = controllerCommon;
 var getCurrentTimeForInsertionIntoDatabase = controllerCommon.getCurrentTimeForInsertionIntoDatabase;
 var createSelectQueryForAllColumns = controllerCommon.createSelectQueryForAllColumns;
 
@@ -730,7 +731,6 @@ function getShiftsYouAreManaging(req, res) {
     var range = grabNormalShiftRange(now);
     var before = range[0];
     var after = new moment(now).unix();
-    var managingPermissionLevel = 2;
     var location_id = req.params.location_id;
     models.Shift.query(function(q) {
 
@@ -1810,7 +1810,7 @@ function unregisterForShift(req, res) {
         .fetch({
             //transacting: t
         })
-        .then(function(shiftapplication) {
+        .tap(function(shiftapplication) {
             var shiftApplicationKeys = Object.keys(getModelKeys('ShiftApplication'));
             if (shiftapplication) {
                 // user has registered for shift
@@ -1833,12 +1833,12 @@ function unregisterForShift(req, res) {
                         // TODO: Transaction
                         return models.ShiftRescissionReason.forge({
                             user_id: req.user.id,
-                            shift_id: req.params.shift_id,
+                            shiftapplication_id: shiftapplication.get('id'),
                             date: date,
                             reason: reason
                         })
                             .save()
-                            .then(function(shiftrecissionreason) {
+                            .tap(function(shiftrecissionreason) {
                                 // shift has been recinded
                                 // send notifications
                                 return triggerShiftApplicationRecinsionNotification(shiftapplication.get('id'), shiftrecissionreason.get('id'));
@@ -1846,7 +1846,7 @@ function unregisterForShift(req, res) {
                             .catch(function(err) {
                                 // TODO: Transaction so can rollback on possible error
                                 console.log(err);
-                            })
+                            });
                     }
                 )
             } else {

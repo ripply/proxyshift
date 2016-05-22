@@ -10,6 +10,11 @@ var categories = {
             { "icon": "ion-checkmark", "title": "Apply", "callback": "window.apply", "foreground": true},
             { "icon": "snooze", "title": "Ignore", "callback": "window.ignore", "foreground": false}
         ]
+    },
+    'manageShift': {
+        actions: [
+
+        ]
     }
 };
 
@@ -106,7 +111,7 @@ var verifyEmail = {
     }
 };
 
-function newShift(shift_location, shift_sublocation, shift_start, shift_end, timezone) {
+function formatTimeDateLocationsForNotifications(shift_location, shift_sublocation, shift_start, shift_end, timezone) {
     var hoursMinutes = time.differenceInHours(shift_start, shift_end);
     var joinableDisplayTime = [];
     if (hoursMinutes.hours && hoursMinutes.hours > 0) {
@@ -124,10 +129,37 @@ function newShift(shift_location, shift_sublocation, shift_start, shift_end, tim
     }
 
     return {
+        location: joinableLocation.join(' '),
+        length: joinableDisplayTime.join(' '),
+        start: time.prettyPrintStartTime(shift_start, timezone),
+        date: time.prettyPrintDate(shift_start, timezone)
+    }
+}
+
+function newShiftApplication(shift_location, shift_sublocation, shift_start, shift_end, timezone, job_title) {
+    var formatted = formatTimeDateLocationsForNotifications(shift_location, shift_sublocation, shift_start, shift_end, timezone);
+
+    return {
+        push: createNotification(
+            {test: 'test'},
+            'New Shift Applications',
+            'Available employees are waiting for your confirmation for the ' + job_title + ' open shift on ' + formatted.date + ' at ' + formatted.start,
+            'body android only',
+            3,
+            3,
+            'manageShift'
+        )
+    }
+}
+
+function newShift(shift_location, shift_sublocation, shift_start, shift_end, timezone) {
+    var formatted = formatTimeDateLocationsForNotifications(shift_location, shift_sublocation, shift_start, shift_end, timezone);
+
+    return {
         push: createNotification(
             {test: 'test'},
             'New Open Shift',
-            joinableLocation.join(' ') + ' has a ' + (joinableDisplayTime.join(' ')) + 'open shift starting at ' + time.prettyPrintStartTime(shift_start, timezone) + ' on ' + time.prettyPrintDate(shift_start, timezone),
+            formatted.location + ' has a ' + formatted.length + 'open shift starting at ' + formatted.start + ' on ' + formatted.date,
             'body android only',
             3,
             3,
@@ -138,6 +170,7 @@ function newShift(shift_location, shift_sublocation, shift_start, shift_end, tim
 
 module.exports = {
     newShift: newShift,
+    newShiftApplication: newShiftApplication,
     invitedToGroup: function eventInvitedToGroup(user_ids, args) {
         // TODO: MODIFY THIS TO ACCEPT A TO EMAIL
         // send email and notification

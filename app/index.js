@@ -2,6 +2,7 @@ var Promise = require('bluebird');
 var _ = require('underscore');
 var EventEmitter = require('events').EventEmitter;
 var models = require('./models');
+var Bookshelf = models.Bookshelf;
 var config = require('config');
 var mailer = require('./mailer');
 var events = require('./events');
@@ -12,6 +13,7 @@ var workers = require('./workers');
 var moment = require('moment-timezone');
 var notifications = require('./notifications');
 var Notifications = new notifications.Notifications();
+var managingPermissionLevel = require('../controllers/variables').managingLocationMember;
 
 var connections = require('./connections');
 
@@ -445,11 +447,205 @@ App.prototype.sendNewShiftApplication = function sendNewShiftApplication(shift_i
     }
 };
 
+const newShiftApplicationProperties = [
+    'start',
+    'end',
+    'timezone',
+    'location_name',
+    'sublocation_name',
+    'location_id'
+];
+
 App.prototype.handleNewShiftApplication = function handleNewShiftApplication(job) {
     console.log("GOT NEW SHIFT APPLICATION");
     var body = job.body;
+    var self = this;
     console.log(job);
-    job.ack();
+    var shift_id = body.shift_id;
+    var shift_application_id = body.shfit_application_id;
+
+    return Bookshelf.transaction(function(t) {
+        return models.ShiftApplication.query(function(q) {
+            q.select(
+                Bookshelf.knex.raw(
+                    'shiftapplications.date as date, ' +
+                    'shiftapplications.recindeddate as recindeddate, ' +
+                    'shiftapplications.user_id as user_id, ' +
+                    'shifts.start as start, ' +
+                    'shifts.canceled as canceled, ' +
+                    'shifts.end as end, ' +
+                    'timezones.name as timezone, ' +
+                    'locations.address as location_name, ' +
+                    'sublocations.title as sublocation_name, ' +
+                    'COALESCE(shifts.notify) >= shiftapplications.date as notified, ' +
+                    'COALESCE(shifts.location_id, locations.id) as location_id, ' +
+                    'shifts.notify as notify'
+                )
+            )
+                .from('shiftapplications')
+                .leftJoin('shiftapplicationacceptdeclinereasons', function() {
+                    this.on('shiftapplicationacceptdeclinereasons.shiftapplication_id', '=', 'shiftapplications.id');
+                })
+                .innerJoin('shifts', function() {
+                    this.on('shifts.id', '=', 'shiftapplications.shift_id');
+                })
+                .leftJoin('timezones', function() {
+                    this.on('timezones.id', '=', 'shifts.timezone_id');
+                })
+                .leftJoin('sublocations', function() {
+                    this.on('sublocations.id', '=', 'shifts.sublocation_id');
+                })
+                .innerJoin('locations', function() {
+                    this.on('locations.id', '=', 'shifts.location_id')
+                        .orOn('locations.id', '=', 'sublocations.location_id');
+                })
+                .leftJoin('shiftrescissionreasons', function() {
+                    this.on('shiftrescissionreasons.shiftapplication_id', '=', 'shiftapplications.id');
+                })
+                .innerJoin('users', function() {
+                    this.on('users.id', '=', 'shiftapplications.user_id');
+                })
+                .where('shiftapplications.shift_id', '=', shift_id)
+                .whereNull('shiftapplicationacceptdeclinereasons.accept')
+                .whereNull('shiftrescissionreasons.id')
+                .andWhere(function() {
+                    this.whereNull('shifts.canceled')
+                        .orWhere('shifts.canceled', '<>', true)
+                        .orWhere('shifts.canceled', '<>', 1);
+                })
+                .andWhere(function() {
+                    this.whereNull('shiftapplications.recinded')
+                        .orWhere('shiftapplications.recinded', '<>', true)
+                        .orWhere('shiftapplications.recinded', '<>', 1);
+                });
+        })
+            .fetchAll({
+                transacting: t
+            })
+            .tap(function fetchHandleNewShiftApplications(shiftapplications) {
+                if (shiftapplications) {
+                    var remainingInformation = _.clone(newShiftApplicationProperties);
+                    var shiftApplicationProperties = {};
+                    var uniqueUserIds = {};
+                    var remainingNotification = false;
+                    shiftapplications.each(function(shiftapplication) {
+                        var user_id = shiftapplication.get('user_id');
+                        uniqueUserIds[user_id] = true;
+                        if (remainingInformation.length > 0) {
+                            var foundKeys = [];
+                            _.each(remainingInformation, function(key) {
+                                var value = shiftapplication.get(key);
+                                if (value) {
+                                    shiftApplicationProperties[key] = value;
+                                    foundKeys.push(key);
+                                }
+                            });
+                            remainingInformation = _.difference(remainingInformation, foundKeys);
+                        }
+                        if (!remainingNotification) {
+                            var notified = shiftapplication.get('notified');
+                            if (notified !== 1 && notified !== true) {
+                                remainingNotification = true;
+                            }
+                        }
+                    });
+                    var shiftApplicationCount = Object.keys(uniqueUserIds).length;
+                    if (shiftApplicationCount == 0 || !remainingNotification) {
+                        // nothing to do, application was 'undone'
+                        // or, a notification was already sent for all these applications
+                    } else {
+                        // figure out who we need to send notifications to
+                        return models.Shift.query(function(q) {
+                            q.select([
+                                'usergroups.user_id as user_id'
+                            ])
+                                .from('shifts')
+                                .leftJoin('sublocations', function() {
+                                    this.on('sublocations.id', '=', 'shifts.sublocation_id');
+                                })
+                                .innerJoin('managingclassesatlocations', function() {
+                                    this.on('managingclassesatlocations.groupuserclass_id', '=', 'shifts.groupuserclass_id');
+                                })
+                                .innerJoin('usergroups', function() {
+                                    this.on('usergroups.id', '=', 'managingclassesatlocations.usergroup_id');
+                                })
+                                .innerJoin('grouppermissions', function() {
+                                    this.on('grouppermissions.id', '=', 'usergroups.grouppermission_id');
+                                })
+                                .innerJoin('userpermissions', function() {
+                                    this.on('userpermissions.location_id', '=', 'shifts.location_id')
+                                        .orOn('userpermissions.location_id', '=', 'sublocations.location_id');
+                                })
+                                .where('shifts.id', '=', shift_id)
+                                .andWhereRaw('COALESCE(shifts.location_id, sublocations.location_id) = managingclassesatlocations.location_id')
+                                .andWhere('grouppermissions.permissionlevel', '>=', managingPermissionLevel);
+                        })
+                            .fetchAll({
+                                transacting: t
+                            })
+                            .tap(function handleNewShiftApplicationsFetchManagers(managingUserIds) {
+                                var managingUserIdsMinusAppliedUserIds = {};
+                                managingUserIds.each(function(managingUserId) {
+                                    var managing_user_id = managingUserId.get('user_id');
+                                    /*
+                                    // don't send notifications for a shift to someone eligible to manage it, if they have applied
+                                    // (this isn't a requirement)
+                                    if (!uniqueUserIds.hasOwnProperty(managing_user_id)) {
+                                        managingUserIdsMinusAppliedUserIds.push(managing_user_id);
+                                    }
+                                    */
+                                    managingUserIdsMinusAppliedUserIds[managing_user_id] = true;
+                                });
+                                var uniqueManagingUserIds = Object.keys(managingUserIdsMinusAppliedUserIds);
+                                if (uniqueManagingUserIds.length > 0) {
+                                    return models.Shift.query(function(q) {
+                                        q.select()
+                                            .from('shifts')
+                                            .where('shifts.id', '=', shift_id)
+                                            .update({
+                                                notify: time.nowInUtc()
+                                            });
+                                    })
+                                        .fetch({
+                                            transacting: t
+                                        })
+                                        .tap(function() {
+                                            self.sendToUsers(
+                                                uniqueManagingUserIds,
+                                                self.newShiftApplication(
+                                                    shiftApplicationProperties.location_name,
+                                                    shiftApplicationProperties.sublocation_name,
+                                                    shiftApplicationProperties.start,
+                                                    shiftApplicationProperties.end,
+                                                    shiftApplicationProperties.timezone
+                                                ), {
+                                                    location_id: shiftApplicationProperties.location_id
+                                                }
+                                            );
+                                            // success
+                                            job.ack();
+                                        })
+                                        .catch(function(err) {
+                                            console.log(err);
+                                            slack.error(null, 'Error sending new shift application notification: Updating notify time', err);
+                                            job.nack();
+                                        });
+                                } else {
+                                    // nothing to do
+                                    job.ack();
+                                }
+                            });
+                    }
+                }
+                // fall through, nothing to do
+                job.ack();
+            })
+            .catch(function(err) {
+                console.log(err.stack);
+                slack.error(null, 'Error sending new shift application notifications', err);
+                job.nack();
+            });
+    });
 };
 
 App.prototype.handleNewDelayedShiftApplication = function handleNewDelayedShiftApplication(job) {
