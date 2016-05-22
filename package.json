@@ -34,6 +34,7 @@
     "errorhandler": "^1.4.0",
     "esprima": "~2.2.0",
     "express": "^4.11.0",
+    "express-cluster": "0.0.4",
     "express-handlebars": "^2.0.1",
     "express-session": "^1.11.3",
     "i18n-js": "^1.0.0",

@@ -1,9 +1,14 @@
-var cluster = require('cluster');
+var cluster = require('cluster'),
+    numCPUs = require('os').cpus().length;
 
 if (process.env.WORKERS) {
-    workers = parseInt(process.env.WORKERS);
+    if (process.env.WORKERS == 'auto') {
+        workers = numCPUs;
+    } else {
+        workers = parseInt(process.env.WORKERS);
+    }
 } else {
-    workers = 1;
+    workers = 0;
 }
 
 module.exports = {

@@ -2,6 +2,7 @@ process.env.WEB = true;
 
 var express = require('express'),
     cluster = require('cluster'),
+    expressCluster = require('express-cluster'),
     http = require('http'),
     path = require('path'),
     timers = require('timers'),
@@ -26,18 +27,17 @@ var express = require('express'),
     I18n = require('i18n-js'),
     moment = require('moment'),
     workers = require('./app/workers'),
-    PeriodicEvents = require('./app/periodic').PeriodicEvents,
-    app = express();
+    PeriodicEvents = require('./app/periodic').PeriodicEvents;
 require('./app/handlebarTranslations');
-var slack;
+var slack = require('./app/slack');
 
 var timeStarted;
 var periodicEvents;
 var serverIsUp = false;
+var message;
 
 if (cluster.isMaster) {
     timeStarted = moment();
-    slack = require('./app/slack');
 
     periodicEvents = new PeriodicEvents();
     periodicEvents.start();
@@ -105,6 +105,15 @@ if (cluster.isMaster) {
     } else {
         launchServer();
     }
+} else if (process.env.WEB_WORKERS == 'true') {
+    message = 'Workers will process web requests';
+    console.log(message);
+    slack.info(message);
+    launchServer();
+} else {
+    message = 'Workers not configured to process web requests';
+    console.log(message);
+    slack.info(message);
 }
 
 function gracefulExit(reason) {
@@ -160,156 +169,181 @@ function uptime() {
 }
 
 function launchServer() {
+    var workerCount = 0;
     if (cluster.isMaster && numCPUs > 1 && workers.workers > 0) {
         console.log("Forking " + workers.workers + " workers");
         // Fork workers.
+        workerCount = workers.workers;
+        /*
         for (var i = 0; i < workers.workers; i++) {
             console.log("Forking worker #" + i);
             cluster.fork();
         }
+        */
 
         cluster.on('exit', function (worker, code, signal) {
             console.log('worker ' + worker.process.pid + ' died');
         });
+    }
+
+    var app = express();
+
+    app.set('port', process.env.PORT || 3300);
+    app.set('views', __dirname + '/views');
+    app.set('view cache', process.env.NODE_ENV !== 'development');
+
+    app.engine('handlebars',
+        exphbs({
+            defaultLayout: 'main',
+            layoutsDir: app.get('views') + '/layouts',
+            helpers: {
+                _: function handlebarsI18n(){
+                    var key = arguments[0];
+                    var args = {};
+                    if (arguments.length > 1) {
+                        for (var i = 1; i < arguments.length; i++) {
+                            args[i] = arguments[i];
+                        }
+                    }
+                    return (I18n != undefined ? I18n.t(key, args) : key);
+                }
+            }
+        })
+    );
+    app.set('view engine', 'handlebars');
+
+    if (false) {
+        var appLog = log4js.getLogger();
+        var httpLog = morgan({
+            "format": "default",
+            "stream": {
+                write: function (str) {
+                    appLog.debug(str);
+                }
+            }
+        });
+        app.use(httpLog);
     } else {
+        app.use(morgan('dev')); // log every request to the console
+    }
+    app.use(bodyParser.urlencoded({
+        extended: true
+    }));
+    app.use(bodyParser.json());
+    //app.use(methodOverride);
+    // TODO: Autogenerate this secret and save it in the database
+    app.use(cookieParser('some-secret-value-here'));
+    app.use(session({
+        cookie: {maxAge: 60000},
+        secret: 'some-secret-value-here',
+        resave: true,
+        saveUninitialized: true
+    }));
+
+    app.use(compression());
+
+    var csrfProtection = csrf({
+        cookie: true,
+        value: function (req) {
+            console.log("Given secret: " + req.cookies['_csrf']);
+            return req.cookies['XSRF-TOKEN'];
+        }
+    });
+
+    /**app.use(function(req, res, next) {
+    // https://github.com/expressjs/csurf/issues/21
+    // TODO: FIX, because csrf comes before routes, every POST request is checked for CSRF tokens, this means that cordova cannot send a POST request to a special route to get a CSRF token
+
+    console.log("RECEIVED URL: " + req.url);
+    if (req.url === '/csrf') {
+        res.set('xcsrftoken', req.csrfToken());
+        return next(req, res);
+    } else {
+        return csrfProtection(req, res, next);
+    }
+});
+     */
+    //app.use(csrfProtection);
+
+    // error handler
+    /*
+     app.use(function (err, req, res, next) {
+     if (err.code !== 'EBADCSRFTOKEN') return next(err)
+
+     // handle CSRF token errors here
+     console.log("INVALID CSRF TOKEN!?");
+     console.log(req.body);
+     res.status(403)
+     res.send('session has expired or form tampered with')
+     });
+     */
+    // http://www.mircozeiss.com/using-csrf-with-express-and-angular/
+    /*app.use(function(req, res, next) {
+     console.log("Creating session cookie...");
+     console.log(req.csrfToken());
+     res.cookie('XSRF-TOKEN', req.csrfToken());
+     console.log("Running next middleware");
+     next();
+     });*/
+
+    app.use(passport.initialize());
+    app.use(passport.session());
+    app.use(passport.authenticate('authentication-token'));
+    if (cluster.isMaster) {
+        // this causes issues when using a cluster of nodes
+        // what happens is that when the user loads the site
+        // their client will fetch all the html files
+        // then the user will login.
+        // if the user reloads the page
+        // then a different process can end up serving at least one of the requests for static files
+        // and those requests will try to invalidate and issue a new token, simultaneously.
+        app.use(passport.authenticate('remember-me'));
+    }
+
+    //app.use(app.router);
+    // serves clients our files in public
+    app.use('/', express.static(path.join(__dirname, 'ionic/www')));
+
+    // development only
+    if ('development' == app.get('env')) {
+        app.use(errorHandler());
+    }
+
+    //routes list:
+    routes.initialize(app);
+
+    app.use(function errorHandler(err, req,res,next) {
+        error(req, res, error, next);
+        console.error(err.stack);
+    });
+
+    console.log('workerCount: ' + workerCount);
+    if (workerCount == 0) {
+        launchWorker();
+    } else {
+        //finally boot up the server:
+        expressCluster(launchWorker, {
+            // https://github.com/Flipboard/express-cluster#config
+            count: workerCount
+        });
+    }
+
+    function launchWorker(worker) {
+        console.log('Trying to listen on port: ' + app.get('port'));
+        var server = http.createServer(app);
 
         if (!cluster.isMaster) {
             process._debugPort = 5858 + cluster.worker.id;
             console.log("Set debug port to " + process._debugPort);
         }
 
-        app.set('port', process.env.PORT || 3300);
-        app.set('views', __dirname + '/views');
-        app.set('view cache', process.env.NODE_ENV !== 'development');
+        tryListen();
 
-        app.engine('handlebars',
-            exphbs({
-                defaultLayout: 'main',
-                layoutsDir: app.get('views') + '/layouts',
-                helpers: {
-                    _: function handlebarsI18n(){
-                        var key = arguments[0];
-                        var args = {};
-                        if (arguments.length > 1) {
-                            for (var i = 1; i < arguments.length; i++) {
-                                args[i] = arguments[i];
-                            }
-                        }
-                        return (I18n != undefined ? I18n.t(key, args) : key);
-                    }
-                }
-            })
-        );
-        app.set('view engine', 'handlebars');
-
-        if (false) {
-            var appLog = log4js.getLogger();
-            var httpLog = morgan({
-                "format": "default",
-                "stream": {
-                    write: function (str) {
-                        appLog.debug(str);
-                    }
-                }
-            });
-            app.use(httpLog);
-        } else {
-            app.use(morgan('dev')); // log every request to the console
-        }
-        app.use(bodyParser.urlencoded({
-            extended: true
-        }));
-        app.use(bodyParser.json());
-        //app.use(methodOverride);
-        // TODO: Autogenerate this secret and save it in the database
-        app.use(cookieParser('some-secret-value-here'));
-        app.use(session({
-            cookie: {maxAge: 60000},
-            secret: 'some-secret-value-here',
-            resave: true,
-            saveUninitialized: true
-        }));
-
-        app.use(compression());
-
-        var csrfProtection = csrf({
-            cookie: true,
-            value: function (req) {
-                console.log("Given secret: " + req.cookies['_csrf']);
-                return req.cookies['XSRF-TOKEN'];
-            }
-        });
-
-        /**app.use(function(req, res, next) {
-        // https://github.com/expressjs/csurf/issues/21
-        // TODO: FIX, because csrf comes before routes, every POST request is checked for CSRF tokens, this means that cordova cannot send a POST request to a special route to get a CSRF token
-
-        console.log("RECEIVED URL: " + req.url);
-        if (req.url === '/csrf') {
-            res.set('xcsrftoken', req.csrfToken());
-            return next(req, res);
-        } else {
-            return csrfProtection(req, res, next);
-        }
-    });
-         */
-        //app.use(csrfProtection);
-
-        // error handler
-        /*
-         app.use(function (err, req, res, next) {
-         if (err.code !== 'EBADCSRFTOKEN') return next(err)
-
-         // handle CSRF token errors here
-         console.log("INVALID CSRF TOKEN!?");
-         console.log(req.body);
-         res.status(403)
-         res.send('session has expired or form tampered with')
-         });
-         */
-        // http://www.mircozeiss.com/using-csrf-with-express-and-angular/
-        /*app.use(function(req, res, next) {
-         console.log("Creating session cookie...");
-         console.log(req.csrfToken());
-         res.cookie('XSRF-TOKEN', req.csrfToken());
-         console.log("Running next middleware");
-         next();
-         });*/
-
-        app.use(passport.initialize());
-        app.use(passport.session());
-        app.use(passport.authenticate('authentication-token'));
-        if (cluster.isMaster) {
-            // this causes issues when using a cluster of nodes
-            // what happens is that when the user loads the site
-            // their client will fetch all the html files
-            // then the user will login.
-            // if the user reloads the page
-            // then a different process can end up serving at least one of the requests for static files
-            // and those requests will try to invalidate and issue a new token, simultaneously.
-            app.use(passport.authenticate('remember-me'));
+        function tryListen() {
+            server.listen(app.get('port'), '0.0.0.0', serverUp);
         }
 
-        //app.use(app.router);
-        // serves clients our files in public
-        app.use('/', express.static(path.join(__dirname, 'ionic/www')));
-
-        // development only
-        if ('development' == app.get('env')) {
-            app.use(errorHandler());
-        }
-
-        //routes list:
-        routes.initialize(app);
-
-        app.use(function errorHandler(err, req,res,next) {
-            error(req, res, error, next);
-            console.error(err.stack);
-        });
-
-        //finally boot up the server:
-        console.log('Trying to listen on port: ' + app.get('port'));
-        http.createServer(app).listen(app.get('port'), '0.0.0.0', function () {
+        function serverUp() {
             serverIsUp = true;
             if (cluster.isMaster) {
                 console.log('Server up: http://localhost:' + app.get('port'));
@@ -319,6 +353,7 @@ function launchServer() {
             } else {
                 console.log('Worker up');
             }
-        });
+        }
+
     }
 }

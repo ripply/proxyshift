@@ -92,6 +92,10 @@ node server.js
 ```bash
 # Use 4 workers
 export WORKERS="4"
+# Workers based on # of CPUs
+export WORKERS="auto"
+# Don't spawn any workers, just have one process
+export WORKERS="0"
 node server.js
 ```
 
