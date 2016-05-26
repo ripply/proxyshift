@@ -1,9 +1,13 @@
 <ion-view view-title="Create Location">
     <ion-content class="has-header" hide-back-button="false">
         <div>
-            <form name="locationCreateForm" ng-submit="createLocation(group_id, location.state, location.city, location.address, location.zipcode, location.phonenumber)">
+            <form name="locationCreateForm" ng-submit="createLocation(group_id, location.title, location.state, location.city, location.address, location.zipcode, location.phonenumber)">
                 <div class="list">
                     <input type="hidden" name="group_id" value="{{group_id}}">
+                    <label class="item item-input">
+                        <span class="input-label">Title</span>
+                        <input type="text" name="title" title="title" ng-model="location.title">
+                    </label>
                     <label class="item item-input">
                         <span class="input-label">Address</span>
                         <input type="text" name="address" title="address" ng-model="location.address">

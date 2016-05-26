@@ -270,6 +270,10 @@ var Schema = {
             onUpdate: cascade,
             nullable: false
         },
+        title: {
+            type: string,
+            nullable: false
+        },
         state: {
             type: string,
             nullable: false

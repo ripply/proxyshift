@@ -99,11 +99,12 @@ angular.module('scheduling-app.services')
                 );
             };
 
-            this.createLocation = function createLocation(group_id, timezone, state, city, address, zipcode, phonenumber, success, error) {
+            this.createLocation = function createLocation(group_id, timezone, title, state, city, address, zipcode, phonenumber, success, error) {
                 andThen(
                     GroupModel.createLocation({
                         group_id: group_id
                     }, {
+                        title: title,
                         state: state,
                         city: city,
                         address: address,
@@ -118,12 +119,13 @@ angular.module('scheduling-app.services')
                 );
             };
 
-            this.editLocation = function editLocation(group_id, location_id, timezone, state, city, address, zipcode, phonenumber, success, error) {
+            this.editLocation = function editLocation(group_id, location_id, timezone, title, state, city, address, zipcode, phonenumber, success, error) {
                 andThen(
                     GroupsModel.updateLocation({
                         group_id: group_id,
                         location_id: location_id
                     }, {
+                        title: title,
                         state: state,
                         city: city,
                         address: address,

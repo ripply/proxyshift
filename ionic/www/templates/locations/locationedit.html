@@ -4,9 +4,13 @@
             <div class="item item-divider">
                 Edit
             </div>
-            <form name="locationEditForm" ng-submit="editLocation(group_id, location_id, location.timezone_id, location.state, location.city, location.address, location.zipcode, location.phonenumber)">
+            <form name="locationEditForm" ng-submit="editLocation(group_id, location_id, location.timezone_id, location.title, location.state, location.city, location.address, location.zipcode, location.phonenumber)">
                 <input type="hidden" name="group_id" value="{{group_id}}">
                 <input type="hidden" name="location_id" value="{{location_id}}">
+                <label class="item item-input">
+                    <span class="input-label">Title</span>
+                    <input type="text" name="title" title="title" ng-model="location.title">
+                </label>
                 <label class="item item-input">
                     <span class="input-label">Address</span>
                     <input type="text" name="address" title="address" ng-model="location.address">
@@ -27,7 +31,7 @@
                     <span class="input-label">phonenumber</span>
                     <input type="text" name="phonenumber" title="phonenumber" ng-model="location.phonenumber">
                 </label>
-                <button class="button button-block button-steelblue" type="submit">Save changes</button></div>
+                <button class="button button-block button-steelblue" type="submit">Save changes</button>
             </form>
         </div>
     </ion-content>
