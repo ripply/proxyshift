@@ -4,9 +4,13 @@ angular.module('scheduling-app.push', [
 ])
     .service('PushProcessingService', [
         '$q',
+        '$rootScope',
+        'ResourceService',
         'CORDOVA_SETTINGS',
         function(
             $q,
+            $rootScope,
+            ResourceService,
             CORDOVA_SETTINGS
         ) {
             var self = this;
@@ -14,6 +18,51 @@ angular.module('scheduling-app.push', [
             var promise = deferred.promise;
             var deviceId;
             var timedout = false;
+
+            window.manageShift = {
+                accept: function(data) {
+
+                },
+                manage: function(data) {
+
+                }
+            };
+
+            window.newShift = {
+                apply: function(data) {
+                    ResourceService.registerForShift(data.additionalData.data.shift_id[0], function() {
+                        alert("Successfully registered for shift");
+                    }, function(response) {
+                        alert("Failed to register for shift: " + JSON.stringify(response));
+                    });
+                },
+                ignore: function(data) {
+                    ResourceService.ignoreShift(adata.additionalData.data.shift_id[0], function() {
+                        alert("Successfully ignored shift");
+                    }, function(response) {
+                        alert("Failed to ignore shift: " + JSON.stringify(response));
+                    })
+                }
+            };
+
+            window.actions = {
+                loggedIn: {
+                    foreground: function(data) {
+                        alert('Someone logged in while the app is open!');
+                    },
+                    background: function(data) {
+                        alert('Someone logged in while app was in background');
+                    },
+                    coldstart: function(data) {
+                        alert('Someone logged in while app was off');
+                    }
+                },
+                newShift: {
+                    'default': function(data, additionalData, foreground, coldstart) {
+
+                    }
+                }
+            };
 
             function supported() {
                 return window.cordova &&
@@ -55,10 +104,10 @@ angular.module('scheduling-app.push', [
                                 "categories": {
                                     "newShift": {
                                         "yes": {
-                                            "callback": "window.apply", "title": "Apply", "foreground": true, "destructive": false
+                                            "callback": "window.newShift.apply", "title": "Apply", "foreground": true, "destructive": false
                                         },
                                         "no": {
-                                            "callback": "window.ignore", "title": "Ignore", "foreground": false, "destructive": false
+                                            "callback": "window.newShift.ignore", "title": "Ignore", "foreground": false, "destructive": false
                                         }
                                     },
                                     "manageShift": {
@@ -66,7 +115,7 @@ angular.module('scheduling-app.push', [
                                             "callback": "window.manageShift.accept", "title": "Accept", "foreground": true, "destructive": true
                                         },
                                         "no": {
-                                            "callback": "window.manageShift.accept", "title": "Dismiss", "foreground": true, "destructive": true
+                                            "callback": "window.manageShift.manage", "title": "Manage", "foreground": true, "destructive": true
                                         }
                                     }
                                 }
@@ -100,9 +149,38 @@ angular.module('scheduling-app.push', [
                             }
                         });
                         self.push.on('notification', function(data) {
-                            alert(data.message);
-                            //navigator.notification.alert(data.message, function(i) {}, data.title, ['hey', 'sup']);
                             console.log("RECEIVED NOTIFICATION:" + JSON.stringify(data));
+                            var additionalData = data.additionalData;
+                            if (additionalData && additionalData.hasOwnProperty('action')) {
+                                var foreground = additionalData.foreground;
+                                var coldstart = additionalData.coldstart;
+                                if (window.actions.hasOwnProperty(additionalData.action)) {
+                                    var actions = window.actions[additionalData.action];
+                                    var method = null;
+                                    if (coldstart && actions.hasOwnProperty('coldstart') && actions['coldstart'] != false) {
+                                        method = actions['coldstart'];
+                                    } else if (foreground && actions.hasOwnProperty('foreground') && actions['foreground'] != false) {
+                                        method = actions['foreground'];
+                                    } else if (!foreground && actions.hasOwnProperty('background') && actions['background'] != false) {
+                                        method = actions['background'];
+                                    } else if (actions.hasOwnProperty('foreground') && actions['foreground'] != false) {
+                                        method = actions['foreground'];
+                                    } else if (actions.hasOwnProperty('background') && actions['background'] != false) {
+                                        method = actions['background'];
+                                    } else if (actions.hasOwnProperty('default')) {
+                                        method = actions['default'];
+                                    }
+                                    if (method) {
+                                        method(data, additionalData, foreground, coldstart);
+                                    } else {
+                                        alert('Cannot handle action: ' + additionalData.action + '\n' + JSON.stringify(data));
+                                    }
+                                } else {
+                                    alert('Unknown action: ' + additionalData.action + '\n' + JSON.stringify(data));
+                                }
+                            } else {
+                                alert(JSON.stringify(data));
+                            }
                         });
                         // if push notifications are never initialized user wont be able to login
                         // this happens on ios when user disables push notifications

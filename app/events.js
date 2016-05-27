@@ -7,18 +7,19 @@ var _ = require('underscore'),
 var categories = {
     'newShift': {
         actions: [
-            { "icon": "ion-checkmark", "title": "Apply", "callback": "window.apply", "foreground": true},
-            { "icon": "snooze", "title": "Ignore", "callback": "window.ignore", "foreground": false}
+            { "icon": "ion-checkmark", "title": "Apply", "callback": "window.newShift.apply", "foreground": true},
+            { "icon": "snooze", "title": "Ignore", "callback": "window.newShift.ignore", "foreground": false}
         ]
     },
     'manageShift': {
         actions: [
-
+            { "icon": "ion-checkmark", "title": "Accept", "callback": "window.manageShift.accept", "foreground": true},
+            { "icon": "snooze", "title": "Manage", "callback": "window.manageShift.manage", "foreground": true}
         ]
     }
 };
 
-function createNotification(default_, title, message, bodyAndroidOnly, badge, timeToLive, category) {
+function createNotification(default_, title, message, bodyAndroidOnly, badge, timeToLive, category, action, data) {
     var compiledMessage = _.template(message);
     var compiledBody = _.template(bodyAndroidOnly);
     return function(args) {
@@ -30,6 +31,8 @@ function createNotification(default_, title, message, bodyAndroidOnly, badge, ti
             'content-available': 1,
             payload: {
                 message: interpolatedMessage,
+                action: action,
+                data: data
             }
         };
 
@@ -46,9 +49,11 @@ function createNotification(default_, title, message, bodyAndroidOnly, badge, ti
             data: {
                 title: title,
                 message: interpolatedMessage,
+                action: action,
+                data: data,
                 //style: 'inbox',
                 //summaryText: 'There are %n% notifications',
-                "content-available": "1",
+                'content-available': '1',
                 //priority: 2,
 
                 //"vibrationPattern": [2000, 1000, 500, 500]
@@ -90,7 +95,9 @@ var eventLoggedInMesages = {
         'Push: You logged in!',
         'Successfully!',
         3,
-        3
+        3,
+        undefined,
+        'loggedIn'
     )
 };
 
@@ -136,7 +143,7 @@ function formatTimeDateLocationsForNotifications(shift_location, shift_sublocati
     }
 }
 
-function newShiftApplication(shift_location, shift_sublocation, shift_start, shift_end, timezone, job_title) {
+function newShiftApplication(shift_location, shift_sublocation, shift_start, shift_end, timezone, job_title, shift_id) {
     var formatted = formatTimeDateLocationsForNotifications(shift_location, shift_sublocation, shift_start, shift_end, timezone);
 
     return {
@@ -147,12 +154,16 @@ function newShiftApplication(shift_location, shift_sublocation, shift_start, shi
             'body android only',
             3,
             3,
-            'manageShift'
+            'manageShift',
+            'manageShift',
+            {
+                shift_id: shift_id
+            }
         )
     }
 }
 
-function newShift(shift_location, shift_sublocation, shift_start, shift_end, timezone) {
+function newShift(shift_location, shift_sublocation, shift_start, shift_end, timezone, shift_id) {
     var formatted = formatTimeDateLocationsForNotifications(shift_location, shift_sublocation, shift_start, shift_end, timezone);
 
     return {
@@ -163,7 +174,11 @@ function newShift(shift_location, shift_sublocation, shift_start, shift_end, tim
             'body android only',
             3,
             3,
-            'newShift'
+            'newShift',
+            'newShift',
+            {
+                shift_id: shift_id
+            }
         )
     };
 }
