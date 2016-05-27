@@ -60,6 +60,14 @@ angular.module('scheduling-app.push', [
                                         "no": {
                                             "callback": "window.ignore", "title": "Ignore", "foreground": false, "destructive": false
                                         }
+                                    },
+                                    "manageShift": {
+                                        "yes": {
+                                            "callback": "window.manageShift.accept", "title": "Accept", "foreground": true, "destructive": true
+                                        },
+                                        "no": {
+                                            "callback": "window.manageShift.accept", "title": "Dismiss", "foreground": true, "destructive": true
+                                        }
                                     }
                                 }
                             },
