@@ -453,7 +453,8 @@ const newShiftApplicationProperties = [
     'timezone',
     'location_name',
     'sublocation_name',
-    'location_id'
+    'location_id',
+    'groupuserclass_title'
 ];
 
 App.prototype.handleNewShiftApplication = function handleNewShiftApplication(job) {
@@ -479,6 +480,7 @@ App.prototype.handleNewShiftApplication = function handleNewShiftApplication(job
                     'sublocations.title as sublocation_name, ' +
                     'COALESCE(shifts.notify) >= shiftapplications.date as notified, ' +
                     'COALESCE(shifts.location_id, locations.id) as location_id, ' +
+                    'groupuserclasses.title as groupuserclass_title, ' +
                     'shifts.notify as notify'
                 )
             )
@@ -488,6 +490,9 @@ App.prototype.handleNewShiftApplication = function handleNewShiftApplication(job
                 })
                 .innerJoin('shifts', function() {
                     this.on('shifts.id', '=', 'shiftapplications.shift_id');
+                })
+                .innerJoin('groupuserclasses', function() {
+                    this.on('groupuserclasses.id', '=', 'shifts.groupuserclass_id');
                 })
                 .leftJoin('timezones', function() {
                     this.on('timezones.id', '=', 'shifts.timezone_id');
@@ -617,7 +622,8 @@ App.prototype.handleNewShiftApplication = function handleNewShiftApplication(job
                                                     shiftApplicationProperties.sublocation_name,
                                                     shiftApplicationProperties.start,
                                                     shiftApplicationProperties.end,
-                                                    shiftApplicationProperties.timezone
+                                                    shiftApplicationProperties.timezone,
+                                                    shiftApplicationProperties.groupuserclass_title
                                                 ), {
                                                     location_id: shiftApplicationProperties.location_id
                                                 }

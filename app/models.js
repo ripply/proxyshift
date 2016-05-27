@@ -503,7 +503,7 @@ var messageBrokerLaunched = false;
 var messageBrokerLaunching = false;
 
 function shouldWeLaunchMessageBrokerInThisProcess() {
-    if (messageBrokerLaunched) {
+    if (messageBrokerLaunched || messageBrokerLaunching) {
         return false;
     }
     if (config.has('rabbit.workers')) {
