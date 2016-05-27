@@ -31,8 +31,11 @@ angular.module('scheduling-app.controllers')
 
             var hideLoginModal = function hideLoginModal() {
                 console.log("Hide login modal... going " + ($rootScope.previousState || STATES.HOME));
-                $state.go(STATES.HOME, {}, {reload: false, inherit: true});
-                //$rootScope.loginModal.hide();
+                if ($state.current.name == STATES.LOGIN) {
+                    $state.go(STATES.HOME, {}, {reload: false, inherit: true});
+                } else {
+                    // user opened app with a different state, let it happen
+                }
             };
 
             this.hideLoginModal = hideLoginModal;
