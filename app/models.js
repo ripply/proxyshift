@@ -499,7 +499,13 @@ function initDb(dropAllTables) {
     return initDbPromise;
 }
 
+var messageBrokerLaunched = false;
+var messageBrokerLaunching = false;
+
 function shouldWeLaunchMessageBrokerInThisProcess() {
+    if (messageBrokerLaunched) {
+        return false;
+    }
     if (config.has('rabbit.workers')) {
         var workers = config.get('rabbit.workers');
         return workers <= 0;
@@ -511,6 +517,10 @@ function shouldWeLaunchMessageBrokerInThisProcess() {
 
 function launchMessageBroker() {
     return new Promise(function launchingMessageBroker(resolve, reject) {
+        if (messageBrokerLaunched === false &&
+            messageBrokerLaunching === false) {
+            messageBrokerLaunching = true;
+        }
         var instance = require('../app');
         var resolved = false;
         if (instance.ready) {
@@ -521,10 +531,14 @@ function launchMessageBroker() {
         }
 
         function messageBrokerReady() {
-            console.log("Starting message broker!");
-            instance.init();
-            resolved = true;
-            resolve();
+            if (!messageBrokerLaunched) {
+                messageBrokerLaunched = true;
+                messageBrokerLaunching = false;
+                console.log("Starting message broker!");
+                instance.init();
+                resolved = true;
+                resolve();
+            }
         }
     });
 }
