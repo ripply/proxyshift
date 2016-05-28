@@ -1185,6 +1185,9 @@ ion-header-bar.bar.bar-positive {
 .list .item-indent .item a {
   padding-left: 0;
 }
+.list .item-complex .item-content {
+  background-color: #38414e;
+}
 .list .item-complex :after {
   content: ">";
   position: absolute;
@@ -1192,18 +1195,22 @@ ion-header-bar.bar.bar-positive {
   right: 20px;
   top: 20px;
 }
-.list .item {
+.list .item,
+.list .card {
   background-color: inherit;
   border-top-width: 0;
   border-bottom-color: #ffffff;
   border-bottom-width: 0px;
   border-left-width: 0;
   border-right-width: 0;
-  margin: 0;
   color: #ffffff;
 }
-.list .item a {
+.list .item a,
+.list .card a {
   background-color: inherit;
+}
+.list .card .item-content .item {
+  padding: 5px;
 }
 .list .shift-item-date {
   color: #ffffff;
@@ -1215,26 +1222,26 @@ ion-header-bar.bar.bar-positive {
   color: #ffffff;
 }
 .shift-info {
-  padding-left: 10px;
-  padding-top: 2px;
-  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-top: 1px;
+  padding-bottom: 1px;
 }
 .item .shift-info .shift-right {
-  padding-top: 2px;
-  padding-bottom: 2px;
+  padding-top: 1px;
+  padding-bottom: 1px;
 }
 #shift-description-content {
-  padding-right: 10px;
+  padding-right: 5px;
 }
 #shift-description-content .shift-info {
-  padding-top: 5px;
+  padding-top: 2.5px;
 }
 #shift-description-content .shift-right {
-  padding-top: 5px;
+  padding-top: 2.5px;
 }
 #shift-description-content .shift-desc {
-  padding-left: 25px;
-  padding-right: 25px;
+  padding-left: 22.5px;
+  padding-right: 22.5px;
 }
 .shift-left {
   display: block;
@@ -1261,8 +1268,8 @@ ion-header-bar.bar.bar-positive {
   float: left;
   display: none;
   color: #d64541;
-  top: 26.5px;
-  left: 2.5px;
+  top: 25.5px;
+  left: 1.25px;
 }
 .shift-left-icon i {
   font-size: 23px;

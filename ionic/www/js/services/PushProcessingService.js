@@ -5,11 +5,13 @@ angular.module('scheduling-app.push', [
     .service('PushProcessingService', [
         '$q',
         '$rootScope',
+        '$state',
         'ResourceService',
         'CORDOVA_SETTINGS',
         function(
             $q,
             $rootScope,
+            $state,
             ResourceService,
             CORDOVA_SETTINGS
         ) {
@@ -24,7 +26,7 @@ angular.module('scheduling-app.push', [
 
                 },
                 manage: function(data) {
-
+                    $state.go('app.shift', {shift_id: data.additionalData.data.shift_id});
                 }
             };
 

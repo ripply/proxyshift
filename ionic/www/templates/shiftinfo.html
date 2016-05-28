@@ -1,0 +1,12 @@
+<ion-view>
+    <p>{{shift.title}}</p>
+    <p>{{shift.start}}</p>
+    <p>{{shift.end}}</p>
+    <p>{{shift.description}}</p>
+    <p ng-if="shift.shiftapplications.length > 0">
+        Shift applications
+    <div ng-repeat="shiftapplication in shift.shiftapplications">
+        <p>{{shiftapplication.date}}: {{shiftapplication.user.username}}</p>
+    </div>
+    </p>
+</ion-view>

@@ -112,8 +112,8 @@ var config_data = {
     'STATES': {
         'LOADING': 'loading',
         // TODO DEPRECATE
-        'HOME': 'app.tabs.shifts',
-        'SHIFTS': 'app.tabs.shifts',
+        'HOME': 'app.home',
+        'SHIFTS': 'app.shifts.open',
         'OPENSHIFTS': 'app.tabs.openshifts',
         'MYSHIFTS': 'app.tabs.myshifts',
         'SETTINGS': 'settings.user',

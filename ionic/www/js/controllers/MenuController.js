@@ -3,11 +3,13 @@ angular.module('scheduling-app.controllers')
     .controller('MenuController', [
         '$scope',
         '$rootScope',
+        '$state',
         'StateHistoryService',
         'GENERAL_EVENTS',
         'STATES',
         function($scope,
                  $rootScope,
+                 $state,
                  StateHistoryService,
                  GENERAL_EVENTS,
                  STATES
@@ -20,5 +22,11 @@ angular.module('scheduling-app.controllers')
             $scope.openSettings = function() {
                 StateHistoryService.addToGotoHistory();
             };
+
+            $rootScope.$on('events:shift:info', function(state, shift, name) {
+                if (shift.hasOwnProperty('id')) {
+                    $state.go('app.shift', {shift_id: shift.id});
+                }
+            });
         }
     ]);

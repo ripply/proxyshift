@@ -408,6 +408,16 @@ angular.module('scheduling-app.services')
                 );
             };
 
+            this.getShift = function getShift(shift_id, success, error) {
+                andThen(
+                    ShiftsModel.get({
+                        shift_id: shift_id
+                    }),
+                    success,
+                    error
+                );
+            };
+
             function andThen(promise, success, error) {
                 if (promise.hasOwnProperty("$promise")) {
                     promise = promise.$promise;

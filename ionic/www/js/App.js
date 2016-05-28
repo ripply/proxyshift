@@ -61,9 +61,11 @@ angular.module('scheduling-app', [
                 if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
                     cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
                 }
+                ionic.Platform.fullScreen();
                 if (window.StatusBar) {
                     // org.apache.cordova.statusbar required
-                    StatusBar.styleDefault();
+                    //StatusBar.styleDefault();
+                    StatusBar.hide();
                 }
                 triggerAuthenticationCheck();
             });
@@ -228,32 +230,48 @@ angular.module('scheduling-app', [
                 .state('app', {
                     url: "/app",
                     abstract: true,
-                    templateUrl: "templates/menu.html",
+                    templateUrl: "templates/tabs.html",
                     controller: 'MenuController',
                     resolve: {
                         authenticated: requireSessionOrGoLogin
                     }
                 })
 
-                .state('app.tabs', {
-                    url: "/tabs",
-                    abstract: true,
+                .state('app.home', {
+                    url: "/home",
                     views: {
-                        'menuContent': {
-                            templateUrl: "templates/tabs.html",
-                            controller: 'AppCtrl',
-                        },
-                        'menu': {
-                            templateUrl: "templates/menuimpl.html",
+                        'tabContent': {
+                            templateUrl: "templates/home.html",
                             controller: 'AppCtrl',
                         }
                     }
                 })
 
-                .state('app.tabs.shifts', {
-                    url: "/shifts",
+                .state('app.shift', {
+                    url: "/shift/:shift_id",
                     views: {
                         'tabContent': {
+                            templateUrl: "templates/shiftinfo.html",
+                            controller: 'ShiftInfoController'
+                        }
+                    }
+                })
+
+                .state('app.shifts', {
+                    url: "/shifts",
+                    abstract: true,
+                    views: {
+                        'tabContent': {
+                            templateUrl: "templates/shifttabs.html",
+                            controller: 'AppCtrl'
+                        }
+                    }
+                })
+
+                .state('app.shifts.open', {
+                    url: "/open",
+                    views: {
+                        'shiftTabContent': {
                             templateUrl: "templates/shifts.html",
                             controller: 'OpenShiftsController',
                         }

@@ -553,6 +553,9 @@ ion-header-bar.bar.bar-positive {
     }
 
     .item-complex {
+        .item-content {
+            background-color: @settings-background;
+        }
         //position: relative;
         :after {
             content: ">";
@@ -563,19 +566,27 @@ ion-header-bar.bar.bar-positive {
         }
     }
 
-    .item {
+    .item, .card {
         background-color: inherit;
         border-top-width: 0;
         border-bottom-color: @settings-offset-color;
         border-bottom-width: 0px;
         border-left-width: 0;
         border-right-width: 0;
-        margin: 0;
+        //margin: 0;
         color: @settings-offset-color;
         //margin-left: 50px;
 
         a {
             background-color: inherit;
+        }
+    }
+
+    .card {
+        .item-content {
+            .item {
+                padding: 5px;
+            }
         }
     }
 
@@ -593,7 +604,7 @@ ion-header-bar.bar.bar-positive {
     color: @text-color;
 }
 
-@shift-padding: 10px;
+@shift-padding: 5px;
 @shift-padding-top-bottom: @shift-padding / 5;
 
 .shift-info {

@@ -1,0 +1,11 @@
+<div id="app-header-tab" class="tabs-striped tabs-top tabs-background-positive tabs-color-light">
+    <div class="tabs" style="top: 0">
+        <a class="tab-item" href="#{{states.SHIFTS_URL}}" ng-class="{'active': currentState == states.SHIFTS}">
+            Open Shifts
+        </a>
+        <a class="tab-item" href="#{{states.OPENSHIFTS_URL}}" ng-class="{'active': currentState == states.OPENSHIFTS}">
+            My Shifts
+        </a>
+    </div>
+</div>
+<ion-nav-view name="shiftTabContent"></ion-nav-view>

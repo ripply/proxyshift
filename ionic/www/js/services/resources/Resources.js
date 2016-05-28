@@ -64,6 +64,18 @@ angular.forEach({
                 shift_id: '@shift_id'
             },
             actions: {
+                get: {
+                    method: GET,
+                    url: base
+                },
+                patch: {
+                    method: PATCH,
+                    url: base
+                },
+                remove: {
+                    method: DELETE,
+                    url: base
+                },
                 all: {
                     method: GET,
                     url: url + '/shifts/all',

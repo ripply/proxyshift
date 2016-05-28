@@ -1455,12 +1455,14 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
 function joinShiftApplications(query, user_id) {
     // TODO: Figure out how to use this query without recinded != true see:
     // https://stackoverflow.com/questions/9592875/sql-server-left-outer-join-with-top-1-to-select-at-most-one-row
+    console.log('joinnnnn');
     return query.leftOuterJoin('shiftapplications', function() {
         this.on('shiftapplications.shift_id', '=', 'shifts.id')
             .andOn('shiftapplications.user_id', '=', user_id);
     })
         .where(function() {
-            this.where('shiftapplications.recinded', '!=', '1')
+            this.where('shiftapplications.recinded', '<>', '1')
+                .orWhere('shiftapplications.recinded', '<>', true)
                 .orWhereNull('shiftapplications.recinded');
         });
 }

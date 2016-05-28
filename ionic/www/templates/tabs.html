@@ -1,18 +1,16 @@
-<div id="app-header-tab" class="tabs-striped tabs-top tabs-background-positive tabs-color-light">
+<div id="app-header-tab" class="tabs-striped tabs-background-positive tabs-color-light">
     <div class="tabs">
-        <a class="tab-item" href="#{{states.SHIFTS_URL}}" ng-class="{'active': currentState == states.SHIFTS}">
-            Shifts
+        <a class="tab-item" href="#{{states.HOME_URL}}" ng-class="{'active': currentState == states.SHIFTS}">
+            Home
         </a>
-        <a class="tab-item" href="#{{states.OPENSHIFTS_URL}}" ng-class="{'active': currentState == states.OPENSHIFTS}">
-            Open shifts
+        <a class="tab-item" href="#{{states.SHIFTS_URL}}" ng-class="{'active': currentState == states.OPENSHIFTS}">
+            Fill a shift
         </a>
-        <a class="tab-item" href="#{{states.MYSHIFTS_URL}}" ng-class="{'active': currentState == states.MYSHIFTS}">
-            My shifts
+        <a class="tab-item" href="#{{states.SHIFTS_URL}}" ng-class="{'active': currentState == states.OPENSHIFTS}">
+            Shift Req
         </a>
-        <a class="tab-item" href="#{{states.MANAGE_URL}}"
-           ng-class="{'active': currentState == states.MANAGE}"
-           ng-if="userinfo.ownedGroups.length > 0 || userinfo.privilegedMemberOfGroups.length > 0 || userinfo.privilegedMemberOfLocations.length > 0">
-            Manage
+        <a class="tab-item" href="#{{states.SHIFTS_URL}}" ng-class="{'active': currentState == states.OPENSHIFTS}">
+            Cal
         </a>
         <div style="position: absolute; top: 100%; left: 0; z-index: 1005; width: inherit; background-color: #FFF;">
             <shift-calendar value="AllShifts" toggle="true" show="false"></shift-calendar>
@@ -20,10 +18,3 @@
     </div>
 </div>
 <ion-nav-view name="tabContent"></ion-nav-view>
-<nav mfb-menu position="br" effect="zoomin"
-     active-icon="ion-ios-plus-outline"
-     nav-transition="ios"
-     resting-icon="ion-ios-plus-outline"
-     ng-click="createShift()"
-     toggling-method="click">
-</nav>

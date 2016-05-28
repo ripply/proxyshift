@@ -436,8 +436,23 @@ angular.module('scheduling-app.controllers')
             };
 
             $scope.clicked = function(shift) {
-                //shift.expanded = !shift.expanded;
                 $rootScope.$broadcast('events:shift:description:show', shift, $scope.name);
+            };
+
+            $scope.accept = function(shift) {
+                $scope.applyForShift(shift.id);
+            };
+
+            $scope.decline = function(shift) {
+                $scope.recindApplicationForAShift(shift.id, 'test');
+            };
+
+            $scope.ignore = function(shift) {
+                $scope.ignoreShift(shift.id);
+            };
+
+            $scope.info = function(shift) {
+                $rootScope.$broadcast('events:shift:info', shift, $scope.name);
             };
 
             $scope.getReadableLocalShiftStartTime = ShiftProcessingService.getReadableLocalShiftStartTime;
@@ -451,4 +466,5 @@ angular.module('scheduling-app.controllers')
             $scope.userIsInDifferentTimeZone = ShiftProcessingService.userIsInDifferentTimeZone;
             $scope.getShiftsLocation = ShiftProcessingService.getShiftsLocation;
             $scope.getShiftsSublocation = ShiftProcessingService.getShiftsSublocation;
+            $scope.ignoreShift = ResourceService.ignoreShift;
         }]);
