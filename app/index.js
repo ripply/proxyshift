@@ -463,7 +463,7 @@ App.prototype.handleNewShiftApplication = function handleNewShiftApplication(job
     var self = this;
     console.log(job);
     var shift_id = body.shift_id;
-    var shift_application_id = body.shfit_application_id;
+    var shiftapplication_id = body.shfit_application_id;
 
     return Bookshelf.transaction(function(t) {
         return models.ShiftApplication.query(function(q) {
@@ -623,7 +623,9 @@ App.prototype.handleNewShiftApplication = function handleNewShiftApplication(job
                                                     shiftApplicationProperties.start,
                                                     shiftApplicationProperties.end,
                                                     shiftApplicationProperties.timezone,
-                                                    shiftApplicationProperties.groupuserclass_title
+                                                    shiftApplicationProperties.groupuserclass_title,
+                                                    shift_id,
+                                                    shiftapplication_id
                                                 ), {
                                                     location_id: shiftApplicationProperties.location_id
                                                 }

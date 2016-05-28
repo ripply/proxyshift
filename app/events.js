@@ -143,7 +143,7 @@ function formatTimeDateLocationsForNotifications(shift_location, shift_sublocati
     }
 }
 
-function newShiftApplication(shift_location, shift_sublocation, shift_start, shift_end, timezone, job_title, shift_id) {
+function newShiftApplication(shift_location, shift_sublocation, shift_start, shift_end, timezone, job_title, shift_id, shiftapplication_id) {
     var formatted = formatTimeDateLocationsForNotifications(shift_location, shift_sublocation, shift_start, shift_end, timezone);
 
     return {
@@ -157,7 +157,8 @@ function newShiftApplication(shift_location, shift_sublocation, shift_start, shi
             'manageShift',
             'manageShift',
             {
-                shift_id: shift_id
+                shift_id: shift_id,
+                shiftapplication_id: shiftapplication_id
             }
         )
     }
