@@ -114,8 +114,8 @@ var config_data = {
         // TODO DEPRECATE
         'HOME': 'app.home',
         'SHIFTS': 'app.shifts.open',
-        'OPENSHIFTS': 'app.tabs.openshifts',
-        'MYSHIFTS': 'app.tabs.myshifts',
+        'MYSHIFTS': 'app.shifts.mine',
+        'SHIFT_REQUEST': 'app.shifts.request',
         'SETTINGS': 'settings.user',
         'GROUPSETTINGS': 'settings.group',
         'GROUPMEMBERS': 'settings.group.members',

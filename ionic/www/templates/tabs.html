@@ -1,12 +1,12 @@
 <div id="app-header-tab" class="tabs-striped tabs-background-positive tabs-color-light">
     <div class="tabs">
-        <a class="tab-item" href="#{{states.HOME_URL}}" ng-class="{'active': currentState == states.SHIFTS}">
+        <a class="tab-item" href="#{{states.HOME_URL}}" ng-class="{'active': currentState == states.HOME}">
             Home
         </a>
-        <a class="tab-item" href="#{{states.SHIFTS_URL}}" ng-class="{'active': currentState == states.OPENSHIFTS}">
+        <a class="tab-item" href="#{{states.SHIFTS_URL}}" ng-class="{'active': currentState == states.SHIFTS || currentState == states.MYSHIFTS}">
             Fill a shift
         </a>
-        <a class="tab-item" href="#{{states.SHIFTS_URL}}" ng-class="{'active': currentState == states.OPENSHIFTS}">
+        <a class="tab-item" href="#{{states.SHIFT_REQUEST_URL}}" ng-class="{'active': currentState == states.SHIFT_REQUEST}">
             Shift Req
         </a>
         <a class="tab-item" href="#{{states.SHIFTS_URL}}" ng-class="{'active': currentState == states.OPENSHIFTS}">

@@ -3,6 +3,7 @@ angular.module('scheduling-app.controllers')
         '$rootScope',
         '$scope',
         '$controller',
+        '$ionicScrollDelegate',
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
         'ResourceService',
@@ -12,6 +13,7 @@ angular.module('scheduling-app.controllers')
         function($rootScope,
                  $scope,
                  $controller,
+                 $ionicScrollDelegate,
                  GENERAL_CONFIG,
                  GENERAL_EVENTS,
                  ResourceService,
@@ -143,23 +145,24 @@ angular.module('scheduling-app.controllers')
                         reason: reason
                     })
                     .then(function(result) {
-                    console.log(result);
-                    var ignoredShift = addShiftToCanceledShifts(id);
-                    if (ignoredShift) {
-                        ignoredShift.busy = false;
-                        ignoredShift.failed = false;
-                    } else {
-                        // we dont have copy of this shift, update
-                        $scope.fetch();
-                    }
-                }, function(response) {
-                    // failure
-                    var failedShift = getShift(id);
-                    if (failedShift) {
-                        failedShift.busy = false;
-                        failedShift.failed = true;
-                    }
-                    $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);
+                        console.log(result);
+                        var ignoredShift = addShiftToCanceledShifts(id);
+                        if (ignoredShift) {
+                            ignoredShift.busy = false;
+                            ignoredShift.failed = false;
+                        } else {
+                            // we dont have copy of this shift, update
+                            $scope.fetch();
+                        }
+                        $ionicScrollDelegate.resize();
+                    }, function(response) {
+                        // failure
+                        var failedShift = getShift(id);
+                        if (failedShift) {
+                            failedShift.busy = false;
+                            failedShift.failed = true;
+                        }
+                        $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);
                 });
             };
 
@@ -186,6 +189,7 @@ angular.module('scheduling-app.controllers')
                             // we dont have copy of this shift, update
                             $scope.fetch();
                         }
+                        $ionicScrollDelegate.resize();
                     }, function(response) {
                         // failure
                         var failedShift = getShift(id);
@@ -219,6 +223,7 @@ angular.module('scheduling-app.controllers')
                             // we dont have copy of this shift, update
                             $scope.fetch();
                         }
+                        $ionicScrollDelegate.resize();
                     }, function(response) {
                         // failure
                         var failedShift = getShift(id);
@@ -252,6 +257,7 @@ angular.module('scheduling-app.controllers')
                             // we dont have copy of this shift, update
                             $scope.fetch();
                         }
+                        $ionicScrollDelegate.resize();
                     }, function(response) {
                         // failure
                         var failedShift = getShift(id);
@@ -289,6 +295,7 @@ angular.module('scheduling-app.controllers')
                             // server sent unexpected content
                         }
                         shift.applied = registrationId;
+                        $ionicScrollDelegate.resize();
                     }, function(response) {
                         // failure
                         var failedShift = getShift(id);
@@ -321,6 +328,7 @@ angular.module('scheduling-app.controllers')
                         shift.busy = false;
                         shift.failed = false;
                         shift.applied = undefined;
+                        $ionicScrollDelegate.resize();
                     }, function(response) {
                         // failure
                         var failedShift = getShift(id);
@@ -414,6 +422,7 @@ angular.module('scheduling-app.controllers')
             };
 
             $scope.ignoredShift = function(shift) {
+                //console.log(shift);
                 if (shift === undefined) {
                     return true;
                 }
@@ -421,6 +430,13 @@ angular.module('scheduling-app.controllers')
                     return false;
                 }
                 return shift.ignoreshifts.length > 0;
+            };
+
+            $scope.acceptedOrApprovedShift = function(shift) {
+                if (shift.id == 1) {
+                    console.log(shift);
+                }
+                return shift.applied;
             };
 
             function getDefaultShiftRange() {

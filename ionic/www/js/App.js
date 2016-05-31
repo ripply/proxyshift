@@ -278,6 +278,16 @@ angular.module('scheduling-app', [
                     }
                 })
 
+                .state('app.shifts.mine', {
+                    url: "/mine",
+                    views: {
+                        'shiftTabContent': {
+                            templateUrl: "templates/myshifts.html",
+                            controller: 'OpenShiftsController',
+                        }
+                    }
+                })
+
                 .state('app.tabs.openshifts', {
                     url: "/openshifts",
                     views: {

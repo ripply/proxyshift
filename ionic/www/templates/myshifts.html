@@ -1,14 +1,9 @@
 <ion-view view-title="My shifts" hide-back-button="true">
-    <ion-content class="has-tabs-top">
+    <ion-content class="has-header">
         <ion-refresher
             pulling-text="Pull to refresh..."
             on-refresh="fetch()">
         </ion-refresher>
-        <ion-list
-            class="has-header"
-            show-delete="false"
-            show-reorder="false"
-            can-swipe="false">
-        </ion-list>
+        <shift-list dismissable="true" name="shifts" acceptedOnly="true"></shift-list>
     </ion-content>
 </ion-view>

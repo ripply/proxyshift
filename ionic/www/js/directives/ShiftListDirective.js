@@ -13,6 +13,11 @@ angular.module('scheduling-app.directives')
         });
 
         function link(scope, element, attributes) {
+            if (attributes['acceptedonly']) {
+                scope.acceptedOnly = attributes['acceptedonly'] == 'true';
+            } else {
+                scope.acceptedOnly = false;
+            }
             scope.$on('$ionicView.afterEnter', function() {
                 console.log("After enter in directive link");
             });

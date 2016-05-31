@@ -4,66 +4,67 @@
     show-delete="false"
     show-reorder="false"
     can-swipe="true">
-    <div collection-repeat="shift in Model" item-height="120">
-    <div class="card">
-        <ion-item
-            class="item"
-            item-height="(64 + (4 * 2))"
-            ng-show="Model"
-            ng-hide="shift.canceled || ignoredShift(shift)">
-            <div ng-if="shift.isDivider">
-                {{getReadableStartDate(shift.shift, 'MMMM Dd')}}
-            </div>
-            <div ng-if="!shift.isDivider">
-                <div class="shift-item list-padding">
-                    <div class="shift-left-icon"><i class="icon ion-ios-checkmark-outline"></i></div>
-                    <div ng-class="{'shift-expanded': shift.expanded, 'shift-collapsed': !shift.expanded}">
-                        <div class="shift-right">
-                            <p class="shift-star" ng-hide="{{userIsInDifferentTimeZone(shift)}}">{{getReadableLocalShiftEndTime(shift)}}</p>
-                            <p class="shift-star" ng-show="{{userIsInDifferentTimeZone(shift)}}">{{getReadableLocalShiftEndTime(shift)}} (local)</p>
-                            <p class="shift-duration">{{getReadableShiftDuration(shift)}}</p>
-                        </div>
-                        <div class="shift-info">
-                            <p class="shift-location" ng-show="{{!shift.sublocation_id}}">{{getShiftsLocation(shift).address}}</p>
-                            <p class="shift-location shift-location-floor" ng-show="{{shift.sublocation_id}}">{{getShiftsLocation(shift).address}} - {{getShiftsSublocation(shift).title}}</p>
-                            <p class="shift-title">{{shift.title}}</p>
-                            <p class="shift-desc">{{shift.description}}</p>
+    <div collection-repeat="shift in Model" item-height="(shift.canceled || ignoredShift(shift)) || (acceptedOnly && (!acceptedOnly || !acceptedOrApprovedShift(shift))) ? 0:120"
+         item-width="100%"
+         ng-show="(!shift.canceled && !ignoredShift(shift)) && (!acceptedOnly || (acceptedOnly && acceptedOrApprovedShift(shift)))">
+        <div class="card">
+            <ion-item
+                class="item"
+                item-height="(64 + (4 * 2))"
+                ng-show="Model">
+                <div ng-if="shift.isDivider">
+                    {{getReadableStartDate(shift.shift, 'MMMM Dd')}}
+                </div>
+                <div ng-if="!shift.isDivider">
+                    <div class="shift-item list-padding">
+                        <div class="shift-left-icon"><i class="icon ion-ios-checkmark-outline"></i></div>
+                        <div ng-class="{'shift-expanded': shift.expanded, 'shift-collapsed': !shift.expanded}">
+                            <div class="shift-right">
+                                <p class="shift-star" ng-hide="{{userIsInDifferentTimeZone(shift)}}">{{getReadableLocalShiftEndTime(shift)}}</p>
+                                <p class="shift-star" ng-show="{{userIsInDifferentTimeZone(shift)}}">{{getReadableLocalShiftEndTime(shift)}} (local)</p>
+                                <p class="shift-duration">{{getReadableShiftDuration(shift)}}</p>
+                            </div>
+                            <div class="shift-info">
+                                <p class="shift-location" ng-show="{{!shift.sublocation_id}}">{{getShiftsLocation(shift).address}}</p>
+                                <p class="shift-location shift-location-floor" ng-show="{{shift.sublocation_id}}">{{getShiftsLocation(shift).address}} - {{getShiftsSublocation(shift).title}}</p>
+                                <p class="shift-title">{{shift.title}}</p>
+                                <p class="shift-desc">{{shift.description}}</p>
+                            </div>
                         </div>
                     </div>
+                    <div class="shift-bottom" ng-show="shift.expanded">
+                        <button class="button button-outline button-positive shift-accept shift-left">Accept</button>
+                        <button class="button button-outline button-assertive shift-decline shift-right">Decline</button>
+                    </div>
                 </div>
-                <div class="shift-bottom" ng-show="shift.expanded">
-                    <button class="button button-outline button-positive shift-accept shift-left">Accept</button>
-                    <button class="button button-outline button-assertive shift-decline shift-right">Decline</button>
-                </div>
-            </div>
-            <ion-option-button class="button-balanced"
-                               ng-click="info(shift)">
-                More Info
-            </ion-option-button>
-            <ion-option-button class="button-positive"
-                               ng-click="accept(shift)">
-                Accept
-            </ion-option-button>
-            <ion-option-button class="button-assertive"
-                               ng-click="decline(shift)"
-                               ng-if="shift.applied">
-                Decline
-            </ion-option-button>
-            <ion-option-button class="button-assertive"
-                               ng-click="ignore(shift)"
-                               ng-if="!shift.applied">
-                Ignore
-            </ion-option-button>
-        </ion-item>
-    </div>
+                <ion-option-button class="button-balanced"
+                                   ng-click="info(shift)">
+                    More Info
+                </ion-option-button>
+                <ion-option-button class="button-positive"
+                                   ng-click="accept(shift)">
+                    Accept
+                </ion-option-button>
+                <ion-option-button class="button-assertive"
+                                   ng-click="decline(shift)"
+                                   ng-if="shift.applied">
+                    Decline
+                </ion-option-button>
+                <ion-option-button class="button-assertive"
+                                   ng-click="ignore(shift)"
+                                   ng-if="!shift.applied">
+                    Ignore
+                </ion-option-button>
+            </ion-item>
+        </div>
     </div>
     <ion-item
         ng-hide="Model"
         class="item item-icon-right">
-        <p>There are currently no open shifts asdf{{Model.length}}</p>
+        <p>There are currently no open shifts {{Model.length}}</p>
     </ion-item>
     <div class="item item-divider"
-        ng-show="ignorableShiftsExist()">
+         ng-show="ignorableShiftsExist()">
         {{declinedshifttitle}}
     </div>
 </ion-list>
