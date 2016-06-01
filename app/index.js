@@ -62,7 +62,7 @@ App.prototype.getUserSettings = function getUserSettings(user_ids, next) {
         })
         .tap(next)
         .catch(function(err) {
-            slack.error(undefined, err, 'Error getting user settings');
+            slack.error(undefined, 'Error getting user settings', err);
             next(err);
         });
 };
@@ -94,7 +94,7 @@ App.prototype.getUserSettingsAndSubs = function getUserSettingsAndSubs(user_ids,
         })
         .tap(next)
         .catch(function(err) {
-            slack.error(undefined, err, 'Error getting user settings and subs');
+            slack.error(undefined, 'Error getting user settings and subs', err);
             next(err);
         });
 };
@@ -239,7 +239,7 @@ App.prototype.onLost = function() {
 
 App.prototype.onFail = function(err) {
     console.log('Failed to connect to RabbitMQ\n' + JSON.stringify(err));
-    slack.error('Failed to connect to RabbitMQ', err);
+    slack.error(undefined, 'Failed to connect to RabbitMQ', err);
     // TODO: ERROR HANDLING HERE?
 };
 
