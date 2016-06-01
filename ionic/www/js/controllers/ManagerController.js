@@ -23,6 +23,14 @@ angular.module('scheduling-app.controllers')
                 ShiftsModel.managing(function(data) {
                     $scope.Model = data;
                     deferred.resolve(data);
+                    data.splice(1, 0, {
+                        type: 'pendingApproval',
+                        isDivider: true
+                    });
+                    data.splice(3, 0, {
+                        type: 'noApplications',
+                        isDivider: true
+                    });
                     $rootScope.$emit(GENERAL_EVENTS.UPDATES.RESOURCE, 'ManageShifts', data, data, $scope);
                     if ($scope.fetchComplete !== undefined) {
                         $scope.fetchComplete(data);
