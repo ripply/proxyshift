@@ -60,7 +60,11 @@ App.prototype.getUserSettings = function getUserSettings(user_ids, next) {
                 'pushTokens'
             ]
         })
-        .tap(next);
+        .tap(next)
+        .catch(function(err) {
+            slack.error(undefined, err, 'Error getting user settings');
+            next(err);
+        });
 };
 
 App.prototype.forEachUserSetting = function forEachUserSetting(user_ids, each) {
@@ -88,7 +92,11 @@ App.prototype.getUserSettingsAndSubs = function getUserSettingsAndSubs(user_ids,
                 'pushTokens'
             ]
         })
-        .tap(next);
+        .tap(next)
+        .catch(function(err) {
+            slack.error(undefined, err, 'Error getting user settings and subs');
+            next(err);
+        });
 };
 
 App.prototype.forEachUserSettingAndSubs = function forEachUserSettingsAndSubs(user_ids, each) {

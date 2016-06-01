@@ -26,6 +26,10 @@ module.exports = {
                 channel: '#crashes',
                 username: username
             });
+        } else if (err) {
+            console.log(err.stack ? err.stack : err);
+        } else {
+            console.log(message);
         }
     },
     alert: function(message, err) {
@@ -35,6 +39,10 @@ module.exports = {
                 channel: "#alerts",
                 username: username
             })
+        } else if (err) {
+            console.log(err.stack ? err.stack : err);
+        } else {
+            console.log(message);
         }
     },
     serious: function(message, err) {
@@ -44,6 +52,10 @@ module.exports = {
                 channel: "#alerts",
                 username: username
             });
+        } else if (err) {
+            console.log(err.stack ? err.stack : err);
+        } else {
+            console.log(message);
         }
     },
     info: function(message, channel) {
