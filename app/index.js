@@ -44,7 +44,7 @@ _.bindAll.apply(this, _.flatten([App.prototype, Object.keys(events)]));
 
 App.prototype.pushNotificationsExpiresIn = pushNotificationsExpiresIn;
 
-App.prototype.getUserSettings = function getUserSettings(user_ids, next) {
+App.prototype.getUserSettings = function getUserSettings(user_ids, next, error) {
     if (!user_ids instanceof Array) {
         user_ids = [user_ids];
     }
@@ -61,21 +61,27 @@ App.prototype.getUserSettings = function getUserSettings(user_ids, next) {
             ]
         })
         .tap(next)
-        .catch(function(err) {
+        .catch(function (err) {
             slack.error(undefined, 'Error getting user settings', err);
-            next(err);
+            if (error) {
+                return error(err);0
+            }
         });
 };
 
-App.prototype.forEachUserSetting = function forEachUserSetting(user_ids, each) {
+App.prototype.forEachUserSetting = function forEachUserSetting(user_ids, each, error) {
     return this.getUserSettings(user_ids, function forEachUserSettingGetPermissions(permissions) {
         if (permissions) {
             permissions.forEach(each);
         }
+    }, function(err) {
+        if (error) {
+            error(err);
+        }
     });
 };
 
-App.prototype.getUserSettingsAndSubs = function getUserSettingsAndSubs(user_ids, next) {
+App.prototype.getUserSettingsAndSubs = function getUserSettingsAndSubs(user_ids, next, error) {
     if (!user_ids instanceof Array) {
         user_ids = [user_ids];
     }
@@ -95,22 +101,28 @@ App.prototype.getUserSettingsAndSubs = function getUserSettingsAndSubs(user_ids,
         .tap(next)
         .catch(function(err) {
             slack.error(undefined, 'Error getting user settings and subs', err);
-            next(err);
+            if (error) {
+                return error(err);
+            }
         });
 };
 
-App.prototype.forEachUserSettingAndSubs = function forEachUserSettingsAndSubs(user_ids, each) {
+App.prototype.forEachUserSettingAndSubs = function forEachUserSettingsAndSubs(user_ids, each, error) {
     return this.getUserSettingsAndSubs(user_ids, function forEachUserSettingAndSubsGetPermissions(permissions) {
         if (permissions) {
             console.log(permissions);
             permissions.forEach(each);
+        }
+    }, function(err) {
+        if (error) {
+            error(err);
         }
     });
 };
 
 const sendToUsersDefaultOrdering = ['push', 'email', 'text'];
 
-App.prototype.sendToUsers = function sendToUsers(user_ids, messages, args, test) {
+App.prototype.sendToUsers = function sendToUsers(user_ids, messages, args, test, error) {
     var hasLocationId = args.hasOwnProperty('location_id');
     var self = this;
     if (!args.order) {
@@ -120,9 +132,9 @@ App.prototype.sendToUsers = function sendToUsers(user_ids, messages, args, test)
         args.limit = args.order.length;
     }
     if (hasLocationId) {
-        return this.forEachUserSettingAndSubs(user_ids, sendToUsersForEach);
+        return this.forEachUserSettingAndSubs(user_ids, sendToUsersForEach, error);
     } else {
-        return this.forEachUserSetting(user_ids, sendToUsersForEach);
+        return this.forEachUserSetting(user_ids, sendToUsersForEach, error);
     }
 
     function sendToUsersForEach(user) {
@@ -623,6 +635,7 @@ App.prototype.handleNewShiftApplication = function handleNewShiftApplication(job
                                             transacting: t
                                         })
                                         .tap(function() {
+                                            var nacked = false;
                                             self.sendToUsers(
                                                 uniqueManagingUserIds,
                                                 self.newShiftApplication(
@@ -636,10 +649,17 @@ App.prototype.handleNewShiftApplication = function handleNewShiftApplication(job
                                                     shiftapplication_id
                                                 ), {
                                                     location_id: shiftApplicationProperties.location_id
+                                                },
+                                                undefined,
+                                                function failedToSendNewShiftApplicationNotification(err) {
+                                                    nacked = true;
+                                                    job.nack();
                                                 }
                                             );
-                                            // success
-                                            job.ack();
+                                            if (!nacked) {
+                                                // success
+                                                job.ack();
+                                            }
                                         })
                                         .catch(function(err) {
                                             console.log(err);
@@ -817,7 +837,11 @@ App.prototype.sendNotificationsAboutNewShifts = function sendNotificationsAboutN
             }
 
             if (start && moment(time.unknownTimeFormatToDate(start, timezone)) > moment()) {
-                self.sendToUsers(Object.keys(user_ids), self.newShift(location_name, sublocation_name, start, end, timezone, shift_ids), args);
+                self.sendToUsers(Object.keys(user_ids), self.newShift(location_name, sublocation_name, start, end, timezone, shift_ids), args, undefined, function failedToSendNewShiftNotifications(err) {
+                    slack.error(undefined, 'Failed to send new shift notification', err);
+                    success = false;
+                    error(err);
+                });
             } else {
                 // never send a notification for a shift created in the past
             }
