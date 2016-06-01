@@ -13,9 +13,18 @@ if (config.has('slack.webhook')) {
 
 var username = 'server';
 
+function printError(message, err) {
+    if (err) {
+        console.log(err.stack ? err.stack : err);
+    } else {
+        console.log(message);
+    }
+}
+
 module.exports = {
     error: function(req, message, err) {
         if (slack) {
+            printError(message, err);
             return slack.send({
                 text: prefixCluster(
                     message + "\nroute: " + (req ? req.originalUrl : 'undefined') +
@@ -26,36 +35,32 @@ module.exports = {
                 channel: '#crashes',
                 username: username
             });
-        } else if (err) {
-            console.log(err.stack ? err.stack : err);
         } else {
-            console.log(message);
+            printError(message, err);
         }
     },
     alert: function(message, err) {
         if (slack) {
+            printError(message, err);
             return slack.send({
                 text: prefixCluster(message + stringify("\n", prettifyError(err))),
                 channel: "#alerts",
                 username: username
             })
-        } else if (err) {
-            console.log(err.stack ? err.stack : err);
         } else {
-            console.log(message);
+            printError(message, err);
         }
     },
     serious: function(message, err) {
         if (slack) {
+            printError(message, err);
             return slack.send({
                 text: prefixCluster(message + stringify("\n", prettifyError(err))),
                 channel: "#alerts",
                 username: username
             });
-        } else if (err) {
-            console.log(err.stack ? err.stack : err);
         } else {
-            console.log(message);
+            printError(message, err);
         }
     },
     info: function(message, channel) {
