@@ -949,6 +949,9 @@ ion-header-bar.bar.bar-positive {
   /* removes the default orange border when focus */
   border: 1px solid #11a8ab;
 }
+.input-label {
+  color: #ffffff;
+}
 .button {
   border-radius: 5px;
 }

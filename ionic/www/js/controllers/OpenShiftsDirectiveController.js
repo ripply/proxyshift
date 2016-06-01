@@ -22,6 +22,7 @@ angular.module('scheduling-app.controllers')
             });
 
             $scope.fetch = function() {
+                console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
                 var deferred = $q.defer();
 
                 AllShiftsModel.all(function(data) {

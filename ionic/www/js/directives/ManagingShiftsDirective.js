@@ -8,7 +8,8 @@ angular.module('scheduling-app.directives')
             scope: {
                 dismissable: '=dismissable',
                 cancelable: '=cancelable',
-                manageable: '=manageable'
+                manageable: '=manageable',
+                name: '=name'
             }
         });
 

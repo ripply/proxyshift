@@ -308,10 +308,10 @@ angular.module('scheduling-app', [
                     }
                 })
 
-                .state('app.tabs.manage', {
+                .state('app.shifts.manage', {
                     url: "/manage",
                     views: {
-                        'tabContent': {
+                        'shiftTabContent': {
                             templateUrl: "templates/manage.html",
                             controller: 'ManagerController',
                         }

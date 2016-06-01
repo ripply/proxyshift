@@ -130,7 +130,7 @@ var config_data = {
         'REQUESTSHIFT_SUBLOCATION_SELECTED': 'requestshift.sublocation',
         'REQUESTSHIFT_SUBLOCATION_AND_JOB_SELECTED': 'requestshift.sublocationjob',
         'NEWSHIFT': 'app.tabs.newshift',
-        'MANAGE': 'app.tabs.manage',
+        'MANAGE': 'app.shifts.manage',
         'LOGIN': 'login',
         'LOGOUT': 'logout',
         'PRIVACY_POLICY': 'app.privacypolicy',

@@ -1,26 +1,34 @@
 angular.module('scheduling-app.controllers')
     .controller('ManagerController', [
+        '$rootScope',
         '$scope',
         '$controller',
+        '$q',
+        'GENERAL_EVENTS',
         'GENERAL_CONFIG',
-        'ManagingShiftsModel',
-        function($scope,
+        'ShiftsModel',
+        function($rootScope,
+                 $scope,
                  $controller,
+                 $q,
+                 GENERAL_EVENTS,
                  GENERAL_CONFIG,
-                 ManagingShiftsModel
+                 ShiftsModel
         ) {
             $controller('BaseModelController', {$scope: $scope});
-            $scope.register(
-                'ManagingShifts',
-                ManagingShiftsModel,
-                undefined
-            );
 
-            $scope.acceptShift = function(id) {
-                //Accept the shift
-            };
+            $scope.fetch = function() {
+                var deferred = $q.defer();
 
-            $scope.rejectShift = function(id) {
-                //Reject the shift
+                ShiftsModel.managing(function(data) {
+                    $scope.Model = data;
+                    deferred.resolve(data);
+                    $rootScope.$emit(GENERAL_EVENTS.UPDATES.RESOURCE, 'ManageShifts', data, data, $scope);
+                    if ($scope.fetchComplete !== undefined) {
+                        $scope.fetchComplete(data);
+                    }
+                });
+
+                return deferred.promise;
             };
         }]);

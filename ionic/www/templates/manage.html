@@ -1,11 +1,9 @@
 <ion-view view-title="Manage" hide-back-button="true">
-    <ion-content class="has-tabs-top">
-        <ion-list
-            class="has-header"
-            show-delete="false"
-            show-reorder="false"
-            can-swipe="false">
-            <managing-shifts manageable="true"></managing-shifts>
-        </ion-list>
+    <ion-content class="has-header">
+        <ion-refresher
+            pulling-text="Pull to refresh..."
+            on-refresh="fetch()">
+        </ion-refresher>
+        <managing-shifts manageable="true"></managing-shifts>
     </ion-content>
 </ion-view>
