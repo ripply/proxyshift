@@ -398,6 +398,7 @@ App.prototype.handleEmailJob = function(job) {
     console.log("GOT EMAIL JOB");
     var body = job.body;
     // setup
+    console.log(job);
     if (body.to.endsWith("@example.com")) {
         console.log("Not sending email to " + body.to + " as it is example.com (FIXTURE DATA)");
         job.ack();
