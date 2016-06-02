@@ -43,22 +43,29 @@
                     </div>
                     <ion-option-button class="button-balanced"
                                        ng-click="info(shift)">
-                        More Info
+                        <div ng-if="manageable">
+                            Manage
+                        </div>
+                        <div ng-if="!manageable">
+                            More Info
+                        </div>
                     </ion-option-button>
-                    <ion-option-button class="button-positive"
-                                       ng-click="accept(shift)">
-                        Accept
-                    </ion-option-button>
-                    <ion-option-button class="button-assertive"
-                                       ng-click="decline(shift)"
-                                       ng-if="shift.applied">
-                        Decline
-                    </ion-option-button>
-                    <ion-option-button class="button-assertive"
-                                       ng-click="ignore(shift)"
-                                       ng-if="!shift.applied">
-                        Ignore
-                    </ion-option-button>
+                    <div ng-if="!manageable">
+                        <ion-option-button class="button-positive"
+                                           ng-click="accept(shift)">
+                            Apply
+                        </ion-option-button>
+                        <ion-option-button class="button-assertive"
+                                           ng-click="decline(shift)"
+                                           ng-if="shift.applied">
+                            Decline
+                        </ion-option-button>
+                        <ion-option-button class="button-assertive"
+                                           ng-click="ignore(shift)"
+                                           ng-if="!shift.applied">
+                            Ignore
+                        </ion-option-button>
+                    </div>
                 </div>
             </ion-item>
         </div>

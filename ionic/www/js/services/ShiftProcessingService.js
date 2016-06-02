@@ -188,6 +188,19 @@ angular.module('scheduling-app.services')
                 return getStartOfShift(shift).format(format);
             }
 
+            this.shiftHasNonRecindedApplications = function shiftHasNonRecindedApplications(shift) {
+                if (shift.shiftapplications) {
+                    for (var i = 0; i < shift.shiftapplications.length; i++) {
+                        var shiftapplication = shift.shiftapplications[i];
+                        if (!shiftapplication.recinded) {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            };
+
             $rootScope.$on(GENERAL_EVENTS.UPDATES.RESOURCE, function(state, resource, value) {
                 if (resource == 'AllShifts') {
                     //markDayBreaksForShifts(value);
