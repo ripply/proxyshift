@@ -1,12 +1,33 @@
 <ion-view>
-    <p>{{shift.title}}</p>
-    <p>{{shift.start}}</p>
-    <p>{{shift.end}}</p>
-    <p>{{shift.description}}</p>
-    <p ng-if="shift.shiftapplications.length > 0">
-        Shift applications
-    <div ng-repeat="shiftapplication in shift.shiftapplications">
-        <p>{{shiftapplication.date}}: {{shiftapplication.user.username}}</p>
+    <div ng-if="shift">
+        <div class="row">
+            <div class="col">
+                {{shift.title}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col col-25">
+                Start time
+            </div>
+            <div class="col col-75">
+                {{getReadableLocalShiftStartTime(shift)}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col col-25">
+                Length
+            </div>
+            <div class="col col-75">
+                {{getReadableShiftDuration(shift)}}
+            </div>
+        </div>
+        <p ng-if="shift.shiftapplications.length > 0">
+            Shift applications
+        <div ng-repeat="shiftapplication in shift.shiftapplications">
+            <p>{{shiftapplication.date}}: {{shiftapplication.user.username}}</p>
+        </div>
     </div>
-    </p>
+    <div ng-if="!shift">
+        Loading...
+    </div>
 </ion-view>

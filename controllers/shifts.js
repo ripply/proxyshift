@@ -1593,17 +1593,19 @@ function getShifts(req, res) {
             // people who have privileged access to shifts (group owners/managers)
             // will also be sent who has applied for the shift
             withRelatedOptions.withRelated = withRelatedShiftApplicationsAndUsers();
+            withRelatedOptions.withRelated.push('ignoreshifts');
+            withRelatedOptions.withRelated.push('timezone');
+        } else {
+            withRelatedOptions.withRelated = [
+                'ignoreshifts',
+                'timezone'
+            ];
         }
 
         clearMarks(req);
 
         return query
-            .fetch(withRelatedOptions, {
-                withRelated: [
-                    'ignoreshifts',
-                    'timezone'
-                ]
-            })
+            .fetch(withRelatedOptions)
             .tap(function (shift) {
                 if (!shift) {
                     // check if the shift exists
@@ -1635,7 +1637,6 @@ function getShifts(req, res) {
                     // we need to strip the 'shiftapplications'
                     // relation from the response
                     // non-managers should not be able to access that
-
                     res.json(shift.toJSON());
                 }
             });

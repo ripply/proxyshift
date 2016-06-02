@@ -4,11 +4,13 @@ angular.module('scheduling-app.controllers')
         '$rootScope',
         '$controller',
         '$stateParams',
+        'ShiftProcessingService',
         'ResourceService',
         function($scope,
                  $rootScope,
                  $controller,
                  $stateParams,
+                 ShiftProcessingService,
                  ResourceService
         ) {
             $controller('BaseModelController', {$scope: $scope});
@@ -23,6 +25,20 @@ angular.module('scheduling-app.controllers')
                     });
                 }
             };
+
+            $scope.getReadableLocalShiftStartTime = ShiftProcessingService.getReadableLocalShiftStartTime;
+            $scope.getReadableLocalShiftEndTime = ShiftProcessingService.getReadableLocalShiftEndTime;
+            $scope.getReadableLocalShiftDiffTime = ShiftProcessingService.getReadableLocalShiftDiffTime;
+            $scope.getReadableUsersShiftTime = ShiftProcessingService.getReadableUsersShiftTime;
+            $scope.getReadableUsersShiftStartTime = ShiftProcessingService.getReadableUsersShiftStartTime;
+            $scope.getReadableUsersShiftEndTime = ShiftProcessingService.getReadableUsersShiftEndTime;
+            $scope.getReadableShiftDuration = ShiftProcessingService.getReadableShiftDuration;
+            $scope.getReadableStartDate = ShiftProcessingService.getReadableStartDate;
+            $scope.userIsInDifferentTimeZone = ShiftProcessingService.userIsInDifferentTimeZone;
+            $scope.getShiftsLocation = ShiftProcessingService.getShiftsLocation;
+            $scope.getShiftsSublocation = ShiftProcessingService.getShiftsSublocation;
+            $scope.shiftHasNonRecindedApplications = ShiftProcessingService.shiftHasNonRecindedApplications;
+            $scope.ignoreShift = ResourceService.ignoreShift;
         }
     ]
 );
