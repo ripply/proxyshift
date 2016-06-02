@@ -1493,7 +1493,7 @@ function getShifts(req, res) {
         }
     }
 
-    Bookshelf.transaction(function(t) {
+    return Bookshelf.transaction(function(t) {
         var query = null;
         if (privilegedshift) {
             // privileged user
@@ -1510,8 +1510,12 @@ function getShifts(req, res) {
                 var query = q.select(shiftAndAppliedSelectKeys)
                     .from('shifts');
                 query = applySearchConstraintsOnShiftsTable(query)
+                    .leftJoin('sublocations', function () {
+                        this.on('shifts.sublocation_id', '=', 'sublocations.id');
+                    })
                     .innerJoin('locations', function () {
-                        this.on('shifts.location_id', '=', 'locations.id');
+                        this.on('shifts.location_id', '=', 'locations.id')
+                            .orOn('sublocations.location_id', '=', 'sublocations.location_id');
                     });
                 query = joinShiftApplications(query, req.user.id);
             })
