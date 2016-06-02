@@ -394,11 +394,18 @@ App.prototype.sendEmail = function(from, to, subject, text, html) {
     }
 };
 
+try {
+    'ECMCA6'.endsWith('test');
+} catch (e) {
+    String.prototype.endsWith = function(suffix) {
+        return this.indexOf(suffix, this.length - suffix.length) !== -1;
+    };
+}
+
 App.prototype.handleEmailJob = function(job) {
     console.log("GOT EMAIL JOB");
     var body = job.body;
     // setup
-    console.log(job);
     if (body.to.endsWith("@example.com")) {
         console.log("Not sending email to " + body.to + " as it is example.com (FIXTURE DATA)");
         job.ack();
