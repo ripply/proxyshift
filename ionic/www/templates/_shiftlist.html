@@ -25,8 +25,8 @@
                         <div class="shift-left-icon"><i class="icon ion-ios-checkmark-outline"></i></div>
                         <div ng-class="{'shift-expanded': shift.expanded, 'shift-collapsed': !shift.expanded}">
                             <div class="shift-right">
-                                <p class="shift-star" ng-hide="{{userIsInDifferentTimeZone(shift)}}">{{getReadableLocalShiftEndTime(shift)}}</p>
-                                <p class="shift-star" ng-show="{{userIsInDifferentTimeZone(shift)}}">{{getReadableLocalShiftEndTime(shift)}} (local)</p>
+                                <p class="shift-star" ng-hide="{{userIsInDifferentTimeZone(shift)}}">{{getReadableLocalShiftStartTime(shift)}}</p>
+                                <p class="shift-star" ng-show="{{userIsInDifferentTimeZone(shift)}}">{{getReadableLocalShiftStartTime(shift)}} (local)</p>
                                 <p class="shift-duration">{{getReadableShiftDuration(shift)}}</p>
                             </div>
                             <div class="shift-info">
