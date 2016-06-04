@@ -20,14 +20,11 @@ angular.module('scheduling-app.controllers')
                  STATES
         ) {
             $controller('BaseModelController', {$scope: $scope});
-            $scope.beforeEnter = function() {
-                fetch();
-            };
+            $scope.beforeEnter = fetch;
 
             function fetch() {
                 if ($stateParams.shift_id) {
                     ResourceService.getShift($stateParams.shift_id, function(response) {
-                        console.log(response);
                         $scope.shift = response;
                     }, function(error) {
                         // TODO: RETRY HANDLING
@@ -47,6 +44,7 @@ angular.module('scheduling-app.controllers')
                 }, function(err) {
                     console.log("ERR");
                     console.log(err);
+                    fetch();
                 });
             };
 
@@ -59,6 +57,7 @@ angular.module('scheduling-app.controllers')
                 }, function(err) {
                     console.log("ERR");
                     console.log(err);
+                    fetch();
                 });
             };
 

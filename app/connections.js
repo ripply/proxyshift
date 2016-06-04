@@ -18,6 +18,8 @@ const NEW_SHIFT_QUEUE = 'jobs-new_shifts-q';
 const NEW_SHIFT_KEY = 'new_shifts';
 const NEW_SHIFT_APPLICATION_QUEUE = 'jobs-new-shift-application-q';
 const NEW_SHIFT_APPLICATION_KEY = 'new_shift_application';
+const SHIFT_APPLICATION_APPROVED_DENIED_QUEUE = 'jobs-shift-application-approval-denial-q';
+const SHIFT_APPLICATION_APPROVED_DENIED_KEY = 'shift-application-approval-denial';
 const NEW_DELAYED_SHIFT_APPLICATION_QUEUE = 'jobs-delayed-new-shift-application-q';
 const NEW_DELAYED_SHIFT_APPLICATION_KEY = 'delayed_new_shift_application';
 
@@ -104,6 +106,10 @@ function Connector(rabbitUrl) {
                 subscribe: subscribe
             },
             {
+                name: SHIFT_APPLICATION_APPROVED_DENIED_QUEUE,
+                subscribe: subscribe
+            },
+            {
                 name: NEW_DELAYED_SHIFT_APPLICATION_QUEUE,
                 //durable: true,
                 subscribe: subscribe,
@@ -136,6 +142,11 @@ function Connector(rabbitUrl) {
                 exchange: JOB_EXCHANGE,
                 target: NEW_SHIFT_APPLICATION_QUEUE,
                 keys: NEW_DELAYED_SHIFT_APPLICATION_KEY
+            },
+            {
+                exchange: JOB_EXCHANGE,
+                target: SHIFT_APPLICATION_APPROVED_DENIED_QUEUE,
+                keys: SHIFT_APPLICATION_APPROVED_DENIED_KEY
             },
             {
                 exchange: DELAYED_JOB_EXCHANGE,
@@ -180,6 +191,8 @@ module.exports = {
     NEW_SHIFT_KEY: NEW_SHIFT_KEY,
     NEW_SHIFT_APPLICATION_QUEUE: NEW_SHIFT_APPLICATION_QUEUE,
     NEW_SHIFT_APPLICATION_KEY: NEW_SHIFT_APPLICATION_KEY,
+    SHIFT_APPLICATION_APPROVED_DENIED_QUEUE: SHIFT_APPLICATION_APPROVED_DENIED_QUEUE,
+    SHIFT_APPLICATION_APPROVED_DENIED_KEY: SHIFT_APPLICATION_APPROVED_DENIED_KEY,
     NEW_DELAYED_SHIFT_APPLICATION_QUEUE: NEW_DELAYED_SHIFT_APPLICATION_QUEUE,
     NEW_DELAYED_SHIFT_APPLICATION_KEY: NEW_DELAYED_SHIFT_APPLICATION_KEY,
     JOB_ROUTING_KEY: JOB_ROUTING_KEY,

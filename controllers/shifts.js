@@ -1781,10 +1781,11 @@ function acceptOrDeclineShiftApplication(req, res, accept) {
                             transacting: t
                         })
                         .then(function(model) {
+                            appLogic.fireEvent('shiftApplicationApprovalOrDenial', model.get('id'));
                             clientStatus(req, res, 200);
                         })
                         .catch(function(err) {
-                            return perror(req, res, err);
+                            return error(req, res, err);
                         });
                 }
             })

@@ -260,6 +260,7 @@ App.prototype.init = function() {
     this.startHandlingNotifications();
     this.startHandlingNewShifts();
     this.startHandlingNewShiftApplications();
+    this.startHandlingShiftApplicationApprovalDenials();
 };
 
 App.prototype.startHandlingEmails = function() {
@@ -294,6 +295,13 @@ App.prototype.startHandlingNewShiftApplications = function() {
     slack.info(started);
     connections.handle(connections.NEW_SHIFT_APPLICATION_QUEUE, this.handleNewShiftApplication.bind(this));
     connections.handle(connections.NEW_DELAYED_SHIFT_APPLICATION_QUEUE, this.handleNewDelayedShiftApplication.bind(this));
+};
+
+App.prototype.startHandlingShiftApplicationApprovalDenials = function() {
+    var started = "Started handling shift application approval denials from RabbitMQ";
+    console.log(started);
+    slack.info(started);
+    connections.handle(connections.SHIFT_APPLICATION_APPROVED_DENIED_QUEUE, this.handleShiftApplicationApprovalDenial.bind(this));
 };
 
 App.prototype.createTokenUrl = function(base, token) {
@@ -475,6 +483,38 @@ App.prototype.sendNewShiftApplication = function sendNewShiftApplication(shift_i
     }
 };
 
+App.prototype.sendShiftApplicationApprovalDenial = function sendShiftApplicationApprovalDenial(shiftapplicationacceptdeclinereason_id) {
+    var approvalDenial = {
+        shiftapplicationacceptdeclinereason_id: shiftapplicationacceptdeclinereason_id,
+    };
+
+    if (!this.connections) {
+        console.log("RabbitMQ not configured, processing shift application approval denial in web process");
+        this.handleShiftApplicationApprovalDenial(forgeRabbitMessage(approvalDenial));
+    } else {
+        console.log("sending shift application approval denial to queue");
+        connections.publish(connections.JOB_EXCHANGE, {
+            routingKey: connections.SHIFT_APPLICATION_APPROVED_DENIED_KEY,
+            type: connections.SHIFT_APPLICATION_APPROVED_DENIED_QUEUE,
+            body: approvalDenial
+        });
+    }
+};
+
+App.prototype.handleShiftApplicationApprovalDenial = function handleShiftApplicationApprovalDenial(job) {
+    console.log("GOT SHIFT APPLICATION APPROVAL DENIAL JOB");
+    var body = job.body;
+    // setup
+    this.shiftApplicationApprovedOrDenied(body.shiftapplicationacceptdeclinereason_id)
+        .then(function() {
+            job.ack();
+        })
+        .catch(function(err) {
+            job.nack();
+            slack.error(undefined, 'Failed to handle shift application approval denial job\n' + JSON.stringify(job), err);
+        });
+};
+
 const newShiftApplicationProperties = [
     'start',
     'end',
@@ -484,6 +524,79 @@ const newShiftApplicationProperties = [
     'location_id',
     'groupuserclass_title'
 ];
+
+App.prototype.shiftApplicationApprovedOrDenied = function shiftApplicationApprovedOrDenied(shiftapplicationacceptdeclinereason_id) {
+    var self = this;
+
+    return models.ShiftApplicationAcceptDeclineReason.query(function(q) {
+        q.select([
+            'shiftapplicationacceptdeclinereasons.date as approved_denied_date',
+            'shiftapplicationacceptdeclinereasons.reason as shit_deny_reason',
+            'shiftapplicationacceptdeclinereasons.accept as shift_accepted',
+            'shiftapplications.id as shiftapplication_id',
+            'shifts.id as shift_id',
+            'shifts.title as shift_title',
+            'shifts.description as shift_description',
+            'shifts.start as shift_start',
+            'shifts.end as shift_end',
+            'shifts.canceled as shift_canceled',
+            'timezones.name as timezone',
+            'locations.title as location_title',
+            'sublocations.title as sublocation_title',
+            'sublocations.description as sublocation_description',
+            'approver.username as approver_username',
+            'approver.firstname as approver_firstname',
+            'approver.lastname as approver_lastname',
+            'shiftapplications.user_id as applicant_userid',
+            'applicant.username as applicant_username',
+            'applicant.firstname as applicant_firstname',
+            'applicant.lastname as applicant_lastname',
+            'groupuserclasses.title as groupuserclass_title',
+            'groupuserclasses.description as groupuserclass_description'
+        ])
+            .from('shiftapplicationacceptdeclinereasons')
+            .innerJoin('shiftapplications', function() {
+                this.on('shiftapplications.id', '=', 'shiftapplicationacceptdeclinereasons.shiftapplication_id');
+            })
+            .innerJoin('shifts', function() {
+                this.on('shifts.id', '=', 'shiftapplications.shift_id');
+            })
+            .innerJoin('groupuserclasses', function() {
+                this.on('groupuserclasses.id', '=', 'shifts.groupuserclass_id');
+            })
+            .leftJoin('timezones', function() {
+                this.on('timezones.id', '=', 'shifts.timezone_id');
+            })
+            .leftJoin('sublocations', function() {
+                this.on('sublocations.id', '=', 'shifts.sublocation_id');
+            })
+            .innerJoin('locations', function() {
+                this.on('locations.id', '=', 'shifts.location_id')
+                    .orOn('locations.id', '=', 'sublocations.location_id');
+            })
+            .innerJoin('users as approver', function() {
+                this.on('approver.id', '=', 'shiftapplicationacceptdeclinereasons.user_id');
+            })
+            .innerJoin('users as applicant', function() {
+                this.on('applicant.id', '=', 'shiftapplications.user_id');
+            })
+            .where('shiftapplicationacceptdeclinereasons.id', '=', shiftapplicationacceptdeclinereason_id)
+    })
+        .fetch()
+        .tap(function(approvalOrDenial) {
+            if (approvalOrDenial) {
+                var data = approvalOrDenial.toJSON();
+                // send the applicant a push notification as well as an email
+                self.sendToUsers(
+                    data.applicant_userid,
+                    self.acceptOrDeniedShiftApplication(data),
+                    data
+                );
+            } else {
+                // do nothing? it doesn't exist
+            }
+        });
+};
 
 App.prototype.handleNewShiftApplication = function handleNewShiftApplication(job) {
     console.log("GOT NEW SHIFT APPLICATION");
@@ -869,7 +982,7 @@ App.prototype.sendNotificationsAboutNewShifts = function sendNotificationsAboutN
 };
 
 function noop() {
-    console.log("NOOOOOOOOOOPPPP");
+    // NO OP, do nothing, used in forged rabbit messages for ack/nack etc
 }
 
 function forgeRabbitMessage(body) {

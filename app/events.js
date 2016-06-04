@@ -184,9 +184,67 @@ function newShift(shift_location, shift_sublocation, shift_start, shift_end, tim
     };
 }
 
+function acceptOrDeniedShiftApplication(data) {
+    /*
+     approved_denied_date,
+     shift_accepted,
+     shift_deny_reason,
+     shift_title,
+     shift_description,
+     shift_start,
+     shift_end,
+     shift_canceled,
+     shift_timezone,
+     groupuserclass_title,
+     groupuserclass_description,
+     approver_username,
+     approver_firstname,
+     approver_lastname,
+     applicant_userid,
+     applicant_firstname,
+     applicant_lastname,
+     location_title,
+     sublocation_title,
+     sublocation_description
+     */
+    var formatted = formatTimeDateLocationsForNotifications(data.location_title, data.sublocation_title, data.shift_start, data.shift_end, data.timezone);
+    _.extend(data, formatted);
+
+    data.shift_accepted = (data.shift_accepted == true || data.shift_accepted == 1);
+
+    return {
+        push: createNotification(
+            {test: 'test'},
+            data.shift_accepted ? 'Approved Shift' : 'Denied Shift',
+            (data.shift_accepted ? 'APPROVED' : 'DENIED') + ' for ' + data.start + ' at ' + data.length + ' at ' + data.location,
+            'body android only',
+            3,
+            3,
+            'newShift',
+            'newShift',
+            {
+                shift_id: data.shift_id,
+                shiftapplication_id: data.shiftapplication_id
+            }
+        ),
+        email: {
+            subject: data.shift_accepted ?
+                _.template("Approved for shift <%- start %> - <%- length %> at <%- location %>") :
+                _.template("Application denied for shift <%- start %> - <%- length %> at <%- location %>"),
+            text: data.shift_accepted ?
+                _.template("APPROVED") :
+                _.template("DENIED"),
+            html: data.shift_accepted ?
+                _.template("APPROVED") :
+                _.template("DENIED")
+        }
+    };
+}
+
 module.exports = {
     newShift: newShift,
     newShiftApplication: newShiftApplication,
+    acceptOrDeniedShiftApplication: acceptOrDeniedShiftApplication,
     invitedToGroup: function eventInvitedToGroup(user_ids, args) {
         // TODO: MODIFY THIS TO ACCEPT A TO EMAIL
         // send email and notification
@@ -222,6 +280,9 @@ module.exports = {
                 self.sendNotification(service, tokens, self.pushNotificationsExpiresIn(now), "You have been logged out on this device");
             });
         }
+    },
+    shiftApplicationApprovalOrDenial: function shiftApplicationApproved(shiftapplicationacceptdeclinereason_id) {
+        return this.sendShiftApplicationApprovalDenial(shiftapplicationacceptdeclinereason_id);
     },
     passwordReset: function passwordReset(user_ids, args) {
         args.link = this.createTokenUrl("/passwordreset", args.token);
