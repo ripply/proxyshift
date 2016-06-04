@@ -506,7 +506,8 @@ App.prototype.handleNewShiftApplication = function handleNewShiftApplication(job
                     'timezones.name as timezone, ' +
                     'locations.address as location_name, ' +
                     'sublocations.title as sublocation_name, ' +
-                    'COALESCE(shifts.notify) >= shiftapplications.date as notified, ' +
+                    //'COALESCE(shifts.notify) >= shiftapplications.date as notified, ' +
+                    'shifts.notify >= shiftapplications.date as notified, ' +
                     'COALESCE(shifts.location_id, locations.id) as location_id, ' +
                     'groupuserclasses.title as groupuserclass_title, ' +
                     'shifts.notify as notify'

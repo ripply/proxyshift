@@ -418,6 +418,16 @@ angular.module('scheduling-app.services')
                 );
             };
 
+            this.removeShift = function removeShift(shift_id, success, error) {
+                andThen(
+                    ShiftsModel.remove({
+                        shift_id: shift_id
+                    }),
+                    success,
+                    error
+                );
+            };
+
             this.approveShiftApplication = function approveShiftApplication(shiftapplication_id, success, error) {
                 andThen(
                     ShiftsModel.approve({

@@ -231,7 +231,7 @@ function getMark(req, mark, submark) {
         return undefined;
     }
 
-    if (submark !== undefined) {
+    if (submark === undefined) {
         return req.user.marks[mark];
     } else {
         return req.user.marks[mark][submark];

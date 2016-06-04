@@ -290,7 +290,7 @@ module.exports = {
     },
     '/application/:shiftapplication_id': {
         'get': { // gets a shift application
-            //auth: ['managing shift'],
+            auth: ['managing shift'],
             route: function(req, res) {
                 simpleGetSingleModel('ShiftApplication', {
                         id: req.params.shiftapplication_id
@@ -301,19 +301,19 @@ module.exports = {
             }
         },
         'post': { // approves a shift applicataion
-            //auth: ['managing shift'],
+            auth: ['managing shift'],
             route: function(req, res) {
                 return acceptOrDeclineShiftApplication(req, res, true);
             }
         },
         'patch': { // rejects a shift application
-            //auth: ['managing shift'],
+            auth: ['managing shift'],
             route: function(req, res) {
                 return acceptOrDeclineShiftApplication(req, res, false);
             }
         },
         'delete': { // rejects a shift application
-            //auth: ['managing shift'],
+            auth: ['managing shift'],
             route: function(req, res) {
                 return acceptOrDeclineShiftApplication(req, res, false);
             }
@@ -329,40 +329,32 @@ module.exports = {
         'patch': { // update a shift
             auth: ['managing shift'], // must be managing the shift
             route: function(req, res) {
-                if (getMark(req, 'privilegedshift', req.param.shift_id)) {
-                    patchModel(
-                        'Shift',
-                        {
-                            id: req.params.shift_id
-                        },
-                        req,
-                        res,
-                        'Success',
-                        [
-                            'id'
-                        ]
-                    );
-                } else {
-                    req.sendStatus(401);
-                }
+                patchModel(
+                    'Shift',
+                    {
+                        id: req.params.shift_id
+                    },
+                    req,
+                    res,
+                    'Success',
+                    [
+                        'id'
+                    ]
+                );
             }
         },
         'delete': { // delete a shift
             auth: ['managing shift'],// must be managing the shift
             route: function(req, res) {
-                if (getMark(req, 'privilegedshift', req.param.shift_id)) {
-                    deleteModel(
-                        'Shift',
-                        {
-                            id: req.params.shift_id
-                        },
-                        req,
-                        res,
-                        'Success'
-                    );
-                } else {
-                    res.sendStatus(401);
-                }
+                deleteModel(
+                    'Shift',
+                    {
+                        id: req.params.shift_id
+                    },
+                    req,
+                    res,
+                    'Success'
+                );
             }
         }
     },
@@ -426,7 +418,6 @@ module.exports = {
                                     // not recinded
                                     // nothing to do as the user has already applied
                                     clientCreate(req, res, 200, outstandingApplicationExists, shiftapplicationsJson.id);
-                                    res.sendStatus(200);
                                     return;
                                 } else {
                                     // all shift applications have been recinded

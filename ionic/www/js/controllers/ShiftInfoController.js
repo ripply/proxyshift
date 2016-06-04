@@ -57,6 +57,10 @@ angular.module('scheduling-app.controllers')
                 });
             };
 
+            $scope.removeShift = function(shift) {
+                $scope._removeShift(shift.id);
+            };
+
             $scope.getReadableLocalShiftStartTime = ShiftProcessingService.getReadableLocalShiftStartTime;
             $scope.getReadableLocalShiftEndTime = ShiftProcessingService.getReadableLocalShiftEndTime;
             $scope.getReadableLocalShiftDiffTime = ShiftProcessingService.getReadableLocalShiftDiffTime;
@@ -76,6 +80,7 @@ angular.module('scheduling-app.controllers')
             $scope.ignoreShift = ResourceService.ignoreShift;
             $scope._approveShiftApplication = ResourceService.approveShiftApplication;
             $scope._declineShiftApplication = ResourceService.declineShiftApplication;
+            $scope._removeShift = ResourceService.removeShift;
         }
     ]
 );

@@ -481,31 +481,14 @@ function markIfGroupOwnerOrPrivilegedMemberForShift(req, act) {
             throw new Error(errorMessage);
         }
 
-        query.innerJoin('locations', function() {
-            this.on('locations.id', '=', 'shifts.location_id');
+        query.leftJoin('sublocations', function() {
+            this.on('sublocations.id', '=', 'shifts.sublocation_id');
         })
-            .whereIn('locations.group_id', ownedGroups)
-            .union(function() {
-                var innerQuery = this.select('shifts.*')
-                    .from('shifts');
-                if (shift_id) {
-                        innerQuery = innerQuery.where('shifts.id', '=', shift_id);
-                } else if (shiftapplication_id) {
-                    innerQuery = innerQuery.innerJoin('shiftapplications', function() {
-                        this.on('shiftapplications.shift_id', '=', 'shifts.id');
-                    })
-                        .where('shiftapplications.id', '=', shiftapplication_id);
-                } else {
-                    throw new Error(errorMessage);
-                }
-                innerQuery.innerJoin('sublocations', function() {
-                    this.on('sublocations.id', '=', 'shifts.sublocation_id');
-                })
-                    .innerJoin('locations', function() {
-                        this.on('locations.id', '=', 'sublocations.location_id');
-                    })
-                    .whereIn('locations.group_id', ownedGroups);
-            });
+            .leftJoin('locations', function() {
+                this.on('locations.id', '=', 'shifts.location_id')
+                    .orOn('locations.id', '=', 'sublocations.location_id');
+            })
+            .whereIn('locations.group_id', ownedGroups);
     })
         .fetch({require: true})
         .then(function (group) {
@@ -520,9 +503,13 @@ function markIfGroupOwnerOrPrivilegedMemberForShift(req, act) {
             // then use that to re-use our privilege checking functions
             return models.Location.query(function(q) {
                 var query = q.select('locations.id as locationid')
-                    .from('locations')
-                    .innerJoin('shifts', function() {
-                        this.on('shifts.location_id', '=', 'locations.id');
+                    .from('shifts')
+                    .leftJoin('sublocations', function() {
+                        this.on('sublocations.id', '=', 'shifts.sublocation_id');
+                    })
+                    .innerJoin('locations', function() {
+                        this.on('locations.id', '=', 'shifts.location_id')
+                            .orOn('locations.id', '=', 'sublocations.location_id');
                     });
                 if (shift_id) {
                     query = query.where('shifts.id', '=', shift_id);
@@ -534,26 +521,6 @@ function markIfGroupOwnerOrPrivilegedMemberForShift(req, act) {
                 } else {
                     throw new Error(errorMessage);
                 }
-                    query.union(function() {
-                        var innerQuery = this.select('locations.id as locationid')
-                            .from('locations')
-                            .innerJoin('sublocations', function() {
-                                this.on('sublocations.location_id', '=', 'locations.id');
-                            })
-                            .innerJoin('shifts', function() {
-                                this.on('shifts.sublocation_id', '=', 'sublocations.id');
-                            });
-                        if (shift_id) {
-                            innerQuery = innerQuery.where('shifts.id', '=', shift_id);
-                        } else if (shiftapplication_id) {
-                            innerQuery = innerQuery.innerJoin('shiftapplications', function() {
-                                this.on('shiftapplications.shift_id', '=', 'shifts.id');
-                            })
-                                .where('shiftapplications.id', '=', shiftapplication_id);
-                        } else {
-                            throw new Error(errorMessage);
-                        }
-                    });
             })
                 .fetch()
                 .then(function(location) {
@@ -564,9 +531,9 @@ function markIfGroupOwnerOrPrivilegedMemberForShift(req, act) {
                         req.params.location_id = location_id;
 
                         return checkLocationPermissionLevel(privilegedLocationMember, req, act)
-                            .then(function (result) {
+                            .tap(function (result) {
                                 if (result) {
-                                    setMark(req, 'privilegedshift', true, result);
+                                    setMark(req, 'privilegedshift', true, shift_id);
                                 }
 
                                 req.params.location_id = old_location_id;
