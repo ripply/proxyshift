@@ -222,10 +222,19 @@ angular.module('scheduling-app.authentication', [
             });
 
             function notAuthenticated() {
+                console.log("NOT AUTHENTICATED???????????????????????????");
                 $rootScope.authenticated = false;
             }
 
-            $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.REQUIRED, notAuthenticated);
+            $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.REQUIRED, function() {
+                SessionService.checkAuthentication(false, true)
+                    .then(function() {
+                        // OK, do nothing
+                    }, function() {
+                        // Not OK
+                        notAuthenticated();
+                    });
+            });
             $rootScope.$on(GENERAL_EVENTS.AUTHENTICATION.FAILED, notAuthenticated);
             $rootScope.$on(GENERAL_EVENTS.LOGOUT.COMPLETE, notAuthenticated);
         }])

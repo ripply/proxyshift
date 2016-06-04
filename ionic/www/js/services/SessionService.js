@@ -142,7 +142,7 @@ angular.module('scheduling-app.session', [
                 deferred.reject(value);
             }
 
-            function checkAuthentication(loggingOut) {
+            function checkAuthentication(loggingOut, forceCheck) {
                 var deferred;
                 if (checkingAuthenticationPromise !== false) {
                     // blocking wait for auth to finish
@@ -154,16 +154,18 @@ angular.module('scheduling-app.session', [
 
                 var rememberme_token = CookiesService.getCookie(GENERAL_CONFIG.APP_REMEMBER_ME_TOKEN);
 
-                if (rememberme_token === null ||
+                if (forceCheck ||
+                    rememberme_token === null ||
                     rememberme_token === undefined) {
                     // remember me token was not found
                     // query the server to see if the session is still open
                     var api_url = GENERAL_CONFIG.APP_URL;
 
-                    if (isAuthenticated()) {
+                    if (!forceCheck && isAuthenticated()) {
                         console.debug("Already logged in.");
+                        console.trace();
                         resolve(deferred);
-                    } else if (failedLogin) {
+                    } else if (!forceCheck && failedLogin) {
                         reject(deferred);
                     } else {
                         fireAuthenticationPendingEvent();

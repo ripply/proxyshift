@@ -244,6 +244,9 @@ angular.module('scheduling-app', [
                             templateUrl: "templates/home.html",
                             controller: 'AppCtrl',
                         }
+                    },
+                    resolve: {
+                        authenticated: requireSessionOrGoLogin
                     }
                 })
 
@@ -254,6 +257,9 @@ angular.module('scheduling-app', [
                             templateUrl: "templates/shiftinfo.html",
                             controller: 'ShiftInfoController'
                         }
+                    },
+                    resolve: {
+                        authenticated: requireSessionOrGoLogin
                     }
                 })
 
@@ -265,6 +271,9 @@ angular.module('scheduling-app', [
                             templateUrl: "templates/shifttabs.html",
                             controller: 'OpenShiftsTabController'
                         }
+                    },
+                    resolve: {
+                        authenticated: requireSessionOrGoLogin
                     }
                 })
 
