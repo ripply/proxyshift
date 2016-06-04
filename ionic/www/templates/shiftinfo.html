@@ -28,10 +28,28 @@
                     {{getReadableShiftDuration(shift)}}
                 </div>
             </div>
-            <p ng-if="shift.shiftapplications.length > 0">
+            <div ng-if="shift.shiftapplications.length > 0">
                 Shift applications
-            <div ng-repeat="shiftapplication in shift.shiftapplications">
-                <p>{{shiftapplication.date}}: {{shiftapplication.user.username}}</p>
+                <ul class="list list-inset" ng-repeat="shiftapplication in shift.shiftapplications"
+                    ng-if="!shiftapplication.recinded">
+                    <li class="item shiftapplication" ng-class="{'shift-approved': shiftApplicationIsAccepted(shiftapplication), 'shift-declined': shiftApplicationIsDeclined(shiftapplication)}">
+                        <div style="display: inline-block; vertical-align: middle;">
+                            {{shiftapplication.user.username}}
+                        </div>
+                        <div style="display: inline-block; float: right;">
+                            <button class="button button-assertive" style="float: right;"
+                                    ng-disabled="shiftApplicationIsDeclined(shiftapplication)"
+                                    ng-click="declineShiftApplication(shiftapplication)">
+                                <i class="icon ion-close"></i>
+                            </button>
+                            <button class="button button-positive" style="float: right;"
+                                    ng-disabled="shiftApplicationIsAccepted(shiftapplication)"
+                                    ng-click="approveShiftApplication(shiftapplication)">
+                                <i class="icon ion-checkmark"></i>
+                            </button>
+                        </div>
+                    </li>
+                </ul>
             </div>
         </div>
         <div ng-if="!shift">

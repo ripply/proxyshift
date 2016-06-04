@@ -61,7 +61,8 @@ angular.forEach({
         return {
             route: base,
             params: {
-                shift_id: '@shift_id'
+                shift_id: '@shift_id',
+                shiftapplication_id: '@shiftapplication_id'
             },
             actions: {
                 get: {
@@ -102,16 +103,16 @@ angular.forEach({
                 },
                 applications: {
                     method: GET,
-                    url: url + '/application/:shiftapplication_id',
+                    url: url + '/shifts/application/:shiftapplication_id',
                     isArray: true
                 },
-                apply: {
+                approve: {
                     method: POST,
-                    url: url + '/application/:shiftapplication_id'
+                    url: url + '/shifts/application/:shiftapplication_id'
                 },
-                unapply: {
-                    method: DELETE,
-                    url: url + '/application/:shiftapplication_id'
+                decline: {
+                    method: PATCH,
+                    url: url + '/shifts/application/:shiftapplication_id'
                 },
                 notify: {
                     method: POST,

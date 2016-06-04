@@ -418,6 +418,28 @@ angular.module('scheduling-app.services')
                 );
             };
 
+            this.approveShiftApplication = function approveShiftApplication(shiftapplication_id, success, error) {
+                andThen(
+                    ShiftsModel.approve({
+                        shiftapplication_id: shiftapplication_id
+                    }),
+                    success,
+                    error
+                );
+            };
+
+            this.declineShiftApplication = function declineShiftApplication(shiftapplication_id, reason, success, error) {
+                andThen(
+                    ShiftsModel.decline({
+                        shiftapplication_id: shiftapplication_id
+                    }, {
+                        reason: reason
+                    }),
+                    success,
+                    error
+                );
+            };
+
             function andThen(promise, success, error) {
                 if (promise.hasOwnProperty("$promise")) {
                     promise = promise.$promise;

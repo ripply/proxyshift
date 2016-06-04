@@ -290,7 +290,7 @@ module.exports = {
     },
     '/application/:shiftapplication_id': {
         'get': { // gets a shift application
-            auth: ['managing shift'],
+            //auth: ['managing shift'],
             route: function(req, res) {
                 simpleGetSingleModel('ShiftApplication', {
                         id: req.params.shiftapplication_id
@@ -301,13 +301,19 @@ module.exports = {
             }
         },
         'post': { // approves a shift applicataion
-            auth: ['managing shift'],
+            //auth: ['managing shift'],
             route: function(req, res) {
                 return acceptOrDeclineShiftApplication(req, res, true);
             }
         },
+        'patch': { // rejects a shift application
+            //auth: ['managing shift'],
+            route: function(req, res) {
+                return acceptOrDeclineShiftApplication(req, res, false);
+            }
+        },
         'delete': { // rejects a shift application
-            auth: ['managing shift'],
+            //auth: ['managing shift'],
             route: function(req, res) {
                 return acceptOrDeclineShiftApplication(req, res, false);
             }
@@ -1722,6 +1728,7 @@ function withRelatedShiftApplicationsAndUsers(withRelated) {
         withRelated = [];
     }
     withRelated.push('shiftapplications');
+    withRelated.push('shiftapplications.shiftapplicationacceptdeclinereasons');
     withRelated.push({
         'shiftapplications.user': function(qb) {
             qb.columns(['users.id','users.username']);
@@ -1735,7 +1742,7 @@ function acceptOrDeclineShiftApplication(req, res, accept) {
     var reason = req.body.reason;
     if (!accept) {
         if (reason == null || reason.length == 0) {
-            clientError(req, res, 400, 'reason: required');
+            return clientError(req, res, 400, 'reason: required');
         }
     }
     return Bookshelf.transaction(function(t) {
@@ -1786,7 +1793,7 @@ function acceptOrDeclineShiftApplication(req, res, accept) {
                             clientStatus(req, res, 200);
                         })
                         .catch(function(err) {
-                            error(req, res, err);
+                            return perror(req, res, err);
                         });
                 }
             })

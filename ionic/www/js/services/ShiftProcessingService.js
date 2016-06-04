@@ -135,6 +135,70 @@ angular.module('scheduling-app.services')
                 return UserInfoService.getSublocation(shift.sublocation_id);
             };
 
+            this.shiftHasAcceptedApplication = function(shift) {
+                if (shift.shiftapplications) {
+                    for (var i = 0; i < shift.shiftapplications.lenght; i++) {
+                        var application = shift.shiftapplications[i];
+                        if (shiftApplicationIsAccepted(application)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            };
+
+            this.shiftApplicationIsAccepted = shiftApplicationIsAccepted;
+
+            function sortShiftApplicationAcceptDeny(acceptDeny) {
+                acceptDeny.sort(function(left, right) {
+                    if (left.date == right.date) {
+                        return 0;
+                    } else if (left.date < right.date) {
+                        return -1;
+                    } else {
+                        return 1;
+                    }
+                });
+            }
+
+            function shiftApplicationIsAccepted(application) {
+                if (!application.recinded && application.shiftapplicationacceptdeclinereasons) {
+                    var reasons = application.shiftapplicationacceptdeclinereasons;
+                    sortShiftApplicationAcceptDeny(reasons);
+                    if (reasons.length > 0) {
+                        if (isAccepted(reasons[reasons.length - 1].accept)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+
+            this.shiftApplicationIsDeclined = shiftApplicationIsDeclined;
+
+            function shiftApplicationIsDeclined(application) {
+                if (!application.recinded && application.shiftapplicationacceptdeclinereasons) {
+                    var reasons = application.shiftapplicationacceptdeclinereasons;
+                    sortShiftApplicationAcceptDeny(reasons);
+                    if (reasons.length > 0) {
+                        if (!isAccepted(reasons[reasons.length - 1].accept)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+
+            function isAccepted(accept) {
+                return accept == '1' || accept == true;
+            }
+
+            this.getDisplayableFormatFromString = function(time, format, wat) {
+                return getDisplayableFormat(moment(time * 1000), format);
+            };
+
+            this.getDisplayableFormat = getDisplayableFormat;
+
             function getDisplayableFormat(time, format) {
                 if (!format) {
                     format = "h:mma";

@@ -36,6 +36,27 @@ angular.module('scheduling-app.controllers')
                 StateHistoryService.goBack($rootScope.currentTabPageState || STATES.SHIFTS);
             };
 
+            $scope.approveShiftApplication = function(shiftapplication) {
+                ResourceService.approveShiftApplication(shiftapplication.id, function(response) {
+                    console.log('SUCCESS');
+                    console.log(response);
+                }, function(err) {
+                    console.log("ERR");
+                    console.log(err);
+                });
+            };
+
+            $scope.declineShiftApplication = function(shiftapplication) {
+                var reason = 'test';
+                ResourceService.declineShiftApplication(shiftapplication.id, reason, function(response) {
+                    console.log('SUCCESS');
+                    console.log(response);
+                }, function(err) {
+                    console.log("ERR");
+                    console.log(err);
+                });
+            };
+
             $scope.getReadableLocalShiftStartTime = ShiftProcessingService.getReadableLocalShiftStartTime;
             $scope.getReadableLocalShiftEndTime = ShiftProcessingService.getReadableLocalShiftEndTime;
             $scope.getReadableLocalShiftDiffTime = ShiftProcessingService.getReadableLocalShiftDiffTime;
@@ -44,11 +65,17 @@ angular.module('scheduling-app.controllers')
             $scope.getReadableUsersShiftEndTime = ShiftProcessingService.getReadableUsersShiftEndTime;
             $scope.getReadableShiftDuration = ShiftProcessingService.getReadableShiftDuration;
             $scope.getReadableStartDate = ShiftProcessingService.getReadableStartDate;
+            $scope.getDisplayableFormatFromString = ShiftProcessingService.getDisplayableFormatFromString;
+            $scope.shiftHasAcceptedApplication = ShiftProcessingService.shiftHasAcceptedApplication;
+            $scope.shiftApplicationIsAccepted = ShiftProcessingService.shiftApplicationIsAccepted;
+            $scope.shiftApplicationIsDeclined = ShiftProcessingService.shiftApplicationIsDeclined;
             $scope.userIsInDifferentTimeZone = ShiftProcessingService.userIsInDifferentTimeZone;
             $scope.getShiftsLocation = ShiftProcessingService.getShiftsLocation;
             $scope.getShiftsSublocation = ShiftProcessingService.getShiftsSublocation;
             $scope.shiftHasNonRecindedApplications = ShiftProcessingService.shiftHasNonRecindedApplications;
             $scope.ignoreShift = ResourceService.ignoreShift;
+            $scope._approveShiftApplication = ResourceService.approveShiftApplication;
+            $scope._declineShiftApplication = ResourceService.declineShiftApplication;
         }
     ]
 );
