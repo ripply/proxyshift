@@ -3,9 +3,11 @@ angular.module('scheduling-app.services.routing.statehistory', [
     .service('StateHistoryService', [
         '$rootScope',
         '$state',
+        '$ionicHistory',
         'STATES',
         function($rootScope,
                  $state,
+                 $ionicHistory,
                  STATES
         ) {
             $rootScope.states = STATES;
@@ -13,11 +15,17 @@ angular.module('scheduling-app.services.routing.statehistory', [
                 STATES[key + "_URL"] = value.replace(/\./g, "/");
             });
             console.log(STATES);
+            var goingTo;
             $rootScope.$on('$stateChangeSuccess', function(ev, to, toParams, from, fromParams) {
+                console.log("STATE CHANGE SUCCESS: " + to.name);
+                if (to == goingTo) {
+                    goinTo = null;
+                }
                 $rootScope.previousState = from.name;
                 $rootScope.previousStateParams = fromParams;
                 $rootScope.currentState = to.name;
                 $rootScope.currentStateParams = toParams;
+                gotoHistory.push(from.name);
             });
 
             this.previousState = function() {
@@ -44,8 +52,14 @@ angular.module('scheduling-app.services.routing.statehistory', [
                 $rootScope.defaultState = state;
             };
 
-            this.goBack = function() {
+            this.goBack = function(defaultState) {
                 // TODO: 2 calls in a row will go back and forth between 2 states
+                if ($ionicHistory.viewHistory().backView == null) {
+                    $state.go(defaultState || this.defaultState(), {}, {reload: false});
+                } else {
+                    $ionicHistory.goBack();
+                }
+                /*
                 var prevState = this.previousState();
                 if (prevState === null ||
                     prevState === undefined) {
@@ -53,6 +67,7 @@ angular.module('scheduling-app.services.routing.statehistory', [
                 } else {
                     $state.go(prevState, this.previousStateParams(), {reload: false})
                 }
+                */
             };
 
             var gotoHistory = [];

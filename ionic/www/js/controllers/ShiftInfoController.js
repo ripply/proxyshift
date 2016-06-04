@@ -4,14 +4,20 @@ angular.module('scheduling-app.controllers')
         '$rootScope',
         '$controller',
         '$stateParams',
+        '$ionicHistory',
+        'StateHistoryService',
         'ShiftProcessingService',
         'ResourceService',
+        'STATES',
         function($scope,
                  $rootScope,
                  $controller,
                  $stateParams,
+                 $ionicHistory,
+                 StateHistoryService,
                  ShiftProcessingService,
-                 ResourceService
+                 ResourceService,
+                 STATES
         ) {
             $controller('BaseModelController', {$scope: $scope});
             $scope.beforeEnter = function() {
@@ -24,6 +30,10 @@ angular.module('scheduling-app.controllers')
                         // TODO: RETRY HANDLING
                     });
                 }
+            };
+
+            $scope.close = function() {
+                StateHistoryService.goBack($rootScope.currentTabPageState || STATES.SHIFTS);
             };
 
             $scope.getReadableLocalShiftStartTime = ShiftProcessingService.getReadableLocalShiftStartTime;

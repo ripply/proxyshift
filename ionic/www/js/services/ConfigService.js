@@ -115,6 +115,7 @@ var config_data = {
         'HOME': 'app.home',
         'SHIFTS': 'app.shifts.open',
         'MYSHIFTS': 'app.shifts.mine',
+        'SHIFT_INFO': 'app.shift',
         'SHIFT_REQUEST': 'app.shifts.request',
         'SETTINGS': 'settings.user',
         'GROUPSETTINGS': 'settings.group',
