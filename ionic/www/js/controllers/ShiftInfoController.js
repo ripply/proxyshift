@@ -21,7 +21,10 @@ angular.module('scheduling-app.controllers')
         ) {
             $controller('BaseModelController', {$scope: $scope});
             $scope.beforeEnter = function() {
-                console.log("ASKDJFLKASJDFJ");
+                fetch();
+            };
+
+            function fetch() {
                 if ($stateParams.shift_id) {
                     ResourceService.getShift($stateParams.shift_id, function(response) {
                         console.log(response);
@@ -30,7 +33,7 @@ angular.module('scheduling-app.controllers')
                         // TODO: RETRY HANDLING
                     });
                 }
-            };
+            }
 
             $scope.close = function() {
                 StateHistoryService.goBack($rootScope.currentTabPageState || STATES.SHIFTS);
@@ -40,6 +43,7 @@ angular.module('scheduling-app.controllers')
                 ResourceService.approveShiftApplication(shiftapplication.id, function(response) {
                     console.log('SUCCESS');
                     console.log(response);
+                    fetch();
                 }, function(err) {
                     console.log("ERR");
                     console.log(err);
@@ -51,6 +55,7 @@ angular.module('scheduling-app.controllers')
                 ResourceService.declineShiftApplication(shiftapplication.id, reason, function(response) {
                     console.log('SUCCESS');
                     console.log(response);
+                    fetch();
                 }, function(err) {
                     console.log("ERR");
                     console.log(err);
