@@ -137,6 +137,8 @@ angular.module('scheduling-app', [
                 newestOnTop: true,
                 positionClass: 'toast-top-center',
                 preventDuplicates: false,
+                tapToDismiss: true,
+                closeButton: false,
                 preventOpenDuplicates: true,
                 target: 'body'
             });

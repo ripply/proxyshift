@@ -23,21 +23,8 @@ angular.module('scheduling-app.push', [
             var deviceId;
             var timedout = false;
 
-            function showToast(type, title, body, onHide, onShow, onTap, misc) {
-                var data = {};
-                if (onHide) {
-                    data.onHidden = onHide;
-                }
-                if (onShow) {
-                    data.onShown = onShow;
-                }
-                if (onShow) {
-                    data.onTap = onTap;
-                }
-                if (misc) {
-                    angular.extend(data, misc);
-                }
-                toastr[type](title, body, data);
+            function showToast(type, title, body, misc) {
+                toastr[type](title, body, misc ? misc : {});
             }
 
             window.manageShift = {
@@ -85,7 +72,11 @@ angular.module('scheduling-app.push', [
                 },
                 shiftApplicationApproveDeny: {
                     foreground: function(data) {
-                        showToast(data.additionalData.data.accepted ? 'success':'warning', data.title, data.message);
+                        showToast(data.additionalData.data.accepted ? 'success':'warning', data.title, data.message, {
+                            onTap: function(clicked, toast) {
+                                $state.go('app.shift', {shift_id: data.additionalData.data.shift_id});
+                            }
+                        });
                     },
                     background: function(data) {
                         alert('Shift application approval/denial');

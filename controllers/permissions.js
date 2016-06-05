@@ -531,7 +531,7 @@ function markIfGroupOwnerOrPrivilegedMemberForShift(req, act) {
                         req.params.location_id = location_id;
 
                         return checkLocationPermissionLevel(privilegedLocationMember, req, act)
-                            .tap(function (result) {
+                            .then(function (result) {
                                 if (result) {
                                     setMark(req, 'privilegedshift', true, submark);
                                 }
