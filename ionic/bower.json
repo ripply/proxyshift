@@ -21,7 +21,8 @@
     "ionic-fancy-select": "https://github.com/tipstrade/ionic-fancy-select.git",
     "angular-resource": "1.4.3",
     "ionic": "1.1.1",
-    "lodash": "^4.4.0"
+    "lodash": "^4.4.0",
+    "angular-toastr": "1.7.0"
   },
   "resolutions": {
     "ionic": "^1.2.4",

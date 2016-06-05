@@ -6,12 +6,14 @@ angular.module('scheduling-app.push', [
         '$q',
         '$rootScope',
         '$state',
+        'toastr',
         'ResourceService',
         'CORDOVA_SETTINGS',
         function(
             $q,
             $rootScope,
             $state,
+            toastr,
             ResourceService,
             CORDOVA_SETTINGS
         ) {
@@ -20,6 +22,23 @@ angular.module('scheduling-app.push', [
             var promise = deferred.promise;
             var deviceId;
             var timedout = false;
+
+            function showToast(type, title, body, onHide, onShow, onTap, misc) {
+                var data = {};
+                if (onHide) {
+                    data.onHidden = onHide;
+                }
+                if (onShow) {
+                    data.onShown = onShow;
+                }
+                if (onShow) {
+                    data.onTap = onTap;
+                }
+                if (misc) {
+                    angular.extend(data, misc);
+                }
+                toastr[type](title, body, data);
+            }
 
             window.manageShift = {
                 accept: function(data) {
@@ -50,18 +69,29 @@ angular.module('scheduling-app.push', [
             window.actions = {
                 loggedIn: {
                     foreground: function(data) {
-                        alert('Someone logged in while the app is open!');
+                        showToast('info', 'Logged in', 'logged in!');
                     },
                     background: function(data) {
-                        alert('Someone logged in while app was in background');
+                        showToast('info', 'Logged in', 'logged in while app in the background');
                     },
                     coldstart: function(data) {
-                        alert('Someone logged in while app was off');
+                        showToast('info', 'Logged in', 'logged in while app was off');
                     }
                 },
                 newShift: {
                     'default': function(data, additionalData, foreground, coldstart) {
 
+                    }
+                },
+                shiftApplicationApproveDeny: {
+                    foreground: function(data) {
+                        showToast(data.additionalData.data.accepted ? 'success':'warning', data.title, data.message);
+                    },
+                    background: function(data) {
+                        alert('Shift application approval/denial');
+                    },
+                    coldstart: function(data) {
+                        $state.go('app.shifts', {shift_id: data.additionalData.data.shift_id});
                     }
                 }
             };

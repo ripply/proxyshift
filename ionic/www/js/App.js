@@ -9,6 +9,7 @@ var sessionHack = [];
 // 'starter.controllers' is found in controllers.js
 angular.module('scheduling-app', [
     'ionic',
+    'toastr',
     'ngCookies',
     'ng-mfb',
     'gettext',
@@ -79,6 +80,7 @@ angular.module('scheduling-app', [
         '$ionicConfigProvider',
         '$resourceProvider',
         '$httpProvider',
+        'toastrConfig',
         'localStorageServiceProvider',
         'STATES',
         'GENERAL_CONFIG',
@@ -91,6 +93,7 @@ angular.module('scheduling-app', [
                  $ionicConfigProvider,
                  $resourceProvider,
                  $httpProvider,
+                 toastrConfig,
                  localStorageServiceProvider,
                  STATES,
                  GENERAL_CONFIG,
@@ -126,6 +129,17 @@ angular.module('scheduling-app', [
             }
 
             console.log("APP-uRL=" + GENERAL_CONFIG.APP_URL);
+
+            angular.extend(toastrConfig, {
+                //autoDismiss: false,
+                containerId: 'toast-container',
+                //maxOpened: 0,
+                newestOnTop: true,
+                positionClass: 'toast-top-center',
+                preventDuplicates: false,
+                preventOpenDuplicates: true,
+                target: 'body'
+            });
 
             // Services cannot be asked for during config
             // instead, ask for injector provider and

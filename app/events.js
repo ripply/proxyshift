@@ -220,11 +220,12 @@ function acceptOrDeniedShiftApplication(data) {
             'body android only',
             3,
             3,
-            'newShift',
-            'newShift',
+            'shiftApplicationApproveDeny',
+            'shiftApplicationApproveDeny',
             {
                 shift_id: data.shift_id,
-                shiftapplication_id: data.shiftapplication_id
+                shiftapplication_id: data.shiftapplication_id,
+                accepted: data.shift_accepted
             }
         ),
         email: {

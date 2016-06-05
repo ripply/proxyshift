@@ -5,6 +5,7 @@ angular.module('scheduling-app.controllers')
         '$controller',
         '$stateParams',
         '$ionicHistory',
+        'toastr',
         'StateHistoryService',
         'ShiftProcessingService',
         'ResourceService',
@@ -14,6 +15,7 @@ angular.module('scheduling-app.controllers')
                  $controller,
                  $stateParams,
                  $ionicHistory,
+                 toastr,
                  StateHistoryService,
                  ShiftProcessingService,
                  ResourceService,
@@ -26,10 +28,21 @@ angular.module('scheduling-app.controllers')
                 if ($stateParams.shift_id) {
                     ResourceService.getShift($stateParams.shift_id, function(response) {
                         $scope.shift = response;
+                        showToast();
                     }, function(error) {
                         // TODO: RETRY HANDLING
                     });
                 }
+            }
+
+            function showToast() {
+                toastr.success('Hello world!', 'Toastr fun!', {
+                    onHidden: function(closed, toast) {
+                        setTimeout(function() {
+                            showToast();
+                        }, 2000);
+                    }
+                });
             }
 
             $scope.close = function() {
