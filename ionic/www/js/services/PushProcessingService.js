@@ -39,9 +39,17 @@ angular.module('scheduling-app.push', [
             window.newShift = {
                 apply: function(data) {
                     ResourceService.registerForShift(data.additionalData.data.shift_id[0], function() {
-                        alert("Successfully registered for shift");
+                        showToast('success', 'Successfully', 'Registered for shift', {
+                            onTap: function(clicked, toast) {
+                                $state.go('app.shift', {shift_id: data.additionalData.data.shift_id});
+                            }
+                        });
                     }, function(response) {
-                        alert("Failed to register for shift: " + JSON.stringify(response));
+                        showToast('error', 'Error', 'Failed to register for shift', {
+                            onTap: function(clicked, toast) {
+                                $state.go('app.shift', {shift_id: data.additionalData.data.shift_id});
+                            }
+                        });
                     });
                 },
                 ignore: function(data) {
@@ -65,7 +73,23 @@ angular.module('scheduling-app.push', [
                         showToast('info', 'Logged in', 'logged in while app was off');
                     }
                 },
+                manageShift: {
+                    foreground: function(data) {
+                        showToast('info', data.title, data.message, {
+                            onTap: function(clicked, toast) {
+                                $state.go('app.shift', {shift_id: data.additionalData.data.shift_id});
+                            }
+                        });
+                    },
+                },
                 newShift: {
+                    foreground: function(data) {
+                        showToast('info', data.title, data.message, {
+                            onTap: function(clicked, toast) {
+                                $state.go('app.shift', {shift_id: data.additionalData.data.shift_id});
+                            }
+                        });
+                    },
                     'default': function(data, additionalData, foreground, coldstart) {
 
                     }
