@@ -1,4 +1,6 @@
-var Schema = require('./schema').Schema,
+var _schema = require('./schema'),
+    Schema = _schema.Schema,
+    SqlFunctions = _schema.Function,
     cluster = require('cluster'),
     ObjectId = Schema.ObjectId,
     bcrypt = require('bcrypt-nodejs'),
@@ -24,6 +26,9 @@ var Schema = require('./schema').Schema,
     time = require('./time'),
     slack = require('./slack'),
     SALT_WORK_FACTOR = 10;
+
+// key in Schema that corresponds to definition of functions
+var SCHEMAFUNCTIONKEY = 'Function';
 
 // hack so that models gets exported as appLogic requires this file so has a circular dependency
 appLogic = {};
@@ -268,7 +273,7 @@ function getListOfNonExistingTables(trx, next) {
     }
 
     var tablesToCheck = [];
-    _.each(Schema, function(tableSchema, modelName) {
+    _.each(_.omit(Schema, SCHEMAFUNCTIONKEY), function(tableSchema, modelName) {
         tablesToCheck.push(modelName);
     });
 
@@ -351,6 +356,8 @@ function initDb(dropAllTables) {
 
     firstInitialization = false;
 
+    var functions = SqlFunctions;
+
     var tablesPopulatedPromise = new Promise(function(tablesPopulatedResolve) {
         var transactionCompletedPromise = new Promise(function (resolve) {
             if (!dropAllTables) {
@@ -388,10 +395,28 @@ function initDb(dropAllTables) {
                             }
                         });
                         return current.tap(function () {
-                            // now create all the tables that they have been dropped successfully
-                            // we are using the same transaction but have executed the sql
-                            current = trx.schema;
-                            return createTables(Schema);
+                            // now drop all functions
+                            return dropAllFunctionsRecursively(Object.keys(functions), 0);
+
+                            function dropAllFunctionsRecursively(functionList, index) {
+                                if (index < functionList.length) {
+                                    return trx.raw('drop function if exists ' + functionList[index])
+                                        .tap(function successfullyDroppedSqlFunction() {
+                                            // success, keep recursing
+                                            return dropAllFunctionsRecursively(functionList, index + 1);
+                                        })
+                                        .catch(function failedToDropSqlFunction(err) {
+                                            // error occurred, print
+                                            slack.error(undefined, 'Failed to drop sql function: ' + functionList[index], err);
+                                            return dropAllFunctionsRecursively(functionList, index + 1);
+                                        });
+                                } else {
+                                    // now create all the tables that they have been dropped successfully
+                                    // we are using the same transaction but have executed the sql
+                                    current = trx.schema;
+                                    return createTables(Schema);
+                                }
+                            }
                         })
                     } else {
                         // no tables to drop, just create them
@@ -400,6 +425,9 @@ function initDb(dropAllTables) {
 
                     function createTables(tables) {
                         var createTablePromises = [];
+                        var sqlFunctionsNotDependedOnByATable = _.clone(functions);
+                        var sqlFunctionsDependedOnByATable = {};
+                        var tableCheckConstraints = {};
                         _.each(tables, function (tableSchema, modelName) {
                             // normalize name so that it can go into the database
                             var normalizedTableName = lowercaseAndPluralizeModelName(modelName);
@@ -442,19 +470,146 @@ function initDb(dropAllTables) {
                                     if (columnSchema.hasOwnProperty('onDelete')) {
                                         column = column.onDelete(columnSchema['onDelete']);
                                     }
+                                    if (columnSchema.hasOwnProperty('comment')) {
+                                        column = column.comment(columnSchema['comment']);
+                                    }
+                                    if (columnSchema.hasOwnProperty('check')) {
+                                        _.each(columnSchema['check'], function(functionDefinition, functionName) {
+                                            console.log('&&&&&&&&&&&&&&&&&&&');
+                                            console.log(functionName);
+                                            console.log('&&&&&&&&&&&&&&&&&&&');
+                                            if (sqlFunctionsNotDependedOnByATable.hasOwnProperty(functionName)) {
+                                                // table depends on this function, delete it from the list of non dependant functions
+                                                // non-dependant functions should not be 'create or replace'
+                                                // they should just be create, and allowed to fail
+                                                if (!tableCheckConstraints.hasOwnProperty(normalizedTableName)) {
+                                                    tableCheckConstraints[normalizedTableName] = {};
+                                                }
+                                                if (!tableCheckConstraints[normalizedTableName].hasOwnProperty(columnName)) {
+                                                    tableCheckConstraints[normalizedTableName][columnName] = {}
+                                                }
+                                                tableCheckConstraints[normalizedTableName][columnName][functionName] = functionDefinition;
+                                                sqlFunctionsDependedOnByATable[functionName] = sqlFunctionsNotDependedOnByATable[functionName];
+                                                delete sqlFunctionsNotDependedOnByATable[functionName];
+                                                console.log(sqlFunctionsNotDependedOnByATable);
+                                            }
+                                        });
+                                    }
                                 });
                             });
                         });
                         return current.tap(function() {
-                            if (tables) {
-                                var tableList = Object.keys(tables);
-                                if (tableList.length > 0) {
-                                    console.log("The following tables have been created: " + tableList.join(', '));
+                            // create functions that are not depended upon by a table
+                            var successfullyCreatedFunctions = [];
+                            return createNonDependantFunctionsRecursively(Object.keys(sqlFunctionsNotDependedOnByATable), 0);
+                            function createNonDependantFunctionsRecursively(functionList, index) {
+                                if (index < functionList.length) {
+                                    return trx.raw('create ' + (functions[functionList[index]].up))
+                                        .tap(function sqlFunctionDidNotExistAndCreatedSuccessfully() {
+                                            successfullyCreatedFunctions.push(functionList[index]);
+                                            return createNonDependantFunctionsRecursively(functionList, index + 1);
+                                        })
+                                        .catch(function sqlFunctionProbablyAlreadyExistsSqlError(err) {
+                                            // this is ok, the function probably already exists
+                                            // or, the database does not support functions
+                                            console.log('Failed to create SQL function: ' + functionList[index]);
+                                            console.log(err);
+                                            return createNonDependantFunctionsRecursively(functionList, index + 1);
+                                        });
                                 } else {
-                                    console.log("No tables were created, they all exist");
+                                    // done creating functions that are not depended upon by a table
+                                    if (index > 0) {
+                                        if (successfullyCreatedFunctions.length > 0) {
+                                            console.log('Finished creating SQL functions not depended upon by tables: ' + successfullyCreatedFunctions.join(', '));
+                                        } else {
+                                            console.log('Failed to create sole SQL function not depended upon by tables');
+                                        }
+                                    } else {
+                                        console.log('No SQL functions that are depeneded upon by tables');
+                                    }
+                                    if (tables) {
+                                        var tableList = Object.keys(tables);
+                                        if (tableList.length > 0) {
+                                            // now create or replace all functions that new tables depend on
+                                            // we will try to create all functions, we won't ever bother dropping functions
+                                            // if a function is a constraint on a new table, we will replace the function if it failed to create
+                                            // there is no real way to automatically determine if the function needs to be updated (that I know of)
+                                            // if we were to replace all functions, then all functions would get replaced at each server boot
+                                            // which can't be good.
+                                            // this means that if a function needs to be updated, that would be a one off manual thing
+                                            var functionInitializationMap = {};
+                                            // first try to create all functions
+                                            _.each(sqlFunctionsDependedOnByATable, function(functionDefinition, functionName) {
+                                                functionInitializationMap[functionName] = trx.raw('create or replace ' + functionDefinition.up);
+                                            });
+
+                                            var functionInitialization = _.values(functionInitializationMap);
+
+                                            if (functionInitialization.length > 0) {
+                                                return Promise.all(functionInitialization)
+                                                    .tap(function() {
+                                                        // these will all be create or replace functions
+                                                        // therefore, there is no reason for them to fail except
+                                                        // if the database does not support functions
+                                                        // or there is a SQL error in one of them
+                                                        console.log("The following SQL functions have been created or replaced: " + Object.keys(functionInitializationMap).join(', '));
+                                                        return addCheckConstraintsToTablesRecursively(Object.keys(tableCheckConstraints), 0, 0, 0);
+                                                    })
+                                                    .catch(function sqlFunctionsAreProbablyNotSupported(err) {
+                                                        console.log("Failed to create SQL functions");
+                                                        console.log(err);
+                                                        slack.error(undefined, 'Failed to create SQL functions depended upon by tables', err);
+                                                        return addCheckConstraintsToTablesRecursively(Object.keys(tableCheckConstraints), 0, 0, 0);
+                                                    });
+
+                                                function addCheckConstraintsToTablesRecursively(tableNameList, tableNameIndex, columnIndex, functionIndex) {
+                                                    if (tableNameIndex < tableNameList.length) {
+                                                        var tableFunctionDefinitions = tableCheckConstraints[tableNameList[tableNameIndex]];
+                                                        var tableColumns = Object.keys(tableFunctionDefinitions);
+                                                        if (columnIndex < tableColumns.length) {
+                                                            var tableFunctions = Object.keys(tableFunctionDefinitions[tableColumns[columnIndex]]);
+                                                            if (functionIndex < tableFunctions.length) {
+                                                                var functionInfo = tableFunctionDefinitions[tableColumns[columnIndex]][tableFunctions[functionIndex]];
+                                                                var functionArguments;
+                                                                if (functionInfo.length > 0) {
+                                                                    functionArguments = '(' + functionInfo.join(', ') + ')'
+                                                                }
+                                                                return trx.raw('alter table ' + tableNameList[tableNameIndex] + ' add constraint ' + tableColumns[columnIndex] + ' check (' + functions[tableFunctions[functionIndex]].name + functionArguments + ');')
+                                                                    .tap(function() {
+                                                                        return addCheckConstraintsToTablesRecursively(tableNameList, tableNameIndex, columnIndex, functionIndex + 1);
+                                                                    })
+                                                                    .catch(function(err) {
+                                                                        var message = 'Failed to add table constraint ' + tableColumns[columnIndex] + ' on ' + tableNameList[tableNameIndex];
+                                                                        console.log(message);
+                                                                        slack.error(undefined, message, err);
+                                                                        return addCheckConstraintsToTablesRecursively(tableNameList, tableNameIndex, columnIndex, functionIndex + 1);
+                                                                    })
+                                                            } else {
+                                                                // next table
+                                                                return addCheckConstraintsToTablesRecursively(tableNameList, tableNameIndex + 1, 0, 0);
+                                                            }
+                                                        } else {
+                                                            return addCheckConstraintsToTablesRecursively(tableNameList, tableNameIndex, columnIndex + 1, functionIndex);
+                                                        }
+                                                    } else {
+                                                        return done();
+                                                    }
+                                                }
+                                            } else {
+                                                return done();
+                                            }
+
+                                            function done() {
+                                                console.log("The following tables have been created: " + tableList.join(', '));
+                                                resolve();
+                                            }
+                                        } else {
+                                            console.log("No tables were created, they all exist");
+                                            resolve();
+                                        }
+                                    }
                                 }
                             }
-                            resolve();
                         });
                     }
                 });

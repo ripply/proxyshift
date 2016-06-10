@@ -70,7 +70,7 @@ if (cluster.isMaster) {
             interval: notifyInterval
         };
         var databaseReadyPrinterInterval = timers.setInterval(function() {
-            if (ready.finishTime) {
+            if (ready.finishTime !== undefined && ready.finishTime !== null) {
                 timers.clearInterval(databaseReadyPrinterInterval);
                 if (ready.notified) {
                     if (serverIsUp) {
