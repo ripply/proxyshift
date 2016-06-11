@@ -647,6 +647,7 @@ var Schema = {
         recinded: {
             type: boolean,
             default: false,
+            nullable: false,
             comment: 'Shift application has been recinded',
             check: {
                 'shiftapplicationsonlyonenonrecinded(integer, integer)': ['shift_id', 'user_id']
