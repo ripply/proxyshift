@@ -649,9 +649,11 @@ var Schema = {
             default: false,
             nullable: false,
             comment: 'Shift application has been recinded',
+            /*
             check: {
                 'shiftapplicationsonlyonenonrecinded(integer, integer)': ['shift_id', 'user_id']
             }
+            */
         },
         recindeddate: {
             type: date,
