@@ -33,7 +33,8 @@ var createSelectQueryForAllColumns = controllerCommon.createSelectQueryForAllCol
 var shiftAndAppliedSelectKeys = _.clone(models.Shifts.selectkeys);
 // LEFT OUTER JOIN TO GET THIS WHERE RECINDED = FALSE
 shiftAndAppliedSelectKeys.push('shifts.id as id');
-shiftAndAppliedSelectKeys.push('shiftapplications.id as applied');
+shiftAndAppliedSelectKeys.push('latestShiftApplication.id as applied');
+shiftAndAppliedSelectKeys.push('latestAcceptDecline.accept as approved');
 
 module.exports = {
     route: '/api/shifts',
@@ -1452,15 +1453,26 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
 function joinShiftApplications(query, user_id) {
     // TODO: Figure out how to use this query without recinded != true see:
     // https://stackoverflow.com/questions/9592875/sql-server-left-outer-join-with-top-1-to-select-at-most-one-row
-    console.log('joinnnnn');
-    return query.leftOuterJoin('shiftapplications', function() {
-        this.on('shiftapplications.shift_id', '=', 'shifts.id')
-            .andOn('shiftapplications.user_id', '=', user_id);
-    })
+    var latestShiftApplicationSubQuery = knex.select()//knex.select('shifts.id as shift_id, shiftapplications.recinded as recinded')
+        .from('shiftapplications')
         .where(function() {
-            this.where('shiftapplications.recinded', '<>', '1')
-                .orWhere('shiftapplications.recinded', '<>', true)
-                .orWhereNull('shiftapplications.recinded');
+            this.whereNot('recinded', 1)
+                .orWhere('recinded', null)
+        })
+        .andWhere('shiftapplications.user_id', '=', user_id)
+        .orderBy('date', 'desc')
+        .limit(1)
+        .as('latestShiftApplication');
+    var acceptDeclineSubquery = knex.select('*')
+        .from('shiftapplicationacceptdeclinereasons')
+        .orderBy('date', 'desc')
+        .limit(1)
+        .as('latestAcceptDecline');
+    return query.leftOuterJoin(latestShiftApplicationSubQuery, function() {
+        this.on('latestShiftApplication.shift_id', '=', 'shifts.id');
+    })
+        .leftOuterJoin(acceptDeclineSubquery, function() {
+            this.on('latestAcceptDecline.shiftapplication_id', '=', 'latestShiftApplication.id');
         });
 }
 
