@@ -430,7 +430,8 @@ module.exports = {
                                 return models.ShiftApplication.forge({
                                     shift_id: req.params.shift_id,
                                     user_id: req.user.id,
-                                    date: getCurrentTimeForInsertionIntoDatabase()
+                                    date: getCurrentTimeForInsertionIntoDatabase(),
+                                    recinded: false
                                 })
                                     .save(null,
                                     {
