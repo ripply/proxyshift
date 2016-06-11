@@ -543,7 +543,8 @@ module.exports = {
             {
                 shift_id: '@shifts:title:monthshiftisover',
                 user_id: '@users:username:shiftapplied',
-                date: formatDateForDb(moment(new Date()).unix())
+                date: formatDateForDb(moment(new Date()).unix()),
+                recinded: false
             }
         ],
         managingclassesatlocations: [
