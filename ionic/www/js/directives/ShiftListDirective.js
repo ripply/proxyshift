@@ -7,16 +7,21 @@ angular.module('scheduling-app.directives')
             templateUrl: 'templates/_shiftlist.html',
             scope: {
                 dismissable: '=dismissable',
-                cancelable: '=cancelable',
-                name: '=name'
+                cancelable: '=cancelable'
             }
         });
 
         function link(scope, element, attributes) {
+            scope.name = attributes.name;
             if (attributes['acceptedonly']) {
                 scope.acceptedOnly = attributes['acceptedonly'] == 'true';
             } else {
                 scope.acceptedOnly = false;
+            }
+            if (attributes['showdividers']) {
+                scope.showDividers = attributes['showdividers'] == 'true';
+            } else {
+                scope.showDividers = false;
             }
             scope.$on('$ionicView.afterEnter', function() {
                 console.log("After enter in directive link");

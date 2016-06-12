@@ -4,9 +4,9 @@
     show-delete="false"
     show-reorder="false"
     can-swipe="true">
-    <div collection-repeat="shift in Model" item-height="(shift.canceled || ignoredShift(shift)) || (acceptedOnly && (!acceptedOnly || !acceptedOrApprovedShift(shift))) ? 0:(shift.isDivider ? 40:120)"
+    <div collection-repeat="shift in Model" item-height="(shift.canceled || ignoredShift(shift)) || (acceptedOnly && (!acceptedOnly || !acceptedOrApprovedShiftOrDivider(shift))) ? 0:(shift.isDivider ? 40:120)"
          item-width="100%"
-         ng-show="(!shift.canceled && !ignoredShift(shift)) && (!acceptedOnly || (acceptedOnly && acceptedOrApprovedShift(shift)))">
+         ng-show="(!shift.canceled && !ignoredShift(shift)) && (!acceptedOnly || (acceptedOnly && acceptedOrApprovedShiftOrDivider(shift)))">
         <div ng-class="{'card': !shift.isDivider, 'divider-card': shift.isDivider}">
             <ion-item
                 class="item"
@@ -19,6 +19,14 @@
                 <div ng-if="shift.isDivider && shift.type == 'noApplications'"
                      class="shift-item list-padding">
                     Shifts without applications
+                </div>
+                <div ng-if="shift.isDivider && shift.type == 'approved'"
+                     class="shift-item list-padding">
+                    Approved shifts
+                </div>
+                <div ng-if="shift.isDivider && shift.type == 'declined'"
+                     class="shift-item list-padding">
+                    Declined shifts
                 </div>
                 <div ng-if="!shift.isDivider">
                     <div class="shift-item list-padding">

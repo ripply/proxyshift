@@ -16,20 +16,6 @@ angular.module('scheduling-app.controllers')
                  AllShiftsModel
         ) {
             $controller('BaseShiftListDirectiveController', {
-                $scope: $scope,
-                ModelVariableName: 'AllShifts',
-                Model: AllShiftsModel
+                $scope: $scope
             });
-
-            $scope.fetch = function() {
-                console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-                var deferred = $q.defer();
-
-                AllShiftsModel.all(function(data) {
-                    $scope.Model = data;
-                    deferred.resolve(data);
-                });
-
-                return deferred.promise;
-            };
         }]);

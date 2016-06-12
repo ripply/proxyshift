@@ -8,12 +8,12 @@ angular.module('scheduling-app.directives')
             scope: {
                 dismissable: '=dismissable',
                 cancelable: '=cancelable',
-                manageable: '=manageable',
-                name: '=name'
+                manageable: '=manageable'
             }
         });
 
         function link(scope, element, attributes) {
+            scope.name = attributes.name;
             scope.$on('$ionicView.afterEnter', function() {
                 console.log("After enter in directive link");
             });

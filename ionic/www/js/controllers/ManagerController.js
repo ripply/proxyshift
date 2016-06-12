@@ -7,13 +7,15 @@ angular.module('scheduling-app.controllers')
         'GENERAL_EVENTS',
         'GENERAL_CONFIG',
         'ShiftsModel',
+        'ShiftProcessingService',
         function($rootScope,
                  $scope,
                  $controller,
                  $q,
                  GENERAL_EVENTS,
                  GENERAL_CONFIG,
-                 ShiftsModel
+                 ShiftsModel,
+                 ShiftProcessingService
         ) {
             $controller('BaseModelController', {$scope: $scope});
 
@@ -27,7 +29,7 @@ angular.module('scheduling-app.controllers')
                     var noApplications = false;
                     for (var i = 0; i < data.length; i++) {
                         var shift = data[i];
-                        if (isAppliedFor(shift)) {
+                        if (ShiftProcessingService.isShiftAppliedFor(shift)) {
                             pendingApprovals = true;
                         } else {
                             noApplications = true;
@@ -70,10 +72,10 @@ angular.module('scheduling-app.controllers')
                         return 0;
                     }
                 }
-                var leftAppliedFor = isAppliedFor(left);
-                var rightAppliedFor = isAppliedFor(right);
+                var leftAppliedFor = ShiftProcessingService.isShiftAppliedFor(left);
+                var rightAppliedFor = ShiftProcessingService.isShiftAppliedFor(right);
                 if (leftAppliedFor && rightAppliedFor) {
-                    return compareShiftByDate(left, right);
+                    return ShiftProcessingService.compareShiftByDate(left, right);
                 } else if (leftAppliedFor) {
                     if (right.isDivider) {
                         if (right.sort <= 0) {
@@ -95,21 +97,7 @@ angular.module('scheduling-app.controllers')
                         return 1;
                     }
                 } else {
-                    return compareShiftByDate(left, right);
+                    return ShiftProcessingService.compareShiftByDate(left, right);
                 }
-            }
-
-            function compareShiftByDate(left, right) {
-                if (left.start < right.start) {
-                    return -1;
-                } else if (left.start > right.start) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            }
-
-            function isAppliedFor(shift) {
-                return shift.shiftapplications && shift.shiftapplications.length > 0;
             }
         }]);

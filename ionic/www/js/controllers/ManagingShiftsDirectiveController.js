@@ -5,18 +5,14 @@ angular.module('scheduling-app.controllers')
         '$controller',
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
-        'ShiftsModel',
         function($rootScope,
                  $scope,
                  $controller,
                  GENERAL_CONFIG,
-                 GENERAL_EVENTS,
-                 ShiftsModel
+                 GENERAL_EVENTS
         ) {
             $controller('BaseShiftListDirectiveController', {
-                $scope: $scope,
-                ModelVariableName: 'ManageShifts',
-                Model: ShiftsModel
+                $scope: $scope
             });
 
             $scope.fetch = function() {

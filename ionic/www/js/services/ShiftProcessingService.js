@@ -161,6 +161,46 @@ angular.module('scheduling-app.services')
                 });
             }
 
+            this.isShiftAppliedFor = function isShiftAppliedFor(shift) {
+                return shift.applied || (shift.shiftapplications && shift.shiftapplications.length > 0);
+            };
+
+            this.compareShiftByDate = function compareShiftByDate(left, right) {
+                if (left.start < right.start) {
+                    return -1;
+                } else if (left.start > right.start) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            };
+
+            this.isShiftApproved = function isShiftApproved(shift) {
+                if (shift.approved) {
+                    return true;
+                } else if (shift.shiftapplications && shift.shiftapplications.length > 0) {
+                    for (var i = 0; i < shift.shiftapplications.length; i++) {
+                        if (shiftApplicationIsAccepted(shift.shiftapplications[i])) {
+                            return true;
+                        }
+                    }
+                }
+                return false
+            };
+
+            this.isShiftDeclined = function isShiftDeclined(shift) {
+                if (shift.approved !== undefined && shift.approved !== null && !shift.approved) {
+                    return true;
+                } else if (shift.shiftapplications && shift.shiftapplications.length > 0) {
+                    for (var i = 0; i < shift.shiftapplications.length; i++) {
+                        if (shiftApplicationIsDeclined(shift.shiftapplications[i])) {
+                            return true;
+                        }
+                    }
+                }
+                return false
+            };
+
             function shiftApplicationIsAccepted(application) {
                 if (!application.recinded && application.shiftapplicationacceptdeclinereasons) {
                     var reasons = application.shiftapplicationacceptdeclinereasons;

@@ -308,26 +308,6 @@ angular.module('scheduling-app', [
                     views: {
                         'shiftTabContent': {
                             templateUrl: "templates/myshifts.html",
-                            controller: 'OpenShiftsController',
-                        }
-                    }
-                })
-
-                .state('app.tabs.openshifts', {
-                    url: "/openshifts",
-                    views: {
-                        'tabContent': {
-                            templateUrl: "templates/openshifts.html",
-                            controller: 'OpenShiftsController',
-                        }
-                    }
-                })
-
-                .state('app.tabs.myshifts', {
-                    url: "/myshifts",
-                    views: {
-                        'tabContent': {
-                            templateUrl: "templates/myshifts.html",
                             controller: 'MyShiftsController',
                         }
                     }
@@ -339,16 +319,6 @@ angular.module('scheduling-app', [
                         'shiftTabContent': {
                             templateUrl: "templates/manage.html",
                             controller: 'ManagerController',
-                        }
-                    }
-                })
-
-                .state('app.tabs.manage_shift', {
-                    url: "/manageshift/:shift_id",
-                    views: {
-                        'tabContent': {
-                            templateUrl: "templates/manageshift.html",
-                            controller: 'ManageShiftController',
                         }
                     }
                 })

@@ -8,8 +8,6 @@ angular.module('scheduling-app.controllers')
         'GENERAL_EVENTS',
         'ResourceService',
         'ShiftProcessingService',
-        'ModelVariableName',
-        'Model',
         function($rootScope,
                  $scope,
                  $controller,
@@ -17,22 +15,24 @@ angular.module('scheduling-app.controllers')
                  GENERAL_CONFIG,
                  GENERAL_EVENTS,
                  ResourceService,
-                 ShiftProcessingService,
-                 ModelVariableName,
-                 Model
+                 ShiftProcessingService
         ) {
             $controller('BaseModelController', {$scope: $scope});
-            $scope.register(
-                ModelVariableName,
-                Model,
-                undefined
-            );
             $scope.shifttitle = 'April 29th';
             $scope.declinedshifttitle = 'Declined shifts';
-            $scope.Model = $rootScope[ModelVariableName];
+            if ($scope.name) {
+                $scope.Model = $rootScope[$scope.name];
+            } else {
+                $scope.Model = [];
+            }
             $scope.data = {};
-            $rootScope.$watch(ModelVariableName, function(newValue, oldValue) {
-                $scope.Model = newValue;
+            $scope.$watch('name', function(newValue, oldValue) {
+                $scope.Model = $rootScope[newValue];
+                $rootScope.$watch(newValue, function(rootNewValue, rootOldValue) {
+                    console.log("UPDATREDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD" + rootNewValue);
+                    console.log(rootNewValue);
+                    $scope.Model = rootNewValue;
+                });
             });
             var superFetchComplete = $scope.fetchComplete;
             $scope.fetchComplete = function(result, oldValue) {
@@ -432,10 +432,16 @@ angular.module('scheduling-app.controllers')
                 return shift.ignoreshifts.length > 0;
             };
 
-            $scope.acceptedOrApprovedShift = function(shift) {
-                if (shift.id == 1) {
-                    console.log(shift);
+            $scope.acceptedOrApprovedShiftOrDivider = function(shift) {
+                if (shift.isDivider) {
+                    return true;
+                } else if (ShiftProcessingService.isShiftAppliedFor(shift)) {
+                    return true;
                 }
+                return false;
+            };
+
+            $scope.acceptedOrApprovedShift = function(shift) {
                 return shift.applied;
             };
 
