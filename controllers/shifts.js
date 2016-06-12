@@ -1461,7 +1461,7 @@ function joinShiftApplications(query, user_id) {
         .as('latestAcceptDecline');
     return query.joinRaw('left join shiftapplications on shiftapplications.id = (' +
     'select id from shiftapplications ' +
-    'where (shiftapplications.recinded != true ' +
+    'where (shiftapplications.recinded != 1 ' +
     'or shiftapplications.recinded is null) ' +
     'and shiftapplications.shift_id = shifts.id ' +
     'and shiftapplications.user_id = shifts.user_id ' +
