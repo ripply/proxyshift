@@ -106,6 +106,7 @@ angular.module('scheduling-app', [
             $httpProvider.interceptors.push('timeoutHttpIntercept');
             // enables caching of calendar which takes 1-2 seconds to render initially
             $ionicConfigProvider.views.forwardCache(true);
+            $ionicConfigProvider.views.transition('none');
             CORDOVA_SETTINGS.isWebView = ionic.Platform.isWebView();
             CORDOVA_SETTINGS.isIPad = ionic.Platform.isIPad();
             CORDOVA_SETTINGS.isIOS = ionic.Platform.isIOS();
