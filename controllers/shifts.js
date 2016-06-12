@@ -34,7 +34,7 @@ var shiftAndAppliedSelectKeys = _.clone(models.Shifts.selectkeys);
 // LEFT OUTER JOIN TO GET THIS WHERE RECINDED = FALSE
 shiftAndAppliedSelectKeys.push('shifts.id as id');
 shiftAndAppliedSelectKeys.push('shiftapplications.id as applied');
-shiftAndAppliedSelectKeys.push('latestAcceptDecline.accept as approved');
+shiftAndAppliedSelectKeys.push('shiftapplicationacceptdeclinereasons.accept as approved');
 
 module.exports = {
     route: '/api/shifts',
@@ -1464,13 +1464,17 @@ function joinShiftApplications(query, user_id) {
     'where (shiftapplications.recinded != 1 ' +
     'or shiftapplications.recinded is null) ' +
     'and shiftapplications.shift_id = shifts.id ' +
-    'and shiftapplications.user_id = shifts.user_id ' +
+    'and shiftapplications.user_id = ? ' +
     'order by shiftapplications.date desc ' +
     'limit 1 ' +
-    ')')
-        .leftOuterJoin(acceptDeclineSubquery, function() {
-            this.on('latestAcceptDecline.shiftapplication_id', '=', 'shiftapplications.id');
-        });
+    ')', user_id)
+        .joinRaw('left join shiftapplicationacceptdeclinereasons on shiftapplicationacceptdeclinereasons.id = (' +
+            'select id from shiftapplicationacceptdeclinereasons ' +
+            'where shiftapplicationacceptdeclinereasons.shiftapplication_id = shiftapplications.id ' +
+            'order by shiftapplicationacceptdeclinereasons.date desc ' +
+            'limit 1 ' +
+            ')'
+    )
 }
 
 /**
