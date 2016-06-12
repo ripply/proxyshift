@@ -135,11 +135,12 @@ if (master) {
     console.log(dbConnection);
 }
 
-var knex = require('knex')( {
+var knexConfig = {
     dialect: global.db_dialect || 'sqlite3',
     connection: dbConnection
     //, debug: true
-});
+};
+var knex = require('knex')(knexConfig);
 
 var Bookshelf = require('bookshelf')(knex);
 Bookshelf.plugin(Validator.plugin);
@@ -1531,6 +1532,8 @@ var exports = {
     sendNotificationToUsers: sendNotificationToUsers,
     purgeExpiredTokens: purgeExpiredTokens,
     Notifications: Notifications,
+    sqlTrue: knexConfig.dialect == 'sqlite3' ? '1':'true',
+    sqlFalse: knexConfig.dialect == 'sqlite3' ? '0':'false',
     usersColumns: usersColumns
 };
 
