@@ -11,6 +11,9 @@
            ng-if="userinfo.ownedGroups.length > 0 || userinfo.privilegedMemberOfGroups.length > 0 || userinfo.privilegedMemberOfLocations.length > 0">
             Manage
         </a>
+        <div style="position: absolute; top: 100%; left: 0; z-index: 1005; width: inherit; background-color: #FFF;">
+            <shift-calendar value="AllShifts" toggle="true" show="false"></shift-calendar>
+        </div>
     </div>
 </div>
 <ion-nav-view name="shiftTabContent"></ion-nav-view>
