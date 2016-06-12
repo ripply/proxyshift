@@ -6,7 +6,7 @@
         <a class="tab-item" href="{{currentTabPage || '#' + states.SHIFTS_URL}}" ng-class="{'active': currentState == states.SHIFTS || currentState == states.MYSHIFTS || currentState == states.MANAGE || currentState == states.SHIFT_INFO}">
             Fill a shift
         </a>
-        <a class="tab-item" href="#{{states.SHIFT_REQUEST_URL}}" ng-class="{'active': currentState == states.SHIFT_REQUEST}">
+        <a class="tab-item" ng-click="createShift()">
             Shift Req
         </a>
         <a class="tab-item" href="{{currentTabPage || '#' + states.SHIFTS_URL}}" ng-class="{'active': currentState == states.OPENSHIFTS}"

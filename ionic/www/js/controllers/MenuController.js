@@ -5,18 +5,24 @@ angular.module('scheduling-app.controllers')
         '$rootScope',
         '$state',
         'StateHistoryService',
+        'CreateShiftService',
         'GENERAL_EVENTS',
         'STATES',
         function($scope,
                  $rootScope,
                  $state,
                  StateHistoryService,
+                 CreateShiftService,
                  GENERAL_EVENTS,
                  STATES
         ) {
             $scope.toggleCalendar = function(event) {
                 $rootScope.$emit(GENERAL_EVENTS.CALENDAR.TOGGLE);
                 event.stopPropagation();
+            };
+
+            $scope.createShift = function() {
+                CreateShiftService.showModal($scope);
             };
 
             $scope.openSettings = function() {
