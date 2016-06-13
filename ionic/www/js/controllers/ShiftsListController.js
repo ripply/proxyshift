@@ -7,6 +7,7 @@ angular.module('scheduling-app.controllers')
         'GENERAL_EVENTS',
         'GENERAL_CONFIG',
         'ShiftProcessingService',
+        'ShiftIntervalTreeCacheService',
         'ShiftsModel',
         function($rootScope,
                  $scope,
@@ -15,6 +16,7 @@ angular.module('scheduling-app.controllers')
                  GENERAL_EVENTS,
                  GENERAL_CONFIG,
                  ShiftProcessingService,
+                 ShiftIntervalTreeCacheService,
                  ShiftsModel
         ) {
             $controller('BaseModelController', {$scope: $scope});
@@ -22,6 +24,16 @@ angular.module('scheduling-app.controllers')
             var APPROVED_GROUP = -1;
             var PENDING_GROUP = 1;
             var DECLINED_GROUP = 2;
+
+            if (!$scope.MODELNAME) {
+                $scope.MODELNAME = 'AllShifts';
+            }
+
+            $rootScope.$on(GENERAL_EVENTS.UPDATES.RESOURCE, function(state, resource, value) {
+                if (resource == $scope.MODELNAME) {
+                    ShiftIntervalTreeCacheService.updateShifts(value);
+                }
+            });
 
             $scope.fetch = function() {
                 var deferred = $q.defer();

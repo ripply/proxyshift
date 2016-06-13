@@ -34,6 +34,8 @@ angular.module('scheduling-app.services')
                 return $rootScope.shiftIntervals;
             }
 
+            this.updateShifts = updateShifts;
+
             function updateShifts(shifts) {
                 $rootScope.shiftIntervals = shifts;
             }
