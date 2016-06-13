@@ -1,0 +1,21 @@
+<ion-view view-title="When" hide-back-button="true">
+    <ion-content class="has-header has-footer">
+        description
+        <textarea rows="4" cols="50" style="width: 100%; height: 20%;" ng-model="description"></textarea>
+        <ion-scroll delegate-handle="shift-who" ng-style="{'height': currentStepDivHeight / 3}">
+            <ion-list
+                type="list-inset"
+                show-delete="false"
+                show-reorder="false"
+                can-swipe="false">
+                <ion-item
+                    class="item clear-padding"
+                    ng-class="{'location-selected': job.selected}"
+                    ng-click="jobTypeClicked(job)"
+                    ng-repeat="job in jobTypes">
+                    {{job.title}} - {{job.description}}
+                </ion-item>
+            </ion-list>
+        </ion-scroll>
+    </ion-content>
+</ion-view>

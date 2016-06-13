@@ -324,6 +324,61 @@ angular.module('scheduling-app', [
                     }
                 })
 
+                .state('app.newshift', {
+                    url: "/newshift",
+                    abstract: true,
+                    views: {
+                        'tabContent': {
+                            templateUrl: "templates/newshift/newshiftstabs.html"
+                        }
+                    }
+                })
+
+                .state('app.newshift.dates', {
+                    url: "/dates",
+                    views: {
+                        'newShiftTabContent': {
+                            templateUrl: "templates/newshift/dates.html"
+                        }
+                    }
+                })
+
+                .state('app.newshift.when', {
+                    url: "/when",
+                    views: {
+                        'newShiftTabContent': {
+                            templateUrl: "templates/newshift/when.html"
+                        }
+                    }
+                })
+
+                .state('app.newshift.where', {
+                    url: "/where",
+                    views: {
+                        'newShiftTabContent': {
+                            templateUrl: "templates/newshift/where.html"
+                        }
+                    }
+                })
+
+                .state('app.newshift.who', {
+                    url: "/who",
+                    views: {
+                        'newShiftTabContent': {
+                            templateUrl: "templates/newshift/who.html"
+                        }
+                    }
+                })
+
+                .state('app.newshift.review', {
+                    url: "/review",
+                    views: {
+                        'newShiftTabContent': {
+                            templateUrl: "templates/newshift/review.html"
+                        }
+                    }
+                })
+
                 .state('requestshift', {
                     url: "/requestshift",
                     abstract: true,

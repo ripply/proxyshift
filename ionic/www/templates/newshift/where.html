@@ -1,0 +1,47 @@
+<ion-view view-title="When" hide-back-button="true">
+    <ion-content class="has-header has-footer">
+        <div class="list list-inset">
+            <label class="item item-input">
+                <i class="icon ion-search placeholder-icon"></i>
+                <input type="text" ng-model="query" ng-style="{'width' : '100%'}"
+                       placeholder="Search by name, email or phone">
+            </label>
+        </div>
+        <ion-scroll delegate-handle="shift-where" ng-style="{'height': currentStepDivHeight / 2}">
+            <ion-list
+                type="list-inset"
+                show-delete="false"
+                show-reorder="false"
+                can-swipe="false">
+                <ion-item
+                    class="item clear-padding"
+                    ng-class="{'location-selected': location.selected}"
+                    ng-click="locationClicked(location)"
+                    ng-repeat="location in users | filter:query">
+                    {{location.address}}
+                </ion-item>
+            </ion-list>
+            <ion-infinite-scroll
+                ng-if="moreToLoad()"
+                on-infinite="loadMore()"
+                distance="20%">
+            </ion-infinite-scroll>
+        </ion-scroll>
+        <div>
+            Floor
+            <ion-list
+                type="list-inset"
+                show-delete="false"
+                show-reorder="false"
+                can-swipe="false">
+                <ion-item
+                    class="item clear-padding"
+                    ng-class="{'location-selected': sublocation.selected}"
+                    ng-click="sublocationClicked(sublocation)"
+                    ng-repeat="sublocation in sublocations">
+                    {{sublocation.title}}
+                </ion-item>
+            </ion-list>
+        </div>
+    </ion-content>
+</ion-view>

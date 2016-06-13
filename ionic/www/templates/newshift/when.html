@@ -1,0 +1,33 @@
+<ion-view view-title="When" hide-back-button="true">
+    <ion-content class="has-header has-footer">
+        <div class="row">
+            <div class="col col-20 uniform-padding">
+                <h4 class="sub-subheader">Start:</h4>
+            </div>
+            <div class="col col-80">
+                <input ng-model="dateState[day.key].time" type="time">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col col-20 uniform-padding">
+                <h4 class="sub-subheader">End:</h4>
+            </div>
+            <div class="col col-80">
+                <input ng-model="dateState[day.key].endtime" type="date">
+                <input ng-model="dateState[day.key].hours" type="time">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col col-20 uniform-padding">
+                <h4 class="sub-subheader nowrap">Employees needed:</h4>
+            </div>
+            <div class="col col-80">
+                <div class="row">
+                    <input ng-model="dateState[day.key].counter" min="1" type="number">
+                </div>
+            </div>
+        </div>
+    </ion-content>
+</ion-view>

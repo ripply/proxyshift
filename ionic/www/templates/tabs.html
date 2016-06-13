@@ -9,6 +9,9 @@
         <a class="tab-item" ng-click="createShift()">
             Shift Request
         </a>
+        <a class="tab-item" href="#{{states.SHIFT_REQUEST_URL}}">
+            +++
+        </a>
         <a class="tab-item" href="{{currentTabPage || '#' + states.SHIFTS_URL}}" ng-class="{'active': currentState == states.OPENSHIFTS}"
             ng-click="toggleCalendar($event)">
             Calendar
