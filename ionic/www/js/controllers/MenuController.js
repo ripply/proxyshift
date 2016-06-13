@@ -16,6 +16,7 @@ angular.module('scheduling-app.controllers')
                  GENERAL_EVENTS,
                  STATES
         ) {
+            $scope.$rootScope = $rootScope;
             $scope.toggleCalendar = function(event) {
                 $rootScope.$emit(GENERAL_EVENTS.CALENDAR.TOGGLE);
                 event.stopPropagation();
