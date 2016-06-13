@@ -21,6 +21,10 @@ angular.module('scheduling-app.controllers')
             createCalendarHeaderData();
             calculateCalendar();
 
+            $rootScope.$watch('shiftIntervals', function(newValue, oldValue) {
+                calculateCalendar();
+            });
+
             $scope.$on('$ionicView.beforeEnter', calculateCalendar());
 
             $scope.$on(GENERAL_EVENTS.CALENDAR.NEXTMONTH, nextMonth);
