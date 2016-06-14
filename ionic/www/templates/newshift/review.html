@@ -2,7 +2,7 @@
     <ion-content class="has-header has-footer">
         {{description}}
         <ion-scroll delegate-handle="shift-review" ng-style="{'height': currentStepDivHeight * 0.5}">
-            <div ng-repeat="day in date">
+            <div ng-repeat="day in dates">
                 <p>Shift {{date.indexOf(day) + 1}}</p>
                 <p>Date: {{day.key}}</p>
                 <p>Begins: {{dateState[day.key].time}}</p>

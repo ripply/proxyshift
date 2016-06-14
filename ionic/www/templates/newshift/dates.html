@@ -1,5 +1,9 @@
 <ion-view view-title="Date(s)" hide-back-button="true">
     <ion-content class="has-header has-footer">
         <shift-calendar toggle="false" show="true" name="create-shift-calendar" multiple="true" clickable="true" cant-click-yesterday="true"></shift-calendar>
+        <button ng-disabled="date.length == 0"
+                ui-sref="app.newshift.when({dates: getDates()})">
+            {{getDates() || 'CHOOSE A DATE'}}
+        </button>
     </ion-content>
 </ion-view>
