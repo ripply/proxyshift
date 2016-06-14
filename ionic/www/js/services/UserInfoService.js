@@ -130,6 +130,13 @@ angular.module('scheduling-app.services')
                 }
             };
 
+            this.getTimezoneAtLocation = function getTimezoneAtLocation(location_id) {
+                var location = this.getLocation(location_id);
+                if (location) {
+                    return location.timezone.name;
+                }
+            };
+
             this.getGroup = function getGroup(group_id) {
                 if (group_id === undefined || group_id === null) {
                     return undefined;

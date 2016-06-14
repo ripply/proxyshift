@@ -324,6 +324,67 @@ angular.module('scheduling-app', [
                     }
                 })
 
+                .state('app.newshift', {
+                    url: "/newshift",
+                    abstract: true,
+                    views: {
+                        'tabContent': {
+                            templateUrl: "templates/newshift/newshiftstabs.html",
+                            controller: "BaseNewShiftController"
+                        }
+                    }
+                })
+
+                .state('app.newshift.dates', {
+                    url: "/dates",
+                    views: {
+                        'newShiftTabContent': {
+                            templateUrl: "templates/newshift/dates.html",
+                            controller: "DateNewShiftController"
+                        }
+                    }
+                })
+
+                .state('app.newshift.when', {
+                    url: "/when/dates/:dates",
+                    views: {
+                        'newShiftTabContent': {
+                            templateUrl: "templates/newshift/when.html",
+                            controller: "WhenNewShiftController"
+                        }
+                    }
+                })
+
+                .state('app.newshift.where', {
+                    url: "/where/dates/:dates/when/:when",
+                    views: {
+                        'newShiftTabContent': {
+                            templateUrl: "templates/newshift/where.html",
+                            controller: "WhereNewShiftController"
+                        }
+                    }
+                })
+
+                .state('app.newshift.who', {
+                    url: "/who/dates/:dates/when/:when/where/:where",
+                    views: {
+                        'newShiftTabContent': {
+                            templateUrl: "templates/newshift/who.html",
+                            controller: "WhoNewShiftController"
+                        }
+                    }
+                })
+
+                .state('app.newshift.review', {
+                    url: "/review/dates/:dates/when/:when/where/:where/who/:who/description/:description",
+                    views: {
+                        'newShiftTabContent': {
+                            templateUrl: "templates/newshift/review.html",
+                            controller: "ReviewNewShiftController"
+                        }
+                    }
+                })
+
                 .state('requestshift', {
                     url: "/requestshift",
                     abstract: true,

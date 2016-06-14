@@ -154,7 +154,7 @@ angular.module('scheduling-app.controllers')
                 }
 
                 if (existingUsers.length == 1 &&
-                    (existingUsers.indexOf($scope.loading) >= 0 || existingUsers.indexOf(error) >= 0)) {
+                    (existingUsers.indexOf($scope.loading) >= 0 || existingUsers.indexOf($scope.error) >= 0)) {
                     existingUsers.length = 0;
                 }
 

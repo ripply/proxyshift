@@ -1,0 +1,44 @@
+<ion-view view-title="When" hide-back-button="true">
+    <ion-content class="has-header has-footer">
+        <div class="list list-inset"
+            ng-repeat="date in getDates()">
+            <div class="item item-divider">
+                {{date}}
+            </div>
+            <div class="item row">
+                <div class="col col-20 uniform-padding">
+                    <h4 class="sub-subheader">Start:</h4>
+                </div>
+                <div class="col col-80">
+                    <input ng-model="when[date].starttime" type="time">
+                </div>
+            </div>
+
+            <div class="item row">
+                <div class="col col-20 uniform-padding">
+                    <h4 class="sub-subheader">End:</h4>
+                </div>
+                <div class="col col-80">
+                    <input ng-model="when[date].endtime" type="date">
+                    <input ng-model="when[date].length" type="time">
+                </div>
+            </div>
+
+            <div class="item row">
+                <div class="col col-20 uniform-padding">
+                    <h4 class="sub-subheader nowrap">Employees needed:</h4>
+                </div>
+                <div class="col col-80">
+                    <div class="row">
+                        <input ng-model="when[date].employees" min="1" type="number">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button ng-disabled="!progressable()"
+                ui-sref="app.newshift.where(whereStateParams())">
+            NEXT?
+        </button>
+    </ion-content>
+</ion-view>

@@ -1,0 +1,20 @@
+<div id="app-header-tab" class="tabs-striped tabs-top tabs-background-positive tabs-color-light">
+    <div class="tabs" style="top: 0">
+        <a class="tab-item" href="#{{states.SHIFT_REQUEST_URL}}" ng-class="{'active': currentState == states.SHIFT_REQUEST}">
+            DATE(S)
+        </a>
+        <a class="tab-item" href="#{{states.SHIFT_REQUEST_WHEN_URL}}" ng-class="{'active': currentState == states.SHIFT_REQUEST_WHEN}">
+            WHEN
+        </a>
+        <a class="tab-item" href="#{{states.SHIFT_REQUEST_WHERE_URL}}" ng-class="{'active': currentState == states.SHIFT_REQUEST_WHERE}">
+            WHERE
+        </a>
+        <a class="tab-item" href="#{{states.SHIFT_REQUEST_WHO_URL}}" ng-class="{'active': currentState == states.SHIFT_REQUEST_WHO}">
+            WHO
+        </a>
+        <a class="tab-item" href="#{{states.SHIFT_REQUEST_REVIEW_URL}}" ng-class="{'active': currentState == states.SHIFT_REQUEST_REVIEW}">
+            REVIEW
+        </a>
+    </div>
+</div>
+<ion-nav-view name="newShiftTabContent"></ion-nav-view>

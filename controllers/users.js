@@ -594,7 +594,8 @@ function getUserInfo(user_id, next) {
                     })
                         .fetchAll({
                             withRelated: [
-                                'sublocations'
+                                'sublocations',
+                                'timezone'
                             ]
                         })
                         .tap(function(locationsAPrivilegedMemeberOf) {
@@ -688,7 +689,8 @@ function getUserInfo(user_id, next) {
                                             })
                                                 .fetchAll({
                                                     withRelated: [
-                                                        'sublocations'
+                                                        'sublocations',
+                                                        'timezone'
                                                     ]
                                                 })
                                                 .tap(function(locationsAndSublocations) {
