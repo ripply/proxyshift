@@ -9,6 +9,7 @@ var boolean = 'boolean';
 // https://github.com/city41/node-sql-fixtures/blob/master/lib/prioritize.js#L177
 // so we are going to use UTC in a bitint as integer will only get us to 2038
 var date = 'bigint';
+var RAW = 'RAW';
 
 // http://blog.ragingflame.co.za/2014/7/21/using-nodejs-with-mysql
 
@@ -534,7 +535,10 @@ var Schema = {
         },
         end: {
             type: date,
-            nullable: false
+            nullable: false,
+            check: {
+                "check('start' < 'end')": RAW
+            }
         },
         timezone_id: {
             type: integer,

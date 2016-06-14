@@ -476,10 +476,8 @@ function initDb(dropAllTables) {
                                     }
                                     if (columnSchema.hasOwnProperty('check')) {
                                         _.each(columnSchema['check'], function(functionDefinition, functionName) {
-                                            console.log('&&&&&&&&&&&&&&&&&&&');
-                                            console.log(functionName);
-                                            console.log('&&&&&&&&&&&&&&&&&&&');
-                                            if (sqlFunctionsNotDependedOnByATable.hasOwnProperty(functionName)) {
+                                            if (functionDefinition == 'RAW' ||
+                                                sqlFunctionsNotDependedOnByATable.hasOwnProperty(functionName)) {
                                                 // table depends on this function, delete it from the list of non dependant functions
                                                 // non-dependant functions should not be 'create or replace'
                                                 // they should just be create, and allowed to fail
@@ -541,7 +539,11 @@ function initDb(dropAllTables) {
                                             var functionInitializationMap = {};
                                             // first try to create all functions
                                             _.each(sqlFunctionsDependedOnByATable, function(functionDefinition, functionName) {
-                                                functionInitializationMap[functionName] = trx.raw('create or replace ' + functionDefinition.up);
+                                                if (functionDefinition) {
+                                                    functionInitializationMap[functionName] = trx.raw('create or replace ' + functionDefinition.up);
+                                                } else {
+                                                    functionInitializationMap[functionName] = 'RAW';
+                                                }
                                             });
 
                                             var functionInitialization = _.values(functionInitializationMap);
@@ -572,10 +574,16 @@ function initDb(dropAllTables) {
                                                             if (functionIndex < tableFunctions.length) {
                                                                 var functionInfo = tableFunctionDefinitions[tableColumns[columnIndex]][tableFunctions[functionIndex]];
                                                                 var functionArguments;
-                                                                if (functionInfo.length > 0) {
-                                                                    functionArguments = '(' + functionInfo.join(', ') + ')'
+                                                                var constraint;
+                                                                if (functionInfo == 'RAW') {
+                                                                    constraint = 'alter table ' + tableNameList[tableNameIndex] + ' add ' + tableFunctions[functionIndex] + ';';
+                                                                } else {
+                                                                    if (functionInfo.length > 0) {
+                                                                        functionArguments = '(' + functionInfo.join(', ') + ')'
+                                                                    }
+                                                                    constraint = 'alter table ' + tableNameList[tableNameIndex] + ' add constraint ' + tableColumns[columnIndex] + ' check (' + functions[tableFunctions[functionIndex]].name + functionArguments + ');';
                                                                 }
-                                                                return trx.raw('alter table ' + tableNameList[tableNameIndex] + ' add constraint ' + tableColumns[columnIndex] + ' check (' + functions[tableFunctions[functionIndex]].name + functionArguments + ');')
+                                                                return trx.raw(constraint)
                                                                     .tap(function() {
                                                                         return addCheckConstraintsToTablesRecursively(tableNameList, tableNameIndex, columnIndex, functionIndex + 1);
                                                                     })
@@ -597,6 +605,7 @@ function initDb(dropAllTables) {
                                                     }
                                                 }
                                             } else {
+                                                console.log(":???????????????????????/");
                                                 return done();
                                             }
 
