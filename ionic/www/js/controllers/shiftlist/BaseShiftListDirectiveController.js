@@ -29,7 +29,6 @@ angular.module('scheduling-app.controllers')
             $scope.$watch('name', function(newValue, oldValue) {
                 $scope.Model = $rootScope[newValue];
                 $rootScope.$watch(newValue, function(rootNewValue, rootOldValue) {
-                    console.log("UPDATREDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD" + rootNewValue);
                     console.log(rootNewValue);
                     $scope.Model = rootNewValue;
                 });
