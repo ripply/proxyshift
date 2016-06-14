@@ -4,10 +4,12 @@ angular.module('scheduling-app.controllers')
         '$rootScope',
         '$stateParams',
         '$controller',
+        'UserInfoService',
         function($scope,
                  $rootScope,
                  $stateParams,
-                 $controller
+                 $controller,
+                 UserInfoService
         ) {
             $controller('BaseModelController', {$scope: $scope});
 
@@ -37,7 +39,7 @@ angular.module('scheduling-app.controllers')
             // ordering of this matters, not sure if iterating over a javascript object preserves ordering everywhere
             var whenDecodeData = [
                 ['date', noop],
-                ['startime', decodeDate],
+                ['starttime', decodeDate],
                 ['endtime', decodeDate],
                 ['length', decodeDate],
                 ['employees', noop]
@@ -45,9 +47,10 @@ angular.module('scheduling-app.controllers')
 
             $scope.decodeWhens = function(encodedWhens) {
                 var splitEncodedWhens = encodedWhens.split(splitter);
-                var decodedWhens = [];
+                var decodedWhens = {};
                 angular.forEach(splitEncodedWhens, function(encodedWhen) {
-                    decodedWhens.push($scope.decodeWhen(encodedWhen));
+                    var when = $scope.decodeWhen(encodedWhen);
+                    decodedWhens[when.date] = when;
                 });
 
                 return decodedWhens;
@@ -101,6 +104,16 @@ angular.module('scheduling-app.controllers')
                 };
             };
 
+            $scope.getStartEndTime = function(location_id, date, start, end, length) {
+                var timezone = UserInfoService.getTimezoneAtLocation(location_id);
+                var startOfShift = moment(date).tz(timezone).startOf('day').add(moment(start).format('x'), 'ms');
+                var endOfShift = moment(end).tz(timezone).startOf('day').add(moment(length).format('x'), 'ms');
+                return {
+                    start: startOfShift,
+                    end: endOfShift
+                };
+            };
+
             $scope.decodeDescription = noop;
 
             $scope.encodeDescription = noop;
@@ -115,7 +128,7 @@ angular.module('scheduling-app.controllers')
 
             function decodeDate(date) {
                 try {
-                    return moment(date);
+                    return moment(parseInt(date));
                 } catch (e) {
                     // do nothing
                 }

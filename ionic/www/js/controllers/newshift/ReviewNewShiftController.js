@@ -23,37 +23,46 @@ angular.module('scheduling-app.controllers')
                 $scope.where = $scope.decodeWhere($stateParams.where);
                 $scope.who = $scope.decodeWho($stateParams.who);
                 $scope.description = $scope.decodeDescription($stateParams.description);
-                console.log("DECODED");
+                $scope.shifts = [];
+
+                var group_id = $scope.where.group_id;
+                var location_id = $scope.where.location_id;
+                var sublocation_id = $scope.where.sublocation_id;
+                var groupuserclass_id = $scope.who.id;
+
+                var title = 'test';
+
+                angular.forEach($scope.dates, function(date) {
+                    if ($scope.when.hasOwnProperty(date)) {
+                        var when = $scope.when[date];
+                        var employeesNeeded = when.employees;
+                        var startEndTime = $scope.getStartEndTime(
+                            location_id,
+                            date,
+                            when.starttime,
+                            when.endtime,
+                            when.length
+                        );
+
+                        var shift = {
+                            location_id: location_id,
+                            sublocation_id: sublocation_id,
+                            title: title,
+                            description: $scope.description,
+                            start: startEndTime.start.format(),
+                            end: startEndTime.end.format(),
+                            groupuserclass_id: groupuserclass_id,
+                            count: employeesNeeded
+                        };
+
+                        $scope.shifts.push(shift);
+                    }
+                });
+                console.log($scope.shifts);
             };
 
             $scope.create = function() {
-                var shifts = [];
-                var location_id = $scope.location;
-                var sublocation_id = $scope.sublocation;
-                console.log($scope.selectedJobType);
-                var location = {
-                    title: 'text',
-                    description: $scope.description,
-                    groupuserclass_id: $scope.selectedJobType.id
-                };
-                if ($scope.sublocation) {
-                    location.sublocation_id = $scope.sublocation.id;
-                } else if ($scope.location) {
-                    location.location_id = $scope.selected.id;
-                } else {
-                    return;
-                }
-                angular.forEach($scope.dateState, function(value, key) {
-                    shifts.push(
-                        angular.extend({
-                            start: value.time,
-                            end: value.hours,
-                            count: value.counter
-                        }, location)
-                    );
-                });
-
-                ResourceService.createMultipleShifts(shifts, function(result) {
+                ResourceService.createMultipleShifts($scope.shifts, function(result) {
                     console.log("SUCCESS");
                     console.log(result);
                 }, function(err) {

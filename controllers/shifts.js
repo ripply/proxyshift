@@ -1389,7 +1389,8 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
             var datesOk = true;
             _.each(['start', 'end'], function(key) {
                 var value = validatedShift[key];
-                if ((value + '').indexOf('Z') >= 0) {
+                var valueStr = (value + '');
+                if (valueStr.indexOf('Z') >= 0 || valueStr.indexOf('T') >= 0) {
                     // for now not ok, javascript date, this will NOOP when we transition to storing times in database like this
                     validatedShift[key] = time.dateToUnix(value, shiftsLocationInfo.timezone_name);
                 } else if (typeof(value) == 'number') {
