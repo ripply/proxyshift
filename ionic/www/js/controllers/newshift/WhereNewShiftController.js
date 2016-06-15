@@ -15,7 +15,7 @@ angular.module('scheduling-app.controllers')
                  $state,
                  ResourceService
         ) {
-            $controller('BaseNewShiftController', {$scope: $scope});
+            $controller('BaseNewShiftController', {$scope: $scope, $stateParams: $stateParams});
             $controller('FilterableIncrementalSearchController', {$scope: $scope});
 
             $scope.state = $stateParams;
