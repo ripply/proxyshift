@@ -537,7 +537,7 @@ var Schema = {
             type: date,
             nullable: false,
             check: {
-                "check('start' >= 'end')": RAW
+                'check(start < "end")': RAW
             }
         },
         timezone_id: {

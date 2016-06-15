@@ -605,7 +605,6 @@ function initDb(dropAllTables) {
                                                     }
                                                 }
                                             } else {
-                                                console.log(":???????????????????????/");
                                                 return done();
                                             }
 
