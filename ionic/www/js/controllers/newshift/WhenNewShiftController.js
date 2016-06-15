@@ -9,7 +9,7 @@ angular.module('scheduling-app.controllers')
                  $stateParams,
                  $controller
         ) {
-            $controller('BaseNewShiftController', {$scope: $scope});
+            $controller('BaseNewShiftController', {$scope: $scope, $stateParams: $stateParams});
             $scope.state = $stateParams;
             $scope.when = {};
 

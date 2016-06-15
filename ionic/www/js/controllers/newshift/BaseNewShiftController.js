@@ -12,6 +12,21 @@ angular.module('scheduling-app.controllers')
                  UserInfoService
         ) {
             $controller('BaseModelController', {$scope: $scope});
+            $scope.$rootScope = $rootScope;
+
+            $scope.afterEnter = function() {
+                var keyCount = Object.keys($stateParams).length;
+                if (keyCount > 0 ||
+                    (keyCount == 0 &&
+                    $rootScope.newShiftTabsStateParams &&
+                    Object.keys($rootScope.newShiftTabsStateParams).length == 0)) {
+                    var existingParams = $rootScope.newShiftTabsStateParams;
+                    if (!existingParams) {
+                        existingParams = {};
+                    }
+                    $rootScope.newShiftTabsStateParams = angular.extend(existingParams, $stateParams);
+                }
+            };
 
             var splitter = '|';
             var subsplitter = '$';
@@ -23,6 +38,23 @@ angular.module('scheduling-app.controllers')
             $scope.encodeDates = function(dates) {
                 return dates.join(splitter);
             };
+
+            function capitalizeFirstLetter(string) {
+                return string.charAt(0).toUpperCase() + string.slice(1);
+            }
+
+            angular.forEach({
+                'defaultDates': 'dates',
+                'defaultWhens': 'whens',
+                'defaultWhere': 'where',
+                'defaultWho': 'who'
+            }, function(key, functionName) {
+                $scope[functionName] = function() {
+                    if ($rootScope.newShiftTabsStateParams && $rootScope.newShiftTabsStateParams[key]) {
+                        return $scope['decode' + capitalizeFirstLetter(key)]($rootScope.newShiftTabsStateParams[key]);
+                    }
+                };
+            });
 
             $scope.encodeWhens = function(whens) {
                 var encoded = [];
@@ -106,8 +138,8 @@ angular.module('scheduling-app.controllers')
 
             $scope.getStartEndTime = function(location_id, date, start, end, length) {
                 var timezone = UserInfoService.getTimezoneAtLocation(location_id);
-                var startOfShift = moment(date).tz(timezone).startOf('day').add(moment(start).format('x'), 'ms');
-                var endOfShift = moment(end).tz(timezone).startOf('day').add(moment(length).format('x'), 'ms');
+                var startOfShift = moment.tz(date, timezone).startOf('day').add(moment(start).format('x'), 'ms');
+                var endOfShift = moment.tz(end, timezone).startOf('day').add(moment(length).format('x'), 'ms');
                 return {
                     start: startOfShift,
                     end: endOfShift

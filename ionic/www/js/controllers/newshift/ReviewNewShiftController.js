@@ -15,9 +15,11 @@ angular.module('scheduling-app.controllers')
                  $state,
                  ResourceService
         ) {
-            $controller('BaseNewShiftController', {$scope: $scope});
+            $controller('BaseNewShiftController', {$scope: $scope, $stateParams: $stateParams});
 
             $scope.beforeEnter = function() {
+                console.log("#####################");
+                console.log($stateParams);
                 $scope.dates = $scope.decodeDates($stateParams.dates);
                 $scope.when = $scope.decodeWhens($stateParams.when);
                 $scope.where = $scope.decodeWhere($stateParams.where);
