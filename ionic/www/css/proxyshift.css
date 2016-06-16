@@ -1169,6 +1169,14 @@ ion-header-bar.bar.bar-positive {
 .calendar-month .calendar-day-selected {
   background: #ff0000;
 }
+.new-shift-title {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+.full-width-inputs input {
+  width: 100%;
+}
 #settings-page .bar-header {
   background-color: #ffffff;
   color: #ffffff;

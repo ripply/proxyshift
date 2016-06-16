@@ -40,6 +40,8 @@ angular.module('scheduling-app.controllers')
                                 progressable = false;
                             }
                         });
+                    } else {
+                        progressable = false;
                     }
                 });
 

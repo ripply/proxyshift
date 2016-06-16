@@ -376,7 +376,7 @@ angular.module('scheduling-app', [
                 })
 
                 .state('app.newshift.review', {
-                    url: "/review/dates/:dates/when/:when/where/:where/who/:who/description/:description",
+                    url: "/review/dates/:dates/when/:when/where/:where/who/:who/description/:description/title/:title",
                     views: {
                         'newShiftTabContent': {
                             templateUrl: "templates/newshift/review.html",

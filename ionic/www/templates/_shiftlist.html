@@ -3,7 +3,7 @@
     class="has-header"
     show-delete="false"
     show-reorder="false"
-    can-swipe="true">
+    can-swipe="swipable">
     <div collection-repeat="shift in Model" item-height="(shift.canceled || ignoredShift(shift)) || (acceptedOnly && (!acceptedOnly || !acceptedOrApprovedShiftOrDivider(shift))) ? 0:(shift.isDivider ? 40:120)"
          item-width="100%"
          ng-show="(!shift.canceled && !ignoredShift(shift)) && (!acceptedOnly || (acceptedOnly && acceptedOrApprovedShiftOrDivider(shift)))">

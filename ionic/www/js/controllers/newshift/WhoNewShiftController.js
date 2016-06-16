@@ -29,7 +29,7 @@ angular.module('scheduling-app.controllers')
                 );
             };
 
-            $scope.description = {};
+            $scope.other = {};
 
             $scope.jobTypeClicked = function(jobType) {
                 clearClickedJobType();
@@ -38,14 +38,27 @@ angular.module('scheduling-app.controllers')
                 next();
             };
 
-            function next() {
+            $scope.next = function next() {
                 console.log($scope.description);
                 var d = angular.extend({
-                    who: $scope.encodeWho($scope.selectedJobType),
-                    description: $scope.description.text
+                    who: $scope.encodeWho(getSelectedJobType()),
+                    description: $scope.other.description,
+                    title: $scope.other.title
                 }, $stateParams);
                 console.log(d);
                 $state.go('app.newshift.review', d);
+            };
+
+            function getSelectedJobType() {
+                var jobId = $scope.other.job;
+                if (jobId) {
+                    for (var i = 0; i < $scope.jobTypes.length; i++) {
+                        if ($scope.jobTypes[i].id == jobId) {
+                            return $scope.jobTypes[i];
+                        }
+                    }
+                }
+                return null;
             }
 
             function clearClickedJobType() {
@@ -54,6 +67,17 @@ angular.module('scheduling-app.controllers')
                 });
                 $scope.selectedJobType = undefined;
             }
+
+            $scope.progressable = function() {
+                return $scope.other.title !== undefined &&
+                    $scope.other.title !== null &&
+                    $scope.other.title != '' &&
+                    $scope.other.description !== undefined &&
+                    $scope.other.description !== null &&
+                    $scope.other.description != '' &&
+                    $scope.other.job !== undefined &&
+                    $scope.other.job !== null;
+            };
 
             function setupJobTypesForLocationOrSublocation() {
                 var where = $scope.decodeWhere($stateParams.where);
@@ -65,8 +89,10 @@ angular.module('scheduling-app.controllers')
                         return false;
                     }
                 });
+                if ($scope.jobTypes.length > 0) {
+                    $scope.other.job = $scope.jobTypes[0].id;
+                }
                 $scope.selectedJobType = undefined;
-                console.log($scope.jobTypes);
             }
         }
     ]

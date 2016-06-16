@@ -80,6 +80,15 @@ angular.module('scheduling-app.controllers')
                 }
             });
 
+            $scope.getDatesString = function() {
+                console.log($scope.date);
+                var dates = [];
+                angular.forEach($scope.date, function(date) {
+                    dates.push(date.key);
+                });
+                return dates;
+            };
+
             $scope.getDates = function() {
                 var result = [];
                 angular.forEach($scope.date, function(date) {

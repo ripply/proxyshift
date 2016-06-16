@@ -1,15 +1,21 @@
 <ion-view view-title="When" hide-back-button="true">
     <ion-content class="has-header has-footer">
-        {{description}}
-        <ion-scroll delegate-handle="shift-review" ng-style="{'height': currentStepDivHeight * 0.5}">
-            <div ng-repeat="day in dates">
-                <p>Shift {{date.indexOf(day) + 1}}</p>
-                <p>Date: {{day.key}}</p>
-                <p>Begins: {{dateState[day.key].time}}</p>
-                <p>Shift Duration: {{dateState[day.key].hours}} hours</p>
-                <p>Employees needed: {{dateState[day.key].counter}}</p>
+        <h4 class="new-shift-title">Please review the shift request before submitting</h4>
+        <div class="list list-inset">
+            <div class="item item-stacked-label">
+                <span class="input-label">Shift Title</span>
+                {{title}}
             </div>
-        </ion-scroll>
-        <ion-button ng-click="create()">Create</ion-button>
+            <div class="item item-stacked-label">
+                <span class="input-label">Shift Description</span>
+                {{description}}
+            </div>
+        </div>
+        <shift-list dismissable="true" name="newShifts" swipable="false"></shift-list>
+        <button ng-click="create()"
+                    style="width: 100%"
+                    class="button button-block button-positive activated">
+            Create
+        </button>
     </ion-content>
 </ion-view>

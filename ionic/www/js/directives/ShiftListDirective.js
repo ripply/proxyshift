@@ -23,6 +23,11 @@ angular.module('scheduling-app.directives')
             } else {
                 scope.showDividers = false;
             }
+            if (attributes['swipable']) {
+                scope.swipable = attributes['swipable'] == 'true';
+            } else {
+                scope.swipable = true;
+            }
             scope.$on('$ionicView.afterEnter', function() {
                 console.log("After enter in directive link");
             });

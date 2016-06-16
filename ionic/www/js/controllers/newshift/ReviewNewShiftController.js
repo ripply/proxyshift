@@ -7,32 +7,35 @@ angular.module('scheduling-app.controllers')
         '$q',
         '$state',
         'ResourceService',
+        'UserInfoService',
+        'GENERAL_EVENTS',
         function($scope,
                  $rootScope,
                  $stateParams,
                  $controller,
                  $q,
                  $state,
-                 ResourceService
+                 ResourceService,
+                 UserInfoService,
+                 GENERAL_EVENTS
         ) {
             $controller('BaseNewShiftController', {$scope: $scope, $stateParams: $stateParams});
 
             $scope.beforeEnter = function() {
-                console.log("#####################");
-                console.log($stateParams);
                 $scope.dates = $scope.decodeDates($stateParams.dates);
                 $scope.when = $scope.decodeWhens($stateParams.when);
                 $scope.where = $scope.decodeWhere($stateParams.where);
                 $scope.who = $scope.decodeWho($stateParams.who);
                 $scope.description = $scope.decodeDescription($stateParams.description);
+                $scope.title = $scope.decodeTitle($stateParams.title);
                 $scope.shifts = [];
+                $scope.fakeShifts = [];
 
                 var group_id = $scope.where.group_id;
                 var location_id = $scope.where.location_id;
                 var sublocation_id = $scope.where.sublocation_id;
                 var groupuserclass_id = $scope.who.id;
-
-                var title = 'test';
+                var timezone = UserInfoService.getLocation(location_id).timezone;
 
                 angular.forEach($scope.dates, function(date) {
                     if ($scope.when.hasOwnProperty(date)) {
@@ -49,7 +52,7 @@ angular.module('scheduling-app.controllers')
                         var shift = {
                             location_id: location_id,
                             sublocation_id: sublocation_id,
-                            title: title,
+                            title: $scope.title,
                             description: $scope.description,
                             start: startEndTime.start.format(),
                             end: startEndTime.end.format(),
@@ -57,16 +60,25 @@ angular.module('scheduling-app.controllers')
                             count: employeesNeeded
                         };
 
+                        var fakeShift = angular.extend(angular.copy(shift), {
+                            start: startEndTime.start.format('X'),
+                            end: startEndTime.end.format('X'),
+                            timezone: timezone,
+                            timezone_id: timezone.id
+                        });
+
                         $scope.shifts.push(shift);
+                        $scope.fakeShifts.push(fakeShift);
                     }
                 });
-                console.log($scope.shifts);
+                $rootScope.$emit(GENERAL_EVENTS.UPDATES.RESOURCE, 'newShifts', $scope.fakeShifts, $scope.fakeShifts, $scope);
             };
 
             $scope.create = function() {
                 ResourceService.createMultipleShifts($scope.shifts, function(result) {
                     console.log("SUCCESS");
                     console.log(result);
+                    $state.go('app.shifts.open');
                 }, function(err) {
                     console.log("ERR");
                     console.log(err);

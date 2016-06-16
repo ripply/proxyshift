@@ -150,6 +150,10 @@ angular.module('scheduling-app.controllers')
 
             $scope.encodeDescription = noop;
 
+            $scope.encodeTitle = noop;
+
+            $scope.decodeTitle = noop;
+
             function encodeDate(date) {
                 try {
                     return moment(date).format('x');

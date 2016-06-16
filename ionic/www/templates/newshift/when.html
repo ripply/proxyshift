@@ -1,44 +1,58 @@
 <ion-view view-title="When" hide-back-button="true">
     <ion-content class="has-header has-footer">
-        <div class="list list-inset"
+        <h4 class="new-shift-title">Select shift duration and number of employees needed</h4>
+        <div class="list list-inset full-width-inputs"
             ng-repeat="date in getDates()">
             <div class="item item-divider">
                 {{date}}
             </div>
             <div class="item row">
-                <div class="col col-20 uniform-padding">
-                    <h4 class="sub-subheader">Start:</h4>
+                <div class="col col-50 uniform-padding">
+                    <h4 class="sub-subheader">Start time</h4>
                 </div>
-                <div class="col col-80">
+                <div class="col">
                     <input ng-model="when[date].starttime" type="time">
                 </div>
             </div>
 
             <div class="item row">
-                <div class="col col-20 uniform-padding">
-                    <h4 class="sub-subheader">End:</h4>
+                <div class="col col-50 uniform-padding">
+                    <h4 class="sub-subheader">End time</h4>
                 </div>
-                <div class="col col-80">
-                    <input ng-model="when[date].endtime" type="date">
+                <div class="col">
                     <input ng-model="when[date].length" type="time">
                 </div>
             </div>
 
             <div class="item row">
-                <div class="col col-20 uniform-padding">
-                    <h4 class="sub-subheader nowrap">Employees needed:</h4>
+                <div class="col col-50 uniform-padding">
+                    <h4 class="sub-subheader">Date the shift ends</h4>
                 </div>
-                <div class="col col-80">
-                    <div class="row">
-                        <input ng-model="when[date].employees" min="1" type="number">
-                    </div>
+                <div class="col">
+                    <input ng-model="when[date].endtime" type="date">
+                </div>
+            </div>
+
+            <div class="item row">
+                <div class="col col-50 uniform-padding">
+                    <h4 class="sub-subheader nowrap">How many employees are needed?</h4>
+                </div>
+                <div class="col">
+                    <input ng-model="when[date].employees" min="1" type="number">
                 </div>
             </div>
         </div>
 
         <button ng-disabled="!progressable()"
+                style="width: 100%"
+                class="button button-block button-positive activated"
                 ui-sref="app.newshift.where(whereStateParams())">
-            NEXT?
+            <div ng-if="progressable()">
+                Next
+            </div>
+            <div ng-if="!progressable()">
+                Please complete the form
+            </div>
         </button>
     </ion-content>
 </ion-view>
