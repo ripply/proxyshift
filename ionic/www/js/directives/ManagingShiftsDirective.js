@@ -13,6 +13,7 @@ angular.module('scheduling-app.directives')
         });
 
         function link(scope, element, attributes) {
+            scope.swipable = true;
             scope.name = attributes.name;
             scope.$on('$ionicView.afterEnter', function() {
                 console.log("After enter in directive link");
