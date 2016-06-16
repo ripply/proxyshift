@@ -35,43 +35,47 @@ angular.module('scheduling-app.controllers')
                 var location_id = $scope.where.location_id;
                 var sublocation_id = $scope.where.sublocation_id;
                 var groupuserclass_id = $scope.who.id;
-                var timezone = UserInfoService.getLocation(location_id).timezone;
+                if (location_id) {
+                    var timezone = UserInfoService.getLocation(location_id).timezone;
 
-                angular.forEach($scope.dates, function(date) {
-                    if ($scope.when.hasOwnProperty(date)) {
-                        var when = $scope.when[date];
-                        var employeesNeeded = when.employees;
-                        var startEndTime = $scope.getStartEndTime(
-                            location_id,
-                            date,
-                            when.starttime,
-                            when.endtime,
-                            when.length
-                        );
+                    angular.forEach($scope.dates, function(date) {
+                        if ($scope.when.hasOwnProperty(date)) {
+                            var when = $scope.when[date];
+                            var employeesNeeded = when.employees;
+                            var startEndTime = $scope.getStartEndTime(
+                                location_id,
+                                date,
+                                when.starttime,
+                                when.endtime,
+                                when.length
+                            );
 
-                        var shift = {
-                            location_id: location_id,
-                            sublocation_id: sublocation_id,
-                            title: $scope.title,
-                            description: $scope.description,
-                            start: startEndTime.start.format(),
-                            end: startEndTime.end.format(),
-                            groupuserclass_id: groupuserclass_id,
-                            count: employeesNeeded
-                        };
+                            var shift = {
+                                location_id: location_id,
+                                sublocation_id: sublocation_id,
+                                title: $scope.title,
+                                description: $scope.description,
+                                start: startEndTime.start.format(),
+                                end: startEndTime.end.format(),
+                                groupuserclass_id: groupuserclass_id,
+                                count: employeesNeeded
+                            };
 
-                        var fakeShift = angular.extend(angular.copy(shift), {
-                            start: startEndTime.start.format('X'),
-                            end: startEndTime.end.format('X'),
-                            timezone: timezone,
-                            timezone_id: timezone.id
-                        });
+                            var fakeShift = angular.extend(angular.copy(shift), {
+                                start: startEndTime.start.format('X'),
+                                end: startEndTime.end.format('X'),
+                                timezone: timezone,
+                                timezone_id: timezone.id
+                            });
 
-                        $scope.shifts.push(shift);
-                        $scope.fakeShifts.push(fakeShift);
-                    }
-                });
-                $rootScope.$emit(GENERAL_EVENTS.UPDATES.RESOURCE, 'newShifts', $scope.fakeShifts, $scope.fakeShifts, $scope);
+                            $scope.shifts.push(shift);
+                            $scope.fakeShifts.push(fakeShift);
+                        }
+                    });
+                    $rootScope.$emit(GENERAL_EVENTS.UPDATES.RESOURCE, 'newShifts', $scope.fakeShifts, $scope.fakeShifts, $scope);
+                } else {
+                    // invalid data passed in
+                }
             };
 
             $scope.create = function() {

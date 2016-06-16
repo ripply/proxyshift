@@ -18,7 +18,7 @@
                 </div>
             </div>
             <div class="item item-divider">
-                Group Settings
+                Manager Appointed Settings
             </div>
             <div class="item-indent">
                 <ion-toggle ng-model="GroupSettings.allowalltocreateshifts"
@@ -35,11 +35,14 @@
                 </ion-toggle>
             </div>
             <div class="item item-divider">
-                Individual Settings
+                My Settings
             </div>
             <div class="item-indent">
                 <ion-item href="#/settings/group/{{group_id}}/locations/subscription" class="item-remove-animate">
-                    Locations Subscription Page
+                    My Location Subscriptions
+                </ion-item>
+                <ion-item href="#/settings/group/{{group_id}}/locations/subscription" class="item-remove-animate">
+                    My Job Title
                 </ion-item>
             </div>
         </div>

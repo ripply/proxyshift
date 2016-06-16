@@ -19,13 +19,14 @@
                 </ion-toggle>
                 <ion-toggle ng-model="UserSettings.textnotifications"
                             ng-checked="UserSettings.textnotifications"
+                            ng-show="false"
                             ng-click="commitSettings()">
                     <i class="icon ion-ios-telephone"></i>
                     Text Notifications
                 </ion-toggle>
             </div>
             <div class="item item-divider">
-                Groups
+                My Company Settings
             </div>
             <div class="item-indent">
                 <ion-item ng-repeat="group in groupsList"
