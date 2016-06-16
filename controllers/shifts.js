@@ -1443,6 +1443,10 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
                 appLogic.fireEvent('shiftsCreated', req.user.id, shift_ids);
                 clientCreate(req, res, 201, results);
             })
+            .catch(function(err) {
+                console.log(err);
+                return rejectTransaction(transaction, 400, err);
+            });
     }
 
 }
