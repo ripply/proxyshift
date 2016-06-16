@@ -9,13 +9,15 @@ angular.module('scheduling-app.push', [
         'toastr',
         'ResourceService',
         'CORDOVA_SETTINGS',
+        'GENERAL_EVENTS',
         function(
             $q,
             $rootScope,
             $state,
             toastr,
             ResourceService,
-            CORDOVA_SETTINGS
+            CORDOVA_SETTINGS,
+            GENERAL_EVENTS
         ) {
             var self = this;
             var deferred = $q.defer();
@@ -26,6 +28,10 @@ angular.module('scheduling-app.push', [
             function showToast(type, title, body, misc) {
                 toastr[type](title, body, misc ? misc : {});
             }
+
+            $rootScope.$on(GENERAL_EVENTS.TOAST, function(state, type, title, body, misc) {
+                showToast(type, title, body, misc);
+            });
 
             window.manageShift = {
                 accept: function(data) {

@@ -55,6 +55,7 @@ var config_data = {
         'RESETPASSWORD': {
             'HIDE': 'event:resetpassword:hide'
         },
+        'TOAST': 'event:toast',
         'SLOW_REQUEST': 'events:slow-request',
         'UPDATES': {
             'USERINFO': {

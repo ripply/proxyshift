@@ -78,10 +78,12 @@ angular.module('scheduling-app.controllers')
                 ResourceService.createMultipleShifts($scope.shifts, function(result) {
                     console.log("SUCCESS");
                     console.log(result);
+                    $rootScope.$emit(GENERAL_EVENTS.TOAST, 'info', "You're all set", 'All eligible employees have been notified of your shift request.');
                     $state.go('app.shifts.open');
                 }, function(err) {
                     console.log("ERR");
                     console.log(err);
+                    $rootScope.$emit(GENERAL_EVENTS.TOAST, 'error', "Failed to send shifts", err.data.data.message);
                 });
             };
         }
