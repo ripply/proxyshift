@@ -3,14 +3,11 @@
         <a class="tab-item" href="#{{states.HOME_URL}}" ng-class="{'active': currentState == states.HOME}">
             Home
         </a>
-        <a class="tab-item" href="{{currentTabPage || '#' + states.SHIFTS_URL}}" ng-class="{'active': currentState == states.SHIFTS || currentState == states.MYSHIFTS || currentState == states.MANAGE || currentState == states.SHIFT_INFO}">
-            Fill a shift
+        <a class="tab-item" href="{{currentTabPage || '#' + states.SHIFTS_URL}}" ng-class="{'active': currentState.indexOf('app.shifts.') == 0}">
+            Shifts
         </a>
-        <a class="tab-item" ng-click="createShift()">
+        <a class="tab-item" ui-sref="{{states.SHIFT_REQUEST}}" ng-class="{'active': currentState.indexOf('app.newshift') == 0}">
             Shift Request
-        </a>
-        <a class="tab-item" href="#{{states.SHIFT_REQUEST_URL}}">
-            +++
         </a>
         <a class="tab-item" href="{{currentTabPage || '#' + states.SHIFTS_URL}}" ng-class="{'active': $rootScope.calendarShown}"
             ng-click="toggleCalendar($event)">
