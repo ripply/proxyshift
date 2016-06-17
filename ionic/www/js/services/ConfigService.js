@@ -130,6 +130,7 @@ var config_data = {
         'CURRENTLOCATIONS': 'settings.group.locations.current',
         'MANAGELOCATION': 'settings.group.locations.manage',
         'USERLOCATIONS': 'settings.group.locations.subscription',
+        'CONFIGURE_JOBS': 'settings.group.jobs',
         'REQUESTSHIFT': 'requestshift.locations',
         'REQUESTSHIFT_LOCATION_SELECTED': 'requestshift.location',
         'REQUESTSHIFT_LOCATION_AND_JOB_SELECTED': 'requestshift.locationjob',

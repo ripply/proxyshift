@@ -79,9 +79,19 @@
         </div>
     </div>
     <ion-item
-        ng-hide="Model"
+        ng-show="Model.length == 0 && myUserClasses.length > 0"
         class="item item-icon-right">
-        <p>There are currently no open shifts {{Model.length}}</p>
+        <p>There are currently no open shifts</p>
+    </ion-item>
+    <ion-item
+        ng-show="(!Model || Model.length == 0) && (!myUserClasses || myUserClasses.length == 0) && !getGroupId()"
+        class="item item-icon-right">
+        You are currently not registered with a company. Please contact your manager for an invite link to start receiving shift notifications.
+    </ion-item>
+    <ion-item
+        ng-show="(!Model || Model.length == 0) && (!myUserClasses || myUserClasses.length == 0) && getGroupId()"
+        class="item item-icon-right">
+        <p>Please <a ui-sref="settings.group.jobs({group_id: groupId})">CLICK HERE</a> to select your job title and select locations you want to receive notifications from.</p>
     </ion-item>
     <div class="item item-divider"
          ng-show="ignorableShiftsExist()">

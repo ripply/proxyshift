@@ -6,6 +6,7 @@ angular.module('scheduling-app.controllers')
         '$ionicScrollDelegate',
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
+        'UserInfoService',
         'ResourceService',
         'ShiftProcessingService',
         function($rootScope,
@@ -14,6 +15,7 @@ angular.module('scheduling-app.controllers')
                  $ionicScrollDelegate,
                  GENERAL_CONFIG,
                  GENERAL_EVENTS,
+                 UserInfoService,
                  ResourceService,
                  ShiftProcessingService
         ) {
@@ -43,6 +45,35 @@ angular.module('scheduling-app.controllers')
             };
             // TODO: Remove and figurout why $ionivView.afterEnter does not trigger in super class
             //$scope.fetch();
+
+            var myUserClasses;
+
+            $rootScope.$on(GENERAL_EVENTS.UPDATES.USERINFO.PROCESSED, function(state, userInfo) {
+                getMyUserClasses();
+            });
+
+            getMyUserClasses();
+
+            $scope.getJobParameters = function() {
+                return {
+                    group_id: getGroupId()
+                }
+            };
+
+            $scope.getGroupId = getGroupId;
+
+            function getGroupId() {
+                var groups = UserInfoService.getGroupList();
+                if (groups && Object.keys(groups).length > 0) {
+                    var group_id = Object.keys(groups)[0];
+                    $scope.groupId = groups[group_id].id;
+                    return groups[group_id].id;
+                }
+            }
+
+            function getMyUserClasses() {
+                myUserClasses = UserInfoService.getUserClasses();
+            }
 
             $rootScope.$on(GENERAL_EVENTS.SHIFTS.ACCEPT, function(state, shift) {
                 $scope.applyForShift(shift.id);
