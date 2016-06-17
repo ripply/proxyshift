@@ -43,6 +43,17 @@ angular.module('scheduling-app.services')
                 return groups;
             };
 
+            this.getUserClasses = function() {
+                return userclasses;
+            };
+
+            this.getUserclassesFromGroup = function(group_id) {
+                var group = this.getGroup(group_id);
+                if (group) {
+                    return group.userClasses;
+                }
+            };
+
             this.getUserclassesFromLocation = function(location_id) {
                 return getUserclassesFromLocationOrSublocation(location_id, undefined);
             };

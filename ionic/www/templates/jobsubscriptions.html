@@ -1,0 +1,25 @@
+<ion-view view-title="Subscriptions">
+    <ion-content class="has-header" hide-back-button="false">
+        <div class="list">
+            <div class="item item-divider">
+                My Jobs
+            </div>
+            <div class="item-indent">
+                <div class="list list-inset centered-input">
+                    <label class="item item-input">
+                        <i class="icon ion-search placeholder-icon"></i>
+                        <input type="text" ng-model="query" ng-style="{'width' : '100%'}"
+                               placeholder="Search by address, city, state, zipcode or phone">
+                    </label>
+                    <ion-toggle ng-repeat="userClass in userClasses | filter:query"
+                                ng-model="userClass.subscribed"
+                                ng-disabled="userClass.persisting"
+                                ng-click="saveJob()"
+                                ng-checked="isJob(userClass)">
+                        {{ userClass.title }} - {{ userClass.description }}
+                    </ion-toggle>
+                </div>
+            </div>
+        </div>
+    </ion-content>
+</ion-view>

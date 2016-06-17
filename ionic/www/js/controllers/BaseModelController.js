@@ -155,6 +155,24 @@ angular.module('scheduling-app.controllers')
                 }
             }
 
+            $scope.errorToast = function(title, body, other) {
+                toast('error', title, body, other);
+            };
+
+            $scope.infoToast = function(title, body, other) {
+                toast('info', title, body, other);
+            };
+
+            $scope.warningToast = function(title, body, other) {
+                toast('warning', title, body, other);
+            };
+
+            $scope.toast = toast;
+
+            function toast(type, title, body, other) {
+                $rootScope.$emit(GENERAL_EVENTS.TOAST, type, title, body, other);
+            }
+
             $scope.$on('$ionicView.beforeEnter', beforeEnterEvent);
             $scope.$on('$ionicNavView.beforeEnter', beforeEnterEvent);
             $scope.$on('$ionicView.afterEnter', afterEnterEvent);

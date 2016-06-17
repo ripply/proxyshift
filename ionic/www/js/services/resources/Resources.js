@@ -20,6 +20,7 @@ angular.forEach({
                 user_id: '@user_id'
             },
             actions: {
+
                 userinfo: {
                     method: GET,
                     url: url + '/userinfo'
@@ -156,7 +157,8 @@ angular.forEach({
         return {
             route: base,
             params: {
-                group_id: '@group_id'
+                group_id: '@group_id',
+                class_id: '@class_id'
             },
             actions: {
                 list: {
@@ -305,6 +307,14 @@ angular.forEach({
                 removePermissionConvertToOtherPermssion: {
                     method: DELETE,
                     url: base + '/permissions/:permission_id/newpermission/:newpermission_id'
+                },
+                userClassSubscribe: {
+                    method: POST,
+                    url: base + '/classes/:class_id/subscribe'
+                },
+                userClassUnsubscribe: {
+                    method: DELETE,
+                    url: base + '/classes/:class_id/subscribe'
                 }
             }
         }

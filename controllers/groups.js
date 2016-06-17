@@ -200,6 +200,82 @@ module.exports = {
             }
         }
     },
+    '/:group_id/classes/:class_id/subscribe': {
+        /*
+         'get': { // get if you are subscribed to this user class or not
+
+         }
+         */
+        'post': { // subscribe to this class type for this group
+            auth: ['group owner', 'or', 'group member'],
+            route: function subscribeToGroupUserClass(req, res) {
+                Bookshelf.transaction(function (t) {
+                    var groupuserclasstouser_data = {
+                        user_id: req.user.id,
+                        groupuserclass_id: req.params.class_id
+                    };
+                    return models.GroupUserClass.query(function(q) {
+                        q.select(
+                            'groupuserclasses.id as groupuserclass_id',
+                            'groupuserclasstousers.user_id as user_id'
+                        )
+                            .from('groupuserclasses')
+                            .leftJoin('groupuserclasstousers', function() {
+                                this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id')
+                                    .andOn('groupuserclasstousers.user_id', '=', req.user.id);
+                            })
+                    })
+                        .fetch({
+                            transacting: t
+                        })
+                        .then(function(groupuserclasstouser) {
+                            if (groupuserclasstouser.get('groupuserclass_id')) {
+                                // user class exists
+                                if (groupuserclasstouser.get('user_id')) {
+                                    // already a member
+                                    res.sendStatus(200);
+                                } else {
+                                    // not a member
+                                    return postModel(
+                                        'GroupUserClassToUser',
+                                        {
+                                            user_id: req.user.id,
+                                            groupuserclass_id: req.params.class_id
+                                        },
+                                        req,
+                                        res,
+                                        [],
+                                        {
+                                            transacting: t
+                                        }
+                                    );
+                                }
+                            } else {
+                                // user class does not exist
+                                res.sendStatus(400);
+                            }
+                        })
+                        .catch(function(err) {
+                            error(req, res, err);
+                        });
+                });
+            }
+        },
+        'delete': { // unsubscribe from this class type for this group
+            auth: ['group owner', 'or', 'group member'],
+            route: function unsubscribeToGroupUserClass(req, res) {
+                deleteModel('GroupUserClassToUser',
+                    {
+                        groupuserclass_id: req.params.class_id,
+                        user_id: req.user.id
+                    },
+                    req,
+                    res,
+                    'Unsubscribed'
+                );
+            }
+        }
+    },
     '/:group_id/classes/:class_id': {
         'get': { // get info about a class type
             auth: ['group owner', 'or', 'group member'], // must be a member/owner of the group

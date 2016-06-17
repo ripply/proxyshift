@@ -543,7 +543,7 @@ module.exports = {
         }
     },
     getUserInfo: getUserInfo
-}
+};
 
 function getUserInfo(user_id, next) {
     models.Group.query(function(q) {

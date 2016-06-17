@@ -601,6 +601,19 @@ angular.module('scheduling-app', [
                     }
                 })
 
+                .state('settings.group.jobs', {
+                    url: "/jobs",
+                    views: {
+                        'groupContent': {
+                            templateUrl: "templates/jobsubscriptions.html",
+                            controller: 'UserJobsController'
+                        }
+                    },
+                    resolve: {
+                        //TODO: Check /userinfo
+                    }
+                })
+
                 .state('settings.group.locations', {
                     url: "/locations",
                     abstract: true,
