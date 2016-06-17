@@ -54,12 +54,6 @@ angular.module('scheduling-app.controllers')
 
             getMyUserClasses();
 
-            $scope.getJobParameters = function() {
-                return {
-                    group_id: getGroupId()
-                }
-            };
-
             $scope.getGroupId = getGroupId;
 
             function getGroupId() {
@@ -74,6 +68,10 @@ angular.module('scheduling-app.controllers')
             function getMyUserClasses() {
                 myUserClasses = UserInfoService.getUserClasses();
             }
+
+            $scope.hasUserClasses = function() {
+                return myUserClasses.length > 0;
+            };
 
             $rootScope.$on(GENERAL_EVENTS.SHIFTS.ACCEPT, function(state, shift) {
                 $scope.applyForShift(shift.id);
