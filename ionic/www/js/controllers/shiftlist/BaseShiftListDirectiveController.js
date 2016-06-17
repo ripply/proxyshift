@@ -63,6 +63,7 @@ angular.module('scheduling-app.controllers')
                     $scope.groupId = groups[group_id].id;
                     return groups[group_id].id;
                 }
+                return false;
             }
 
             function getMyUserClasses() {
@@ -70,7 +71,7 @@ angular.module('scheduling-app.controllers')
             }
 
             $scope.hasUserClasses = function() {
-                return myUserClasses.length > 0;
+                return Object.keys(myUserClasses).length > 0;
             };
 
             $rootScope.$on(GENERAL_EVENTS.SHIFTS.ACCEPT, function(state, shift) {
