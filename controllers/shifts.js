@@ -1026,8 +1026,7 @@ function getShiftsYouAreManaging(req, res) {
                                         });
                                 });
                         });
-                })
-                .orderBy('shifts.start');
+                });
         }
     })
         .fetchAll({
