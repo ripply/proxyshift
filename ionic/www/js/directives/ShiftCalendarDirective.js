@@ -23,6 +23,7 @@ angular.module('scheduling-app.directives')
                 scope.attributes = attributes;
 
                 if (attributes['toggle'] == 'true') {
+                    attributes['toggle'] = true;
                     $document.bind('click', function (event) {
                         if (scope.show) {
                             var isClickedElementChildOfPopup = element
@@ -37,6 +38,8 @@ angular.module('scheduling-app.directives')
                             $rootScope.$apply();
                         }
                     });
+                } else {
+                    attributes['toggle'] = false;
                 }
             }
         }
