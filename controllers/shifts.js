@@ -115,7 +115,8 @@ module.exports = {
                                 .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery)
                                 .whereIn('sublocations.location_id', relatedLocationsSubQuery);
                             query = joinShiftApplications(query, req.user.id);
-                        });
+                        })
+                        .orderBy('shifts.start');
                 })
                     .fetchAll({
                         withRelated: [
@@ -804,7 +805,8 @@ function getShiftsYouAreManaging(req, res) {
                                 });
                             */
                         });
-                });
+                })
+                .orderBy('shifts.start');
         } else {
             // grab all shifts at locations/sublocations that you are a manager of and managing
             // TODO: SIMPLIFY THIS GOD AWFUL QUERY, BY USING ORs IT SHOULD BE ABLE TO BE SIMPLIFIED
@@ -1024,7 +1026,8 @@ function getShiftsYouAreManaging(req, res) {
                                         });
                                 });
                         });
-                });
+                })
+                .orderBy('shifts.start');
         }
     })
         .fetchAll({
