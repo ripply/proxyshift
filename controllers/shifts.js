@@ -204,7 +204,25 @@ module.exports = {
                     .then(function(shifts) {
                         if (shifts) {
                             // TODO: Fetch related group user class information
-                            res.json(shifts.toJSON());
+                            var shiftJson = shifts.toJSON();
+                            // TODO: GET RID OF THIS SORT AND OPTIMIZE QUERY TO GET ORDERBY TO BE RESPECTED WITH UNIONS
+                            // https://stackoverflow.com/questions/213851/sql-query-using-order-by-in-union
+                            shiftJson.sort(function(left, right) {
+                                if (left.start == right.start) {
+                                    if (left.end == right.end) {
+                                        return 0;
+                                    } else if (left.end < right.end) {
+                                        return -1;
+                                    } else {
+                                        return 1;
+                                    }
+                                } else if (left.start < right.start) {
+                                    return -1;
+                                } else {
+                                    return 1;
+                                }
+                            });
+                            res.json(shiftJson);
                         } else {
                             res.json([]);
                         }
