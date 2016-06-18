@@ -4,6 +4,9 @@ angular.module('scheduling-app.controllers')
         '$scope',
         '$controller',
         '$q',
+        '$location',
+        '$stateParams',
+        '$ionicScrollDelegate',
         'GENERAL_EVENTS',
         'GENERAL_CONFIG',
         'ShiftProcessingService',
@@ -13,6 +16,9 @@ angular.module('scheduling-app.controllers')
                  $scope,
                  $controller,
                  $q,
+                 $location,
+                 $stateParams,
+                 $ionicScrollDelegate,
                  GENERAL_EVENTS,
                  GENERAL_CONFIG,
                  ShiftProcessingService,
@@ -29,15 +35,26 @@ angular.module('scheduling-app.controllers')
                 $scope.MODELNAME = 'AllShifts';
             }
 
+            $scope.spacing = 1;
+            $scope.dividerOuterHeight = 40;
+            $scope.dividerInnerHeight = 32;
+            $scope.shiftOuterHeight = 120;
+            $scope.shiftInnerHeight = 64 + 4 * 2;
+
             $rootScope.$on(GENERAL_EVENTS.UPDATES.RESOURCE, function(state, resource, value) {
                 if (resource == $scope.MODELNAME) {
                     ShiftIntervalTreeCacheService.updateShifts(value);
                 }
             });
 
+            $rootScope.$on(GENERAL_EVENTS.SHIFTS.SCROLL, function(state, value) {
+                var model = $rootScope[$scope.MODELNAME];
+                var y = ShiftProcessingService.getScrollToPosition(value, model, $scope.spacing, $scope.dividerOuterHeight, $scope.dividerInnerHeight, $scope.shiftOuterHeight, $scope.shiftInnerHeight);
+                $ionicScrollDelegate.scrollTo(0, y, true);
+            });
+
             $scope.fetch = function() {
                 var deferred = $q.defer();
-
                 ShiftsModel.all(function(data) {
                     $scope.Model = data;
                     deferred.resolve(data);

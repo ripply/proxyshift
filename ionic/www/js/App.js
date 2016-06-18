@@ -304,6 +304,10 @@ angular.module('scheduling-app', [
                     }
                 })
 
+                .state('app.shifts.open.scroll', {
+                    url: "/scroll/:scroll_date"
+                })
+
                 .state('app.shifts.mine', {
                     url: "/mine",
                     views: {
@@ -314,6 +318,10 @@ angular.module('scheduling-app', [
                     }
                 })
 
+                .state('app.shifts.mine.scroll', {
+                    url: "/scroll/:scroll_date"
+                })
+
                 .state('app.shifts.manage', {
                     url: "/manage",
                     views: {
@@ -322,6 +330,10 @@ angular.module('scheduling-app', [
                             controller: 'ManagerController',
                         }
                     }
+                })
+
+                .state('app.shifts.manage.scroll', {
+                    url: "/scroll/:scroll_date"
                 })
 
                 .state('app.newshift', {

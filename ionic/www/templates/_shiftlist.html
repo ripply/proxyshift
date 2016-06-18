@@ -6,12 +6,14 @@
     can-swipe="swipable">
     <div collection-repeat="shift in Model" item-height="(shift.canceled || ignoredShift(shift)) || (acceptedOnly && (!acceptedOnly || !acceptedOrApprovedShiftOrDivider(shift))) ? 0:(shift.isDivider ? 40:120)"
          item-width="100%"
-         ng-show="(!shift.canceled && !ignoredShift(shift)) && (!acceptedOnly || (acceptedOnly && acceptedOrApprovedShiftOrDivider(shift)))">
+         id="hey"
+         ng-show="((!shift.canceled && !ignoredShift(shift)) && (!acceptedOnly || (acceptedOnly && acceptedOrApprovedShiftOrDivider(shift))) && markShiftVisible(shift)) || markShiftNotVisible(shift)">
         <div ng-class="{'card': !shift.isDivider, 'divider-card': shift.isDivider}">
             <ion-item
                 class="item"
                 item-height="shift.isDivider ? 32:(64 + (4 * 2))"
                 ng-show="Model">
+                <a name="{{shift.start}}"></a>
                 <div ng-if="shift.isDivider && shift.type == 'pendingApproval'"
                      class="shift-item list-padding">
                     Shifts pending manager approval
@@ -33,6 +35,7 @@
                         <div class="shift-left-icon"><i class="icon ion-ios-checkmark-outline"></i></div>
                         <div ng-class="{'shift-expanded': shift.expanded, 'shift-collapsed': !shift.expanded}">
                             <div class="shift-right">
+                                {{getReadableStartDate(shift)}}
                                 <p class="shift-star" ng-hide="{{userIsInDifferentTimeZone(shift)}}">{{getReadableLocalShiftStartTime(shift)}}</p>
                                 <p class="shift-star" ng-show="{{userIsInDifferentTimeZone(shift)}}">{{getReadableLocalShiftStartTime(shift)}} (local)</p>
                                 <p class="shift-duration">{{getReadableShiftDuration(shift)}}</p>

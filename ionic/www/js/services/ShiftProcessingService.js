@@ -161,6 +161,53 @@ angular.module('scheduling-app.services')
                 });
             }
 
+            this.getScrollToPosition = function(scrollTo, model, spacing, dividerOuterHeight, dividerInnerHeight, shiftOuterHeight, shiftInnerHeight) {
+                if (model) {
+                    var start = parseInt(scrollTo);
+                    if (!start) {
+                        return;
+                    }
+                    var y = 0;
+                    var index = 0;
+                    var latestShift;
+                    var latestY = 0;
+                    for (var i = 0; i < model.length; i++) {
+                        var shift = model[i];
+                        if (shift.isDivider) {
+                            if (y != 0) {
+                                y = y + spacing;
+                            }
+                            y = y + dividerOuterHeight;
+                        } else {
+                            if (shift.start < start) {
+                                // this shift is the latest one we know, keep searching
+                                index = i;
+                                latestShift = shift.start;
+                                latestY = y;
+                                if (y != 0) {
+                                    y = y + spacing;
+                                }
+                                y = y + shiftOuterHeight;
+                            } else {
+                                // this shift is AFTER what we are looking for, and it is the first
+                                if (latestShift) {
+                                    // there is a shift before this, that's good
+                                } else {
+                                    index = i;
+                                    latestShift = shift.start;
+                                    latestY = y;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    if (latestShift) {
+                        //$ionicScrollDelegate.scrollTo(0, latestY, true);
+                        return latestY;
+                    }
+                }
+            };
+
             this.isShiftAppliedFor = function isShiftAppliedFor(shift) {
                 return shift.applied || (shift.shiftapplications && shift.shiftapplications.length > 0);
             };

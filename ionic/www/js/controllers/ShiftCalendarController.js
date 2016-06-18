@@ -236,7 +236,7 @@ angular.module('scheduling-app.controllers')
                     selected = {};
                     selected[selectedKey] = value;
                 }
-                $rootScope.$emit(GENERAL_EVENTS.CALENDAR.CLICKED, $scope.name, angular.copy(selected));
+                $rootScope.$emit(GENERAL_EVENTS.CALENDAR.CLICKED, $scope.name, angular.copy(selected), angular.copy(day));
             }
 
             function initialShowOrHide() {

@@ -103,7 +103,8 @@ var config_data = {
         },
         'SHIFTS': {
             'ACCEPT': 'events:shifts:accept',
-            'DECLINE': 'events:shifts:decline'
+            'DECLINE': 'events:shifts:decline',
+            'SCROLL': 'events:shifts:scroll'
         }
     },
     'TOKENS': {

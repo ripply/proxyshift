@@ -22,8 +22,12 @@ angular.module('scheduling-app.controllers')
             $controller('BaseModelController', {$scope: $scope});
             $scope.shifttitle = 'April 29th';
             $scope.declinedshifttitle = 'Declined shifts';
+            $scope.visible = {};
             if ($scope.name) {
                 $scope.Model = $rootScope[$scope.name];
+                if ($rootScope[$scope.name + 'Status']) {
+                    $scope.visible = $rootScope[$scope.name + 'Status'];
+                }
             } else {
                 $scope.Model = [];
             }
@@ -33,6 +37,8 @@ angular.module('scheduling-app.controllers')
                 $rootScope.$watch(newValue, function(rootNewValue, rootOldValue) {
                     console.log(rootNewValue);
                     $scope.Model = rootNewValue;
+                    $scope.visible = {};
+                    $rootScope[newValue + 'Status'] = $scope.visible;
                 });
             });
             var superFetchComplete = $scope.fetchComplete;
@@ -65,6 +71,28 @@ angular.module('scheduling-app.controllers')
                 }
                 return false;
             }
+
+            $scope.markShiftVisible = function(shift) {
+                if (shift.id) {
+                    $scope.visible[shift.id] = true;
+                }
+                return true;
+            };
+
+            $scope.markShiftNotVisible = function(shift) {
+                if (shift.id) {
+                    $scope.visible[shift.id] = false;
+                }
+                return false;
+            };
+
+            $scope.isShiftVisible = function(shift) {
+                if (shift.id) {
+                    return $scope.visible[shift.id];
+                } else {
+                    return false;
+                }
+            };
 
             function getMyUserClasses() {
                 myUserClasses = UserInfoService.getUserClasses();

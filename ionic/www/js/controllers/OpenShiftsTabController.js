@@ -4,12 +4,16 @@ angular.module('scheduling-app.controllers')
         '$scope',
         '$controller',
         '$state',
+        '$stateParams',
         'STATES',
+        'GENERAL_EVENTS',
         function($rootScope,
                  $scope,
                  $controller,
                  $state,
-                 STATES
+                 $stateParams,
+                 STATES,
+                 GENERAL_EVENTS
         ) {
             var validTabPages = [
                 STATES.SHIFTS,
@@ -25,4 +29,26 @@ angular.module('scheduling-app.controllers')
                     console.log("Update to: " + $rootScope.currentTabPage);
                 }
             };
+
+            $rootScope.$on(GENERAL_EVENTS.CALENDAR.CLICKED, function(state, name, selected, clickedDay) {
+                var start = moment().year(clickedDay.year).month(clickedDay.month - 1).date(clickedDay.number).format('X');
+                scrollTo(start);
+                $rootScope.$emit(GENERAL_EVENTS.CALENDAR.HIDE, name);
+            });
+
+            $rootScope.$on('$stateChangeSuccess', function(ev, to, toParams, from, fromParams) {
+                tryToScrollToDate(toParams);
+            });
+
+            tryToScrollToDate($stateParams);
+
+            function tryToScrollToDate(params) {
+                if (params.scroll_date) {
+                    scrollTo(time);
+                }
+            }
+
+            function scrollTo(time) {
+                $rootScope.$emit(GENERAL_EVENTS.SHIFTS.SCROLL, time);
+            }
         }]);

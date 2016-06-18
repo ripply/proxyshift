@@ -4,6 +4,7 @@ angular.module('scheduling-app.controllers')
         '$rootScope',
         '$controller',
         '$stateParams',
+        '$ionicScrollDelegate',
         //'Restangular',
         'GENERAL_EVENTS',
         'GENERAL_CONFIG',
@@ -12,6 +13,7 @@ angular.module('scheduling-app.controllers')
                  $rootScope,
                  $controller,
                  $stateParams,
+                 $ionicScrollDelegate,
                  //Restangular,
                  GENERAL_EVENTS,
                  GENERAL_CONFIG,
@@ -50,6 +52,18 @@ angular.module('scheduling-app.controllers')
 
                 // TODO: Go back, invalid shift
             }
+
+            $scope.spacing = 1;
+            $scope.dividerOuterHeight = 40;
+            $scope.dividerInnerHeight = 32;
+            $scope.shiftOuterHeight = 120;
+            $scope.shiftInnerHeight = 64 + 4 * 2;
+
+            $rootScope.$on(GENERAL_EVENTS.SHIFTS.SCROLL, function(state, value) {
+                var model = $rootScope[$scope.MODELNAME];
+                var y = ShiftProcessingService.getScrollToPosition(value, model, $scope.spacing, $scope.dividerOuterHeight, $scope.dividerInnerHeight, $scope.shiftOuterHeight, $scope.shiftInnerHeight);
+                $ionicScrollDelegate.scrollTo(0, y, true);
+            });
 
             $scope.promptAcceptShiftApplication = promptAcceptShiftApplication;
 
