@@ -224,12 +224,13 @@ module.exports = {
                                 this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id')
                                     .andOn('groupuserclasstousers.user_id', '=', req.user.id);
                             })
+                            .where('groupuserclasses.id', '=', req.params.class_id);
                     })
                         .fetch({
                             transacting: t
                         })
                         .then(function(groupuserclasstouser) {
-                            if (groupuserclasstouser.get('groupuserclass_id')) {
+                            if (groupuserclasstouser && groupuserclasstouser.get('groupuserclass_id')) {
                                 // user class exists
                                 if (groupuserclasstouser.get('user_id')) {
                                     // already a member
