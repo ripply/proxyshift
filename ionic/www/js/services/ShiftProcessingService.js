@@ -45,6 +45,15 @@ angular.module('scheduling-app.services')
                 'minute': 'm'
             };
 
+            this.getReadableClassType = function(shift) {
+                var userClass = UserInfoService.getUserClass(shift.groupuserclass_id);
+                if (userClass) {
+                    return userClass.title;
+                } else {
+                    return 'UNKNOWN';
+                }
+            };
+
             this.getReadableShiftDuration = function(shift) {
                 var duration = moment.duration(getEndOfShift(shift) - getStartOfShift(shift));
                 var list = [];

@@ -47,6 +47,10 @@ angular.module('scheduling-app.services')
                 return userclasses;
             };
 
+            this.getUserClass = function(groupuserclass_id) {
+                return allUserclasses[groupuserclass_id];
+            };
+
             this.getUserclassesFromGroup = function(group_id) {
                 var group = this.getGroup(group_id);
                 if (group) {
@@ -213,6 +217,7 @@ angular.module('scheduling-app.services')
             var locations = {};
             var areas = {};
             var userclasses = {};
+            var allUserclasses = {};
 
             this.updateUserInfo = function updateUserInfo() {
                 var userinfo = $rootScope.userinfo;
@@ -302,6 +307,24 @@ angular.module('scheduling-app.services')
                         });
                     });
                     // now we have a map of group_id => groups.locations => location_id => location
+                    var foundIds = [];
+                    angular.forEach([
+                        'memberOfGroups',
+                        'privilegedMemberOfGroups'
+                    ], function(sourceAttribute) {
+                        angular.forEach(userinfo[sourceAttribute], function(value, key) {
+                            if (value.hasOwnProperty('userClasses')) {
+                                var groupUserclasses = value.userClasses;
+                                angular.forEach(groupUserclasses, function (groupUserclass) {
+                                    if (allUserclasses.hasOwnProperty(groupUserclass.id)) {
+                                        angular.copy(allUserclasses[groupUserclass.id], groupUserclass);
+                                    } else {
+                                        allUserclasses[groupUserclass.id] = angular.copy(groupUserclass);
+                                    }
+                                })
+                            }
+                        });
+                    });
                 }
                 $rootScope.$emit(GENERAL_EVENTS.UPDATES.USERINFO.PROCESSED, userinfo);
             };

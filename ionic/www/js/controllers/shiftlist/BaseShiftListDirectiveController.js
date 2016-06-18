@@ -546,5 +546,6 @@ angular.module('scheduling-app.controllers')
             $scope.getShiftsLocation = ShiftProcessingService.getShiftsLocation;
             $scope.getShiftsSublocation = ShiftProcessingService.getShiftsSublocation;
             $scope.shiftHasNonRecindedApplications = ShiftProcessingService.shiftHasNonRecindedApplications;
+            $scope.getReadableClassType = ShiftProcessingService.getReadableClassType;
             $scope.ignoreShift = ResourceService.ignoreShift;
         }]);
