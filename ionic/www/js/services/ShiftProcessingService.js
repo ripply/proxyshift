@@ -179,6 +179,7 @@ angular.module('scheduling-app.services')
                     var y = 0;
                     var index = 0;
                     var latestShift;
+                    var latestShiftMoment;
                     var latestY = 0;
                     for (var i = 0; i < model.length; i++) {
                         var shift = model[i];
@@ -188,11 +189,22 @@ angular.module('scheduling-app.services')
                             }
                             y = y + dividerOuterHeight;
                         } else {
+                            // check if this shift is on the same day as the previous one
+                            var thisShiftMoment = this.getStartOfShift(shift);
                             if (shift.start < start) {
                                 // this shift is the latest one we know, keep searching
+                                if (latestShiftMoment &&
+                                    (latestShiftMoment.year() == thisShiftMoment.year() &&
+                                    latestShiftMoment.month() == thisShiftMoment.month() &&
+                                    latestShiftMoment.date() == thisShiftMoment.date())) {
+                                        // starts on the same day
+                                        // don't update the latest Shift
+                                } else {
+                                    latestShift = shift.start;
+                                    latestShiftMoment = thisShiftMoment;
+                                    latestY = y;
+                                }
                                 index = i;
-                                latestShift = shift.start;
-                                latestY = y;
                                 if (y != 0) {
                                     y = y + spacing;
                                 }
@@ -204,6 +216,7 @@ angular.module('scheduling-app.services')
                                 } else {
                                     index = i;
                                     latestShift = shift.start;
+                                    latestShiftMoment = thisShiftMoment;
                                     latestY = y;
                                 }
                                 break;
@@ -297,7 +310,7 @@ angular.module('scheduling-app.services')
 
             function getDisplayableFormat(time, format) {
                 if (!format) {
-                    format = "h:mma";
+                    format = "MMM D YYYY @ h:mma";
                 }
                 return time.format(format);
             }
