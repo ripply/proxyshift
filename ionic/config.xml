@@ -90,7 +90,11 @@
     <gap:plugin name="phonegap-plugin-push" source="npm" spec="1.5.3">
         <param name="SENDER_ID" value="635706604728"/>
     </gap:plugin>
+    <gap:plugin name="org.apache.cordova.dialogs" source="pgb" />
+    <gap:plugin name="org.apache.cordova.statusbar" source="pgb" />
+    <gap:plugin name="org.apache.cordova.vibration" source="pgb" />
     <gap:plugin name="org.apache.cordova.dialogs" />
     <gap:plugin name="org.apache.cordova.vibration" />
     <gap:plugin name="org.apache.cordova.statusbar" />
+    <gap:plugin name="ionic-plugin-keyboard" source="npm" />
 </widget>

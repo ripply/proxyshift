@@ -163,6 +163,15 @@ angular.module('scheduling-app.controllers')
 
             $scope.login = function() {
                 $rootScope.user.remember_me = true;
+                try {
+                    if (window.cordova &&
+                        window.cordova.plugins &&
+                        window.cordova.plugins.Keyboard) {
+                        cordova.plugins.Keyboard.close();
+                    }
+                } catch (e) {
+                    // plugin not loaded, not a problem
+                }
                 AuthenticationService.login($rootScope.user)
                     .then(function() {
                         console.log("Logged in!");
