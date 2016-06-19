@@ -1179,8 +1179,8 @@ function getValidationOptionsForModelName(modelName) {
 }
 
 var tokens = {
-    refresh: 1 * 24 * 60 * 60, // 1 week
-    expires: 2 * 24 * 60 * 60 // 2 weeks
+    refresh: 4 * 4 * 24 * 60 * 60, // 4 months
+    expires: 6 * 4 * 24 * 60 * 60 // 6 months
 };
 
 if (config.has('tokens.expires')) {
