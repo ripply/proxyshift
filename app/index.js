@@ -702,34 +702,7 @@ App.prototype.handleNewShiftApplication = function handleNewShiftApplication(job
                         // or, a notification was already sent for all these applications
                     } else {
                         // figure out who we need to send notifications to
-                        return models.Shift.query(function(q) {
-                            q.select([
-                                'usergroups.user_id as user_id'
-                            ])
-                                .from('shifts')
-                                .leftJoin('sublocations', function() {
-                                    this.on('sublocations.id', '=', 'shifts.sublocation_id');
-                                })
-                                .innerJoin('managingclassesatlocations', function() {
-                                    this.on('managingclassesatlocations.groupuserclass_id', '=', 'shifts.groupuserclass_id');
-                                })
-                                .innerJoin('usergroups', function() {
-                                    this.on('usergroups.id', '=', 'managingclassesatlocations.usergroup_id');
-                                })
-                                .innerJoin('grouppermissions', function() {
-                                    this.on('grouppermissions.id', '=', 'usergroups.grouppermission_id');
-                                })
-                                .innerJoin('userpermissions', function() {
-                                    this.on('userpermissions.location_id', '=', 'shifts.location_id')
-                                        .orOn('userpermissions.location_id', '=', 'sublocations.location_id');
-                                })
-                                .where('shifts.id', '=', shift_id)
-                                .andWhereRaw('COALESCE(shifts.location_id, sublocations.location_id) = managingclassesatlocations.location_id')
-                                .andWhere('grouppermissions.permissionlevel', '>=', managingPermissionLevel);
-                        })
-                            .fetchAll({
-                                transacting: t
-                            })
+                        return getUsersManagingAShift(shift_id, t)
                             .tap(function handleNewShiftApplicationsFetchManagers(managingUserIds) {
                                 var managingUserIdsMinusAppliedUserIds = {};
                                 managingUserIds.each(function(managingUserId) {
@@ -836,6 +809,61 @@ App.prototype.sendNotificationsAboutNewShifts = function sendNotificationsAboutN
 
     var self = this;
 
+    return getUsersInterestedInAShift(shift_ids, {}, function gotUsersInterestedInAShift(interested) {
+        if (interested.start && moment(time.unknownTimeFormatToDate(interested.start, interested.timezone)) > moment()) {
+            self.sendToUsers(Object.keys(interested.user_ids), self.newShift(interested.location_name, interested.sublocation_name, interested.start, interested.end, interested.timezone, interested.shift_ids), interested.args, undefined, function failedToSendNewShiftNotifications(err) {
+                slack.error(undefined, 'Failed to send new shift notification', err);
+                success = false;
+                error(err);
+            });
+        } else {
+            // never send a notification for a shift created in the past
+        }
+
+        if (success) {
+            success();
+        }
+    }, function failedToGetUsersInterestedInAShift() {
+        slack.error(undefined, 'Error notifying about new shift', err);
+        console.log(err.stack);
+        if (error) {
+            error(err);
+        }
+    });
+};
+
+function getUsersManagingAShift(shift_id, transacting) {
+    return models.Shift.query(function(q) {
+        q.select([
+            'usergroups.user_id as user_id'
+        ])
+            .from('shifts')
+            .leftJoin('sublocations', function() {
+                this.on('sublocations.id', '=', 'shifts.sublocation_id');
+            })
+            .innerJoin('managingclassesatlocations', function() {
+                this.on('managingclassesatlocations.groupuserclass_id', '=', 'shifts.groupuserclass_id');
+            })
+            .innerJoin('usergroups', function() {
+                this.on('usergroups.id', '=', 'managingclassesatlocations.usergroup_id');
+            })
+            .innerJoin('grouppermissions', function() {
+                this.on('grouppermissions.id', '=', 'usergroups.grouppermission_id');
+            })
+            .innerJoin('userpermissions', function() {
+                this.on('userpermissions.location_id', '=', 'shifts.location_id')
+                    .orOn('userpermissions.location_id', '=', 'sublocations.location_id');
+            })
+            .where('shifts.id', '=', shift_id)
+            .andWhereRaw('COALESCE(shifts.location_id, sublocations.location_id) = managingclassesatlocations.location_id')
+            .andWhere('grouppermissions.permissionlevel', '>=', managingPermissionLevel);
+    })
+        .fetchAll({
+            transacting: transacting
+        });
+}
+
+function getUsersInterestedInAShift(shift_ids, sqlOptions, success, error) {
     return models.Shift.query(function(q) {
         q.select([
             'usersettings.pushnotifications as pushOk',
@@ -853,6 +881,7 @@ App.prototype.sendNotificationsAboutNewShifts = function sendNotificationsAboutN
             'users.username as username',
             'users.email as email',
             'users.phonemobile as text',
+            'groupuserclasses.requiremanagerapproval as requiremanagerapproval',
             'userpermissions.user_id as user_id',
             'pushtokens.token as pushtoken',
             'pushtokens.platform as service'
@@ -901,7 +930,7 @@ App.prototype.sendNotificationsAboutNewShifts = function sendNotificationsAboutN
             })
             .orderBy('pushtokens.platform');
     })
-        .fetchAll()
+        .fetchAll(sqlOptions)
         .tap(function(interestedUsers) {
             var user_ids = {};
             var location_id;
@@ -910,7 +939,7 @@ App.prototype.sendNotificationsAboutNewShifts = function sendNotificationsAboutN
             var timezone;
             var start;
             var end;
-            interestedUsers.each(function(interestedUser) {
+            interestedUsers.each(function (interestedUser) {
                 // the same user_id can show up multiple times if the user has more than one login token
                 // we prefer to send push notifications
                 // if that is not possible we will send an email and a text message?
@@ -958,28 +987,18 @@ App.prototype.sendNotificationsAboutNewShifts = function sendNotificationsAboutN
                 args.sublocation_name = sublocation_name;
             }
 
-            if (start && moment(time.unknownTimeFormatToDate(start, timezone)) > moment()) {
-                self.sendToUsers(Object.keys(user_ids), self.newShift(location_name, sublocation_name, start, end, timezone, shift_ids), args, undefined, function failedToSendNewShiftNotifications(err) {
-                    slack.error(undefined, 'Failed to send new shift notification', err);
-                    success = false;
-                    error(err);
-                });
-            } else {
-                // never send a notification for a shift created in the past
-            }
-
-            if (success) {
-                success();
-            }
-        })
-        .catch(function(err) {
-            slack.error(undefined, 'Error notifying about new shift', err);
-            console.log(err.stack);
-            if (error) {
-                error(err);
-            }
+            success({
+                user_ids: user_ids,
+                location_id: location_id,
+                location_name: location_name,
+                sublocation_name: sublocation_name,
+                timezone: timezone,
+                start: start,
+                end: end,
+                args: args
+            });
         });
-};
+}
 
 function noop() {
     // NO OP, do nothing, used in forged rabbit messages for ack/nack etc

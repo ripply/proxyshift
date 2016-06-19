@@ -209,6 +209,10 @@ angular.module('scheduling-app', [
                 }
             }
 
+            function requireUserInfo() {
+
+            }
+
             $stateProvider
 
                 .state('loading', {
@@ -478,7 +482,7 @@ angular.module('scheduling-app', [
                     controller: 'SettingsController',
                     abstract: true,
                     resolve: {
-                        //TODO: Check /userinfo
+                        authenticated: requireSessionOrGoLogin
                     }
                 })
 

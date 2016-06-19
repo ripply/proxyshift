@@ -48,10 +48,14 @@ angular.module('scheduling-app.controllers')
             };
 
             function init() {
-                $scope.userClasses = angular.copy(UserInfoService.getUserclassesFromGroup(getGroupId()));
+                $scope.userClasses = angular.copy(UserInfoService.getSubscribableUserclassesFromGroup(getGroupId()));
                 $scope.myUserClasses = UserInfoService.getUserClasses();
                 updateJobs();
             }
+
+            $scope.isPrivilegedGroupMember = function() {
+                return UserInfoService.isPrivilegedGroupMember(getGroupId())
+            };
 
             $scope.isJob = isJob;
 

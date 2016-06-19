@@ -1,6 +1,7 @@
 var models = require('../app/models');
 var knex = models.knex;
 var variables = require('./variables.js');
+var _ = require('underscore');
 
 var privilegedGroupMember = variables.privilegedGroupMember;
 var managingGroupMember = variables.managingGroupMember;
@@ -199,11 +200,11 @@ module.exports = {
         },
 
         'privileged group member': function(req, act) {
-            return hasGroupPermissionLevel(managingGroupMember, req, act);
+            return hasGroupPermissionLevelReturnBoolean(managingGroupMember, req, act);
         },
 
         'very privileged group member': function(req, act) {
-            return hasGroupPermissionLevel(veryPrivilegedGroupMember, req, act);
+            return hasGroupPermissionLevelReturnBoolean(veryPrivilegedGroupMember, req, act);
         },
 
         'location member': function(req, act) {
@@ -359,11 +360,13 @@ module.exports = {
                 })
         }
 
-    }
+    },
+
+    hasGroupPermissionLevel: hasGroupPermissionLevel
 
 };
 
-function hasGroupPermissionLevel(permissionLevel, req, act) {
+function hasGroupPermissionLevelReturnBoolean(permissionLevel, req, act) {
     // TODO: Combine group owner check
     var group_id = req.params.group_id;
     if (!req.user) {
@@ -379,6 +382,14 @@ function hasGroupPermissionLevel(permissionLevel, req, act) {
         throw new Error("User id not passed into route");
     }
 
+    return hasGroupPermissionLevel(user_id, permissionLevel, undefined, function() {
+        return true;
+    }, function() {
+        return false;
+    });
+}
+
+function hasGroupPermissionLevel(user_id, permissionLevel, sqlOptions, success, error) {
     return models.UserGroup.query(function(q) {
         q.select('usergroups.*')
             .innerJoin('grouppermissions', function() {
@@ -387,12 +398,14 @@ function hasGroupPermissionLevel(permissionLevel, req, act) {
             })
             .where('permissionlevel', '>=', permissionLevel);
     })
-        .fetchAll({require: true})
+        .fetchAll(_.extend({
+            require: true
+        }, sqlOptions))
         .then(function(grouppermissions) {
-            return true;
+            return success();
         })
         .catch(function(err) {
-            return false;
+            return error();
         });
 }
 

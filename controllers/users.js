@@ -616,7 +616,8 @@ function getUserInfo(user_id, next) {
                                         'memberOfGroups.grouppermissions',
                                         'memberOfGroups.groupsetting',
                                         'memberOfGroups.userClasses',
-                                        'userClasses'//,
+                                        'userClasses',
+                                        'usergroups'
                                         //'allGroupPermissions'
                                     ]
                                 })

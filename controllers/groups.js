@@ -11,6 +11,7 @@ var models = require('../app/models'),
     deleteModel = require('./controllerCommon').deleteModel,
     createSelectQueryForAllColumns = require('./controllerCommon').createSelectQueryForAllColumns,
     getPatchKeysWithoutBannedKeys = require('./controllerCommon').getPatchKeysWithoutBannedKeys,
+    permissions = require('./permissions'),
     controllerCommon = require('./controllerCommon'),
     _ = require('underscore'),
     error = require('./controllerCommon').error,
@@ -207,9 +208,12 @@ module.exports = {
          }
          */
         'post': { // subscribe to this class type for this group
-            auth: ['group owner', 'or', 'group member'],
+            auth: ['group owner or group member'],
             route: function subscribeToGroupUserClass(req, res) {
                 Bookshelf.transaction(function (t) {
+                    var sqlOptions = {
+                        transacting: t
+                    };
                     var groupuserclasstouser_data = {
                         user_id: req.user.id,
                         groupuserclass_id: req.params.class_id
@@ -217,37 +221,48 @@ module.exports = {
                     return models.GroupUserClass.query(function(q) {
                         q.select(
                             'groupuserclasses.id as groupuserclass_id',
-                            'groupuserclasstousers.user_id as user_id'
+                            'groupuserclasstousers.user_id as user_id',
+                            'grouppermissions.permissionlevel as groupuserclass_permissionlevel'
                         )
                             .from('groupuserclasses')
+                            .innerJoin('grouppermissions', function() {
+                                this.on('grouppermissions.id', '=', 'groupuserclasses.grouppermission_id');
+                            })
                             .leftJoin('groupuserclasstousers', function() {
                                 this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id')
                                     .andOn('groupuserclasstousers.user_id', '=', req.user.id);
                             })
-                            .where('groupuserclasses.id', '=', req.params.class_id);
+                            .where('groupuserclasses.id', '=', req.params.class_id)
+                            .andWhere('grouppermissions.group_id', '=', req.params.group_id);
                     })
-                        .fetch({
-                            transacting: t
-                        })
-                        .then(function(groupuserclasstouser) {
-                            if (groupuserclasstouser && groupuserclasstouser.get('groupuserclass_id')) {
+                        .fetch(sqlOptions)
+                        .then(function subscribeToGropuUserClassCheckPermissionLevel(groupuserclass) {
+                            if (groupuserclass && groupuserclass.get('groupuserclass_id')) {
                                 // user class exists
-                                if (groupuserclasstouser.get('user_id')) {
+                                if (groupuserclass.get('user_id')) {
                                     // already a member
                                     res.sendStatus(200);
                                 } else {
                                     // not a member
-                                    return postModel(
-                                        'GroupUserClassToUser',
-                                        {
-                                            user_id: req.user.id,
-                                            groupuserclass_id: req.params.class_id
+                                    return permissions.hasGroupPermissionLevel(
+                                        req.user.id,
+                                        groupuserclass.get('groupuserclass_permissionlevel'),
+                                        sqlOptions,
+                                        function subscribeToGroupUserClassHasPermissionLevel() {
+                                            return postModel(
+                                                'GroupUserClassToUser',
+                                                {
+                                                    user_id: req.user.id,
+                                                    groupuserclass_id: req.params.class_id
+                                                },
+                                                req,
+                                                res,
+                                                [],
+                                                sqlOptions
+                                            );
                                         },
-                                        req,
-                                        res,
-                                        [],
-                                        {
-                                            transacting: t
+                                        function subscribeToGroupUserClassDoesNotHavePermissionLevel() {
+                                            res.sendStatus(403);
                                         }
                                     );
                                 }
@@ -256,14 +271,14 @@ module.exports = {
                                 res.sendStatus(400);
                             }
                         })
-                        .catch(function(err) {
+                        .catch(function subscribeToGroupUserClassError(err) {
                             error(req, res, err);
                         });
                 });
             }
         },
         'delete': { // unsubscribe from this class type for this group
-            auth: ['group owner', 'or', 'group member'],
+            auth: ['group owner or group member'],
             route: function unsubscribeToGroupUserClass(req, res) {
                 deleteModel('GroupUserClassToUser',
                     {

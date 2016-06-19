@@ -4,6 +4,9 @@
             <div class="item item-divider">
                 My Jobs
             </div>
+            <div class="item item-divider" ng-if="!isPrivilegedGroupMember()">
+                Don't see your job type? Contact your manager or IT department.
+            </div>
             <div class="item-indent">
                 <div class="list list-inset centered-input">
                     <label class="item item-input">

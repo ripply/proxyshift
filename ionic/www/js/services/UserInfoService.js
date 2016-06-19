@@ -58,6 +58,60 @@ angular.module('scheduling-app.services')
                 }
             };
 
+            this.getGroupPermissionById = getGroupPermissionById
+
+            function getGroupPermissionById(grouppermission_id) {
+                var groupPermissions = $rootScope.userinfo.allGroupPermissions;
+                for (var i = 0; i < groupPermissions.length; i++) {
+                    var grouppermission = groupPermissions[i];
+                    if (grouppermission.id == grouppermission_id) {
+                        return grouppermission;
+                    }
+                }
+            }
+
+            this.getSubscribableUserclassesFromGroup = function(group_id) {
+                var userclasses = this.getUserclassesFromGroup(group_id);
+                var subscribableUserClasses = [];
+                var permissionlevel = this.getGroupPermissionLevel(group_id);
+                angular.forEach(userclasses, function(userclass) {
+                    var grouppermission = getGroupPermissionById(userclass.grouppermission_id);
+                    if (grouppermission && grouppermission.permissionlevel <= permissionlevel) {
+                        subscribableUserClasses.push(userclass);
+                    }
+                });
+                return subscribableUserClasses;
+            };
+
+            this.getGroupPermissionLevel = function(group_id) {
+                var usergroups = $rootScope.userinfo.usergroups;
+                if (this.isGroupOwner(group_id)) {
+                    return 99999999;
+                }
+
+                for (var i = 0; i < usergroups.length; i++) {
+                    var usergroup = usergroups[i];
+                    var grouppermission_id = usergroup.grouppermission_id;
+                    var grouppermission = getGroupPermissionById(grouppermission_id);
+                    if (grouppermission) {
+                        return grouppermission.permissionlevel;
+                    }
+                }
+            };
+
+            this.isGroupOwner = function(group_id) {
+                var groups = $rootScope.userinfo.ownedGroups;
+                if (groups) {
+                    for (var i = 0; i < groups.length; i++) {
+                        var group = groups[i];
+                        if (group.id == group_id) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            };
+
             this.getUserclassesFromLocation = function(location_id) {
                 return getUserclassesFromLocationOrSublocation(location_id, undefined);
             };
