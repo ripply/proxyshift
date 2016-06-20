@@ -118,15 +118,24 @@ var verifyEmail = {
     }
 };
 
+var timeFormats= {
+    'years': 'year',
+    'months': 'month',
+    'days': 'day',
+    'hours': 'hr',
+    'minutes': 'min'
+};
+
 function formatTimeDateLocationsForNotifications(shift_location, shift_sublocation, shift_start, shift_end, timezone) {
     var hoursMinutes = time.differenceInHours(shift_start, shift_end);
     var joinableDisplayTime = [];
-    if (hoursMinutes.hours && hoursMinutes.hours > 0) {
-        joinableDisplayTime.push(hoursMinutes.hours + ' hr');
-    }
-    if (hoursMinutes.minutes && hoursMinutes.minutes > 0) {
-        joinableDisplayTime.push(hoursMinutes.minutes + ' min');
-    }
+
+    _.each(timeFormats, function(value, key) {
+        if (hoursMinutes.hasOwnProperty(key) && hoursMinutes[key] > 0) {
+            joinableDisplayTime.push(hoursMinutes[key] + ' ' + value)
+        }
+    });
+
     var joinableLocation = [];
     if (shift_location) {
         joinableLocation.push(shift_location);
@@ -143,7 +152,16 @@ function formatTimeDateLocationsForNotifications(shift_location, shift_sublocati
     }
 }
 
-function newShiftApplication(shift_location, shift_sublocation, shift_start, shift_end, timezone, job_title, shift_id, shiftapplication_id) {
+function newShiftApplication(
+    shift_location,
+    shift_sublocation,
+    shift_start,
+    shift_end,
+    timezone,
+    job_title,
+    shift_id,
+    shiftapplication_id
+) {
     var formatted = formatTimeDateLocationsForNotifications(shift_location, shift_sublocation, shift_start, shift_end, timezone);
 
     return {
@@ -164,19 +182,176 @@ function newShiftApplication(shift_location, shift_sublocation, shift_start, shi
     }
 }
 
-function newShift(shift_location, shift_sublocation, shift_start, shift_end, timezone, shift_id) {
+// sent to anyone who can apply for this shift, informing them that it exists
+function newShift(
+    job_title,
+    shift_location,
+    shift_sublocation,
+    shift_start,
+    shift_end,
+    shift_count,
+    timezone,
+    shift_id
+) {
     var formatted = formatTimeDateLocationsForNotifications(shift_location, shift_sublocation, shift_start, shift_end, timezone);
+    var difference = time.differenceInHoursWithTimezone(shift_start, shift_end, timezone);
 
+    var now = time.now();
+    if (now > difference.start) {
+        // shift started in the past
+        if (now <= difference.end) {
+            // shift is in progress, good!
+        } else {
+            // shift is over...
+            // it may have *just* ended
+            if (now.diff(difference.end, 'hours') > 1) {
+                // this shift is too old, lets let this fail
+                // the worst that will happen is that it will progress to the next one
+                // and this will show up in slack
+                throw new Error(
+                    'newShiftInProgress: Shift has ended: id:' + shift_id +
+                    ', shift_end: ' + shift_end +
+                    ', now: ' + now.format()
+                );
+            } else {
+                // shift is relatively recent... let it pass but warn in slack, hopefully this doesn't happen
+                slack.info(
+                    'Sending notification for recently ended shift: ' + shift_id +
+                    ', shift_end: ' + shift_end +
+                    ', timezone: ' + timezone +
+                    ', now: ' + now.format()
+                );
+            }
+        }
+    } else {
+        // shift has not started yet
+        return {
+            push: createNotification(
+                {test: 'test'},
+                'New Open Shift' + (shift_count <= 1 ? '':'s'),
+                shift_count <= 1 ?
+                    (formatted.location + ' has a ' + formatted.length + ' long ' + job_title + ' open shift starting at ' + formatted.start + ' on ' + formatted.date):
+                    (formatted.location + ' needs ' + shift_count + ' ' + job_title + ' to fill ' + formatted.length + ' long open shifts starting at ' + formatted.start + ' on ' + formatted.date),
+                'body android only',
+                3,
+                3,
+                'newShift',
+                'newShift',
+                {
+                    shift_id: shift_id
+                }
+            )
+        };
+    }
+
+    var message;
+
+    if (shift_count <= 1) {
+        message =
+            formatted.location +
+            ' needs help for a current shift in progress for a ' +
+            job_title +
+            ' for ' +
+            formatted.length +
+            ' that began on ' +
+            formatted.date +
+            ' at ' +
+            formatted.start;
+    } else {
+        message =
+            formatted.location +
+            ' needs help for a current shift in progress for ' +
+            shift_count +
+            ' ' +
+            job_title +
+            ' for ' +
+            formatted.length +
+            ' that began on ' +
+            formatted.date +
+            ' at ' +
+            formatted.start;
+    }
+
+    // shift is in progress
     return {
         push: createNotification(
             {test: 'test'},
-            'New Open Shift',
-            formatted.location + ' has a ' + formatted.length + 'open shift starting at ' + formatted.start + ' on ' + formatted.date,
+            'New Shift' + (shift_count <= 1 ? '':'s') + ' In Progress',
+            message,
             'body android only',
             3,
             3,
             'newShift',
             'newShift',
+            {
+                shift_id: shift_id
+            }
+        )
+    };
+}
+
+// sent to all managers that can approve this new shift, letting them know that someone has called out or a new shift has been created
+function newShiftForManagers(
+    job_title,
+    shift_location,
+    shift_sublocation,
+    shift_start,
+    shift_end,
+    shift_count,
+    timezone,
+    shift_id,
+    calledout_user_firstname,
+    calledout_user_lastname
+) {
+    var formatted = formatTimeDateLocationsForNotifications(shift_location, shift_sublocation, shift_start, shift_end, timezone);
+
+    // [Employee Name] has called out from [LOCATION] for [X] hours on [DATE] at [TIME]
+    return {
+        push: createNotification(
+            {test: 'test'},
+            'New callout',
+            shift_count <= 1 ?
+                (calledout_user_firstname + ' ' + calledout_user_lastname + ' (' + job_title + ') has called out from ' + shift_location + ' for ' + formatted.length + ' on ' + formatted.date + ' at ' + formatted.start) :
+                (calledout_user_firstname + ' ' + calledout_user_lastname + ' (' + job_title + ') has requested ' + shift_count + ' employees to cover at ' + shift_location + ' for ' + formatted.length + ' on ' + formatted.date + ' at ' + formatted.start),
+            'body android only',
+            3,
+            3,
+            'manageShift',
+            'manageShift',
+            {
+                shift_id: shift_id
+            }
+        )
+    };
+}
+
+// sent to person who created shift to inform them to contact their manager
+function newShiftButNoManagersCanApprove(
+    job_title,
+    shift_location,
+    shift_sublocation,
+    shift_start,
+    shift_end,
+    shift_count,
+    timezone,
+    shift_id,
+    calledout_user_firstname,
+    calledout_user_lastname
+) {
+    var formatted = formatTimeDateLocationsForNotifications(shift_location, shift_sublocation, shift_start, shift_end, timezone);
+
+    // There are no managers registered to approve this shift. Please contact your manager.
+
+    return {
+        push: createNotification(
+            {test: 'test'},
+            'Notice',
+            'There are no managers registered to approve this shift. Please contact your manager.',
+            'body android only',
+            3,
+            3,
+            'manageShift',
+            'manageShift',
             {
                 shift_id: shift_id
             }
@@ -244,7 +419,9 @@ function acceptOrDeniedShiftApplication(data) {
 
 module.exports = {
     newShift: newShift,
+    newShiftForManagers: newShiftForManagers,
     newShiftApplication: newShiftApplication,
+    newShiftButNoManagersCanApprove: newShiftButNoManagersCanApprove,
     acceptOrDeniedShiftApplication: acceptOrDeniedShiftApplication,
     invitedToGroup: function eventInvitedToGroup(user_ids, args) {
         // TODO: MODIFY THIS TO ACCEPT A TO EMAIL

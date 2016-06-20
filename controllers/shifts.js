@@ -245,7 +245,10 @@ module.exports = {
                 if (req.body && req.body instanceof Array) {
                     _.each(req.body, function(shift) {
                         shifts.push({
-                            unsafe: shift
+                            unsafe: shift,
+                            safe: {
+                                user_id: req.user.id
+                            }
                         });
                     });
                 }

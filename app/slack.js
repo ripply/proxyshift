@@ -24,13 +24,22 @@ function printError(message, err) {
 module.exports = {
     error: function(req, message, err) {
         if (slack) {
+            if (err === undefined || err === null) {
+                try {
+                    throw new Error('No stack trace specified, getting stack trace.');
+                } catch (e) {
+                    err = e;
+                }
+            }
             printError(message, err);
             return slack.send({
                 text: prefixCluster(
                     message + "\nip: " + (req ? req.ip : 'undefined') + "\nroute: " + (req ? req.originalUrl : 'undefined') +
                     "\nreq.body = " + JSON.stringify(req ? req.body : 'undefined') +
                     "\nuserid: " + (req ? (req.user ? req.user.id:'none') : 'undefined') +
-                    (err.stack ? ("\nstack trace:\n -" + JSON.stringify(err.stack).replace(/\\n/g, '\n -')):'\nno stacktrace')
+                    (err ?
+                        (err.stack ? ("\nstack trace:\n -" + JSON.stringify(err.stack).replace(/\\n/g, '\n -')):'\nno stacktrace') :
+                        '\nstack trace: No stack given')
                 ),
                 channel: '#crashes',
                 username: username

@@ -1,4 +1,5 @@
-var moment = require('moment-timezone');
+var moment = require('moment-timezone'),
+    slack = require('./slack');
 
 module.exports = {
     nowInUtc: function() {
@@ -17,16 +18,12 @@ module.exports = {
         return unix;
     },
     unknownTimeFormatToDate: unknownTimeFormatToDate,
-    differenceInHours: function differenceInHours(start, end) {
-        var startMoment = moment(unknownTimeFormatToDate(end));
-        var endMoment = moment(unknownTimeFormatToDate(end));
-        var hours = Math.abs(startMoment.diff(endMoment, 'hours', false));
-        var minutes = Math.abs(startMoment.diff(endMoment, 'minutes', false));
-
-        return {
-            hours: hours,
-            minutes: minutes - (hours * 60)
-        };
+    differenceInHours: differenceInHours,
+    differenceInHoursWithTimezone: function differenceInHoursWithTimezone(start, end, timezone) {
+        var difference = differenceInHours(start, end);
+        difference.start = difference.start.tz(timezone);
+        difference.end = difference.end.tz(timezone);
+        return difference;
     },
     prettyPrintStartTime: function prettyPrintStartTime(start, timezone) {
         var startMoment = moment(unknownTimeFormatToDate(start, timezone)).tz(timezone);
@@ -53,9 +50,38 @@ function actualUnixToDate(unix, timezone) {
 }
 
 function unknownTimeFormatToDate(time, timezone) {
-    if (typeof(time) != 'number' && time.indexOf('T') >= 0) {
-        return time;
+    if (time) {
+        if (typeof(time) != 'number' && time.indexOf('T') >= 0) {
+            return time;
+        } else {
+            return actualUnixToDate(time, timezone);
+        }
     } else {
-        return actualUnixToDate(time, timezone);
+        slack.error(undefined, 'Unknown time given: ' + JSON.stringify(time));
     }
+}
+
+function differenceInHours(start, end) {
+    var startMoment = moment(unknownTimeFormatToDate(start));
+    var endMoment = moment(unknownTimeFormatToDate(end));
+    var endMomentCopy = moment(endMoment);
+    var years = Math.abs(startMoment.diff(endMoment, 'years', false));
+    endMoment.subtract('years', years);
+    var months = Math.abs(startMoment.diff(endMoment, 'months', false));
+    endMoment.subtract('months', months);
+    var days = Math.abs(startMoment.diff(endMoment, 'days', false));
+    endMoment.subtract('days', days);
+    var hours = Math.abs(startMoment.diff(endMoment, 'hours', false));
+    endMoment.subtract('hours', hours);
+    var minutes = Math.abs(startMoment.diff(endMoment, 'minutes', false));
+
+    return {
+        start: startMoment,
+        end: endMomentCopy,
+        years: years,
+        months: months,
+        days: days,
+        hours: hours,
+        minutes: minutes
+    };
 }

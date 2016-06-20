@@ -123,6 +123,11 @@ App.prototype.forEachUserSettingAndSubs = function forEachUserSettingsAndSubs(us
 const sendToUsersDefaultOrdering = ['push', 'email', 'text'];
 
 App.prototype.sendToUsers = function sendToUsers(user_ids, messages, args, test, error) {
+    if (user_ids && user_ids.length == 0) {
+        // nothing to do
+        return;
+    }
+
     var hasLocationId = args.hasOwnProperty('location_id');
     var self = this;
     if (!args.order) {
@@ -607,6 +612,9 @@ App.prototype.handleNewShiftApplication = function handleNewShiftApplication(job
     var shiftapplication_id = body.shfit_application_id;
 
     return Bookshelf.transaction(function(t) {
+        var sqlOptions = {
+            transacting: t
+        };
         return models.ShiftApplication.query(function(q) {
             q.select(
                 Bookshelf.knex.raw(
@@ -666,9 +674,7 @@ App.prototype.handleNewShiftApplication = function handleNewShiftApplication(job
                         .orWhere('shiftapplications.recinded', '<>', 1);
                 });
         })
-            .fetchAll({
-                transacting: t
-            })
+            .fetchAll(sqlOptions)
             .tap(function fetchHandleNewShiftApplications(shiftapplications) {
                 if (shiftapplications) {
                     var remainingInformation = _.clone(newShiftApplicationProperties);
@@ -702,7 +708,7 @@ App.prototype.handleNewShiftApplication = function handleNewShiftApplication(job
                         // or, a notification was already sent for all these applications
                     } else {
                         // figure out who we need to send notifications to
-                        return getUsersManagingAShift(shift_id, t)
+                        return getUsersManagingAShift(shift_id, false, sqlOptions)
                             .tap(function handleNewShiftApplicationsFetchManagers(managingUserIds) {
                                 var managingUserIdsMinusAppliedUserIds = {};
                                 managingUserIds.each(function(managingUserId) {
@@ -726,9 +732,7 @@ App.prototype.handleNewShiftApplication = function handleNewShiftApplication(job
                                                 notify: time.nowInUtc()
                                             });
                                     })
-                                        .fetch({
-                                            transacting: t
-                                        })
+                                        .fetch(sqlOptions)
                                         .tap(function() {
                                             var nacked = false;
                                             self.sendToUsers(
@@ -809,34 +813,309 @@ App.prototype.sendNotificationsAboutNewShifts = function sendNotificationsAboutN
 
     var self = this;
 
-    return getUsersInterestedInAShift(shift_ids, {}, function gotUsersInterestedInAShift(interested) {
-        if (interested.start && moment(time.unknownTimeFormatToDate(interested.start, interested.timezone)) > moment()) {
-            self.sendToUsers(Object.keys(interested.user_ids), self.newShift(interested.location_name, interested.sublocation_name, interested.start, interested.end, interested.timezone, interested.shift_ids), interested.args, undefined, function failedToSendNewShiftNotifications(err) {
-                slack.error(undefined, 'Failed to send new shift notification', err);
-                success = false;
-                error(err);
-            });
+    var sqlOptions = {};
+
+    var sendToCreator = true;
+
+    var now = time.now();
+
+    return getUsersInterestedInAShift(shift_ids, sqlOptions, function gotUsersInterestedInAShift(interested) {
+        if (interested.start === undefined || // no users interested in this shift, managers might be interested
+            moment(time.unknownTimeFormatToDate(interested.start, interested.timezone)) > now) {
+            return getUsersManagingAShiftAndShiftInformation(
+                shift_ids,
+                sqlOptions,
+                function gotManagersForANewShift(interestedManagers) {
+                    if ((interested.start == undefined && // if users are not interested in this shift AND
+                        interestedManagers.start == undefined) || // managers are not interested in this shift
+                            // OR, the shift occurred in the past
+                        moment(time.unknownTimeFormatToDate(
+                            interested.end === undefined ?
+                                interestedManagers.end:
+                                interested.end,
+                            interested.end === undefined ?
+                                interestedManagers.timezone:
+                                interested.timezone)
+                        ) < now) {
+                        // than do not send notifications
+                        if (success) {
+                            return success();
+                        }
+                        return;
+                    }
+
+                    var requiresmanagerapproval = interested.start === undefined ?
+                        interestedManagers.requiremanagerapproval : interested.requiremanagerapproval;
+
+                    var user_ids_key = sendToCreator ? 'user_ids' : 'user_ids_minus_creator';
+
+                    if (interested.notifiableUsersExist) {
+                        // interested users exist that we can send notifications to
+                        if (interestedManagers.notifiableUsersExist) {
+                            // interested managers exist that we can send notifications to
+                            // managers exist that can approve shift
+
+                            // send user notifications
+                            console.log(_.difference(interestedManagers.user_ids, interested[user_ids_key]));
+                            var interestedUsersMinusManagersWithoutParameters = interestedManagers[user_ids_key].slice();
+                            interestedUsersMinusManagersWithoutParameters.splice(0, 0, interested[user_ids_key]);
+                            _.each(interested.groupedShifts, function (groupedShift) {
+                                self.sendToUsers(
+                                    // do not send this notification to managers who also happen to be interested in the shift
+                                    // send them the management specific notification instead
+                                    _.without.apply(this, interestedUsersMinusManagersWithoutParameters),
+                                    self.newShift(
+                                        interested.groupuserclass_title,
+                                        interested.location_name,
+                                        interested.sublocation_name,
+                                        groupedShift.start,
+                                        groupedShift.end,
+                                        Object.keys(groupedShift.ids).length,
+                                        interested.timezone,
+                                        interested.shift_ids
+                                    ),
+                                    interested.args,
+                                    undefined,
+                                    function failedToSendUsersNewShiftNotifications(err) {
+                                        slack.error(undefined, 'Failed to send new shift notifications to users', err);
+                                        success = false;
+                                        return error(err);
+                                    }
+                                );
+                                // send managers notifications
+                                self.sendToUsers(
+                                    interestedManagers[user_ids_key],
+                                    self.newShiftForManagers(
+                                        interestedManagers.groupuserclass_title,
+                                        interestedManagers.location_name,
+                                        interestedManagers.sublocation_name,
+                                        groupedShift.start,
+                                        groupedShift.end,
+                                        Object.keys(groupedShift.ids).length,
+                                        interestedManagers.timezone,
+                                        interestedManagers.shift_ids,
+                                        interestedManagers.shiftcreator_firstname,
+                                        interestedManagers.shiftcreator_lastname
+                                    ),
+                                    interestedManagers.args,
+                                    undefined,
+                                    function failedToSendManagersNewShiftNotificationsAfterSendingUserNotification(err) {
+                                        slack.error(undefined, 'Failed to send new shift notifications to managers', err);
+                                        success = false;
+                                        return error(err);
+                                    }
+                                );
+                            });
+                        } else if (interestedManagers.unnotifiableUsersExist) {
+                            // interested users exist that we can send notifications to
+                            // but, no interested managers exist that we can notify, user does not need to know that
+                            // managers that can approve the shift exist
+                            _.each(interested.groupedShifts, function (groupedShift) {
+                                self.sendToUsers(
+                                    interested[user_ids_key],
+                                    self.newShift(
+                                        interested.groupuserclass_title,
+                                        interested.location_name,
+                                        interested.sublocation_name,
+                                        groupedShift.start,
+                                        groupedShift.end,
+                                        Object.keys(groupedShift.ids).length,
+                                        interested.timezone,
+                                        interested.shift_ids
+                                    ),
+                                    interested.args,
+                                    undefined,
+                                    function failedToSendUsersNewShiftNotificationsNotSendingManagerNotification(err) {
+                                        slack.error(undefined, 'Failed to send new shift notifications to users', err);
+                                        success = false;
+                                        return error(err);
+                                    }
+                                );
+                            });
+                        } else {
+                            // interested users exist that we can send notifications to
+                            // but, no managers even can approve this shift
+
+                            // notify all users like normal
+                            _.each(interested.groupedShifts, function (groupedShift) {
+                                self.sendToUsers(
+                                    interested[user_ids_key],
+                                    self.newShift(
+                                        interested.groupuserclass_title,
+                                        interested.location_name,
+                                        interested.sublocation_name,
+                                        groupedShift.start,
+                                        groupedShift.end,
+                                        Object.keys(groupedShift.ids).length,
+                                        interested.timezone,
+                                        interested.shift_ids
+                                    ),
+                                    interested.args,
+                                    undefined,
+                                    function failedToSendUsersNewShiftNotificationsNotSendingManagerNotification(err) {
+                                        slack.error(undefined, 'Failed to send new shift notifications to users', err);
+                                        success = false;
+                                        return error(err);
+                                    }
+                                );
+                            });
+                            // but also send the user that created the shift a notification
+                            if (interested.shiftcreator_id) {
+                                _.each(interested.groupedShifts, function (groupedShift) {
+                                    self.sendToUsers(
+                                        [interested.shiftcreator_id],
+                                        self.newShiftButNoManagersCanApprove(
+                                            interested.groupuserclass_title,
+                                            interested.location_name,
+                                            interested.sublocation_name,
+                                            groupedShift.start,
+                                            groupedShift.end,
+                                            Object.keys(groupedShift.ids).length,
+                                            interested.timezone,
+                                            interested.shift_ids
+                                        ),
+                                        interested.args,
+                                        undefined,
+                                        function failedToSendUsersNewShiftNotificationsNotSendingManagerNotification(err) {
+                                            slack.error(undefined, 'Failed to send new shift notifications to users', err);
+                                            success = false;
+                                            return error(err);
+                                        }
+                                    )
+                                });
+                            }
+                        }
+                    } else if (interested.unnotifiableUsersExist) {
+                        // users exist that can apply for the shift
+                        // but they have their notifications disabled
+                        console.log('no interested users, but users exist that can apply for the shift');
+                        if (interestedManagers.notifiableUsersExist) {
+                            // users exist that can apply for shift, but will not receive notifications about the new shift
+                            // managers exist that will receive notifications about the new shift
+                            console.log('but, interested managers');
+                            // send special notification to managers saying that this might not get filled
+                        } else if (interestedManagers.unnotifiableUsersExist) {
+                            // users exist that can apply for shift, but will not receive notifications about the new shift
+                            // managers exist to approve the shift, but will not receive notifications about the new shift
+                        } else {
+                            // users exist that can apply for shift, but will not receive notifications about the new shift
+                            // no managers are interested...
+                            console.log('no interested managers');
+                        }
+                    } else {
+                        // no users are interested in this shift
+                        // no users can apply for the shift
+                        console.log('no interested users, users cannot apply for it');
+                        if (interestedManagers.notifiableUsersExist) {
+                            // no users are interested in this shift
+                            // no users can apply for the shift
+                            // send special notification to managers saying that this might not get filled
+                            console.log('but, interested managers');
+                        } else if (interestedManagers.unnotifiableUsersExist) {
+                            // no users are interested in this shift
+                            // no users can apply for the shift
+                            // managers can approve it, but are not interested
+                            console.log('no interested managers');
+                        } else {
+                            // no users are interested
+                            // no users can apply
+                            // no managers are interested
+                            // no managers can approve
+
+                            // no one cares about this shift except the person creating it
+                        }
+                    }
+
+                    if (success) {
+                        return success();
+                    }
+                },
+                function failedToGetManagersForANewShift(err) {
+                    slack.error(undefined, 'Error fetching managers for a new shift', err);
+                    if (error) {
+                        return error(err);
+                    }
+                });
         } else {
             // never send a notification for a shift created in the past
-        }
-
-        if (success) {
-            success();
         }
     }, function failedToGetUsersInterestedInAShift() {
         slack.error(undefined, 'Error notifying about new shift', err);
         console.log(err.stack);
         if (error) {
-            error(err);
+            return error(err);
         }
     });
 };
 
-function getUsersManagingAShift(shift_id, transacting) {
+var usersManagingAShiftSelect = [
+    'usergroups.user_id as user_id'
+];
+
+var usersManagingAShiftWithShiftInformationSelect = usersManagingAShiftSelect.slice();
+_.each([
+    // checking if manager is interested in notifications
+    'usersettings.pushnotifications as pushOk',
+    'usersettings.textnotifications as textOk',
+    'usersettings.emailnotifications as emailOk',
+    // shift information
+    'shifts.title as title',
+    'shifts.start as start',
+    'shifts.end as end',
+    'shifts.location_id as location_id',
+    'shifts.id as shift_id',
+    // where shift is
+    'sublocations.location_id as sublocation_location_id',
+    'locations.title as location_name',
+    'timezones.name as timezone',
+    'sublocations.title as sublocation_name',
+    // who the shift is for
+    'groupuserclasses.title as groupuserclass_title',
+    'groupuserclasses.description as groupuserclass_description',
+    'groupuserclasses.requiremanagerapproval as requiremanagerapproval',
+    // manager information
+    'users.id as user_id',
+    'users.username as username',
+    'users.email as email',
+    'users.phonemobile as text',
+    // creator of shift
+    'shiftcreator.id as shiftcreator_id',
+    'shiftcreator.username as shiftcreator_username',
+    'shiftcreator.firstname as shiftcreator_firstname',
+    'shiftcreator.lastname as shiftcreator_lastname',
+    'shiftcreator.email as shiftcreator_email',
+    'shiftcreator.phonemobile as shiftcreator_phonemobile',
+    // if manager has any push notifications
+    'pushtokens.token as pushtoken',
+    'pushtokens.platform as service'
+], function(shiftInformationSelectStatement) {
+    usersManagingAShiftWithShiftInformationSelect.push(shiftInformationSelectStatement);
+});
+
+function getUsersManagingAShiftAndShiftInformation(shift_id, sqlOptions, success, error) {
+    return _getUsersManagingAShift(shift_id, true, sqlOptions)
+        .tap(function(interestedUsers) {
+            if (success) {
+                return success(processFetchedInterestedUsers(interestedUsers));
+            }
+        })
+        .catch(function(err) {
+            if (error) {
+                return error(err);
+            }
+        });
+}
+
+function getUsersManagingAShift(shift_id, sqlOptions) {
+    return _getUsersManagingAShift(shift_id, false, sqlOptions);
+}
+
+function _getUsersManagingAShift(shift_id, includeShiftInformation, sqlOptions) {
     return models.Shift.query(function(q) {
-        q.select([
-            'usergroups.user_id as user_id'
-        ])
+        q = q.select(
+            includeShiftInformation ?
+                usersManagingAShiftWithShiftInformationSelect : usersManagingAShiftSelect
+        )
             .from('shifts')
             .leftJoin('sublocations', function() {
                 this.on('sublocations.id', '=', 'shifts.sublocation_id');
@@ -853,14 +1132,51 @@ function getUsersManagingAShift(shift_id, transacting) {
             .innerJoin('userpermissions', function() {
                 this.on('userpermissions.location_id', '=', 'shifts.location_id')
                     .orOn('userpermissions.location_id', '=', 'sublocations.location_id');
-            })
-            .where('shifts.id', '=', shift_id)
-            .andWhereRaw('COALESCE(shifts.location_id, sublocations.location_id) = managingclassesatlocations.location_id')
+            });
+        if (includeShiftInformation) {
+            q
+                // grab job type for this shift
+                .innerJoin('groupuserclasses', function() {
+                    this.on('groupuserclasses.id', '=', 'shifts.groupuserclass_id');
+                })
+                // where the shift is located at
+                .leftJoin('locations', function() {
+                    this.on('locations.id', '=', 'sublocations.location_id')
+                        .orOn('locations.id', '=', 'shifts.location_id');
+                })
+                // what timezone it is in
+                .leftJoin('timezones', function() {
+                    this.on('timezones.id', '=', 'locations.timezone_id');
+                })
+                .leftJoin('users as shiftcreator', function() {
+                    this.on('shiftcreator.id', '=', 'shifts.user_id');
+                })
+                // get managing users from their usergroup through managingclassesatlocations
+                .innerJoin('users', function() {
+                    this.on('users.id', '=', 'usergroups.user_id');
+                })
+                // get user settings
+                .innerJoin('usersettings', function() {
+                    this.on('usersettings.id', '=', 'users.usersetting_id');
+                })
+                // if manager has any push tokens
+                .leftJoin('tokens', function() {
+                    this.on('tokens.user_id', '=', 'users.id')
+                })
+                .leftJoin('pushtokens', function() {
+                    this.on('pushtokens.token_id', '=', 'tokens.id')
+                        .andOn('pushtokens.expires', '<', time.nowInUtc())
+                })
+        }
+        if (shift_id instanceof Array) {
+            q = q.whereIn('shifts.id', shift_id);
+        } else {
+            q = q.where('shifts.id', '=', shift_id)
+        }
+            q = q.andWhereRaw('COALESCE(shifts.location_id, sublocations.location_id) = managingclassesatlocations.location_id')
             .andWhere('grouppermissions.permissionlevel', '>=', managingPermissionLevel);
     })
-        .fetchAll({
-            transacting: transacting
-        });
+        .fetchAll(sqlOptions);
 }
 
 function getUsersInterestedInAShift(shift_ids, sqlOptions, success, error) {
@@ -873,10 +1189,13 @@ function getUsersInterestedInAShift(shift_ids, sqlOptions, success, error) {
             'shifts.start as start',
             'shifts.end as end',
             'shifts.location_id as location_id',
+            'shifts.id as shift_id',
             'sublocations.location_id as sublocation_location_id',
-            'locations.address as location_name',
+            'locations.title as location_name',
             'timezones.name as timezone',
             'sublocations.title as sublocation_name',
+            'groupuserclasses.title as groupuserclass_title',
+            'groupuserclasses.description as groupuserclass_description',
             'users.id as user_id',
             'users.username as username',
             'users.email as email',
@@ -884,18 +1203,27 @@ function getUsersInterestedInAShift(shift_ids, sqlOptions, success, error) {
             'groupuserclasses.requiremanagerapproval as requiremanagerapproval',
             'userpermissions.user_id as user_id',
             'pushtokens.token as pushtoken',
-            'pushtokens.platform as service'
+            'pushtokens.platform as service',
+            // creator of shift
+            'shiftcreator.id as shiftcreator_id',
+            'shiftcreator.username as shiftcreator_username',
+            'shiftcreator.firstname as shiftcreator_firstname',
+            'shiftcreator.lastname as shiftcreator_lastname',
+            'shiftcreator.email as shiftcreator_email',
+            'shiftcreator.phonemobile as shiftcreator_phonemobile',
         ])
             .from('shifts')
             .innerJoin('groupuserclasses', function() {
-                this.on('groupuserclasses.id', '=', 'shifts.groupuserclass_id')
-                    .andOn('groupuserclasses.id', '=', 'shifts.groupuserclass_id');
+                this.on('groupuserclasses.id', '=', 'shifts.groupuserclass_id');
             })
             .innerJoin('groupuserclasstousers', function() {
                 this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id');
             })
             .innerJoin('users', function() {
                 this.on('users.id', '=', 'groupuserclasstousers.user_id');
+            })
+            .leftJoin('users as shiftcreator', function() {
+                this.on('shiftcreator.id', '=', 'shifts.user_id');
             })
             .leftJoin('sublocations', function() {
                 this.on('sublocations.id', '=', 'shifts.sublocation_id');
@@ -932,72 +1260,177 @@ function getUsersInterestedInAShift(shift_ids, sqlOptions, success, error) {
     })
         .fetchAll(sqlOptions)
         .tap(function(interestedUsers) {
-            var user_ids = {};
-            var location_id;
-            var location_name;
-            var sublocation_name;
-            var timezone;
-            var start;
-            var end;
-            interestedUsers.each(function (interestedUser) {
-                // the same user_id can show up multiple times if the user has more than one login token
-                // we prefer to send push notifications
-                // if that is not possible we will send an email and a text message?
-                var user_id = interestedUser.get('user_id');
-                var pushOk = interestedUser.get('pushOk');
-                var textOk = interestedUser.get('textOk');
-                var emailOk = interestedUser.get('emailOk');
-                if (interestedUser.get('location_id')) {
-                    location_id = interestedUser.get('location_id');
-                }
-                if (interestedUser.get('sublocation_location_id')) {
-                    location_id = interestedUser.get('sublocation_location_id');
-                }
-                if (interestedUser.get('location_name')) {
-                    location_name = interestedUser.get('location_name');
-                }
-                if (interestedUser.get('sublocation_name')) {
-                    sublocation_name = interestedUser.get('sublocation_name');
-                }
-                if (interestedUser.get('start')) {
-                    start = interestedUser.get('start');
-                }
-                if (interestedUser.get('end')) {
-                    end = interestedUser.get('end');
-                }
-                if (interestedUser.get('timezone')) {
-                    timezone = interestedUser.get('timezone');
-                }
-                if (pushOk || textOk || emailOk) {
-                    user_ids[user_id] = true;
-                } else {
-                    // user wants to be in the dark, which is ok
-                }
-            });
-            var args = {
-                limit: 1 // limit to only sending one notification method (the first that works)
-            };
-            if (location_id) {
-                args.location_id = location_id;
+            return success(
+                processFetchedInterestedUsers(interestedUsers)
+            );
+        })
+        .catch(function(err) {
+            slack.error(undefined, 'Failed to get users interested in a shift', err)
+            if (err) {
+                return error(err);
             }
-            if (location_name) {
-                args.location_name = location_name;
-            }
-            if (sublocation_name) {
-                args.sublocation_name = sublocation_name;
-            }
+        })
+}
 
-            success({
-                user_ids: user_ids,
-                location_id: location_id,
-                location_name: location_name,
-                sublocation_name: sublocation_name,
-                timezone: timezone,
-                start: start,
-                end: end,
-                args: args
-            });
-        });
+function processFetchedInterestedUsers(interestedUsers) {
+    var user_ids = {};
+    var user_ids_minus_creator = {};
+    var uninterested_user_ids = {};
+    var uninterested_user_ids_minus_creator = {};
+    var location_id;
+    var location_name;
+    var sublocation_name;
+    var timezone;
+    var start;
+    var end;
+    var shifts = {};
+    var groupedShifts = {};
+    var shiftcreator_id;
+    var shiftcreator_firstname;
+    var shiftcreator_lastname;
+    var groupuserclass_title;
+    var groupuserclass_description;
+    var requiremanagerapproval;
+
+    var notifiableUsersExist = false;
+    var unnotifiableUsersExist = false;
+    var notifiableUsersExistMinusShiftCreator = false;
+    var unnotifiableUsersExistMinusShiftCreator = false;
+
+    interestedUsers.each(function (interestedUser) {
+        // the same user_id can show up multiple times if the user has more than one login token
+        // we prefer to send push notifications
+        // if that is not possible we will send an email and a text message?
+        interestedUser = interestedUser.toJSON();
+        //console.log(interestedUser);
+        var user_id = interestedUser.user_id;
+        var pushOk = interestedUser.pushOk;
+        var textOk = interestedUser.textOk;
+        var emailOk = interestedUser.emailOk;
+        if (interestedUser.location_id) {
+            location_id = interestedUser.location_id;
+        }
+        if (interestedUser.sublocation_location_id) {
+            location_id = interestedUser.sublocation_location_id;
+        }
+        if (interestedUser.location_name) {
+            location_name = interestedUser.location_name;
+        }
+        if (interestedUser.sublocation_name) {
+            sublocation_name = interestedUser.sublocation_name;
+        }
+        if (interestedUser.start) {
+            start = interestedUser.start;
+        }
+        if (interestedUser.end) {
+            end = interestedUser.end;
+        }
+        if (interestedUser.timezone) {
+            timezone = interestedUser.timezone;
+        }
+        if (interestedUser.groupuserclass_title) {
+            groupuserclass_title = interestedUser.groupuserclass_title;
+        }
+        if (interestedUser.groupuserclass_description) {
+            groupuserclass_description = interestedUser.groupuserclass_description;
+        }
+        if (interestedUser.requiremanagerapproval) {
+            requiremanagerapproval = interestedUser.requiremanagerapproval;
+        }
+        if (interestedUser.shiftcreator_id) {
+            callout_id = interestedUser.shiftcreator_id;
+        }
+        if (interestedUser.shiftcreator_firstname) {
+            shiftcreator_firstname = interestedUser.shiftcreator_firstname;
+        }
+        if (interestedUser.shiftcreator_lastname) {
+            shiftcreator_lastname = interestedUser.shiftcreator_lastname;
+        }
+        if (interestedUser.shift_id) {
+            if (!shifts.hasOwnProperty(interestedUser.shift_id)) {
+                shifts[interestedUser.shift_id] = {
+                    start: start,
+                    end: end
+                }
+            }
+            var shiftKey = start + '-' + end;
+            if (!groupedShifts.hasOwnProperty(shiftKey)) {
+                groupedShifts[shiftKey] = {
+                    start: start,
+                    end: end,
+                    ids: {}
+                };
+            }
+            groupedShifts[shiftKey].ids[interestedUser.shift_id] = true;
+        }
+
+        var isShiftCreator = callout_id !== undefined && callout_id == user_id;
+
+        if (pushOk || textOk || emailOk) {
+            // regardless if this user is the shift creator, add them to the list
+            user_ids[user_id] = true;
+            notifiableUsersExist = true;
+            if (!isShiftCreator) {
+                // this user is not the shift creator
+                // add them to the list of users that are not the creator
+                user_ids_minus_creator[user_id] = true;
+                notifiableUsersExistMinusShiftCreator = true;
+            }
+        } else {
+            // user wants to be in the dark, which is ok
+            uninterested_user_ids[user_id] = true;
+            unnotifiableUsersExist = true;
+            if (!isShiftCreator) {
+                // not the shift creator, add them to the list of users that are not the creator
+                uninterested_user_ids_minus_creator[user_id] = true;
+                unnotifiableUsersExistMinusShiftCreator = true;
+            }
+        }
+    });
+
+    var args = {
+        limit: 1 // limit to only sending one notification method (the first that works)
+    };
+
+    if (location_id) {
+        args.location_id = location_id;
+    }
+
+    if (location_name) {
+        args.location_name = location_name;
+    }
+
+    if (sublocation_name) {
+        args.sublocation_name = sublocation_name;
+    }
+
+    return {
+        user_ids: Object.keys(user_ids),
+        user_ids_minus_creator: Object.keys(user_ids_minus_creator),
+        user_ids_map: user_ids,
+        notifiableUsersExist: notifiableUsersExist,
+        notifiableUsersExistMinusShiftCreator: notifiableUsersExistMinusShiftCreator,
+        uninterested_user_ids: Object.keys(uninterested_user_ids),
+        uninterested_user_ids_minus_creator: Object.keys(uninterested_user_ids_minus_creator),
+        uninterested_user_ids_map: uninterested_user_ids,
+        unnotifiableUsersExist: unnotifiableUsersExist,
+        unnotifiableUsersExistMinusShiftCreator: unnotifiableUsersExistMinusShiftCreator,
+        location_id: location_id,
+        location_name: location_name,
+        sublocation_name: sublocation_name,
+        timezone: timezone,
+        start: start,
+        end: end,
+        shifts: shifts,
+        groupedShifts: _.values(groupedShifts),
+        shiftcreator_id: shiftcreator_id,
+        shiftcreator_firstname: shiftcreator_firstname,
+        shiftcreator_lastname: shiftcreator_lastname,
+        groupuserclass_title: groupuserclass_title,
+        groupuserclass_description: groupuserclass_description,
+        requiremanagerapproval: requiremanagerapproval,
+        args: args
+    };
 }
 
 function noop() {
