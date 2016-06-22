@@ -432,25 +432,28 @@ module.exports = {
         },
         'post': {
             route: function userSettingsPost(req, res) {
-                return models.UserSettings.query(function userSettingsPostQuery(q) {
-                    q.select(
-                        // do not send id to user
-                        createSelectQueryForAllColumns('UserSetting', 'usersettings')
-                    )
-                        .from('usersettings')
-                        .innerJoin('users', function() {
-                            this.on('users.usersetting_id', '=', 'usersettings.id')
-                                .andOn('users.id', '=', req.user.id);
-                        })
-                        .update(getPatchKeysWithoutBannedKeys(
-                            'UserSetting',
-                            req.body
-                        ));
+                return models.User.forge({
+                    id: req.user.id
                 })
                     .fetch()
-                    .then(function userSettingsPostThen(userSettings) {
-                        return userSettingsGet(req, res);
-                        //res.json(userSettings.toJSON());
+                    .tap(function(user) {
+                        return models.UserSettings.query(function userSettingsPostQuery(q) {
+                            q.select(
+                                // do not send id to user
+                                createSelectQueryForAllColumns('UserSetting', 'usersettings')
+                            )
+                                .from('usersettings')
+                                .where('usersettings.id', '=', user.get('usersetting_id'))
+                                .update(getPatchKeysWithoutBannedKeys(
+                                    'UserSetting',
+                                    req.body
+                                ));
+                        })
+                            .fetch()
+                            .then(function userSettingsPostThen(userSettings) {
+                                return userSettingsGet(req, res);
+                                //res.json(userSettings.toJSON());
+                            })
                     })
                     .catch(function userSettingsPostError(err) {
                         error(req, res, err);
