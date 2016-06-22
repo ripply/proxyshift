@@ -990,39 +990,250 @@ App.prototype.sendNotificationsAboutNewShifts = function sendNotificationsAboutN
                         // but they have their notifications disabled
                         console.log('no interested users, but users exist that can apply for the shift');
                         if (interestedManagers.notifiableUsersExist) {
+                            // users wont be notified, but they can apply for the shifts, managers will be notified
+
                             // users exist that can apply for shift, but will not receive notifications about the new shift
                             // managers exist that will receive notifications about the new shift
                             console.log('but, interested managers');
+                            // newShiftNoInterestedUsersManagersInterestedToCreator
                             // send special notification to managers saying that this might not get filled
+
+                            // but also send the user that created the shift a notification
+                            if (interested.shiftcreator_id) {
+                                _.each(interested.groupedShifts, function (groupedShift) {
+                                    self.sendToUsers(
+                                        [interested.shiftcreator_id],
+                                        self.newShiftNoInterestedUsersManagersInterestedToCreator(
+                                            interested.groupuserclass_title,
+                                            interested.location_name,
+                                            interested.sublocation_name,
+                                            groupedShift.start,
+                                            groupedShift.end,
+                                            Object.keys(groupedShift.ids).length,
+                                            interested.timezone,
+                                            interested.shift_ids
+                                        ),
+                                        interested.args,
+                                        undefined,
+                                        function failedToSendUsersNewShiftNotificationsNotSendingManagerNotification(err) {
+                                            slack.error(undefined, 'Failed to send new shift notifications to users', err);
+                                            success = false;
+                                            return error(err);
+                                        }
+                                    )
+                                });
+                            }
+                            // send managers notifications
+                            _.each(interestedManagers.groupedShifts, function (groupedShift) {
+                                self.sendToUsers(
+                                    interestedManagers[user_ids_key],
+                                    self.newShiftNoInterestedUsersManagersInterestedToManager(
+                                        interestedManagers.groupuserclass_title,
+                                        interestedManagers.location_name,
+                                        interestedManagers.sublocation_name,
+                                        groupedShift.start,
+                                        groupedShift.end,
+                                        Object.keys(groupedShift.ids).length,
+                                        interestedManagers.timezone,
+                                        interestedManagers.shift_ids,
+                                        interestedManagers.shiftcreator_firstname,
+                                        interestedManagers.shiftcreator_lastname
+                                    ),
+                                    interestedManagers.args,
+                                    undefined,
+                                    function failedToSendManagersNewShiftNotificationsAfterSendingUserNotification(err) {
+                                        slack.error(undefined, 'Failed to send new shift notifications to managers', err);
+                                        success = false;
+                                        return error(err);
+                                    }
+                                );
+                            });
+
                         } else if (interestedManagers.unnotifiableUsersExist) {
+                            // users wont be notified, but they can apply for the shifts, managers will not be notified but can approve
+
                             // users exist that can apply for shift, but will not receive notifications about the new shift
                             // managers exist to approve the shift, but will not receive notifications about the new shift
+
+                            if (interested.shiftcreator_id) {
+                                _.each(interested.groupedShifts, function (groupedShift) {
+                                    self.sendToUsers(
+                                        [interested.shiftcreator_id],
+                                        self.newShiftNoInterestedUsersNoInterestedManagersToCreator(
+                                            interested.groupuserclass_title,
+                                            interested.location_name,
+                                            interested.sublocation_name,
+                                            groupedShift.start,
+                                            groupedShift.end,
+                                            Object.keys(groupedShift.ids).length,
+                                            interested.timezone,
+                                            interested.shift_ids
+                                        ),
+                                        interested.args,
+                                        undefined,
+                                        function failedToSendUsersNewShiftNotificationsNotSendingManagerNotification(err) {
+                                            slack.error(undefined, 'Failed to send new shift notifications to users', err);
+                                            success = false;
+                                            return error(err);
+                                        }
+                                    )
+                                });
+                            }
                         } else {
+                            // users wont be notified, but they can apply for the shifts, no managers to approve shifts
+
                             // users exist that can apply for shift, but will not receive notifications about the new shift
                             // no managers are interested...
                             console.log('no interested managers');
+                            if (interested.shiftcreator_id) {
+                                _.each(interested.groupedShifts, function (groupedShift) {
+                                    self.sendToUsers(
+                                        [interested.shiftcreator_id],
+                                        self.newShiftNoInterestedUsersNoManagersToCreator(
+                                            interested.groupuserclass_title,
+                                            interested.location_name,
+                                            interested.sublocation_name,
+                                            groupedShift.start,
+                                            groupedShift.end,
+                                            Object.keys(groupedShift.ids).length,
+                                            interested.timezone,
+                                            interested.shift_ids
+                                        ),
+                                        interested.args,
+                                        undefined,
+                                        function failedToSendUsersNewShiftNotificationsNotSendingManagerNotification(err) {
+                                            slack.error(undefined, 'Failed to send new shift notifications to users', err);
+                                            success = false;
+                                            return error(err);
+                                        }
+                                    )
+                                });
+                            }
                         }
                     } else {
                         // no users are interested in this shift
                         // no users can apply for the shift
                         console.log('no interested users, users cannot apply for it');
                         if (interestedManagers.notifiableUsersExist) {
+                            // no users to apply for shifts, managers will be notified
+
                             // no users are interested in this shift
                             // no users can apply for the shift
                             // send special notification to managers saying that this might not get filled
                             console.log('but, interested managers');
+                            if (interested.shiftcreator_id) {
+                                _.each(interested.groupedShifts, function (groupedShift) {
+                                    self.sendToUsers(
+                                        [interested.shiftcreator_id],
+                                        self.newShiftNoUsersInterestedManagersToCreator(
+                                            interested.groupuserclass_title,
+                                            interested.location_name,
+                                            interested.sublocation_name,
+                                            groupedShift.start,
+                                            groupedShift.end,
+                                            Object.keys(groupedShift.ids).length,
+                                            interested.timezone,
+                                            interested.shift_ids
+                                        ),
+                                        interested.args,
+                                        undefined,
+                                        function failedToSendUsersNewShiftNotificationsNotSendingManagerNotification(err) {
+                                            slack.error(undefined, 'Failed to send new shift notifications to users', err);
+                                            success = false;
+                                            return error(err);
+                                        }
+                                    )
+                                });
+                            }
+                            // send managers notifications
+                            _.each(interestedManagers.groupedShifts, function (groupedShift) {
+                                self.sendToUsers(
+                                    interestedManagers[user_ids_key],
+                                    self.newShiftNoUsersInterestedManagersToManager(
+                                        interestedManagers.groupuserclass_title,
+                                        interestedManagers.location_name,
+                                        interestedManagers.sublocation_name,
+                                        groupedShift.start,
+                                        groupedShift.end,
+                                        Object.keys(groupedShift.ids).length,
+                                        interestedManagers.timezone,
+                                        interestedManagers.shift_ids,
+                                        interestedManagers.shiftcreator_firstname,
+                                        interestedManagers.shiftcreator_lastname
+                                    ),
+                                    interestedManagers.args,
+                                    undefined,
+                                    function failedToSendManagersNewShiftNotificationsAfterSendingUserNotification(err) {
+                                        slack.error(undefined, 'Failed to send new shift notifications to managers', err);
+                                        success = false;
+                                        return error(err);
+                                    }
+                                );
+                            });
                         } else if (interestedManagers.unnotifiableUsersExist) {
+                            // no users to apply for shifts, managers will not be notified, but can approve
+
                             // no users are interested in this shift
                             // no users can apply for the shift
                             // managers can approve it, but are not interested
                             console.log('no interested managers');
+                            if (interested.shiftcreator_id) {
+                                _.each(interested.groupedShifts, function (groupedShift) {
+                                    self.sendToUsers(
+                                        [interested.shiftcreator_id],
+                                        self.newShiftNoUsersNoInterestedManagerToCreator(
+                                            interested.groupuserclass_title,
+                                                interested.location_name,
+                                                interested.sublocation_name,
+                                                groupedShift.start,
+                                                groupedShift.end,
+                                                Object.keys(groupedShift.ids).length,
+                                                interested.timezone,
+                                                interested.shift_ids
+                                        ),
+                                        interested.args,
+                                        undefined,
+                                        function failedToSendUsersNewShiftNotificationsNotSendingManagerNotification(err) {
+                                            slack.error(undefined, 'Failed to send new shift notifications to users', err);
+                                            success = false;
+                                            return error(err);
+                                        }
+                                    )
+                                });
+                            }
                         } else {
+                            // no users to apply for shifts, no managers to approve shifts
+
                             // no users are interested
                             // no users can apply
                             // no managers are interested
                             // no managers can approve
 
                             // no one cares about this shift except the person creating it
+                            if (interested.shiftcreator_id) {
+                                _.each(interested.groupedShifts, function (groupedShift) {
+                                    self.sendToUsers(
+                                        [interested.shiftcreator_id],
+                                        self.newShiftNoUsersNoManagersToCreator(
+                                            interested.groupuserclass_title,
+                                            interested.location_name,
+                                            interested.sublocation_name,
+                                            groupedShift.start,
+                                            groupedShift.end,
+                                            Object.keys(groupedShift.ids).length,
+                                            interested.timezone,
+                                            interested.shift_ids
+                                        ),
+                                        interested.args,
+                                        undefined,
+                                        function failedToSendUsersNewShiftNotificationsNotSendingManagerNotification(err) {
+                                            slack.error(undefined, 'Failed to send new shift notifications to users', err);
+                                            success = false;
+                                            return error(err);
+                                        }
+                                    )
+                                });
+                            }
                         }
                     }
 

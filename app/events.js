@@ -359,6 +359,304 @@ function newShiftButNoManagersCanApprove(
     };
 }
 
+// sent to user who created the shift
+function newShiftNoInterestedUsersManagersInterestedToCreator(
+    job_title,
+    shift_location,
+    shift_sublocation,
+    shift_start,
+    shift_end,
+    shift_count,
+    timezone,
+    shift_id,
+    calledout_user_firstname,
+    calledout_user_lastname
+) {
+    var formatted = formatTimeDateLocationsForNotifications(shift_location, shift_sublocation, shift_start, shift_end, timezone);
+
+    // There are no managers registered to approve this shift. Please contact your manager.
+
+    return {
+        push: createNotification(
+            {test: 'test'},
+            'Notice',
+            'You shift request has been sent. Please note no users have set their notification settings turned on.',
+            'body android only',
+            3,
+            3,
+            'manageShift',
+            'manageShift',
+            {
+                shift_id: shift_id
+            }
+        )
+    };
+}
+
+// sent to manager when no users have their notifications on
+function newShiftNoInterestedUsersManagersInterestedToManager(
+    job_title,
+    shift_location,
+    shift_sublocation,
+    shift_start,
+    shift_end,
+    shift_count,
+    timezone,
+    shift_id,
+    calledout_user_firstname,
+    calledout_user_lastname
+) {
+    var formatted = formatTimeDateLocationsForNotifications(shift_location, shift_sublocation, shift_start, shift_end, timezone);
+
+    // Manager- [Name] has created a shift request  at [Location Name] on [ date] at [time] for [X] hours. Please note no users have set their notification settings turned on."
+    var message =
+        calledout_user_firstname + ' ' + calledout_user_lastname +
+        ' has created a shift request at ' +
+        shift_location +
+        ' on ' +
+        formatted.date + ' at ' +
+        formatted.start + ' for ' +
+        formatted.length +
+        '.Please note no users have set their notification settings turned on.';
+
+    return {
+        push: createNotification(
+            {test: 'test'},
+            'Notice',
+            message,
+            'body android only',
+            3,
+            3,
+            'manageShift',
+            'manageShift',
+            {
+                shift_id: shift_id
+            }
+        )
+    };
+}
+
+// users wont be notified, but they can apply for the shifts, no managers to approve shifts
+// sent to manager when no users have their notifications on
+function newShiftNoInterestedUsersNoInterestedManagersToCreator(
+    job_title,
+    shift_location,
+    shift_sublocation,
+    shift_start,
+    shift_end,
+    shift_count,
+    timezone,
+    shift_id,
+    calledout_user_firstname,
+    calledout_user_lastname
+) {
+    var formatted = formatTimeDateLocationsForNotifications(shift_location, shift_sublocation, shift_start, shift_end, timezone);
+
+    // There are no managers registered to approve this shift. Please contact your manager.
+    var message =
+        'Your shift request has been sent. Please note this shift requires manager approval and all managers currently have notifications turned off. Please contact your manager.';
+
+    return {
+        push: createNotification(
+            {test: 'test'},
+            'Notice',
+            message,
+            'body android only',
+            3,
+            3,
+            'manageShift',
+            'manageShift',
+            {
+                shift_id: shift_id
+            }
+        )
+    };
+}
+
+// no users to apply for shifts, managers will not be notified, but can approve
+function newShiftNoInterestedUsersNoManagersToCreator(
+    job_title,
+    shift_location,
+    shift_sublocation,
+    shift_start,
+    shift_end,
+    shift_count,
+    timezone,
+    shift_id,
+    calledout_user_firstname,
+    calledout_user_lastname
+) {
+    var formatted = formatTimeDateLocationsForNotifications(shift_location, shift_sublocation, shift_start, shift_end, timezone);
+
+    // There are no managers registered to approve this shift. Please contact your manager.
+    var message =
+        'Your shift request has been sent. However no users are subscribed to receive notifications from your location. Please contact either your coworkers or manager.';
+
+    return {
+        push: createNotification(
+            {test: 'test'},
+            'Notice',
+            message,
+            'body android only',
+            3,
+            3,
+            'manageShift',
+            'manageShift',
+            {
+                shift_id: shift_id
+            }
+        )
+    };
+}
+
+// no users to apply for shifts, managers will not be notified, but can approve
+function newShiftNoUsersInterestedManagersToCreator(
+    job_title,
+    shift_location,
+    shift_sublocation,
+    shift_start,
+    shift_end,
+    shift_count,
+    timezone,
+    shift_id,
+    calledout_user_firstname,
+    calledout_user_lastname
+) {
+    var formatted = formatTimeDateLocationsForNotifications(shift_location, shift_sublocation, shift_start, shift_end, timezone);
+
+    // There are no managers registered to approve this shift. Please contact your manager.
+    var message =
+        'Your shift request has been sent. However no users are subscribed to receive notifications from your location. Please contact either your coworkers or manager.';
+
+    return {
+        push: createNotification(
+            {test: 'test'},
+            'Notice',
+            message,
+            'body android only',
+            3,
+            3,
+            'manageShift',
+            'manageShift',
+            {
+                shift_id: shift_id
+            }
+        )
+    };
+}
+
+function newShiftNoUsersInterestedManagersToManager(
+    job_title,
+    shift_location,
+    shift_sublocation,
+    shift_start,
+    shift_end,
+    shift_count,
+    timezone,
+    shift_id,
+    calledout_user_firstname,
+    calledout_user_lastname
+) {
+    var formatted = formatTimeDateLocationsForNotifications(shift_location, shift_sublocation, shift_start, shift_end, timezone);
+
+    // Manager- [Name] has created a shift request  at [Location Name] on [ date] at [time] for [X] hours. Please note no users have set their notification settings turned on."
+    var message =
+        calledout_user_firstname + ' ' + calledout_user_lastname +
+        ' has created a shift request at ' +
+        shift_location +
+        ' on ' +
+        formatted.date +
+        ' at ' +
+        formatted.start +
+        ' for ' +
+        formatted.length +
+        '. Please note no users have set their notification settings turned on.';
+
+    return {
+        push: createNotification(
+            {test: 'test'},
+            'Notice',
+            message,
+            'body android only',
+            3,
+            3,
+            'manageShift',
+            'manageShift',
+            {
+                shift_id: shift_id
+            }
+        )
+    };
+}
+
+function newShiftNoUsersNoInterestedManagerToCreator(
+    job_title,
+    shift_location,
+    shift_sublocation,
+    shift_start,
+    shift_end,
+    shift_count,
+    timezone,
+    shift_id,
+    calledout_user_firstname,
+    calledout_user_lastname
+) {
+    var formatted = formatTimeDateLocationsForNotifications(shift_location, shift_sublocation, shift_start, shift_end, timezone);
+
+    var message =
+        'Your shift request has been sent. Please note this shift requires manager approval and all managers currently have notifications turned off. Please contact your manager.';
+
+    return {
+        push: createNotification(
+            {test: 'test'},
+            'Notice',
+            message,
+            'body android only',
+            3,
+            3,
+            'manageShift',
+            'manageShift',
+            {
+                shift_id: shift_id
+            }
+        )
+    };
+}
+
+function newShiftNoUsersNoManagersToCreator(
+    job_title,
+    shift_location,
+    shift_sublocation,
+    shift_start,
+    shift_end,
+    shift_count,
+    timezone,
+    shift_id,
+    calledout_user_firstname,
+    calledout_user_lastname
+) {
+    var formatted = formatTimeDateLocationsForNotifications(shift_location, shift_sublocation, shift_start, shift_end, timezone);
+
+    var message =
+        'Your shift request has been sent. However no users are subscribed to receive notifications from your location. Also there are no managers to approve the shift. Please contact your coworkers and manager.';
+
+    return {
+        push: createNotification(
+            {test: 'test'},
+            'Notice',
+            message,
+            'body android only',
+            3,
+            3,
+            'manageShift',
+            'manageShift',
+            {
+                shift_id: shift_id
+            }
+        )
+    };
+}
+
 function acceptOrDeniedShiftApplication(data) {
     /*
      approved_denied_date,
@@ -418,11 +716,28 @@ function acceptOrDeniedShiftApplication(data) {
 }
 
 module.exports = {
+    newShiftApplication: newShiftApplication,
+    acceptOrDeniedShiftApplication: acceptOrDeniedShiftApplication,
+
     newShift: newShift,
     newShiftForManagers: newShiftForManagers,
-    newShiftApplication: newShiftApplication,
     newShiftButNoManagersCanApprove: newShiftButNoManagersCanApprove,
-    acceptOrDeniedShiftApplication: acceptOrDeniedShiftApplication,
+    // 4a
+    newShiftNoInterestedUsersManagersInterestedToCreator: newShiftNoInterestedUsersManagersInterestedToCreator,
+    // 4b
+    newShiftNoInterestedUsersManagersInterestedToManager: newShiftNoInterestedUsersManagersInterestedToManager,
+    // 5a
+    newShiftNoInterestedUsersNoInterestedManagersToCreator: newShiftNoInterestedUsersNoInterestedManagersToCreator,
+    // 6a
+    newShiftNoInterestedUsersNoManagersToCreator: newShiftNoInterestedUsersNoManagersToCreator,
+    // 7a
+    newShiftNoUsersInterestedManagersToCreator: newShiftNoUsersInterestedManagersToCreator,
+    // 7b
+    newShiftNoUsersInterestedManagersToManager: newShiftNoUsersInterestedManagersToManager,
+    // 8a
+    newShiftNoUsersNoInterestedManagerToCreator: newShiftNoUsersNoInterestedManagerToCreator,
+    // 9a
+    newShiftNoUsersNoManagersToCreator: newShiftNoUsersNoManagersToCreator,
     invitedToGroup: function eventInvitedToGroup(user_ids, args) {
         // TODO: MODIFY THIS TO ACCEPT A TO EMAIL
         // send email and notification
