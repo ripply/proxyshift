@@ -374,7 +374,7 @@ module.exports = {
     },
     '/:location_id/manage/:groupuserclass_id': {
         'post': {
-            auth: ['group owner', 'or', 'privileged location member'],
+            auth: ['group owner', 'or', 'privileged group member', 'or', 'privileged location member'],
             route: function manageUserclassAtLocation(req, res) {
                 Bookshelf.transaction(function(t) {
                     var sqlOptions = {
@@ -491,7 +491,7 @@ module.exports = {
             }
         },
         'delete': {
-            auth: ['group owner', 'or', 'privileged location member'],
+            auth: ['group owner', 'or', 'privileged group member', 'or', 'privileged location member'],
             route: function dontManageUserclassAtLocation(req, res) {
                 models.ManagingClassesAtLocation.query(function(q) {
                     q.select()
