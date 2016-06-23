@@ -83,10 +83,17 @@ angular.module('scheduling-app.controllers')
                     if (!userClass.persisting && userClass.subscribed != isJob(userClass.id)) {
                         var method;
                         var clonedUserClass = angular.copy(userClass);
+                        var successCallback;
                         if (clonedUserClass.subscribed) {
                             method = 'manageJob';
+                            successCallback = function() {
+                                UserInfoService.addManagingUserclassToGroup(clonedUserClass.id);
+                            };
                         } else {
                             method = 'unmanageJob';
+                            successCallback = function() {
+                                UserInfoService.removeManagingUserclassToGroup(clonedUserClass.id);
+                            }
                         }
                         userClass.persisting = true;
                         LocationsModel[method]({
@@ -100,6 +107,7 @@ angular.module('scheduling-app.controllers')
                                 // remove from myUserClasses
                                 delete $scope.myUserClasses[clonedUserClass.id];
                             }
+                            successCallback();
                             userClass.persisting = false;
                         }, function persistUserClassError(err) {
                             // undo, failure
