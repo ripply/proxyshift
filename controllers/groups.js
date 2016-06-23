@@ -247,6 +247,8 @@ module.exports = {
                                     return permissions.hasGroupPermissionLevel(
                                         req.user.id,
                                         groupuserclass.get('groupuserclass_permissionlevel'),
+                                        req.params.group_id,
+                                        undefined,
                                         sqlOptions,
                                         function subscribeToGroupUserClassHasPermissionLevel() {
                                             return postModel(
