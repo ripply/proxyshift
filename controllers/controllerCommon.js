@@ -59,7 +59,7 @@ module.exports = {
                 )
             )
         })
-            .fetch()
+            .fetch(sqlOptions)
             .then(function(model) {
                 if (model) {
                     var result;
@@ -68,7 +68,7 @@ module.exports = {
                     }
                     return Promise.resolve(result)
                         .then(function() {
-                            res.json({error: false, data: {message: 'Success'}});
+                            respond(res, false, 'Success');
                         })
                         .catch(function(err) {
                             error(req, res, err);
@@ -129,7 +129,7 @@ module.exports = {
             .where(queryArgs)
             .destroy(sqlOptions)
             .then(function () {
-                res.json({error: false, data: {message: successMessage}});
+                respond(res, false, successMessage);
             })
             .catch(function (err) {
                 error(req, res, err);
@@ -142,8 +142,13 @@ module.exports = {
     clearMarks: clearMarks,
     getModelKeys: getModelKeys,
     true: true,
+    respond: respond,
     createSelectQueryForAllColumns: createSelectQueryForAllColumns
 };
+
+function respond(res, error, message) {
+    res.json({error: error, data: {message: message}});
+}
 
 /*
 function getModelKeys(modelName, bannedKeys) {

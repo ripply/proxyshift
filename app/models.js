@@ -1077,7 +1077,7 @@ _.each(modelNames, function(tableName, modelName) {
                     }
 
                     if (global.silent !== true && master) {
-                        //console.log(modelName + "." + methodName + "() = " + modelName + "." + relationMethodName + "(" + foreignModelName + ")");
+                        console.log(modelName + "." + methodName + "() = " + modelName + "." + relationMethodName + "(" + foreignModelName + ")");
                     }
                     modelOptions[methodName] = function() {
                         var model = models[foreignModelName];

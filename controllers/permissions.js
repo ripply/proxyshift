@@ -112,10 +112,11 @@ module.exports = {
 
             if (group_id !== undefined) {
                 return models.Group.query(function (q) {
-                    q.select('groups.*').innerJoin('usergroups', function () {
-                        this.on('groups.id', '=', 'usergroups.group_id')
-                            .andOn('groups.user_id', '=', user_id);
-                    })
+                    q.select('groups.*')
+                        .innerJoin('usergroups', function () {
+                            this.on('groups.id', '=', 'usergroups.group_id')
+                                .andOn('groups.user_id', '=', user_id);
+                        })
                         .where('groups.id', '=', group_id);
                 })
                     .fetch({require: true})
@@ -127,10 +128,11 @@ module.exports = {
                     });
             } else if (location_id !== undefined) {
                 return models.Group.query(function (q) {
-                    q.select('groups.*').innerJoin('locations', function () {
-                        this.on('groups.id', '=', 'locations.group_id')
-                            .andOn('locations.id', '=', location_id);
-                    })
+                    q.select('groups.*')
+                        .innerJoin('locations', function () {
+                            this.on('groups.id', '=', 'locations.group_id')
+                                .andOn('locations.id', '=', location_id);
+                        })
                         .where('groups.user_id', '=', user_id);
                 })
                     .fetch({require: true})

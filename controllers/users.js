@@ -469,7 +469,7 @@ module.exports = {
                 var user_id = parseInt(req.params.user_id);
 
                 if (user_id !== currentId) {
-                    res.status(401).json({error: true, data: {}});
+                    res.status(403).json({error: true, data: {}});
                 }
 
                 else {
@@ -523,7 +523,7 @@ module.exports = {
                 var user_id = parseInt(req.params.user_id);
 
                 if (user_id !== currentId) {
-                    res.status(401).json({error: true, data: {}});
+                    res.status(403).json({error: true, data: {}});
                 }
 
                 else {
@@ -598,6 +598,7 @@ function getUserInfo(user_id, next) {
                         .fetchAll({
                             withRelated: [
                                 'sublocations',
+                                'managingclassesatlocations',
                                 'timezone'
                             ]
                         })
@@ -694,6 +695,7 @@ function getUserInfo(user_id, next) {
                                                 .fetchAll({
                                                     withRelated: [
                                                         'sublocations',
+                                                        'managingclassesatlocations',
                                                         'timezone'
                                                     ]
                                                 })
