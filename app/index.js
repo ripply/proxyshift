@@ -1954,7 +1954,7 @@ function getApprovedDeniedUsersForShift(user_id, shift_id, sqlOptions, success, 
             .leftJoin('timezones', function() {
                 this.on('timezones.id', '=', 'shifts.timezone_id');
             })
-            .where('shiftapplications.shift_id', '=', shift_id)
+            .where('shifts.id', '=', shift_id)
             .orderBy('acceptdecline_date', 'desc'); // desc so that always compares against latest one
     })
         .fetchAll(sqlOptions)
@@ -2018,19 +2018,23 @@ function getApprovedDeniedUsersForShift(user_id, shift_id, sqlOptions, success, 
                 }
 
                 if (shiftapplicationsJson.length == 0) {
-                    slack.error(undefined, 'Approved/Denied users for shift: ' + shift_id + ' end up returning zero results, this will cause a crash.');
+                    var errorMessage = 'Approved/Denied users for shift: ' + shift_id + ' end up returning zero results, this will cause a crash.';
+                    slack.error(undefined, errorMessage);
+                    if (error) {
+                        return error(errorMessage);
+                    }
+                } else if (success) {
+                    return success(
+                        true,
+                        approvedApplicant,
+                        approvedApplicantApplicationId,
+                        shiftApplicants,
+                        userHasOutstandingApplication,
+                        otherUsersHaveAppliedBeforeUser,
+                        shiftInfo
+                    );
                 }
-
-                return success(
-                    true,
-                    approvedApplicant,
-                    approvedApplicantApplicationId,
-                    shiftApplicants,
-                    userHasOutstandingApplication,
-                    otherUsersHaveAppliedBeforeUser,
-                    shiftInfo
-                );
-            } else {
+            } else if (success) {
                 return success(false);
             }
         })
