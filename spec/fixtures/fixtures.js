@@ -428,20 +428,26 @@ module.exports = {
                 group_id: '@groups:name:membershiptest',
                 title: 'User class 1',
                 description: 'User class 0 description',
-                grouppermission_id: '@grouppermissions:description:unprivileged'
+                grouppermission_id: '@grouppermissions:description:unprivileged',
+                requiremanagerapproval: false,
+                cansendnotification: true
             },
             {
                 group_id: '@groups:name:membershiptest',
                 title: 'classtest',
                 description: 'User class 1 description',
-                grouppermission_id: '@grouppermissions:description:unprivileged'
+                grouppermission_id: '@grouppermissions:description:unprivileged',
+                requiremanagerapproval: true,
+                cansendnotification: true
             },
 
             {
                 group_id: '@groups:name:membershiptest',
                 title: 'manager',
                 description: 'Manages people',
-                grouppermission_id: '@grouppermissions:description:privileged'
+                grouppermission_id: '@grouppermissions:description:privileged',
+                requiremanagerapproval: true,
+                cansendnotification: true
             }
         ],
         groupuserclasstousers: [
@@ -478,6 +484,7 @@ module.exports = {
                 end: formatDateForDb(moment(new Date()).unix()),
                 timezone_id: defaultTimezone(),
                 location_id: '@locations:state:membershiptest',
+                canceled: false,
                 //sublocation_id: null,
                 user_id: '@users:username:groupmember',
                 groupuserclass_id: '@groupuserclasses:title:classtest'
@@ -489,6 +496,7 @@ module.exports = {
                 end: formatDateForDb(moment(new Date()).add('3', 'hour').unix()),
                 timezone_id: defaultTimezone(),
                 location_id: '@locations:state:membershiptest',
+                canceled: false,
                 //sublocation_id: null,
                 user_id: '@users:username:groupmember',
                 groupuserclass_id: '@groupuserclasses:title:classtest'
@@ -501,6 +509,7 @@ module.exports = {
                 end: formatDateForDb(moment(new Date()).add('3', 'hour').unix()),
                 timezone_id: defaultTimezone(),
                 location_id: '@locations:state:test_state',
+                canceled: false,
                 //sublocation_id: '@sublocations:description:membershiptest floor 1',
                 user_id: '@users:username:groupmember',
                 groupuserclass_id: '@groupuserclasses:title:classtest'
@@ -511,6 +520,7 @@ module.exports = {
                 start: formatDateForDb(moment(new Date()).add('1', 'hour').unix()),
                 end: formatDateForDb(moment(new Date()).add('3', 'hour').unix()),
                 timezone_id: defaultTimezone(),
+                canceled: false,
                 //location_id: null,
                 sublocation_id: '@sublocations:description:membershiptest floor 1',
                 //user_id: null,
@@ -522,6 +532,7 @@ module.exports = {
                 start: formatDateForDb(moment(new Date()).add('1', 'hour').unix()),
                 end: formatDateForDb(moment(new Date()).add('3', 'hour').unix()),
                 timezone_id: defaultTimezone(),
+                canceled: false,
                 //location_id: null,
                 sublocation_id: '@sublocations:description:membershiptest floor 1',
                 user_id: '@users:username:groupmember',
@@ -533,6 +544,7 @@ module.exports = {
                 start: formatDateForDb(moment(new Date()).add('1', 'hour').unix()),
                 end: formatDateForDb(moment(new Date()).add('3', 'hour').unix()),
                 timezone_id: defaultTimezone(),
+                canceled: false,
                 //location_id: null,
                 sublocation_id: '@sublocations:description:membershiptest floor 1',
                 //user_id: null,

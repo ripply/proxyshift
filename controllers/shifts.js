@@ -1179,6 +1179,10 @@ const createShiftUntrustedKeysAllowLocationSublocationGroupclass = _.keys(
     )
 );
 
+const alwaysDefaultNewShiftParameters = {
+    canceled: false
+};
+
 function rejectTransaction(t, code, message) {
     return t.rollback({
         code: code,
@@ -1396,6 +1400,8 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
             if (count === undefined || count === null) {
                 count = 1;
             }
+
+            _.extend(validatedShift, alwaysDefaultNewShiftParameters);
 
             if (count) {
                 if (count > MAX_CREATE_SHIFTS) {

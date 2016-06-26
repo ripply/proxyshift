@@ -182,12 +182,14 @@ var Schema = {
         allowalltocreateshifts: {
             type: boolean,
             comment: 'Any user can create a shift',
-            defaultTo: false
+            defaultTo: false,
+            nullable: false
         },
         requireshiftconfirmation: {
             type: boolean,
             comment: 'If true, will require manager approval',
-            defaultTo: true
+            defaultTo: true,
+            nullable: false
         }
     },
     Group: {
@@ -420,11 +422,13 @@ var Schema = {
         },
         cansendnotification: {
             type: boolean,
-            defaultTo: true
+            defaultTo: true,
+            nullable: false
         },
         requiremanagerapproval: {
             type: boolean,
-            defaultTo: true
+            defaultTo: true,
+            nullable: false
         },
         grouppermission_id: {
             type: integer,
@@ -582,7 +586,8 @@ var Schema = {
         // this provides no indication to any applicants or people interested that a shift has disappeared
         canceled: {
             type: boolean,
-            default: false
+            default: false,
+            nullable: false
         }
     },
     // Keeps a record of reasons that a shift has been canceled
@@ -870,7 +875,8 @@ var Schema = {
         },
         subscribed: {
             type: boolean,
-            defaultTo: true
+            defaultTo: true,
+            nullable: false
         }
     },
     // TODO: DESCRIBE THIS
@@ -953,7 +959,8 @@ var Schema = {
         // if they want to manage that type of user
         managing: {
             type: boolean,
-            defaultsTo: false
+            defaultsTo: false,
+            nullable: false
         }
     },
     ResetPasswordToken: {
