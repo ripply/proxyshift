@@ -152,6 +152,10 @@ function formatTimeDateLocationsForNotifications(shift_location, shift_sublocati
     }
 }
 
+function combineFirstLastName(first, last) {
+    return first + ' ' + last;
+}
+
 function newShiftApplication(
     shift_location,
     shift_sublocation,
@@ -311,8 +315,8 @@ function newShiftForManagers(
             {test: 'test'},
             'New callout',
             shift_count <= 1 ?
-                (calledout_user_firstname + ' ' + calledout_user_lastname + ' (' + job_title + ') has called out from ' + shift_location + ' for ' + formatted.length + ' on ' + formatted.date + ' at ' + formatted.start) :
-                (calledout_user_firstname + ' ' + calledout_user_lastname + ' (' + job_title + ') has requested ' + shift_count + ' employees to cover at ' + shift_location + ' for ' + formatted.length + ' on ' + formatted.date + ' at ' + formatted.start),
+                (combineFirstLastName(calledout_user_firstname, calledout_user_lastname) + ' (' + job_title + ') has called out from ' + shift_location + ' for ' + formatted.length + ' on ' + formatted.date + ' at ' + formatted.start) :
+                (combineFirstLastName(calledout_user_firstname, calledout_user_lastname) + ' (' + job_title + ') has requested ' + shift_count + ' employees to cover at ' + shift_location + ' for ' + formatted.length + ' on ' + formatted.date + ' at ' + formatted.start),
             'body android only',
             3,
             3,
@@ -410,7 +414,7 @@ function newShiftNoInterestedUsersManagersInterestedToManager(
 
     // Manager- [Name] has created a shift request  at [Location Name] on [ date] at [time] for [X] hours. Please note no users have set their notification settings turned on."
     var message =
-        calledout_user_firstname + ' ' + calledout_user_lastname +
+        combineFirstLastName(calledout_user_firstname, calledout_user_lastname) +
         ' has created a shift request at ' +
         shift_location +
         ' on ' +
@@ -561,7 +565,7 @@ function newShiftNoUsersInterestedManagersToManager(
 
     // Manager- [Name] has created a shift request  at [Location Name] on [ date] at [time] for [X] hours. Please note no users have set their notification settings turned on."
     var message =
-        calledout_user_firstname + ' ' + calledout_user_lastname +
+        combineFirstLastName(calledout_user_firstname, calledout_user_lastname) +
         ' has created a shift request at ' +
         shift_location +
         ' on ' +
@@ -715,6 +719,267 @@ function acceptOrDeniedShiftApplication(data) {
     };
 }
 
+function newShiftApplicationApprovedToInterestedUsers(
+    job_title,
+    shift_location,
+    shift_sublocation,
+    shift_start,
+    shift_end,
+    shift_count,
+    timezone,
+    shift_id,
+    calledout_user_firstname,
+    calledout_user_lastname
+) {
+    var formatted = formatTimeDateLocationsForNotifications(shift_location, shift_sublocation, shift_start, shift_end, timezone);
+
+    // Good news! Your shift on [date] at [time] has been covered by an awesome co-worker.
+    var message =
+        'Good news! Your shift on ' +
+        formatted.date +
+        ' at ' +
+        formatted.start +
+        ' has been covered by an awesome co-worker.';
+
+    return {
+        push: createNotification(
+            {test: 'test'},
+            'APPROVED',
+            message,
+            'body android only',
+            3,
+            3,
+            'manageShift',
+            'manageShift',
+            {
+                shift_id: shift_id
+            }
+        )
+    };
+}
+
+function newShiftApplicationApprovedToManagers(
+    job_title,
+    shift_location,
+    shift_sublocation,
+    shift_start,
+    shift_end,
+    shift_count,
+    timezone,
+    shift_id,
+    calledout_user_firstname,
+    calledout_user_lastname,
+    cover_user_firstname,
+    cover_user_lastname
+) {
+    var formatted = formatTimeDateLocationsForNotifications(shift_location, shift_sublocation, shift_start, shift_end, timezone);
+
+    //  [Requesting User]’s shift on [date] at [time] at [store location] has been covered by [Filling user].
+    var message =
+        combineFirstLastName(calledout_user_firstname, calledout_user_lastname) +
+        "'s shift on " +
+        formatted.date +
+        ' at ' +
+        formatted.start +
+        ' at ' +
+        shift_location +
+        ' has been covered by ' +
+        combineFirstLastName(cover_user_firstname, cover_user_lastname);
+
+    return {
+        push: createNotification(
+            {test: 'test'},
+            'APPROVED',
+            message,
+            'body android only',
+            3,
+            3,
+            'manageShift',
+            'manageShift',
+            {
+                shift_id: shift_id
+            }
+        )
+    };
+}
+
+function newShiftApplicationAutoApproved(
+    shift_location,
+    shift_sublocation,
+    shift_start,
+    shift_end,
+    timezone,
+    shift_id
+) {
+    return newShiftApplicationApproved(
+        shift_location,
+        shift_sublocation,
+        shift_start,
+        shift_end,
+        timezone,
+        shift_id
+    );
+}
+
+function newShiftApplicationApproved(
+    shift_location,
+    shift_sublocation,
+    shift_start,
+    shift_end,
+    timezone,
+    shift_id
+) {
+    var formatted = formatTimeDateLocationsForNotifications(shift_location, shift_sublocation, shift_start, shift_end, timezone);
+
+    // "Thanks, for being awesome! You have been approved to cover a shift at [location] for [x]hrs starting at [time] on [date]."
+    var message =
+        'Thanks, for being awesome! You have been approved to cover a shift at ' +
+        shift_location +
+        ' for ' +
+        formatted.length +
+        ' starting at ' +
+        formatted.start +
+        ' on ' +
+        formatted.date;
+
+    return {
+        push: createNotification(
+            {test: 'test'},
+            'APPROVED',
+            message,
+            'body android only',
+            3,
+            3,
+            'manageShift',
+            'manageShift',
+            {
+                shift_id: shift_id
+            }
+        )
+    };
+}
+
+function newShiftCancellationNoticeToCreator(
+    job_title,
+    shift_location,
+    shift_sublocation,
+    shift_start,
+    shift_end,
+    shift_count,
+    timezone,
+    shift_id,
+    calledout_user_firstname,
+    calledout_user_lastname
+) {
+    var formatted = formatTimeDateLocationsForNotifications(shift_location, shift_sublocation, shift_start, shift_end, timezone);
+
+    // “Unfortunately, your coverage can no longer fill in on [date] at [time] and the shift been resent to the shift request queue.
+
+    var message =
+        'Unfortunately, your coverage can no longer fill in on ' +
+        formatted.date +
+        ' at ' +
+        formatted.start +
+        ' and the shift has been resent to the shift request queue.';
+
+    return {
+        push: createNotification(
+            {test: 'test'},
+            'APPROVED',
+            message,
+            'body android only',
+            3,
+            3,
+            'manageShift',
+            'manageShift',
+            {
+                shift_id: shift_id
+            }
+        )
+    };
+}
+
+function newShiftCancellationNoticeToManager(
+    job_title,
+    shift_location,
+    shift_sublocation,
+    shift_start,
+    shift_end,
+    shift_count,
+    timezone,
+    shift_id,
+    calledout_user_firstname,
+    calledout_user_lastname
+) {
+    var formatted = formatTimeDateLocationsForNotifications(shift_location, shift_sublocation, shift_start, shift_end, timezone);
+
+    // [Requesting User]’s shift on [date] at [time] at [store location] has been resent to the shift request queue as their coverage can no longer fill in
+    var message =
+        combineFirstLastName(calledout_user_firstname, calledout_user_lastname) +
+        "'s shift on " +
+        formatted.date +
+        ' at ' +
+        formatted.start +
+        ' at ' +
+        shift_location +
+        ' has been resent to the shift request queue as their coverage can no longer fill in.';
+
+    return {
+        push: createNotification(
+            {test: 'test'},
+            'APPROVED',
+            message,
+            'body android only',
+            3,
+            3,
+            'manageShift',
+            'manageShift',
+            {
+                shift_id: shift_id
+            }
+        )
+    };
+}
+
+function newShiftApplicationApprovedToDeniedUsers(
+    shift_location,
+    shift_sublocation,
+    shift_start,
+    shift_end,
+    timezone,
+    shift_id
+) {
+    var formatted = formatTimeDateLocationsForNotifications(shift_location, shift_sublocation, shift_start, shift_end, timezone);
+
+    // “Sorry, but the shift at [location] for [x]hrs starting at [time] on [date] has been given to another user.”
+    var message =
+        'Sorry, but the shift at ' +
+        shift_location +
+        ' for ' +
+        formatted.length +
+        ' starting at ' +
+        formatted.start +
+        ' on ' +
+        formatted.date +
+        ' has been given to another user.';
+
+    return {
+        push: createNotification(
+            {test: 'test'},
+            'DENIED',
+            message,
+            'body android only',
+            3,
+            3,
+            'manageShift',
+            'manageShift',
+            {
+                shift_id: shift_id
+            }
+        )
+    };
+}
+
 module.exports = {
     newShiftApplication: newShiftApplication,
     acceptOrDeniedShiftApplication: acceptOrDeniedShiftApplication,
@@ -738,6 +1003,22 @@ module.exports = {
     newShiftNoUsersNoInterestedManagerToCreator: newShiftNoUsersNoInterestedManagerToCreator,
     // 9a
     newShiftNoUsersNoManagersToCreator: newShiftNoUsersNoManagersToCreator,
+    // 10a
+    newShiftApplicationApprovedToInterestedUsers: newShiftApplicationApprovedToInterestedUsers,
+    // 10b
+    newShiftApplicationApprovedToManagers: newShiftApplicationApprovedToManagers,
+    // 10c? same as 10b for now
+    newShiftApplicationAutoApprovedToManagers: newShiftApplicationApprovedToManagers,
+    // 11a
+    newShiftCancellationNoticeToCreator: newShiftCancellationNoticeToCreator,
+    // 11b
+    newShiftCancellationNoticeToManager: newShiftCancellationNoticeToManager,
+    // 13a
+    newShiftApplicationApproved: newShiftApplicationApproved,
+    // 13b? same as 13a for now
+    newShiftApplicationAutoApproved: newShiftApplicationAutoApproved,
+    // 14
+    newShiftApplicationApprovedToDeniedUsers: newShiftApplicationApprovedToDeniedUsers,
     invitedToGroup: function eventInvitedToGroup(user_ids, args) {
         // TODO: MODIFY THIS TO ACCEPT A TO EMAIL
         // send email and notification
