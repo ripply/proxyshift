@@ -1955,7 +1955,7 @@ function getApprovedDeniedUsersForShift(user_id, shift_id, sqlOptions, success, 
                 this.on('timezones.id', '=', 'shifts.timezone_id');
             })
             //.andWhere('shiftapplications.user_id', '=', req.user.id)
-            .orderBy('date', 'desc'); // desc so that always compares against latest one
+            .orderBy('shiftapplicationacceptdeclinereasons.date', 'desc'); // desc so that always compares against latest one
     })
         .fetchAll(sqlOptions)
         .tap(function getApprovedDeniedUsersForShiftSuccess(shiftapplications) {
