@@ -939,9 +939,9 @@ App.prototype.sendNotificationAboutAutoApprovedShift = function(
     success,
     error
 ) {
-    return sendNotificationAboutApprovedShift(
-        'newShiftApplicationAutoApproved',
-        'newShiftApplicationAutoApprovedToManagers',
+    return sendNotificationAboutApprovedShift.call(this,
+        this.newShiftApplicationAutoApproved,
+        this.newShiftApplicationAutoApprovedToManagers,
         user_id,
         shift_id,
         location_title,
@@ -965,9 +965,9 @@ App.prototype.sendNotificationAboutApprovedShift = function(
     success,
     error
 ) {
-    return sendNotificationAboutApprovedShift(
-        'newShiftApplicationApproved',
-        'newShiftApplicationApprovedToManagers',
+    return sendNotificationAboutApprovedShift.call(this,
+        this.newShiftApplicationApproved,
+        this.newShiftApplicationApprovedToManagers,
         user_id,
         shift_id,
         location_title,
@@ -981,8 +981,8 @@ App.prototype.sendNotificationAboutApprovedShift = function(
 };
 
 function sendNotificationAboutApprovedShift(
-    user_message,
-    message,
+    userMessage,
+    managerMessage,
     user_id,
     shift_id,
     location_title,
@@ -1001,7 +1001,7 @@ function sendNotificationAboutApprovedShift(
     var failedToSendToUsers = undefined;
     this.sendToUsers(
         user_id,
-        this[user_message](
+        userMessage(
             location_title,
             sublocation_title,
             shift_start,
@@ -1030,7 +1030,7 @@ function sendNotificationAboutApprovedShift(
             _.each(interestedManagers.groupedShifts, function (groupedShift) {
                 self.sendToUsers(
                     interestedManagers.user_ids,
-                    self[message](
+                    managerMessage(
                         interestedManagers.groupuserclass_title,
                         interestedManagers.location_name,
                         interestedManagers.sublocation_name,
@@ -1919,7 +1919,7 @@ const approvedDeniedUsersShiftInfoKeys = [
 ];
 
 function getApprovedDeniedUsersForShift(user_id, shift_id, sqlOptions, success, error) {
-    return models.ShiftApplication.query(function(q) {
+    return models.Shift.query(function(q) {
         q.select([
             'shiftapplications.id as shiftapplication_id',
             'shiftapplications.user_id as shiftapplicant',
@@ -1936,26 +1936,26 @@ function getApprovedDeniedUsersForShift(user_id, shift_id, sqlOptions, success, 
             'timezones.name as shift_timezone',
             'shifts.user_id as shiftcreator_userid'
         ])
-            .from('shiftapplications')
-            .where('shiftapplications.shift_id', '=', shift_id)
+            .from('shifts')
+            .leftJoin('shiftapplications', function() {
+                this.on('shiftapplications.shift_id', '=', 'shifts.id');
+            })
             .leftJoin('shiftapplicationacceptdeclinereasons', function() {
                 this.on('shiftapplicationacceptdeclinereasons.shiftapplication_id', '=', 'shiftapplications.id');
-            })
-            .innerJoin('shifts', function() {
-                this.on('shifts.id', '=', 'shiftapplications.shift_id');
-            })
-            .leftJoin('locations', function() {
-                this.on('locations.id', '=', 'shifts.location_id');
             })
             .leftJoin('sublocations', function() {
                 this.on('sublocations.id', '=', 'shifts.sublocation_id')
                     .orOn('sublocations.id', '=', 'shifts.location_id');
             })
+            .leftJoin('locations', function() {
+                this.on('locations.id', '=', 'shifts.location_id')
+                    .orOn('sublocations.location_id', '=', 'locations.id');
+            })
             .leftJoin('timezones', function() {
                 this.on('timezones.id', '=', 'shifts.timezone_id');
             })
-            //.andWhere('shiftapplications.user_id', '=', req.user.id)
-            .orderBy('shiftapplicationacceptdeclinereasons.date', 'desc'); // desc so that always compares against latest one
+            .where('shiftapplications.shift_id', '=', shift_id)
+            .orderBy('acceptdecline_date', 'desc'); // desc so that always compares against latest one
     })
         .fetchAll(sqlOptions)
         .tap(function getApprovedDeniedUsersForShiftSuccess(shiftapplications) {
@@ -1964,7 +1964,7 @@ function getApprovedDeniedUsersForShift(user_id, shift_id, sqlOptions, success, 
                 var userHasOutstandingApplication = false;
                 var shiftApplicants = {};
                 var approvedApplicant;
-                var approvedApplicationApplicationId;
+                var approvedApplicantApplicationId;
                 // iterate through the list of applications
                 // figure out if someone has been approved for the shift
                 // the first non recinded, accepted shift is the approved one
@@ -1973,6 +1973,7 @@ function getApprovedDeniedUsersForShift(user_id, shift_id, sqlOptions, success, 
                 var otherUsersHaveAppliedBeforeUser = false;
                 var shiftInfoFilled = false;
                 var shiftInfo;
+                console.log(shiftapplicationsJson);
                 for (var i = 0; i < shiftapplicationsJson.length; i++) {
                     var shiftapplication = shiftapplicationsJson[i];
                     if (!shiftInfoFilled) {
@@ -1984,7 +1985,7 @@ function getApprovedDeniedUsersForShift(user_id, shift_id, sqlOptions, success, 
                         var applicant = shiftapplication.shiftapplicant;
                         if (approvedApplicant === undefined && shiftapplication.accept) {
                             approvedApplicant = applicant;
-                            approvedApplicationApplicationId = shiftapplication.shiftapplication_id;
+                            approvedApplicantApplicationId = shiftapplication.shiftapplication_id;
                         } else {
                             shiftApplicants[applicant] = shiftapplication.shiftapplication_id;
                         }
@@ -2016,10 +2017,14 @@ function getApprovedDeniedUsersForShift(user_id, shift_id, sqlOptions, success, 
                     }
                 }
 
+                if (shiftapplicationsJson.length == 0) {
+                    slack.error(undefined, 'Approved/Denied users for shift: ' + shift_id + ' end up returning zero results, this will cause a crash.');
+                }
+
                 return success(
                     true,
                     approvedApplicant,
-                    approvedApplicationApplicationId,
+                    approvedApplicantApplicationId,
                     shiftApplicants,
                     userHasOutstandingApplication,
                     otherUsersHaveAppliedBeforeUser,
