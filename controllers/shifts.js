@@ -1779,8 +1779,7 @@ function acceptOrDeclineShiftApplication(req, res, accept) {
                             transacting: t
                         })
                         .then(function(model) {
-                            appLogic.fireEvent(
-                                'shiftApplicationApprovalOrDenial',
+                            appLogic.shiftApplicationApprovalOrDenial(
                                 req.params.shift_id,
                                 model.get('id'),
                                 accept

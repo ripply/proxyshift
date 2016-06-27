@@ -1059,8 +1059,16 @@ module.exports = {
             });
         }
     },
-    shiftApplicationApprovalOrDenial: function shiftApplicationApproved(shiftapplicationacceptdeclinereason_id) {
-        return this.sendShiftApplicationApprovalDenial(shiftapplicationacceptdeclinereason_id);
+    shiftApplicationApprovalOrDenial: function shiftApplicationApproved(
+        shift_id,
+        shiftapplicationacceptdeclinereason_id,
+        accepted
+    ) {
+        return this.sendShiftApplicationApprovalDenial(
+            shift_id,
+            shiftapplicationacceptdeclinereason_id,
+            accepted
+        );
     },
     passwordReset: function passwordReset(user_ids, args) {
         args.link = this.createTokenUrl("/passwordreset", args.token);
