@@ -1772,7 +1772,8 @@ function acceptOrDeclineShiftApplication(req, res, accept) {
                         accept: accept,
                         user_id: req.user.id,
                         date: getCurrentTimeForInsertionIntoDatabase(),
-                        reason: reason
+                        reason: reason,
+                        autoaccepted: false
                     })
                         .save(null, {
                             transacting: t
