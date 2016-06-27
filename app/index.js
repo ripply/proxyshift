@@ -1023,10 +1023,12 @@ function sendNotificationAboutApprovedShift(
 
     var self = this;
     var sqlOptions = {};
+    console.log('getting users managing the shift');
     return getUsersManagingAShiftAndShiftInformation(
         [shift_id],
         sqlOptions,
         function gotManagersForANewShift(interestedManagers) {
+            console.log('got managers!');
             _.each(interestedManagers.groupedShifts, function (groupedShift) {
                 self.sendToUsers(
                     interestedManagers.user_ids,
@@ -1053,8 +1055,9 @@ function sendNotificationAboutApprovedShift(
             });
         },
         function failedToGetManagersForAutoApprovedShift(err) {
+            console.log('failed to get managers');
             if (error) {
-                error(err);
+                return error(err);
             }
         }
     );
