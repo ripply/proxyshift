@@ -638,13 +638,13 @@ App.prototype.shiftApplicationApprovedOrDenied = function shiftApplicationApprov
                     }
                     if (approvalOrDenial.shift_accepted) {
                         // approved
-                        approved = approvalOrDenial.toJSON();
+                        approved = approvalOrDenial;
                     } else if (approvalOrDenial.shift_accepted == false) {
                         // denied
                         denied[approvalOrDenial.applicant_userid] = approvalOrDenial;
                     } else {
                         // neither
-                        neitherApprovedOrDenied[approvalOrDenial.applicant_userid] = approvalOrDenial
+                        neitherApprovedOrDenied[approvalOrDenial.applicant_userid] = approvalOrDenial;
                     }
                 });
 
