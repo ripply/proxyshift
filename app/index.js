@@ -613,6 +613,7 @@ App.prototype.shiftApplicationApprovedOrDenied = function shiftApplicationApprov
                 var data;
                 var alreadyAccepted = false;
                 var approvalOrDenialsJson = approvalOrDenials.toJSON();
+                console.log(approvalOrDenialsJson);
                 _.each(approvalOrDenialsJson, function shiftApplicationApprovedOrDeniedForEach(approvalOrDenial) {
                     if (data === undefined &&
                         // this is the approval/denial that was just done
