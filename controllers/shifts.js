@@ -465,7 +465,8 @@ module.exports = {
                                                     // there will be no declined users because this was an auto accepted shift
                                                     console.log("SHIFTINFO:::");
                                                     console.log(shiftInfo);
-                                                    return appLogic.sendNotificationAboutAutoApprovedShift(
+                                                    clientCreate(req, res, 201, model.get('id'));
+                                                    appLogic.sendNotificationAboutAutoApprovedShift(
                                                         req.user.id,
                                                         req.params.shift_id,
                                                         shiftInfo.location_title,
@@ -474,11 +475,10 @@ module.exports = {
                                                         shiftInfo.shift_end,
                                                         shiftInfo.shift_timezone,
                                                         function createShiftApplicationAutoAcceptSendNotificationSuccess() {
-                                                            clientCreate(req, res, 201, model.get('id'));
+
                                                         },
                                                         function createShiftApplicationAutoAcceptSendNotificationError(err) {
                                                             // TODO: HOW TO NOTIFY USER THAT NOTIFICATIONS FAILED?
-                                                            clientCreate(req, res, 201, model.get('id'));
                                                         }
                                                     );
                                                 });
