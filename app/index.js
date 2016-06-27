@@ -612,7 +612,8 @@ App.prototype.shiftApplicationApprovedOrDenied = function shiftApplicationApprov
                 var neitherApprovedOrDenied = {};
                 var data;
                 var alreadyAccepted = false;
-                approvalOrDenials.each(function shiftApplicationApprovedOrDeniedForEach(approvalOrDenial) {
+                var approvalOrDenialsJson = approvalOrDenials.toJSON();
+                _.each(approvalOrDenialsJson, function shiftApplicationApprovedOrDeniedForEach(approvalOrDenial) {
                     if (data === undefined &&
                         // this is the approval/denial that was just done
                         // grab data from it for sending personalized message to user
