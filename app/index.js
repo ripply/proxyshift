@@ -620,7 +620,7 @@ App.prototype.shiftApplicationApprovedOrDenied = function shiftApplicationApprov
                         // grab data from it for sending personalized message to user
                         approvalOrDenial.approved_denied_id == shiftapplicationacceptdeclinereason_id
                     ) {
-                        data = approvalOrDenial.toJSON();
+                        data = approvalOrDenial;
                     }
                     if (approvalOrDenial.approved_denied_id != shiftapplicationacceptdeclinereason_id &&
                         approvalOrDenial.recinded &&
