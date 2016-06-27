@@ -620,7 +620,13 @@ App.prototype.shiftApplicationApprovedOrDenied = function shiftApplicationApprov
                         // grab data from it for sending personalized message to user
                         approvalOrDenial.approved_denied_id == shiftapplicationacceptdeclinereason_id
                     ) {
+                        console.log("YEP");
                         data = approvalOrDenial;
+                    } else {
+                        console.log('NOPE');
+                        console.log(approvalOrDenial);
+                        console.log(shiftapplicationacceptdeclinereason_id);
+                        console.log(approvalOrDenial.approved_denied_id);
                     }
                     if (approvalOrDenial.approved_denied_id != shiftapplicationacceptdeclinereason_id &&
                         approvalOrDenial.recinded &&
@@ -647,6 +653,18 @@ App.prototype.shiftApplicationApprovedOrDenied = function shiftApplicationApprov
                         neitherApprovedOrDenied[approvalOrDenial.applicant_userid] = approvalOrDenial;
                     }
                 });
+
+                if (!data) {
+                    slack.error(
+                        undefined,
+                        'Failed to get shiftapplicationacceptdenial with id ' +
+                        shiftapplicationacceptdeclinereason_id +
+                        ' and shift_id: ' +
+                        shift_id +
+                        ' where approved = ' +
+                        approved
+                    );
+                }
 
                 if (approved) {
                     // this shift was approved
