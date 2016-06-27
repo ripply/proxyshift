@@ -604,7 +604,7 @@ App.prototype.shiftApplicationApprovedOrDenied = function shiftApplicationApprov
             .orderBy('shiftapplicationacceptdeclinereasons.date', 'desc'); // desc so that always compares against latest one
             //.where('shiftapplicationacceptdeclinereasons.id', '=', shiftapplicationacceptdeclinereason_id)
     })
-        .fetch()
+        .fetchAll()
         .tap(function shiftApplicationApprovedOrDeniedSuccess(approvalOrDenials) {
             if (approvalOrDenials) {
                 var approved;
