@@ -1023,39 +1023,61 @@ function sendNotificationAboutApprovedShift(
 
     var self = this;
     var sqlOptions = {};
-    console.log('getting users managing the shift');
     return getUsersManagingAShiftAndShiftInformation(
         [shift_id],
         sqlOptions,
         function gotManagersForANewShift(interestedManagers) {
-            console.log('got managers!');
-            _.each(interestedManagers.groupedShifts, function (groupedShift) {
-                self.sendToUsers(
-                    interestedManagers.user_ids,
-                    managerMessage(
-                        interestedManagers.groupuserclass_title,
-                        interestedManagers.location_name,
-                        interestedManagers.sublocation_name,
-                        groupedShift.start,
-                        groupedShift.end,
-                        Object.keys(groupedShift.ids).length,
-                        interestedManagers.timezone,
-                        interestedManagers.shift_ids,
-                        interestedManagers.shiftcreator_firstname,
-                        interestedManagers.shiftcreator_lastname
-                    ),
-                    interestedManagers.args,
-                    undefined,
-                    function failedToSendManagersNewShiftNotificationsAfterSendingUserNotification(err) {
-                        slack.error(undefined, 'Failed to send new shift notifications to managers', err);
-                        success = false;
-                        return error(err);
+            return models.User.query(function(q) {
+                q.select([
+                    'firstname',
+                    'lastname'
+                ])
+                    .from('users')
+                    .where('id', '=', user_id);
+            })
+                .fetch(sqlOptions)
+                .tap(function createShiftApplicationGetUserInfo(user) {
+                    var firstname = 'UNKNOWN';
+                    var lastname;
+                    if (user) {
+                        firstname = user.get('firstname');
+                        lastname = user.get('lastname');
                     }
-                );
-            });
+
+                    _.each(interestedManagers.groupedShifts, function (groupedShift) {
+                        if (!interestedManagers.shiftcreator_firstname ||
+                            !interestedManagers.shiftcreator_firstname) {
+                            interestedManagers.shiftcreator_firstname = 'UNKNOWN';
+                            interestedManagers.shiftcreator_lastname = undefined;
+                        }
+                        self.sendToUsers(
+                            interestedManagers.user_ids,
+                            managerMessage(
+                                interestedManagers.groupuserclass_title,
+                                interestedManagers.location_name,
+                                interestedManagers.sublocation_name,
+                                groupedShift.start,
+                                groupedShift.end,
+                                Object.keys(groupedShift.ids).length,
+                                interestedManagers.timezone,
+                                interestedManagers.shift_ids,
+                                interestedManagers.shiftcreator_firstname,
+                                interestedManagers.shiftcreator_lastname,
+                                firstname,
+                                lastname
+                            ),
+                            interestedManagers.args,
+                            undefined,
+                            function failedToSendManagersNewShiftNotificationsAfterSendingUserNotification(err) {
+                                slack.error(undefined, 'Failed to send new shift notifications to managers', err);
+                                success = false;
+                                return error(err);
+                            }
+                        );
+                    });
+                });
         },
         function failedToGetManagersForAutoApprovedShift(err) {
-            console.log('failed to get managers');
             if (error) {
                 return error(err);
             }

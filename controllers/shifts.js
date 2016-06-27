@@ -412,35 +412,29 @@ module.exports = {
                                                                        otherUsersHaveAppliedBeforeUser,
                                                                        shiftInfo
                         ) {
-                            console.log('got approved denied users for shift');
                             if (shiftApplicants.hasOwnProperty(req.user.id)) {
                                 // already exists
-                                console.log('already exists...');
                                 return clientCreate(req, res, 200, shiftApplicants[req.user.id]);
                             }
                             if (shiftInfo.requiremanagerapproval) {
                                 // apply for shift
                                 // does not exist
                                 // create it!
-                                console.log('requiers manager approval');
                                 return createShiftApplication(false);
                             } else {
                                 // user does not need manager approval to apply for the shift
                                 if (otherUsersHaveAppliedBeforeUser) {
                                     // other users have already applied and have not recinded their shift...
                                     // we need to create an application but not automatically approve it
-                                    console.log('3');
                                     return createShiftApplication(false);
                                 } else {
                                     // no other users have applied, create this users shift application and approve it!
-                                    console.log('4');
                                     return createShiftApplication(true);
                                 }
                             }
 
                             function createShiftApplication(autoaccept) {
                                 var shiftApplicationTime = getCurrentTimeForInsertionIntoDatabase();
-                                console.log('5');
                                 return models.ShiftApplication.forge({
                                     shift_id: req.params.shift_id,
                                     user_id: req.user.id,
@@ -449,7 +443,6 @@ module.exports = {
                                 })
                                     .save(null, sqlOptions)
                                     .tap(function createShiftApplicationSuccess(model) {
-                                        console.log('6');
                                         if (autoaccept) {
                                             return models.ShiftApplicationAcceptDeclineReason.forge({
                                                 accept: true,

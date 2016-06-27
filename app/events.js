@@ -153,6 +153,10 @@ function formatTimeDateLocationsForNotifications(shift_location, shift_sublocati
 }
 
 function combineFirstLastName(first, last) {
+    if (!first || !last) {
+        slack.alert('combineFirstLastName(' + first + ', ' + last + ')');
+        return 'UNKNOWN';
+    }
     return first + ' ' + last;
 }
 
