@@ -1915,7 +1915,8 @@ const approvedDeniedUsersShiftInfoKeys = [
     'shift_start',
     'shift_end',
     'shift_timezone',
-    'shiftcreator_userid'
+    'shiftcreator_userid',
+    'requiremanagerapproval'
 ];
 
 function getApprovedDeniedUsersForShift(user_id, shift_id, sqlOptions, success, error) {
@@ -1928,6 +1929,7 @@ function getApprovedDeniedUsersForShift(user_id, shift_id, sqlOptions, success, 
             'shiftapplicationacceptdeclinereasons.accept as accept',
             'shiftapplicationacceptdeclinereasons.autoaccepted as autoaccepted',
             'shiftapplicationacceptdeclinereasons.date as acceptdecline_date',
+            'groupuserclasses.requiremanagerapproval as requiremanagerapproval',
 
             'locations.title as location_title',
             'sublocations.title as sublocation_title',
@@ -1937,6 +1939,9 @@ function getApprovedDeniedUsersForShift(user_id, shift_id, sqlOptions, success, 
             'shifts.user_id as shiftcreator_userid'
         ])
             .from('shifts')
+            .leftJoin('groupuserclasses', function() {
+                this.on('groupuserclasses.id', '=', 'shifts.groupuserclass_id');
+            })
             .leftJoin('shiftapplications', function() {
                 this.on('shiftapplications.shift_id', '=', 'shifts.id');
             })
@@ -1973,7 +1978,6 @@ function getApprovedDeniedUsersForShift(user_id, shift_id, sqlOptions, success, 
                 var otherUsersHaveAppliedBeforeUser = false;
                 var shiftInfoFilled = false;
                 var shiftInfo;
-                console.log(shiftapplicationsJson);
                 for (var i = 0; i < shiftapplicationsJson.length; i++) {
                     var shiftapplication = shiftapplicationsJson[i];
                     if (!shiftInfoFilled) {

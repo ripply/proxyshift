@@ -428,7 +428,8 @@ var Schema = {
         requiremanagerapproval: {
             type: boolean,
             defaultTo: true,
-            nullable: false
+            nullable: false,
+            comment: 'Indicates whether this job type requires manager approval'
         },
         grouppermission_id: {
             type: integer,
@@ -436,7 +437,8 @@ var Schema = {
             inTable: 'grouppermissions',
             onDelete: cascade,
             onUpdate: cascade,
-            nullable: false
+            nullable: false,
+            comment: 'How privileged is this job type'
         }
     },
     GroupInvitation: {

@@ -297,7 +297,7 @@ module.exports = {
             })
                 .fetch()
                 .then(function(groupuserclass) {
-                    if (!groupuserclass) {
+                    if (groupuserclass) {
                         setMark(req, 'shift.cansendnotification', groupuserclass.get('cansendnotification'), shift_id);
                         setMark(req, 'shift.requiremanagerapproval', groupuserclass.get('requiermanagerapproval'), shift_id);
                         return true;

@@ -375,7 +375,7 @@ module.exports = {
     },
     '/:shift_id/register': {
         'post': {
-            auth: ['mark groupuserclass options for shift', 'user can apply for shift'],
+            auth: ['user can apply for shift'],
             route: function(req, res) {
                 // confirm that user can register for this shift
                 // and shift has no user attached
@@ -383,9 +383,6 @@ module.exports = {
                 // add to list
                 // then send notification to managers
                 // we should receive a notification when a manager approves
-                var canSendNotifications = getMark(req, 'shift.cansendnotification', req.params.shift_id);
-                var requiremanagerapproval = getMark(req, 'shift.requiremanagerapproval', req.params.shift_id);
-                clearMarks(req);
 
                 // check that the user has not already applied for shift
                 // then:
@@ -418,7 +415,7 @@ module.exports = {
                                 // already exists
                                 return clientCreate(req, res, 200, shiftApplicants[req.user.id]);
                             }
-                            if (requiremanagerapproval) {
+                            if (shiftInfo.requiremanagerapproval) {
                                 // apply for shift
                                 // does not exist
                                 // create it!
