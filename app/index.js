@@ -515,6 +515,7 @@ App.prototype.sendShiftApplicationApprovalDenial = function sendShiftApplication
 App.prototype.handleShiftApplicationApprovalDenial = function handleShiftApplicationApprovalDenial(job) {
     console.log("GOT SHIFT APPLICATION APPROVAL DENIAL JOB");
     var body = job.body;
+    console.log(body);
     // setup
     this.shiftApplicationApprovedOrDenied(
         body.shift_id,
