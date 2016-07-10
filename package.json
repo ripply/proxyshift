@@ -8,10 +8,11 @@
     "url": "https://ripply@bitbucket.org/teamevolution/schedulingapp.git"
   },
   "engines": {
-    "node": "0.10.x"
+    "node": "~4.2"
   },
   "scripts": {
-    "start": "node server/server.js",
+    "start": "node ./server.js",
+    "deploy": "gcloud app deploy",
     "test": "./node_modules/.bin/mocha -R xunit --recursive spec/spechelper.js \"spec/**/*.test.js\" | awk 'BEGIN{found=0} /testsuite/{found=1} {if (found) print}' > test-reports.xml"
   },
   "dependencies": {

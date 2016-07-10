@@ -48,6 +48,10 @@ module.exports = function(app, settings){
         console.log("Sent 200 response");
     });
 
+    app.get('/api/ping', function(req, res, next) {
+        res.sendStatus(200);
+    });
+
     // return current server time in utc
     app.get('/api/utc', function(req, res, next) {
         res.status(200).send('' + time.nowInUtc());
