@@ -696,7 +696,13 @@ var Schema = {
         },
         accept: {
             type: boolean,
-            nullable: false
+            nullable: false,
+            comment: 'Is the shift application approved'
+        },
+        autoaccepted: {
+            type: boolean,
+            nullable: false,
+            comment: 'System auto approved the shift because at time of creation, it did not require manager approval'
         },
         shiftapplication_id: {
             type: integer,
@@ -708,15 +714,19 @@ var Schema = {
             type: integer,
             references: 'id',
             inTable: 'users',
-            onDelete: cascade
+            onDelete: cascade,
+            nullable: true,
+            comment: 'User who made the approval, it will be null if the system auto approved it'
         },
         date: {
             type: date,
-            nullable: false
+            nullable: false,
+            comment: 'Date the approval/denial was made'
         },
         reason: {
             type: string,
-            nullable: true
+            nullable: true,
+            comment: 'Reasons for denial of the shift application'
         }
     },
     IgnoreShift: {

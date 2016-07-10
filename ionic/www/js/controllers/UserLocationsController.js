@@ -25,6 +25,8 @@ angular.module('scheduling-app.controllers')
                  STATES) {
             $controller('BaseModelController', {$scope: $scope});
 
+            $scope.getGroupId = getGroupId;
+
             function getGroupId() {
                 return $stateParams.group_id;
             }

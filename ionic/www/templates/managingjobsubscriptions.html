@@ -2,7 +2,10 @@
     <ion-content class="has-header" hide-back-button="false">
         <div class="list">
             <div class="item item-divider">
-                Locations
+                My Jobs
+            </div>
+            <div class="item item-divider" ng-if="!isPrivilegedGroupMember()">
+                Don't see your job type? Contact your manager or IT department.
             </div>
             <div class="item-indent">
                 <div class="list list-inset centered-input">
@@ -11,11 +14,12 @@
                         <input type="text" ng-model="query" ng-style="{'width' : '100%'}"
                                placeholder="Search by address, city, state, zipcode or phone">
                     </label>
-                    <ion-toggle ng-repeat="location in locations | filter:query"
-                                ng-model="location.subscribed"
-                                ng-click="saveLocations()"
-                                ng-checked="location.subscribed">
-                        {{ location.title }} - {{ location.address }}
+                    <ion-toggle ng-repeat="userClass in userClasses | filter:query"
+                                ng-model="userClass.subscribed"
+                                ng-disabled="userClass.persisting"
+                                ng-click="saveJob()"
+                                ng-checked="isJob(userClass)">
+                        {{ userClass.title }} - {{ userClass.description }}
                     </ion-toggle>
                 </div>
             </div>

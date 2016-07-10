@@ -44,6 +44,12 @@
                 <ion-item href="#/settings/group/{{group_id}}/jobs" class="item-remove-animate">
                     My Job Title
                 </ion-item>
+                <ion-item
+                    ng-if="isPrivilegedGroupMember()"
+                    ui-sref="settings.group.locations.managing({group_id: group_id})"
+                    class="item-remove-animate">
+                    Managing Jobs
+                </ion-item>
             </div>
         </div>
     </ion-content>

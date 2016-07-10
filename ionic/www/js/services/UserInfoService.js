@@ -51,14 +51,16 @@ angular.module('scheduling-app.services')
                 return allUserclasses[groupuserclass_id];
             };
 
-            this.getUserclassesFromGroup = function(group_id) {
-                var group = this.getGroup(group_id);
+            this.getUserclassesFromGroup = getUserclassesFromGroup;
+
+            function getUserclassesFromGroup(group_id) {
+                var group = getGroup(group_id);
                 if (group) {
                     return group.userClasses;
                 }
-            };
+            }
 
-            this.getGroupPermissionById = getGroupPermissionById
+            this.getGroupPermissionById = getGroupPermissionById;
 
             function getGroupPermissionById(grouppermission_id) {
                 var groupPermissions = $rootScope.userinfo.allGroupPermissions;
@@ -69,6 +71,30 @@ angular.module('scheduling-app.services')
                     }
                 }
             }
+
+            this.getManagingUserclassesForLocation = function(location_id) {
+                var group_id = getGroupIdForLocation(location_id);
+                var groupUserclasses = getUserclassesFromGroup(group_id);
+                var managingclassesForGroup = {};
+                angular.forEach(groupUserclasses, function(groupuserclass) {
+                    if (managingclasses.hasOwnProperty(groupuserclass.id)) {
+                        managingclassesForGroup[groupuserclass.id] = groupuserclass;
+                    }
+                });
+                return managingclassesForGroup;
+            };
+
+            this.addManagingUserclassToGroup = function(userclass_id) {
+                if (userclasses.hasOwnProperty(userclass_id)) {
+                    managingclasses[userclass_id] = userclasses[userclass_id];
+                }
+            };
+
+            this.removeManagingUserclassToGroup = function(userclass_id) {
+                if (managingclasses.hasOwnProperty(userclass_id)) {
+                    delete managingclasses[userclass_id];
+                }
+            };
 
             this.getSubscribableUserclassesFromGroup = function(group_id) {
                 var userclasses = this.getUserclassesFromGroup(group_id);
@@ -206,14 +232,16 @@ angular.module('scheduling-app.services')
                 }
             };
 
-            this.getGroup = function getGroup(group_id) {
+            this.getGroup = getGroup;
+
+            function getGroup(group_id) {
                 if (group_id === undefined || group_id === null) {
                     return undefined;
                 }
                 if (groups.hasOwnProperty(group_id)) {
                     return groups[group_id];
                 }
-            };
+            }
 
             this.getSublocation = function getSublocation(sublocation_id) {
                 if (sublocation_id === undefined || sublocation_id === null) {
@@ -272,9 +300,13 @@ angular.module('scheduling-app.services')
             var areas = {};
             var userclasses = {};
             var allUserclasses = {};
+            var managingclasses = {};
 
             this.updateUserInfo = function updateUserInfo() {
                 var userinfo = $rootScope.userinfo;
+                angular.forEach(managingclasses, function(value, key) {
+                    delete managingclasses[key];
+                });
 
                 // empty groups/locations/areas maps
                 angular.forEach([
@@ -376,6 +408,27 @@ angular.module('scheduling-app.services')
                                         allUserclasses[groupUserclass.id] = angular.copy(groupUserclass);
                                     }
                                 })
+                            }
+                            if (value.hasOwnProperty('managingclassesatlocation')) {
+                                angular.forEach(value.managingclassesatlocation, function(managingclassatlocation) {
+                                    if (!managingclasses.hasOwnProperty(managingclassatlocation.id)) {
+                                        managingclasses[managingclassatlocation.id] = angular.clone(managingclassatlocation);
+                                    }
+                                });
+                            }
+                        });
+                    });
+                    angular.forEach([
+                        'memberOfLocations',
+                        'privilegedMemberOfLocations'
+                    ], function(sourceAttribute) {
+                        angular.forEach(userinfo[sourceAttribute], function(value, key) {
+                            if (value.hasOwnProperty('managingclassesatlocations')) {
+                                angular.forEach(value.managingclassesatlocations, function(managingclassatlocation) {
+                                    if (!managingclasses.hasOwnProperty(managingclassatlocation.groupuserclass_id)) {
+                                        managingclasses[managingclassatlocation.groupuserclass_id] = angular.copy(managingclassatlocation);
+                                    }
+                                });
                             }
                         });
                     });

@@ -643,6 +643,32 @@ angular.module('scheduling-app', [
                     }
                 })
 
+                .state('settings.group.locations.managing', {
+                    url: "/managing",
+                    views: {
+                        'locationContent': {
+                            templateUrl: "templates/managablelocations.html",
+                            controller: 'UserLocationsController'
+                        }
+                    },
+                    resolve: {
+                        //TODO: Check /userinfo
+                    }
+                })
+
+                .state('settings.group.locations.managingsubscriptions', {
+                    url: "/managingsubscriptions/:location_id",
+                    views: {
+                        'locationContent': {
+                            templateUrl: "templates/managingjobsubscriptions.html",
+                            controller: 'ManagingJobsController'
+                        }
+                    },
+                    resolve: {
+                        //TODO: Check /userinfo
+                    }
+                })
+
                 .state('settings.group.locations.subscriptions', {
                     url: "/subscription",
                     resolve: {

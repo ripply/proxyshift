@@ -372,6 +372,146 @@ module.exports = {
             }
         }
     },
+    '/:location_id/manage/:groupuserclass_id': {
+        'post': {
+            auth: ['group owner', 'or', 'privileged group member', 'or', 'privileged location member'],
+            route: function manageUserclassAtLocation(req, res) {
+                Bookshelf.transaction(function(t) {
+                    var sqlOptions = {
+                        transacting: t
+                    };
+                    return models.ManagingClassesAtLocation.query(function(q) {
+                        q.select([
+                            'managingclassesatlocations.id as id',
+                            'managingclassesatlocations.managing as managing'
+                        ])
+                            .from('managingclassesatlocations')
+                            .innerJoin('usergroups', function() {
+                                this.on('usergroups.id', '=', 'managingclassesatlocations.usergroup_id');
+                            })
+                            .where('usergroups.user_id', '=', req.user.id)
+                            .andWhere('managingclassesatlocations.location_id', '=', req.params.location_id)
+                            .andWhere('managingclassesatlocations.groupuserclass_id', '=', req.params.groupuserclass_id);
+                    })
+                        .fetch(sqlOptions)
+                        .tap(function(managingclassesatlocation) {
+                            if (managingclassesatlocation) {
+                                // row already exists
+                                if (managingclassesatlocation.get('managing')) {
+                                    // do nothing!
+                                    res.sendStatus(200);
+                                } else {
+                                    // not managing it, update
+                                    return models.ManagingClassesAtLocation.forge({
+                                        id: managingclassesatlocation.get('id')
+                                    })
+                                        .save({managing: true}, {patch: true, transacting: t})
+                                        .tap(function() {
+                                            res.sendStatus(201);
+                                        });
+                                }
+                            } else {
+                                // validate that the user has access to the groupuserclass_id
+                                // through a group
+                                return models.GroupUserClass.query(function(q) {
+                                    q.select([
+                                        'groups.id as group_id',
+                                        'usergroups.id as usergroup_id'
+                                    ])
+                                        .from('groupuserclasses')
+                                        // check that the user is attached to the group
+                                        .leftJoin('usergroups', function() {
+                                            this.on('usergroups.group_id', '=', 'groupuserclasses.group_id')
+                                                .andOn('usergroups.user_id', '=', req.user.id);
+                                        })
+                                        // or that the user owns that group
+                                        .joinRaw('left join groups on (groups.id = usergroups.group_id) or (groups.id = groupuserclasses.group_id and groups.id = ?)', [req.user.id])
+                                        .where('groupuserclasses.id', '=', req.params.groupuserclass_id);
+                                })
+                                    .fetch(sqlOptions)
+                                    .tap(function(groupid) {
+                                        if (groupid) {
+                                            if (groupid.get('usergroup_id')) {
+                                                // ok to create
+                                                return createManagingClassesAtLocation(groupid.get('usergroup_id'));
+                                            } else {
+                                                // have to link the user to the group, this is the group owner
+                                                return models.GroupPermission.query(function(q) {
+                                                    q.select([
+                                                        'grouppermissions.id as id'
+                                                    ])
+                                                        .from('grouppermissions')
+                                                        .where('grouppermissions.group_id', '=', groupid.get('group_id'))
+                                                        .orderBy('permissionlevel');
+                                                })
+                                                    .fetch({
+                                                        // there should be a grouppermission associated with the group
+                                                        require: true,
+                                                        transacting: t
+                                                    })
+                                                    .tap(function (highestGrouppermission) {
+                                                        return models.UserGroup.forge({
+                                                            user_id: req.user.id,
+                                                            grouppermission_id: highestGrouppermission.get('id'),
+                                                            group_id: groupid.get('id')
+                                                        })
+                                                            .save(undefined, sqlOptions)
+                                                            .tap(function(newUsergroup) {
+                                                                return createManagingClassesAtLocation(newUsergroup.get('id'));
+                                                            });
+                                                    });
+                                            }
+
+                                            function createManagingClassesAtLocation(usergroup_id) {
+                                                return postModel(
+                                                    'ManagingClassesAtLocation',
+                                                    {
+                                                        usergroup_id: usergroup_id,
+                                                        location_id: req.params.location_id,
+                                                        groupuserclass_id: req.params.groupuserclass_id,
+                                                        managing: true
+                                                    },
+                                                    req,
+                                                    res,
+                                                    undefined,
+                                                    sqlOptions
+                                                );
+                                            }
+                                        } else {
+                                            // not accessible
+                                            req.send(403);
+                                        }
+                                    });
+                            }
+                        });
+                })
+                    .catch(function(err) {
+                        error(req, res, err);
+                    });
+            }
+        },
+        'delete': {
+            auth: ['group owner', 'or', 'privileged group member', 'or', 'privileged location member'],
+            route: function dontManageUserclassAtLocation(req, res) {
+                models.ManagingClassesAtLocation.query(function(q) {
+                    q.select()
+                        .from('managingclassesatlocations')
+                        .innerJoin('usergroups', function() {
+                            this.on('usergroups.id', '=', 'managingclassesatlocation.usergroup_id')
+                                .andOn('usergroups.user_id', '=', req.user.id);
+                        })
+                        .where('managingclassesatlocations.groupuserclass_id', '=', req.params.groupuserclass_id);
+                })
+                    .destroy()
+                    .tap(function() {
+                        res.send(200);
+                    })
+                    .catch(function(err) {
+                        error(req, res, err);
+                    })
+            }
+        }
+    },
     '/search/start/:start/end/:end': {
         'get': {
             //auth: 'anyone',

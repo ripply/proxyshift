@@ -112,10 +112,11 @@ module.exports = {
 
             if (group_id !== undefined) {
                 return models.Group.query(function (q) {
-                    q.select('groups.*').innerJoin('usergroups', function () {
-                        this.on('groups.id', '=', 'usergroups.group_id')
-                            .andOn('groups.user_id', '=', user_id);
-                    })
+                    q.select('groups.*')
+                        .innerJoin('usergroups', function () {
+                            this.on('groups.id', '=', 'usergroups.group_id')
+                                .andOn('groups.user_id', '=', user_id);
+                        })
                         .where('groups.id', '=', group_id);
                 })
                     .fetch({require: true})
@@ -127,10 +128,11 @@ module.exports = {
                     });
             } else if (location_id !== undefined) {
                 return models.Group.query(function (q) {
-                    q.select('groups.*').innerJoin('locations', function () {
-                        this.on('groups.id', '=', 'locations.group_id')
-                            .andOn('locations.id', '=', location_id);
-                    })
+                    q.select('groups.*')
+                        .innerJoin('locations', function () {
+                            this.on('groups.id', '=', 'locations.group_id')
+                                .andOn('locations.id', '=', location_id);
+                        })
                         .where('groups.user_id', '=', user_id);
                 })
                     .fetch({require: true})
@@ -369,27 +371,28 @@ module.exports = {
 function hasGroupPermissionLevelReturnBoolean(permissionLevel, req, act) {
     // TODO: Combine group owner check
     var group_id = req.params.group_id;
+    var location_id = req.params.location_id;
     if (!req.user) {
         return false;
     }
     var user_id = req.user.id;
 
-    if (group_id === undefined) {
-        throw new Error("Group is not passed into route");
+    if (group_id === undefined && location_id === undefined) {
+        throw new Error("Group/Location is not passed into route");
     }
 
     if (user_id === undefined) {
         throw new Error("User id not passed into route");
     }
 
-    return hasGroupPermissionLevel(user_id, permissionLevel, undefined, function() {
+    return hasGroupPermissionLevel(user_id, permissionLevel, group_id, location_id, undefined, function() {
         return true;
     }, function() {
         return false;
     });
 }
 
-function hasGroupPermissionLevel(user_id, permissionLevel, sqlOptions, success, error) {
+function hasGroupPermissionLevel(user_id, permissionLevel, group_id, location_id, sqlOptions, success, error) {
     return models.UserGroup.query(function(q) {
         q.select('usergroups.*')
             .innerJoin('grouppermissions', function() {
@@ -397,6 +400,16 @@ function hasGroupPermissionLevel(user_id, permissionLevel, sqlOptions, success, 
                     .andOn('usergroups.user_id', '=', user_id);
             })
             .where('permissionlevel', '>=', permissionLevel);
+        if (group_id) {
+            q.andWhere('usergroups.group_id', '=', group_id);
+        } else if (location_id) {
+            q.innerJoin('locations', function() {
+                this.on('locations.group_id', '=', 'usergroups.group_id');
+            })
+                .where('locations.id', '=', location_id);
+        } else {
+            throw new Error('Pass in group_id or location_id');
+        }
     })
         .fetchAll(_.extend({
             require: true

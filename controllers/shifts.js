@@ -384,7 +384,7 @@ module.exports = {
                 // then send notification to managers
                 // we should receive a notification when a manager approves
                 var canSendNotifications = getMark(req, 'shift.cansendnotification', req.params.shift_id);
-                var requiremanagerapproval= getMark(req, 'shift.requiremanagerapproval', req.params.shift_id);
+                var requiremanagerapproval = getMark(req, 'shift.requiremanagerapproval', req.params.shift_id);
                 clearMarks(req);
 
                 // check that the user has not already applied for shift
@@ -396,122 +396,102 @@ module.exports = {
                 //  - only one person can apply for the shift?
                 //  - they can still apply to be next in line
 
-                return Bookshelf.transaction(function(t) {
-                    return models.ShiftApplication.query(function(q) {
-                        q.select()
-                            .from('shiftapplications')
-                            .where('shiftapplications.shift_id', '=', req.params.shift_id)
-                            .andWhere('shiftapplications.user_id', '=', req.user.id)
-                            .orderBy('date', 'desc'); // desc so that always compares against latest one
-                    })
-                        .fetchAll({
-                            transacting: t
-                        })
-                        .tap(function(shiftapplications) {
-                            if (shiftapplications) {
-                                var shiftapplicationsJson = shiftapplications.toJSON();
-                                var outstandingApplicationExists = false;
-                                for (var i = 0; i < shiftapplicationsJson.length; i++) {
-                                    var shiftapplication = shiftapplicationsJson[i];
-                                    if (!shiftapplication.recinded) {
-                                        outstandingApplicationExists = true;
-                                        break;
-                                    }
-                                }
-                                if (outstandingApplicationExists) {
-                                    // not recinded
-                                    // nothing to do as the user has already applied
-                                    clientCreate(req, res, 200, outstandingApplicationExists, shiftapplicationsJson.id);
-                                    return;
-                                } else {
-                                    // all shift applications have been recinded
-                                    // fallthrough to creating a new one that is not recinded
-                                }
-                            }
-
-                            function createShiftApplication() {
-                                return models.ShiftApplication.forge({
-                                    shift_id: req.params.shift_id,
-                                    user_id: req.user.id,
-                                    date: getCurrentTimeForInsertionIntoDatabase(),
-                                    recinded: false
-                                })
-                                    .save(null,
-                                    {
-                                        transacting: t
-                                    })
-                                    .tap(function (model) {
-                                        triggerShiftApplicationNotification(req.params.shift_id, model.get('id'));
-                                        clientCreate(req, res, 201, model.get('id'));
-                                    });
-                            }
+                return Bookshelf.transaction(function (t) {
+                    // figure out how many people have applied to the shift
+                    // and exactly who is approved - if any
+                    var sqlOptions = {
+                        transacting: t
+                    };
+                    return appLogic.getApprovedDeniedUsersForShift(
+                        req.user.id,
+                        req.params.shift_id,
+                        sqlOptions,
+                        function getApprovedDeniedUsersForShiftSuccess(applicationsExist,
+                                                                       approvedApplicant,
+                                                                       approvedApplicationApplicationId,
+                                                                       shiftApplicants,
+                                                                       userHasOutstandingApplication,
+                                                                       otherUsersHaveAppliedBeforeUser,
+                                                                       shiftInfo
+                        ) {
 
                             if (requiremanagerapproval) {
                                 // apply for shift
-                                // TODO: Check if ShiftApplication already exists
-                                return models.ShiftApplication.forge({
-                                    shift_id: req.params.shift_id,
-                                    user_id: req.user.id
-                                })
-                                    .fetchAll(null, {
-                                        transacting: t
-                                    })
-                                    .tap(function (existingShiftApplications) {
-                                        if (existingShiftApplications) {
-                                            // already exists
-                                            // TODO: Maybe re-send notification to manager?
-                                            clientCreate(req, res, 200, existingShiftApplications.get('id'));
-                                        } else {
-                                            // does not exist
-                                            // create it!
-                                            return createShiftApplication();
-                                        }
-                                    })
+                                if (shiftApplicants.contains(req.user.id)) {
+                                    // already exists
+                                    // TODO: Maybe re-send notification to manager?
+                                    clientCreate(req, res, 200, shiftApplicants[req.user.id]);
+                                } else {
+                                    // does not exist
+                                    // create it!
+                                    return createShiftApplication(false);
+                                }
                             } else {
                                 // user does not need manager approval to apply for the shift
-                                // check if someone has already applied for the shift
-                                // if they have not, then we register for it
-                                // otherwise we apply for queue
-                                return models.Shift.forge({
-                                    id: req.params.shift_id
-                                })
-                                    .fetch({
-                                        transacting: t,
-                                        // shift should exist
-                                        require: true
-                                    })
-                                    .tap(function(shift) {
-                                        var shift_user_id = shift.get('user_id');
-                                        if (shift_user_id) {
-                                            // someone already has been approved for the shift
-                                            // register in queue
-                                            return createShiftApplication();
-                                        } else {
-                                            // patch shift
-                                            // TODO: Turn this into a patch
-                                            return shift.save(
-                                                updateModel(
-                                                    'Shift',
-                                                    shift, {
-                                                        user_id: req.user.id
-                                                    }
-                                                ),
-                                                {
-                                                    transacting: t
-                                                }
-                                            )
-                                                .tap(function(model) {
-                                                    return createShiftApplication();
-                                                })
-                                        }
-                                    })
+                                if (otherUsersHaveAppliedBeforeUser) {
+                                    // other users have already applied and have not recinded their shift...
+                                    // we need to create an application but not automatically approve it
+                                    return createShiftApplication(false);
+                                } else {
+                                    // no other users have applied, create this users shift application and approve it!
+                                    return createShiftApplication(true);
+                                }
                             }
-                        });
+
+                            function createShiftApplication(autoaccept) {
+                                var shiftApplicationTime = getCurrentTimeForInsertionIntoDatabase();
+                                return models.ShiftApplication.forge({
+                                    shift_id: req.params.shift_id,
+                                    user_id: req.user.id,
+                                    date: shiftApplicationTime,
+                                    recinded: false
+                                })
+                                    .save(null, sqlOptions)
+                                    .tap(function createShiftApplicationSuccess(model) {
+                                        if (autoaccept) {
+                                            return models.ShiftApplicationAcceptDeclineReason.forge({
+                                                accept: true,
+                                                autoaccepted: true,
+                                                shiftapplication_id: model.get('id'),
+                                                user_id: null, // system
+                                                date: shiftApplicationTime,
+                                                reason: null
+                                            })
+                                                .save(null, sqlOptions)
+                                                .tap(function createShiftApplicationAutoAcceptSuccess(shiftapplicationacceptdeclinereason) {
+                                                    // send success notification to user and managers
+                                                    // there will be no declined users because this was an auto accepted shift
+                                                    return appLogic.fireEvent(
+                                                        'sendNotificationAboutAutoApprovedShift',
+                                                        req.user.id,
+                                                        req.params.shift_id,
+                                                        shiftInfo.location_title,
+                                                        shiftInfo.sublocation_title,
+                                                        shiftInfo.shift_start,
+                                                        shiftInfo.shift_end,
+                                                        shiftInfo.timezone,
+                                                        function createShiftApplicationAutoAcceptSendNotificationSuccess() {
+                                                            clientCreate(req, res, 201, model.get('id'));
+                                                        },
+                                                        function createShiftApplicationAutoAcceptSendNotificationError(err) {
+                                                            // TODO: HOW TO NOTIFY USER THAT NOTIFICATIONS FAILED?
+                                                            clientCreate(req, res, 201, model.get('id'));
+                                                        }
+                                                    );
+                                                });
+                                        } else {
+                                            triggerShiftApplicationNotification(req.params.shift_id, model.get('id'));
+                                            clientCreate(req, res, 201, model.get('id'));
+                                        }
+                                    });
+                            }
+                        }, function getApprovedDeniedUsersForShiftError(err) {
+                            // TODO:?
+                            error(req, res, err);
+                        }
+                    );
                 })
-                    .then(function(model) {
-                        // do nothing, inner tap functions should handle this
-                    })
-                    .catch(function(err) {
+                    .catch(function (err) {
                         error(req, res, err);
                     });
             }
@@ -1462,11 +1442,6 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
 function joinShiftApplications(query, user_id) {
     // TODO: Figure out how to use this query without recinded != true see:
     // https://stackoverflow.com/questions/9592875/sql-server-left-outer-join-with-top-1-to-select-at-most-one-row
-    var acceptDeclineSubquery = knex.select('*')
-        .from('shiftapplicationacceptdeclinereasons')
-        .orderBy('date', 'desc')
-        .limit(1)
-        .as('latestAcceptDecline');
     return query.joinRaw('left join shiftapplications on shiftapplications.id = (' +
     'select id from shiftapplications ' +
     'where shiftapplications.recinded <> ' + models.sqlTrue + ' ' +
@@ -1481,7 +1456,7 @@ function joinShiftApplications(query, user_id) {
             'order by shiftapplicationacceptdeclinereasons.date desc ' +
             'limit 1 ' +
             ')'
-    )
+    );
 }
 
 /**
@@ -1801,7 +1776,12 @@ function acceptOrDeclineShiftApplication(req, res, accept) {
                             transacting: t
                         })
                         .then(function(model) {
-                            appLogic.fireEvent('shiftApplicationApprovalOrDenial', model.get('id'));
+                            appLogic.fireEvent(
+                                'shiftApplicationApprovalOrDenial',
+                                req.params.shift_id,
+                                model.get('id'),
+                                accept
+                            );
                             clientStatus(req, res, 200);
                         })
                         .catch(function(err) {
@@ -1885,3 +1865,4 @@ function unregisterForShift(req, res) {
         });
     //});
 }
+

@@ -325,7 +325,8 @@ angular.forEach({
         return {
             route: base,
             params: {
-                location_id: '@location_id'
+                location_id: '@location_id',
+                groupuserclass_id: '@groupuserclass_id'
             },
             actions: {
                 list: {
@@ -391,6 +392,14 @@ angular.forEach({
                 removeSublocation: {
                     method: DELETE,
                     url: base + '/sublocations'
+                },
+                manageJob: {
+                    method: POST,
+                    url: base + '/manage/:groupuserclass_id'
+                },
+                unmanageJob: {
+                    method: DELETE,
+                    url: base + '/manage/:groupuserclass_id'
                 },
                 listStagger: {
                     method: GET,
