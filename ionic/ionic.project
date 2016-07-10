@@ -4,15 +4,15 @@
   "proxies": [
     {
       "path": "/csrf",
-      "proxyUrl": "http://localhost:3300/csrf"
+      "proxyUrl": "http://localhost:8080/csrf"
     },
     {
       "path": "/session",
-      "proxyUrl": "http://localhost:3300/session"
+      "proxyUrl": "http://localhost:8080/session"
     },
     {
       "path": "/api",
-      "proxyUrl": "http://localhost:3300/api"
+      "proxyUrl": "http://localhost:8080/api"
     }
   ]
 }
