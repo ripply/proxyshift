@@ -50,3 +50,7 @@ npm-debug.log
 
 public/js/myapp.js
 public/css/myapp.css
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
