@@ -7,7 +7,6 @@ var _schema = require('./schema'),
     passport = require('passport'),
     utils = require('./utils'),
     _ = require('underscore'),
-    sqlite3 = require('sqlite3').verbose(),
     fs = require('fs'),
     mkdirp = require('mkdirp'),
     path = require('path'),
@@ -117,6 +116,7 @@ if (process.env.DATABASE_URL !== undefined ||
 }
 
 if ((global.db_dialect || 'sqlite3') == 'sqlite3') {
+    sqlite3 = require('sqlite3').verbose();
     dbConnection.filename = db_file;
 } else {
     dbConnection.host = global.db_host;
@@ -140,6 +140,10 @@ var knexConfig = {
     connection: dbConnection
     //, debug: true
 };
+
+if (knexConfig.dialect == 'sqlite3') {
+    sqlite3 = require('sqlite3').verbose();
+}
 var knex = require('knex')(knexConfig);
 
 var Bookshelf = require('bookshelf')(knex);

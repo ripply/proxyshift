@@ -13,6 +13,7 @@
     </author>
     <content src="index.html"/>
     <access origin="guarded-waters-4321.herokuapp.com"/>
+    <access origin="http://proxyshift-env.us-east-1.elasticbeanstalk.com"/>
     <preference name="webviewbounce" value="false"/>
     <preference name="UIWebViewBounce" value="false"/>
     <preference name="DisallowOverscroll" value="true"/>

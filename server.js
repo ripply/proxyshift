@@ -188,7 +188,7 @@ function launchServer() {
 
     var app = express();
 
-    app.set('port', process.env.PORT || 3300);
+    app.set('port', process.env.PORT || 8080);
     app.set('views', __dirname + '/views');
     app.set('view cache', process.env.NODE_ENV !== 'development');
 
