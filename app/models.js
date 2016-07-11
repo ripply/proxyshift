@@ -64,7 +64,7 @@ if (process.env.DATABASE_URL !== undefined ||
     && config.get("dbConfig.url") !== null)
     && config.get("dbConfig.url") != '') {
     // running in heroku?
-    var re = /([^:]*):\/\/([^:]*):([^@]*)@([^:]*)(:(\d*))?\/(.*)/;
+    var re = /([^:]*):\/\/([^:]*):([^@]*)@([^:]*)(:(\d*))?(\/.*)?/;
     var match;
 
     var url = process.env.DATABASE_URL;
@@ -97,7 +97,9 @@ if (process.env.DATABASE_URL !== undefined ||
         global.db_database = match[7];
         global.db_ssl = true;
     } else {
-        console.log("WARNING: DATABASE_URL is of the INCORRECT FORMAT");
+        var message = "WARNING: DATABASE_URL is of the INCORRECT FORMAT: '" + process.env.DATABASE_URL + "'";
+        slack.info(message);
+        console.log(message);
     }
 } else {
     _.each({
