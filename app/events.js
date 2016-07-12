@@ -945,6 +945,10 @@ function newShiftCancellationNoticeToManager(
     };
 }
 
+const contactUsSlackTemplate = _.template(
+    "@channel Contact us form submission from ip: <%= ip %>\nname: <%= name %>\nfrom: <%= from %>\nmessage: <%= message %>"
+);
+
 function newShiftApplicationApprovedToDeniedUsers(
     shift_location,
     shift_sublocation,
@@ -1070,6 +1074,23 @@ module.exports = {
             accepted
         );
     },
+    contactUs: function contactUs(req, res, next) {
+        // TODO: RATE LIMITING
+        var self = this;
+        getPostData(req, res, function(body) {
+            if (body !== undefined &&
+                inputNotEmpty(body.from) &&
+                inputNotEmpty(body.name) &&
+                inputNotEmpty(body.message)) {
+                next(true);
+                body.ip = req.ip;
+                slack.info(contactUsSlackTemplate(body), '#contactus');
+                self.sendEmail(body.from, 'admin@proxyshift.com', 'CONTACTUS: ' + body.name, body.message);
+            } else {
+                next(false);
+            }
+        });
+    },
     passwordReset: function passwordReset(user_ids, args) {
         args.link = this.createTokenUrl("/passwordreset", args.token);
         return this.sendToUsers(user_ids, eventPasswordReset, args);
@@ -1078,3 +1099,43 @@ module.exports = {
         return this.sendNewShifts(user_id_that_created_shift, shift_ids);
     }
 };
+
+function getPostData(req, res, callback) {
+    // Check if this is a form post or a stream post via REST client.
+    if (req.readable) {
+        // REST post.
+        var content = '';
+
+        req.on('data', function (data) {
+            if (content.length > 1e6) {
+                // Flood attack or faulty client, nuke request.
+                res.json({ error: 'Request entity too large.' }, 413);
+            }
+
+            // Append data.
+            content += data;
+        });
+
+        req.on('end', function () {
+            // Return the posted data.
+            callback(content);
+        });
+    }
+    else {
+        // Form post.
+        callback(req.body);
+    }
+}
+
+function inputNotEmpty(input) {
+    try {
+        console.log('**************8');
+        console.log(input);
+        var a =input !== undefined && input.length > 0;
+        console.log(a);
+        return a;
+
+    } catch (e) {
+        return false;
+    }
+}

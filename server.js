@@ -1,11 +1,13 @@
 process.env.WEB = true;
 
+var path = require('path');
+global.appRoot = path.resolve(__dirname);
+
 var express = require('express'),
     cluster = require('cluster'),
     expressCluster = require('express-cluster'),
     _ = require('underscore'),
     http = require('http'),
-    path = require('path'),
     timers = require('timers'),
     Promise = require('bluebird'),
     routes = require('./app/routes'),
