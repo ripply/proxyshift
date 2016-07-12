@@ -3,6 +3,7 @@ process.env.WEB = true;
 var express = require('express'),
     cluster = require('cluster'),
     expressCluster = require('express-cluster'),
+    _ = require('lodash'),
     http = require('http'),
     path = require('path'),
     timers = require('timers'),
@@ -300,9 +301,27 @@ function launchServer() {
         app.use(passport.authenticate('remember-me'));
     }
 
+    app.use('/site', express.static(path.join(__dirname, 'static')));
+
     //app.use(app.router);
     // serves clients our files in public
+    app.use('/', express.static(path.join(__dirname, 'static')));
     app.use('/', express.static(path.join(__dirname, 'ionic/www')));
+    const mobileIndexPath = path.join(__dirname, 'ionic/www/index.html');
+    function serveMobileIndex(req, res) {
+        res.sendFile(mobileIndexPath)
+    }
+
+    _.each([
+        '/mobile',
+        '/mobile.html',
+        '/mobile.htm',
+        '/mobile.shtml',
+        '/mobile.shtm',
+        '/mobile.xhtml'
+    ], function(path) {
+        app.get(path, serveMobileIndex);
+    });
 
     // development only
     if ('development' == app.get('env')) {
