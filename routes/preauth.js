@@ -7,6 +7,7 @@ var middleware = require('./misc/middleware'),
     users = require('../controllers/users'),
     error = require('../controllers/controllerCommon').error,
     appLogic = require('../app'),
+    slack = require('../app/slack'),
     passport = require('passport');
 
 require('./../app/configure_passport');
@@ -49,9 +50,40 @@ module.exports = function(app, settings){
         console.log("Sent 200 response");
     });
 
-    app.get('/api/ping', function(req, res, next) {
-        res.sendStatus(200);
-    });
+    app.get('/api/ping', healthCheckRespond);
+    app.get('/api/v1/ping', healthCheckRespond);
+
+    function healthCheck(req, res, next) {
+        return models.initDb(false)
+            .then(function() {
+                next();
+            })
+            .catch(function(err) {
+                next(err);
+            });
+    }
+
+    function requireHealthyServer(req, res, next) {
+        healthCheck(req, res, function requireHealthyServerCallback(err) {
+            if (err) {
+                slack.serious('Health check failing', err);
+                error(err, res, res, next);
+            } else {
+                next();
+            }
+        });
+    }
+
+    function healthCheckRespond(req, res, next) {
+        healthCheck(req, res, function healthCheckRespondCallback(err) {
+            if (err) {
+                slack.serious('Health check failing', err);
+                error(err, res, res, next);
+            } else {
+                res.sendStatus(200);
+            }
+        });
+    }
 
     // return current server time in utc
     app.get('/api/utc', function(req, res, next) {
@@ -410,7 +442,7 @@ module.exports = function(app, settings){
         return time.nowInUtc() + (maxAgeInMs / 1000);
     }
 
-    app.post('/session/login', requireJson, function(req, res, next) {
+    app.post('/session/login', requireHealthyServer, requireJson, function(req, res, next) {
         passport.authenticate('local', {session: true}, function (err, user, info) {
             if (err) { return next(err); }
             console.log("login request:");
@@ -476,13 +508,13 @@ module.exports = function(app, settings){
         })(req, res, next);
     });
 
-    app.post('/session/logout', ensureCsrf, ensureAuthenticated, function(req, res, next) {
+    app.post('/session/logout', requireHealthyServer, ensureCsrf, ensureAuthenticated, function(req, res, next) {
         logout(req, res);
         // client session.postAuth method expects JSON, it will error if sent a blank response
         res.send({});
     });
 
-    app.get('/session', ensureAuthenticated, function(req, res, next){
+    app.get('/session', requireHealthyServer, ensureAuthenticated, function(req, res, next){
         var defaults = {
             id: 0,
             username: '',

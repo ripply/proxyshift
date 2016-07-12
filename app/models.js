@@ -286,7 +286,7 @@ function getListOfNonExistingTables(trx, next) {
 
     function recurse() {
         if (tablesToCheck.length == 0) {
-            return next(nonExistingTables);
+            return next(null, nonExistingTables);
         } else {
             var modelName = tablesToCheck.shift();
             var tableName = lowercaseAndPluralizeModelName(modelName);
@@ -296,7 +296,10 @@ function getListOfNonExistingTables(trx, next) {
                 }
 
                 return recurse();
-            });
+            })
+                .catch(function issueWithDatabase(err) {
+                    return next(err);
+                });
         }
     }
 
@@ -356,7 +359,7 @@ function initDb(dropAllTables) {
             return onDatabaseReady(function() {
                 // other initDb either just finished or was already finished
                 // delete the old promise and recurse to finish stuff\
-                return initDb(dropAllTables);
+                return initDbPromise;
             });
         }
     }
@@ -365,18 +368,24 @@ function initDb(dropAllTables) {
 
     var functions = SqlFunctions;
 
-    var tablesPopulatedPromise = new Promise(function(tablesPopulatedResolve) {
-        var transactionCompletedPromise = new Promise(function (resolve) {
+    var tablesPopulatedPromise = new Promise(function(tablesPopulatedResolve, tablesPopulatedReject) {
+        var transactionCompletedPromise = new Promise(function (resolve, reject) {
             if (!dropAllTables) {
                 // apparently we cannot do hasTable() calls within a transaction
                 // so.. since this method should only have one copy of it running
                 // we can query which tables dont exist BEFORE the transaction
-                return getListOfNonExistingTables(knex, function (nonExistingTables) {
+                return getListOfNonExistingTables(knex, function (err, nonExistingTables) {
+                    if (err) {
+                        return reject(err);
+                    }
                     return createTablesInATransaction(nonExistingTables, nonExistingTables);
                 });
             } else {
                 // create all the tables because we will be dropping them all
-                return getListOfNonExistingTables(knex, function (nonExistingTables) {
+                return getListOfNonExistingTables(knex, function (err, nonExistingTables) {
+                    if (err) {
+                        return reject(err);
+                    }
                     return createTablesInATransaction(Schema, nonExistingTables);
                 });
             }
@@ -641,7 +650,10 @@ function initDb(dropAllTables) {
                     tablesPopulatedResolve();
                 });
             });
-        });
+        })
+            .catch(function transactionCompletedError(err) {
+                return tablesPopulatedReject(err);
+            });
     });
 
     initDbPromise = new Promise(function(resolve, reject) {
@@ -663,7 +675,11 @@ function initDb(dropAllTables) {
                 initDbPromise = null;
                 resolve();
             }
-        });
+        })
+            .catch(function(err) {
+                // issue with database
+                reject(err);
+            })
     });
 
     return initDbPromise;
@@ -774,6 +790,9 @@ if (firstInitialization) {
     initDb(false).then(function() {
         //console.log("Completed initial initialization of the database.");
     })
+        .catch(function(err) {
+            slack.error(undefined, 'PROBLEM INITIALIZING DATABASE', err);
+        })
 }
 
 function databaseReadyMiddleware(req, res, next) {
@@ -1083,7 +1102,7 @@ _.each(modelNames, function(tableName, modelName) {
                     }
 
                     if (global.silent !== true && master) {
-                        console.log(modelName + "." + methodName + "() = " + modelName + "." + relationMethodName + "(" + foreignModelName + ")");
+                        //console.log(modelName + "." + methodName + "() = " + modelName + "." + relationMethodName + "(" + foreignModelName + ")");
                     }
                     modelOptions[methodName] = function() {
                         var model = models[foreignModelName];

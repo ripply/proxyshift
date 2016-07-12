@@ -1129,12 +1129,7 @@ function getPostData(req, res, callback) {
 
 function inputNotEmpty(input) {
     try {
-        console.log('**************8');
-        console.log(input);
-        var a =input !== undefined && input.length > 0;
-        console.log(a);
-        return a;
-
+        return input !== undefined && input.length > 0;
     } catch (e) {
         return false;
     }

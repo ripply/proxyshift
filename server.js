@@ -333,7 +333,7 @@ function launchServer() {
     //routes list:
     routes.initialize(app);
 
-    app.use(function errorHandler(err, req,res,next) {
+    app.use(function errorHandler(err, req, res, next) {
         error(req, res, error, next);
         console.error(err.stack);
     });
