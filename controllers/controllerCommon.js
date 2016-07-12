@@ -50,8 +50,6 @@ module.exports = {
             _.each(queryArgs, function(value, key) {
                 query = query.where(tableName + "." + key, '=', value);
             });
-            console.log("Updating with:");
-            console.log(updateSource);
             query.update(getPatchKeysWithoutBannedKeys(
                     modelName,
                     updateSource,

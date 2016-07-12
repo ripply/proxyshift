@@ -515,6 +515,7 @@ App.prototype.sendShiftApplicationApprovalDenial = function sendShiftApplication
 App.prototype.handleShiftApplicationApprovalDenial = function handleShiftApplicationApprovalDenial(job) {
     console.log("GOT SHIFT APPLICATION APPROVAL DENIAL JOB");
     var body = job.body;
+    console.log(body);
     // setup
     this.shiftApplicationApprovedOrDenied(
         body.shift_id,
@@ -604,7 +605,7 @@ App.prototype.shiftApplicationApprovedOrDenied = function shiftApplicationApprov
             .orderBy('shiftapplicationacceptdeclinereasons.date', 'desc'); // desc so that always compares against latest one
             //.where('shiftapplicationacceptdeclinereasons.id', '=', shiftapplicationacceptdeclinereason_id)
     })
-        .fetch()
+        .fetchAll()
         .tap(function shiftApplicationApprovedOrDeniedSuccess(approvalOrDenials) {
             if (approvalOrDenials) {
                 var approved;
@@ -612,13 +613,21 @@ App.prototype.shiftApplicationApprovedOrDenied = function shiftApplicationApprov
                 var neitherApprovedOrDenied = {};
                 var data;
                 var alreadyAccepted = false;
-                approvalOrDenials.each(function shiftApplicationApprovedOrDeniedForEach(approvalOrDenial) {
+                var approvalOrDenialsJson = approvalOrDenials.toJSON();
+                console.log(approvalOrDenialsJson);
+                _.each(approvalOrDenialsJson, function shiftApplicationApprovedOrDeniedForEach(approvalOrDenial) {
                     if (data === undefined &&
                         // this is the approval/denial that was just done
                         // grab data from it for sending personalized message to user
                         approvalOrDenial.approved_denied_id == shiftapplicationacceptdeclinereason_id
                     ) {
-                        data = approvalOrDenial.toJSON();
+                        console.log("YEP");
+                        data = approvalOrDenial;
+                    } else {
+                        console.log('NOPE');
+                        console.log(approvalOrDenial);
+                        console.log(shiftapplicationacceptdeclinereason_id);
+                        console.log(approvalOrDenial.approved_denied_id);
                     }
                     if (approvalOrDenial.approved_denied_id != shiftapplicationacceptdeclinereason_id &&
                         approvalOrDenial.recinded &&
@@ -636,15 +645,27 @@ App.prototype.shiftApplicationApprovedOrDenied = function shiftApplicationApprov
                     }
                     if (approvalOrDenial.shift_accepted) {
                         // approved
-                        approved = approvalOrDenial.toJSON();
+                        approved = approvalOrDenial;
                     } else if (approvalOrDenial.shift_accepted == false) {
                         // denied
                         denied[approvalOrDenial.applicant_userid] = approvalOrDenial;
                     } else {
                         // neither
-                        neitherApprovedOrDenied[approvalOrDenial.applicant_userid] = approvalOrDenial
+                        neitherApprovedOrDenied[approvalOrDenial.applicant_userid] = approvalOrDenial;
                     }
                 });
+
+                if (!data) {
+                    slack.error(
+                        undefined,
+                        'Failed to get shiftapplicationacceptdenial with id ' +
+                        shiftapplicationacceptdeclinereason_id +
+                        ' and shift_id: ' +
+                        shift_id +
+                        ' where approved = ' +
+                        approved
+                    );
+                }
 
                 if (approved) {
                     // this shift was approved
@@ -939,9 +960,9 @@ App.prototype.sendNotificationAboutAutoApprovedShift = function(
     success,
     error
 ) {
-    return sendNotificationAboutApprovedShift(
-        'newShiftApplicationAutoApproved',
-        'newShiftApplicationAutoApprovedToManagers',
+    return sendNotificationAboutApprovedShift.call(this,
+        this.newShiftApplicationAutoApproved,
+        this.newShiftApplicationAutoApprovedToManagers,
         user_id,
         shift_id,
         location_title,
@@ -965,9 +986,9 @@ App.prototype.sendNotificationAboutApprovedShift = function(
     success,
     error
 ) {
-    return sendNotificationAboutApprovedShift(
-        'newShiftApplicationApproved',
-        'newShiftApplicationApprovedToManagers',
+    return sendNotificationAboutApprovedShift.call(this,
+        this.newShiftApplicationApproved,
+        this.newShiftApplicationApprovedToManagers,
         user_id,
         shift_id,
         location_title,
@@ -981,8 +1002,8 @@ App.prototype.sendNotificationAboutApprovedShift = function(
 };
 
 function sendNotificationAboutApprovedShift(
-    user_message,
-    message,
+    userMessage,
+    managerMessage,
     user_id,
     shift_id,
     location_title,
@@ -1001,7 +1022,7 @@ function sendNotificationAboutApprovedShift(
     var failedToSendToUsers = undefined;
     this.sendToUsers(
         user_id,
-        this[user_message](
+        userMessage(
             location_title,
             sublocation_title,
             shift_start,
@@ -1027,34 +1048,59 @@ function sendNotificationAboutApprovedShift(
         [shift_id],
         sqlOptions,
         function gotManagersForANewShift(interestedManagers) {
-            _.each(interestedManagers.groupedShifts, function (groupedShift) {
-                self.sendToUsers(
-                    interestedManagers.user_ids,
-                    self[message](
-                        interestedManagers.groupuserclass_title,
-                        interestedManagers.location_name,
-                        interestedManagers.sublocation_name,
-                        groupedShift.start,
-                        groupedShift.end,
-                        Object.keys(groupedShift.ids).length,
-                        interestedManagers.timezone,
-                        interestedManagers.shift_ids,
-                        interestedManagers.shiftcreator_firstname,
-                        interestedManagers.shiftcreator_lastname
-                    ),
-                    interestedManagers.args,
-                    undefined,
-                    function failedToSendManagersNewShiftNotificationsAfterSendingUserNotification(err) {
-                        slack.error(undefined, 'Failed to send new shift notifications to managers', err);
-                        success = false;
-                        return error(err);
+            return models.User.query(function(q) {
+                q.select([
+                    'firstname',
+                    'lastname'
+                ])
+                    .from('users')
+                    .where('id', '=', user_id);
+            })
+                .fetch(sqlOptions)
+                .tap(function createShiftApplicationGetUserInfo(user) {
+                    var firstname = 'UNKNOWN';
+                    var lastname;
+                    if (user) {
+                        firstname = user.get('firstname');
+                        lastname = user.get('lastname');
                     }
-                );
-            });
+
+                    _.each(interestedManagers.groupedShifts, function (groupedShift) {
+                        if (!interestedManagers.shiftcreator_firstname ||
+                            !interestedManagers.shiftcreator_firstname) {
+                            interestedManagers.shiftcreator_firstname = 'UNKNOWN';
+                            interestedManagers.shiftcreator_lastname = undefined;
+                        }
+                        self.sendToUsers(
+                            interestedManagers.user_ids,
+                            managerMessage(
+                                interestedManagers.groupuserclass_title,
+                                interestedManagers.location_name,
+                                interestedManagers.sublocation_name,
+                                groupedShift.start,
+                                groupedShift.end,
+                                Object.keys(groupedShift.ids).length,
+                                interestedManagers.timezone,
+                                interestedManagers.shift_ids,
+                                interestedManagers.shiftcreator_firstname,
+                                interestedManagers.shiftcreator_lastname,
+                                firstname,
+                                lastname
+                            ),
+                            interestedManagers.args,
+                            undefined,
+                            function failedToSendManagersNewShiftNotificationsAfterSendingUserNotification(err) {
+                                slack.error(undefined, 'Failed to send new shift notifications to managers', err);
+                                success = false;
+                                return error(err);
+                            }
+                        );
+                    });
+                });
         },
         function failedToGetManagersForAutoApprovedShift(err) {
             if (error) {
-                error(err);
+                return error(err);
             }
         }
     );
@@ -1915,11 +1961,12 @@ const approvedDeniedUsersShiftInfoKeys = [
     'shift_start',
     'shift_end',
     'shift_timezone',
-    'shiftcreator_userid'
+    'shiftcreator_userid',
+    'requiremanagerapproval'
 ];
 
 function getApprovedDeniedUsersForShift(user_id, shift_id, sqlOptions, success, error) {
-    return models.ShiftApplication.query(function(q) {
+    return models.Shift.query(function(q) {
         q.select([
             'shiftapplications.id as shiftapplication_id',
             'shiftapplications.user_id as shiftapplicant',
@@ -1928,6 +1975,7 @@ function getApprovedDeniedUsersForShift(user_id, shift_id, sqlOptions, success, 
             'shiftapplicationacceptdeclinereasons.accept as accept',
             'shiftapplicationacceptdeclinereasons.autoaccepted as autoaccepted',
             'shiftapplicationacceptdeclinereasons.date as acceptdecline_date',
+            'groupuserclasses.requiremanagerapproval as requiremanagerapproval',
 
             'locations.title as location_title',
             'sublocations.title as sublocation_title',
@@ -1936,26 +1984,29 @@ function getApprovedDeniedUsersForShift(user_id, shift_id, sqlOptions, success, 
             'timezones.name as shift_timezone',
             'shifts.user_id as shiftcreator_userid'
         ])
-            .from('shiftapplications')
-            .where('shiftapplications.shift_id', '=', shift_id)
+            .from('shifts')
+            .leftJoin('groupuserclasses', function() {
+                this.on('groupuserclasses.id', '=', 'shifts.groupuserclass_id');
+            })
+            .leftJoin('shiftapplications', function() {
+                this.on('shiftapplications.shift_id', '=', 'shifts.id');
+            })
             .leftJoin('shiftapplicationacceptdeclinereasons', function() {
                 this.on('shiftapplicationacceptdeclinereasons.shiftapplication_id', '=', 'shiftapplications.id');
-            })
-            .innerJoin('shifts', function() {
-                this.on('shifts.id', '=', 'shiftapplications.shift_id');
-            })
-            .leftJoin('locations', function() {
-                this.on('locations.id', '=', 'shifts.location_id');
             })
             .leftJoin('sublocations', function() {
                 this.on('sublocations.id', '=', 'shifts.sublocation_id')
                     .orOn('sublocations.id', '=', 'shifts.location_id');
             })
+            .leftJoin('locations', function() {
+                this.on('locations.id', '=', 'shifts.location_id')
+                    .orOn('sublocations.location_id', '=', 'locations.id');
+            })
             .leftJoin('timezones', function() {
                 this.on('timezones.id', '=', 'shifts.timezone_id');
             })
-            //.andWhere('shiftapplications.user_id', '=', req.user.id)
-            .orderBy('date', 'desc'); // desc so that always compares against latest one
+            .where('shifts.id', '=', shift_id)
+            .orderBy('acceptdecline_date', 'desc'); // desc so that always compares against latest one
     })
         .fetchAll(sqlOptions)
         .tap(function getApprovedDeniedUsersForShiftSuccess(shiftapplications) {
@@ -1964,7 +2015,7 @@ function getApprovedDeniedUsersForShift(user_id, shift_id, sqlOptions, success, 
                 var userHasOutstandingApplication = false;
                 var shiftApplicants = {};
                 var approvedApplicant;
-                var approvedApplicationApplicationId;
+                var approvedApplicantApplicationId;
                 // iterate through the list of applications
                 // figure out if someone has been approved for the shift
                 // the first non recinded, accepted shift is the approved one
@@ -1984,7 +2035,7 @@ function getApprovedDeniedUsersForShift(user_id, shift_id, sqlOptions, success, 
                         var applicant = shiftapplication.shiftapplicant;
                         if (approvedApplicant === undefined && shiftapplication.accept) {
                             approvedApplicant = applicant;
-                            approvedApplicationApplicationId = shiftapplication.shiftapplication_id;
+                            approvedApplicantApplicationId = shiftapplication.shiftapplication_id;
                         } else {
                             shiftApplicants[applicant] = shiftapplication.shiftapplication_id;
                         }
@@ -2016,16 +2067,24 @@ function getApprovedDeniedUsersForShift(user_id, shift_id, sqlOptions, success, 
                     }
                 }
 
-                return success(
-                    true,
-                    approvedApplicant,
-                    approvedApplicationApplicationId,
-                    shiftApplicants,
-                    userHasOutstandingApplication,
-                    otherUsersHaveAppliedBeforeUser,
-                    shiftInfo
-                );
-            } else {
+                if (shiftapplicationsJson.length == 0) {
+                    var errorMessage = 'Approved/Denied users for shift: ' + shift_id + ' end up returning zero results, this will cause a crash.';
+                    slack.error(undefined, errorMessage);
+                    if (error) {
+                        return error(errorMessage);
+                    }
+                } else if (success) {
+                    return success(
+                        true,
+                        approvedApplicant,
+                        approvedApplicantApplicationId,
+                        shiftApplicants,
+                        userHasOutstandingApplication,
+                        otherUsersHaveAppliedBeforeUser,
+                        shiftInfo
+                    );
+                }
+            } else if (success) {
                 return success(false);
             }
         })

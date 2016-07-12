@@ -283,7 +283,7 @@ module.exports = {
                         if (shifts) {
                             res.send(shifts.toJSON());
                         } else {
-                            res.send(204); // no content
+                            res.sendStatus(204); // no content
                         }
                     })
                     .catch(function(err) {
@@ -375,7 +375,7 @@ module.exports = {
     },
     '/:shift_id/register': {
         'post': {
-            auth: ['mark groupuserclass options for shift', 'user can apply for shift'],
+            auth: ['user can apply for shift'],
             route: function(req, res) {
                 // confirm that user can register for this shift
                 // and shift has no user attached
@@ -383,9 +383,6 @@ module.exports = {
                 // add to list
                 // then send notification to managers
                 // we should receive a notification when a manager approves
-                var canSendNotifications = getMark(req, 'shift.cansendnotification', req.params.shift_id);
-                var requiremanagerapproval = getMark(req, 'shift.requiremanagerapproval', req.params.shift_id);
-                clearMarks(req);
 
                 // check that the user has not already applied for shift
                 // then:
@@ -402,6 +399,7 @@ module.exports = {
                     var sqlOptions = {
                         transacting: t
                     };
+                    console.log('get approved denied users for shift');
                     return appLogic.getApprovedDeniedUsersForShift(
                         req.user.id,
                         req.params.shift_id,
@@ -414,18 +412,15 @@ module.exports = {
                                                                        otherUsersHaveAppliedBeforeUser,
                                                                        shiftInfo
                         ) {
-
-                            if (requiremanagerapproval) {
+                            if (shiftApplicants.hasOwnProperty(req.user.id)) {
+                                // already exists
+                                return clientCreate(req, res, 200, shiftApplicants[req.user.id]);
+                            }
+                            if (shiftInfo.requiremanagerapproval) {
                                 // apply for shift
-                                if (shiftApplicants.contains(req.user.id)) {
-                                    // already exists
-                                    // TODO: Maybe re-send notification to manager?
-                                    clientCreate(req, res, 200, shiftApplicants[req.user.id]);
-                                } else {
-                                    // does not exist
-                                    // create it!
-                                    return createShiftApplication(false);
-                                }
+                                // does not exist
+                                // create it!
+                                return createShiftApplication(false);
                             } else {
                                 // user does not need manager approval to apply for the shift
                                 if (otherUsersHaveAppliedBeforeUser) {
@@ -461,21 +456,22 @@ module.exports = {
                                                 .tap(function createShiftApplicationAutoAcceptSuccess(shiftapplicationacceptdeclinereason) {
                                                     // send success notification to user and managers
                                                     // there will be no declined users because this was an auto accepted shift
-                                                    return appLogic.fireEvent(
-                                                        'sendNotificationAboutAutoApprovedShift',
+                                                    console.log("SHIFTINFO:::");
+                                                    console.log(shiftInfo);
+                                                    clientCreate(req, res, 201, model.get('id'));
+                                                    appLogic.sendNotificationAboutAutoApprovedShift(
                                                         req.user.id,
                                                         req.params.shift_id,
                                                         shiftInfo.location_title,
                                                         shiftInfo.sublocation_title,
                                                         shiftInfo.shift_start,
                                                         shiftInfo.shift_end,
-                                                        shiftInfo.timezone,
+                                                        shiftInfo.shift_timezone,
                                                         function createShiftApplicationAutoAcceptSendNotificationSuccess() {
-                                                            clientCreate(req, res, 201, model.get('id'));
+
                                                         },
                                                         function createShiftApplicationAutoAcceptSendNotificationError(err) {
                                                             // TODO: HOW TO NOTIFY USER THAT NOTIFICATIONS FAILED?
-                                                            clientCreate(req, res, 201, model.get('id'));
                                                         }
                                                     );
                                                 });
@@ -535,14 +531,14 @@ module.exports = {
                         .then(function(ignoreShift) {
                             if (ignoreShift) {
                                 // already ignored
-                                res.send(200);
+                                res.sendStatus(200);
                             } else {
                                 return models.IgnoreShift.forge(ignoreShiftData)
                                     .save(null, {
                                         transacting: t
                                     })
                                     .then(function(ignoredShift) {
-                                        res.send(201)
+                                        res.sendStatus(201)
                                     })
                                     .catch(function(err) {
                                         error(req, res, err);
@@ -570,7 +566,7 @@ module.exports = {
                             transacting: t
                         })
                         .then(function(ignoreShifts) {
-                            res.send(200);
+                            res.sendStatus(200);
                         })
                         .catch(function(err) {
                             error(req, res, err);
@@ -1126,7 +1122,7 @@ function createNewShift(req, res) {
                         }
                     } else {
                         // unknown sub/location_id
-                        res.send(403);
+                        res.sendStatus(403);
                     }
                 })
                 .catch(function(err) {
@@ -1181,6 +1177,10 @@ const createShiftUntrustedKeysAllowLocationSublocationGroupclass = _.keys(
     )
 );
 
+const alwaysDefaultNewShiftParameters = {
+    canceled: false
+};
+
 function rejectTransaction(t, code, message) {
     return t.rollback({
         code: code,
@@ -1195,7 +1195,7 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
         return rejectTransaction(transaction, 400, 'No shifts sent');
     }
     if (index >= shifts.length) {
-        res.send(200);
+        res.sendStatus(200);
         return;
     }
     var shift;
@@ -1398,6 +1398,8 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
             if (count === undefined || count === null) {
                 count = 1;
             }
+
+            _.extend(validatedShift, alwaysDefaultNewShiftParameters);
 
             if (count) {
                 if (count > MAX_CREATE_SHIFTS) {
@@ -1770,14 +1772,14 @@ function acceptOrDeclineShiftApplication(req, res, accept) {
                         accept: accept,
                         user_id: req.user.id,
                         date: getCurrentTimeForInsertionIntoDatabase(),
-                        reason: reason
+                        reason: reason,
+                        autoaccepted: false
                     })
                         .save(null, {
                             transacting: t
                         })
                         .then(function(model) {
-                            appLogic.fireEvent(
-                                'shiftApplicationApprovalOrDenial',
+                            appLogic.shiftApplicationApprovalOrDenial(
                                 req.params.shift_id,
                                 model.get('id'),
                                 accept
@@ -1813,33 +1815,34 @@ function unregisterForShift(req, res) {
                     .orWhereNull('shiftapplications.recinded');
             });
     })
-        .fetch({
+        .fetchAll({
             //transacting: t
         })
-        .tap(function(shiftapplication) {
+        .tap(function(shiftapplications) {
             var shiftApplicationKeys = Object.keys(getModelKeys('ShiftApplication'));
-            if (shiftapplication) {
+            if (shiftapplications) {
+                var shiftapplicationIds = [];
+                shiftapplications.each(function(shiftapplication) {
+                    shiftapplicationIds.push(shiftapplication.get('id'));
+                });
                 // user has registered for shift
                 // recind it
                 var date = getCurrentTimeForInsertionIntoDatabase();
-                patchModel('ShiftApplication', {
-                        id: shiftapplication.get('id')
-                    },
-                    {
-                        recinded: true,
-                        recindeddate: date
-                    },
-                    res,
-                    'Success',
-                    shiftApplicationKeys,
-                    {
-                        //transacting: t
-                    },
-                    function() {
+                models.ShiftApplication.query(function(q) {
+                    q.select()
+                        .from('shiftapplications')
+                        .whereIn('id', shiftapplicationIds)
+                        .update({
+                            recinded: true,
+                            recindeddate: date
+                        });
+                })
+                    .fetch()
+                    .tap(function() {
                         // TODO: Transaction
                         return models.ShiftRescissionReason.forge({
                             user_id: req.user.id,
-                            shiftapplication_id: shiftapplication.get('id'),
+                            shiftapplication_id: shiftapplicationIds[0],
                             date: date,
                             reason: reason
                         })
@@ -1847,14 +1850,16 @@ function unregisterForShift(req, res) {
                             .tap(function(shiftrecissionreason) {
                                 // shift has been recinded
                                 // send notifications
-                                return triggerShiftApplicationRecinsionNotification(shiftapplication.get('id'), shiftrecissionreason.get('id'));
+                                clientCreate(req, res, 201, shiftrecissionreason.get('id'));
+                                return triggerShiftApplicationRecinsionNotification(shiftapplicationIds[0], shiftrecissionreason.get('id'));
                             })
                             .catch(function(err) {
                                 // TODO: Transaction so can rollback on possible error
+                                error(req, res, err);
                                 console.log(err);
                             });
                     }
-                )
+                );
             } else {
                 // not even registered
                 res.sendStatus(200);

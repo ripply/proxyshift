@@ -26,6 +26,9 @@ module.exports = {
         return difference;
     },
     prettyPrintStartTime: function prettyPrintStartTime(start, timezone) {
+        if (!timezone) {
+            throw new Error('No timezone passed in: ' + start + ' - ' + timezone);
+        }
         var startMoment = moment(unknownTimeFormatToDate(start, timezone)).tz(timezone);
         return startMoment.format('h:mm A');
     },
@@ -66,13 +69,13 @@ function differenceInHours(start, end) {
     var endMoment = moment(unknownTimeFormatToDate(end));
     var endMomentCopy = moment(endMoment);
     var years = Math.abs(startMoment.diff(endMoment, 'years', false));
-    endMoment.subtract('years', years);
+    endMoment.subtract(years, 'years');
     var months = Math.abs(startMoment.diff(endMoment, 'months', false));
-    endMoment.subtract('months', months);
+    endMoment.subtract(months, 'months');
     var days = Math.abs(startMoment.diff(endMoment, 'days', false));
-    endMoment.subtract('days', days);
+    endMoment.subtract(days, 'days');
     var hours = Math.abs(startMoment.diff(endMoment, 'hours', false));
-    endMoment.subtract('hours', hours);
+    endMoment.subtract(hours, 'hours');
     var minutes = Math.abs(startMoment.diff(endMoment, 'minutes', false));
 
     return {
