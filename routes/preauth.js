@@ -2,6 +2,7 @@ var middleware = require('./misc/middleware'),
     _ = require('underscore'),
     models = require('../app/models'),
     Notifications = models.Notifications,
+    path = require('path'),
     time = require('../app/time'),
     users = require('../controllers/users'),
     error = require('../controllers/controllerCommon').error,
@@ -476,14 +477,12 @@ module.exports = function(app, settings){
     });
 
     app.post('/session/logout', ensureCsrf, ensureAuthenticated, function(req, res, next) {
-
         logout(req, res);
         // client session.postAuth method expects JSON, it will error if sent a blank response
         res.send({});
     });
 
     app.get('/session', ensureAuthenticated, function(req, res, next){
-
         var defaults = {
             id: 0,
             username: '',
@@ -493,6 +492,20 @@ module.exports = function(app, settings){
         // only send information in the above hash to client
         res.statusCode = 200;
         res.send(_.pick(req.user, _.keys(defaults)));
+    });
+
+    const contactUsSuccess = path.join(global.appRoot, 'static/contactussuccess.html');
+    const contactUsFail = path.join(global.appRoot, 'static/contactusfail.html');
+
+    app.post('/contactus', function(req, res, next) {
+        console.log(req);
+        appLogic.contactUs(req, res, function contactUsSuccessFail(success) {
+            if (success) {
+                res.sendFile(contactUsSuccess);
+            } else {
+                res.sendFile(contactUsFail);
+            }
+        });
     });
 
     // creating users is ok to do without being logged in
