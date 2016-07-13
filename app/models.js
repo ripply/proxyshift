@@ -336,10 +336,16 @@ var specialFieldList = {
     }
 };
 
+var databaseInitialized = false;
+
 function initDb(dropAllTables) {
 
     if (!master) {
         return Promise.resolve('slave');
+    }
+
+    if (databaseInitialized) {
+        return Promise.resolve('initialized');
     }
 
     if (dropAllTables) {
@@ -660,6 +666,7 @@ function initDb(dropAllTables) {
         //initDbPromise = tablesPopulatedPromise;
         tablesPopulatedPromise.tap(function initDbPromiseTap() {
             console.log("Database has been initialized");
+            databaseInitialized = true;
             if (shouldWeLaunchMessageBrokerInThisProcess()) {
                 console.log("Launching message broker in this process");
                 return launchMessageBroker()
