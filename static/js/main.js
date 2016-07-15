@@ -11,7 +11,7 @@ function main() {
 
    /* ==============================================
   	Testimonial Slider
-  	=============================================== */ 
+  	=============================================== */
 
   	$('a.page-scroll').click(function() {
         if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
@@ -30,7 +30,7 @@ function main() {
     Show Menu on Book
     ======================================*/
     $(window).bind('scroll', function() {
-        var navHeight = $(window).height() - 100;
+        var navHeight = $(window).height() - 950;
         if ($(window).scrollTop() > navHeight) {
             $('.navbar-default').addClass('on');
         } else {
@@ -38,14 +38,14 @@ function main() {
         }
     });
 
-    $('body').scrollspy({ 
+    $('body').scrollspy({
         target: '.navbar-default',
         offset: 80
     })
 
   	$(document).ready(function() {
   	  $("#team").owlCarousel({
-  	 
+
   	      navigation : false, // Show next and prev buttons
   	      slideSpeed : 300,
   	      paginationSpeed : 400,
@@ -63,7 +63,7 @@ function main() {
   	  });
 
   	  $("#clients").owlCarousel({
-  	 
+
   	      navigation : false, // Show next and prev buttons
   	      slideSpeed : 300,
   	      paginationSpeed : 400,

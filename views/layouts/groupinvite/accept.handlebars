@@ -1,59 +1,149 @@
-<h1>{{_ 'welcome.to.proxyshift'}}</h1>
-<p>{{_ 'invites.join.group' group.name inviter.firstname }}</p>
-{{#if loggedIn}}
-    <p>{{_ 'you.already.loggedin.as' loggedIn.username}}</p>
-    {{#if message}}
-        <p>{{message}}</p>
-    {{/if}}
-    <p>{{_ 'accept.invitation.thisaccount.clickhere'}}</p>
-    <form action="/acceptinvitation" method="post">
-        <input type="hidden" name="token" value="{{invitation.token}}">
-        <input type="submit" value="Accept">
-    </form>
-    <p>{{_ 'or.signin.other.existingaccount'}}</p>
-{{else}}
-    <p>{{_ 'to.getstarted.signin.anotherexistingaccount.orcreateanewone'}}</p>
-    <p>{{_ 'signin.existing.proxyshift.account'}}</p>
-    {{#if message}}
-        <p>{{_ message}}</p>
-    {{/if}}
-{{/if}}
-{{#if loginFailure}}
-    <p>{{_ 'invalid.usernameorpassword.caps'}}</p>
-{{/if}}
-<form action="/acceptinvitation" method="post">
-    <input type="hidden" name="token" value="{{invitation.token}}">
-    <input type="hidden" name="action" value="signin">
-    {{_ 'form.username'}}:<br>
-    <input type="text" name="username" value="{{inputUsername}}"><br>
-    {{_ 'form.password'}}:<br>
-    <input type="text" name="password"><br><br>
-    <input type="submit" value="Submit">
-</form>
+<link rel="stylesheet" type="text/css"  href="site/css/login-form-style.css">
 
-<p>{{_ 'or.create.new.account.caps'}}</p>
-<form action="/acceptinvitation" method="post">
-    <input type="hidden" name="action" value="signup">
-    <input type="hidden" name="token" value="{{invitation.token}}">
-    {{_ 'form.username'}}:<br>
-    <input type="text" name="username"><br>
-    {{_ 'form.firstname'}}:<br>
-    <input type="text" name="firstname"><br>
-    {{_ 'form.lastname'}}:<br>
-    <input type="text" name="lastname"><br>
-    {{_ 'form.email'}}:<br>
-    <input type="text" name="email"><br>
-    {{_ 'form.password'}}:<br>
-    <input type="text" name="password"><br>
-    {{_ 'form.secretquestion'}}:<br>
-    <input type="text" name="squestion"><br>
-    {{_ 'form.secretanswer'}}:<br>
-    <input type="text" name="sanswer"><br>
-    {{_ 'form.phone.home'}}:<br>
-    <input type="text" name="phonehome"><br>
-    {{_ 'form.phone.mobile'}}:<br>
-    <input type="text" name="phonemobile"><br>
-    {{_ 'form.phone.pager'}}:<br>
-    <input type="text" name="pagernumber"><br>
-    <input type="submit" value="Submit">
-</form>
+<div class="login-form">
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2 text center">
+            <h1>{{_ 'welcome.to.proxyshift'}}</h1>
+            <div class="description">
+                <p>
+                    {{_ 'invites.join.group' group.name inviter.firstname }}
+                </p>
+                {{#if loggedIn}}
+                {{else}}
+                    <p>{{_ 'to.getstarted.signin.anotherexistingaccount.orcreateanewone'}}</p>
+                    {{#if message}}
+                        <p>{{_ message}}</p>
+                    {{/if}}
+                {{/if}}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-5">
+
+            <div class="form-box">
+                <div class="form-top">
+                    <div class="form-top-left">
+                        <h3>{{_ 'welcome.login.header' }}</h3>
+                        <p>{{_ 'welcome.login.description' }}:</p>
+                    </div>
+                    <div class="form-top-right">
+                        <i class="fa fa-lock"></i>
+                    </div>
+                </div>
+                <div class="form-bottom">
+                    <form role="form" action="/acceptinvitation" method="post" class="login-form">
+                        <input type="hidden" name="token" value="{{invitation.token}}">
+                        <input type="hidden" name="action" value="signin">
+                        <div class="form-group">
+                            <label class="sr-only" for="form-username">{{_ 'form.username' }}</label>
+                            <input type="text" name="username" placeholder="{{_ 'form.username'}}..." value="{{inputUsername}}" class="form-username form-control" id="form-username">
+                        </div>
+                        <div class="form-group">
+                            <label class="sr-only" for="form-password">{{_ 'form.password' }}</label>
+                            <input type="password" name="password" placeholder="{{_ 'form.password' }}..." class="form-password form-control" id="form-password">
+                        </div>
+                        <button type="submit" class="btn">{{_ 'form.submit.join.group.existing' group.name }}</button>
+                    </form>
+                </div>
+            </div>
+
+            {{#if loggedIn}}
+                <div class="social-login">
+                    <h3>{{_ 'or.already.logged.in' loggedIn.username}}</h3>
+                    {{#if message}}
+                        <p>{{message}}</p>
+                    {{/if}}
+                    <form action="/acceptinvitation" method="post">
+                        <input type="hidden" name="token" value="{{invitation.token}}">
+                        <input class="btn btn-primary" type="submit" value="{{_ 'accept.invitation.thisaccount.clickhere' loggedIn.username}}">
+                    </form>
+                </div>
+            {{/if}}
+
+            <!--
+            <div class="social-login">
+                <h3>...or login with:</h3>
+                <div class="social-login-buttons">
+                    <a class="btn btn-link-2" href="#">
+                        <i class="fa fa-facebook"></i> Facebook
+                    </a>
+                    <a class="btn btn-link-2" href="#">
+                        <i class="fa fa-twitter"></i> Twitter
+                    </a>
+                    <a class="btn btn-link-2" href="#">
+                        <i class="fa fa-google-plus"></i> Google Plus
+                    </a>
+                </div>
+            </div>
+            -->
+
+        </div>
+
+        <div class="col-sm-1 middle-border"></div>
+        <div class="col-sm-1"></div>
+
+        <div class="col-sm-5">
+
+            <div class="form-box">
+                <div class="form-top">
+                    <div class="form-top-left">
+                        <h3>{{_ 'welcome.signup.header' }}</h3>
+                        <p>{{_ 'welcome.login.description' }}:</p>
+                    </div>
+                    <div class="form-top-right">
+                        <i class="fa fa-pencil"></i>
+                    </div>
+                </div>
+                <div class="form-bottom">
+                    <form role="form" action="/acceptinvitation" method="post" class="registration-form">
+                        <input type="hidden" name="token" value="{{invitation.token}}">
+                        <div class="form-group">
+                            <label class="sr-only" for="form-first-name">{{_ 'form.username' }}</label>
+                            <input type="text" name="username" placeholder="{{_ 'form.username' }}..." class="form-first-name form-control" id="form-first-name">
+                        </div>
+                        <div class="form-group">
+                            <label class="sr-only" for="form-first-name">{{_ 'form.firstname' }}</label>
+                            <input type="text" name="firstname" placeholder="{{_ 'form.firstname' }}..." class="form-first-name form-control" id="form-first-name">
+                        </div>
+                        <div class="form-group">
+                            <label class="sr-only" for="form-last-name">{{_ 'form.lastname' }}</label>
+                            <input type="text" name="lastname" placeholder="{{_ 'form.lastname' }}..." class="form-last-name form-control" id="form-last-name">
+                        </div>
+                        <div class="form-group">
+                            <label class="sr-only" for="form-email">{{_ 'form.email' }}</label>
+                            <input type="text" name="email" placeholder="{{_ 'form.email' }}..." class="form-email form-control" id="form-email">
+                        </div>
+                        <div class="form-group">
+                            <label class="sr-only" for="form-email">{{_ 'form.password' }}</label>
+                            <input type="text" name="password" placeholder="{{_ 'form.password' }}..." class="form-email form-control" id="form-email">
+                        </div>
+                        <div class="form-group">
+                            <label class="sr-only" for="form-email">{{_ 'form.secretquestion' }}</label>
+                            <input type="text" name="squestion" placeholder="{{_ 'form.secretquestion' }}..." class="form-email form-control" id="form-email">
+                        </div>
+                        <div class="form-group">
+                            <label class="sr-only" for="form-email">{{_ 'form.secretanswer' }}</label>
+                            <input type="text" name="sanswer" placeholder="{{_ 'form.secretanswer' }}..." class="form-email form-control" id="form-email">
+                        </div>
+                        <div class="form-group">
+                            <label class="sr-only" for="form-email">{{_ 'form.phone.home' }}</label>
+                            <input type="text" name="phonehome" placeholder="{{_ 'form.phone.home' }}..." class="form-email form-control" id="form-email">
+                        </div>
+                        <div class="form-group">
+                            <label class="sr-only" for="form-email">{{_ 'form.phone.mobile' }}</label>
+                            <input type="text" name="phonemobile" placeholder="{{_ 'form.phone.mobile' }}..." class="form-email form-control" id="form-email">
+                        </div>
+                        <div class="form-group">
+                            <label class="sr-only" for="form-email">{{_ 'form.phone.pager' }}</label>
+                            <input type="text" name="pagernumber" placeholder="{{_ 'form.phone.pager' }}..." class="form-email form-control" id="form-email">
+                        </div>
+                        <button type="submit" class="btn">{{_ 'form.submit.join.group.new' group.name }}</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -1,6 +1,6 @@
 angular.module('scheduling-app').run(['$templateCache', function($templateCache) {
-   console.log('lakjsdfkljaslkdjfjkasdf');
   'use strict';
+
   $templateCache.put('index.html',
     "<!DOCTYPE html>\n" +
     "<html>\n" +
@@ -13,25 +13,40 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "    <link href=\"css/proxyshift.css\" rel=\"stylesheet\">\n" +
     "    <link rel=\"stylesheet\" type=\"text/css\" href=\"lib/angular-toastr/dist/angular-toastr.css\">\n" +
     "\n" +
-    "    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above\n" +
-    "    <link href=\"css/ionic.app.css\" rel=\"stylesheet\">\n" +
-    "    -->\n" +
-    "\n" +
     "    <!-- In windows apps this fixes dynamic content errors -->\n" +
     "    <script src=\"lib/winstore-jscompat/winstore-jscompat.js\"></script>\n" +
-    "    <!-- ionic/angularjs js -->\n" +
-    "    <script src=\"lib/ionic/release/js/ionic.bundle.js\"></script>\n" +
+    "    <script src=\"lib/ionic/release/js/ionic.bundle.min.js\"></script>\n" +
     "    <script src=\"lib/validator-js/validator.min.js\"></script>\n" +
     "    <script src=\"lib/angular-toastr/dist/angular-toastr.tpls.js\"></script>\n" +
     "    <script src=\"lib/ng-material-floating-button/src/mfb-directive.js\"></script>\n" +
-    "    <script src=\"template.js\"></script>\n" +
     "    <script src=\"libs.js\"></script>\n" +
-    "\n" +
-    "\n" +
+    "    <script src=\"template.js\"></script>\n" +
     "</head>\n" +
-    "\n" +
     "  <body ng-app=\"scheduling-app\">\n" +
     "    <ion-nav-view></ion-nav-view>\n" +
+    "    <noscript>\n" +
+    "        <div class=\"login-container centered-input\">\n" +
+    "            <div>\n" +
+    "                <form>\n" +
+    "                    <div class=\"list list-inset\">\n" +
+    "                        <a href=\"/\"><img src=\"img/logo.png\" class=\"logo\"></a>\n" +
+    "                        <label class=\"item item-input\">\n" +
+    "                            <i class=\"icon ion-email placeholder-icon\"></i>\n" +
+    "                            <input  type=\"text\" ng-model=\"user.username\" placeholder=\"Username or email\">\n" +
+    "                        </label>\n" +
+    "                        <label class=\"item item-input\">\n" +
+    "                            <i class=\"icon ion-locked placeholder-icon\"></i>\n" +
+    "                            <input  type=\"password\" ng-model=\"user.password\" placeholder=\"Password\">\n" +
+    "                        </label>\n" +
+    "                        <label class=\"item login-error-message\" ng-show=\"message != null\">\n" +
+    "                            <span>Proxy/Shift requires Javascript to be enabled.</span>\n" +
+    "                        </label>\n" +
+    "                        <button disabled class=\"button button-block\" type=\"submit\">Log in</button>\n" +
+    "                    </div>\n" +
+    "                </form>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "    </noscript>\n" +
     "  </body>\n" +
     "</html>\n"
   );

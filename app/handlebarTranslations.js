@@ -7,17 +7,37 @@ I18n.translations["en"] = {
         to: {
             proxyshift: 'Welcome to Proxy Shift!'
         },
+        login: {
+            header: 'Login to our site',
+            description: 'Enter username and password to log on'
+        },
+        signup: {
+            header: 'Sign up now',
+            description: 'Create an account and join Proxy Shift'
+        },
+        getstarted: {
+            download: {
+                app: "To get started download our mobile app",
+            },
+            login: 'Or use the mobile web version'
+        },
         resetpassword: 'Reset your password'
     },
     invites: {
         join: {
-            group: "You've been invited to join {{1}}'s Proxy Shift group by {{2}}"
-        }
+            group: "You've been invited to join {{1}}'s Proxy Shift group by {{2}}",
+            expired: {
+                headline: "Invitation to {{1}} expired",
+                details: "Please contact {{1}} for another invitation"
+            },
+            success: "You have joined {{1}}'s Proxy Shift group",
+            unknown: 'Unknown invitation'
+        },
     },
     accept: {
         invitation: {
             thisaccount: {
-                clickhere: 'to accept this invitation on this account click here'
+                clickhere: 'Accept invitation on your account ({{1}})'
             }
         }
     },
@@ -44,6 +64,11 @@ I18n.translations["en"] = {
                 account: {
                     caps: 'Or create a new account'
                 }
+            }
+        },
+        already: {
+            logged: {
+                in: '...or use the account you are logged into ({{1}})'
             }
         }
     },
@@ -81,6 +106,14 @@ I18n.translations["en"] = {
             home: 'Phone (Home)',
             mobile: 'Phone (Mobile)',
             pager: 'Pager number'
+        },
+        submit: {
+            join: {
+                group: {
+                    existing: 'Login and join {{1}}',
+                    new: 'Sign me up and join {{1}}'
+                }
+            },
         }
     },
     message: {

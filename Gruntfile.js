@@ -23,140 +23,6 @@ module.exports = function(grunt) {
             prod: ['dist']
         },
 
-        browserify: {
-            vendor: {
-                src: ['ionic/www/js/**/*.js'],
-                dest: 'ionic/www/libs.js',
-                options: {
-                    transform: [
-                        'deamdify'
-                    ],
-                    shim: {
-                        ionic: {
-                            path: 'ionic/lib/ionic/release/js/ionic.bundle.min.js',
-                            exports: 'angular'
-                        },
-                        jquery: {
-                            path: 'ionic/lib/jquery/dist/jquery.js',
-                            exports: '$'
-                        },
-                        lodash: {
-                            path: 'ionic/lib/lodash/lodash.js',
-                            exports: '_'
-                        },
-                        'angular-cookies': {
-                            path: 'ionic/lib/angular-cookies/angular-cookies.min.js',
-                            depends: {
-                                ionic: 'angular'
-                            },
-                            exports: null
-                        },
-                        'httpauth': {
-                            path: 'ionic/lib/angular-http-auth/src/http-auth-interceptor.js',
-                            depends: {
-                                ionic: 'angular'
-                            },
-                            exports: null
-                        },
-                        'angular-messages': {
-                            path: 'ionic/lib/angular-http-auth/src/http-auth-interceptor.js',
-                            depends: {
-                                ionic: 'angular'
-                            },
-                            exports: null
-                        },
-                        momentjs: {
-                            path: 'ionic/lib/moment/min/moment.min.js',
-                            exports: 'moment',
-                            depends: {
-                                jquery: '$'
-                            }
-                        },
-                        tzdetect: {
-                            path: 'ionic/lib/tzdetect/tzdetect.js',
-                            depends: {
-                                momentjs: 'moment'
-                            },
-                            exports: null
-                        },
-                        'ui-grid': {
-                            path: 'ionic/lib/angular-ui-grid/ui-grid.js',
-                            depends: {
-                                ionic: 'angular'
-                            },
-                            exports: null
-                        },/*
-                        validator: {
-                            path: 'ionic/lib/validator-js/validator.js',
-                            exports: null
-                        },*/
-                        'angular-gettext': {
-                            path: 'ionic/lib/angular-gettext/dist/angular-gettext.js',
-                            depends: {
-                                ionic: 'angular'
-                            },
-                            exports: null
-                        },
-                        'angular-local-storage': {
-                            path: 'ionic/lib/angular-local-storage/dist/angular-local-storage.js',
-                            depends: {
-                                ionic: 'angular'
-                            },
-                            exports: null
-                        },
-                        'ionic-fancy-select': {
-                            path: 'ionic/lib/ionic-fancy-select/src/ionic-fancy-select.js',
-                            depends: {
-                                ionic: 'angular'
-                            },
-                            exports: null
-                        },
-                        'angular-resource': {
-                            path: 'ionic/lib/angular-resource/angular-resource.js',
-                            depends: {
-                                ionic: 'angular'
-                            },
-                            exports: null
-                        },
-                        'ionic-timepicker': {
-                            path: 'ionic/lib/ionic-timepicker/dist/ionic-timepicker.bundle.min.js',
-                            depends: {
-                                ionic: 'angular'
-                            },
-                            exports: null
-                        },
-                        'ionic-datepicker': {
-                            path: 'ionic/lib/ionic-datepicker/dist/ionic-datepicker.bundle.min.js',
-                            depends: {
-                                ionic: 'angular'
-                            },
-                            exports: null
-                        }
-                    }
-                }
-            },
-            app: {
-                files: {
-                    'build/app.js': ['client/src/main.js']
-                },
-                options: {
-                    transform: ['ractivate', 'hbsfy'],
-                    external: ['jquery', 'underscore', 'backbone', 'backbone.marionette', 'moment', 'fullcalendar']
-                }
-            },
-            test: {
-                files: {
-                    'build/tests.js': [
-                        'client/spec/**/*.test.js'
-                    ]
-                },
-                options: {
-                    transform: ['ractivate', 'hbsfy'],
-                    external: ['jquery', 'underscore', 'backbone', 'backbone.marionette']
-                }
-            }
-        },
-
         less: {
             transpile: {
                 files: {
@@ -166,6 +32,10 @@ module.exports = function(grunt) {
                         'ionic/www/lib/angular-ui-grid/ui-grid.min.css',
                         'ionic/www/lib/ng-material-floating-button/mfb/dist/mfb.css',
                         'ionic/less/main.less'
+                    ],
+                    'static/css/login-form-style.css': [
+                        'static/css/form-elements.css',
+                        'static/css/login-form-style.less'
                     ]
                 }
             }
@@ -294,10 +164,11 @@ module.exports = function(grunt) {
                         'ionic/www/js/controllers/CreateGroupController.js',
                         'ionic/www/js/controllers/GroupSettingsController.js',
                         'ionic/www/js/controllers/GroupMembersController.js',
+                        'ionic/www/js/controllers/GroupLocationsController.js',
                         'ionic/www/js/controllers/UserLocationsController.js',
-                        'ionic/www/js/sendinvite/BaseSendInviteDirectiveController.js',
+                        'ionic/www/js/controllers/sendinvite/BaseSendInviteDirectiveController.js',
                         'ionic/www/js/controllers/SendInviteDirectiveController.js',
-                        'ionic/www/js/createsublocation/BaseManageLocationDirectiveController.js',
+                        'ionic/www/js/controllers/createsublocation/BaseManageLocationDirectiveController.js',
                         'ionic/www/js/controllers/ManageLocationDirectiveController.js',
                         'ionic/www/js/controllers/LoginLogoutController.js',
                         'ionic/www/js/controllers/LogoutController.js',
@@ -399,10 +270,18 @@ module.exports = function(grunt) {
         watch: {
             scripts: {
                 files: ['client/templates/**/*', 'client/src/**/*.js', 'views/**/*'],
-                tasks: ['clean:dev', 'browserify:app', 'concat', 'copy:dev']
+                tasks: ['clean:dev', 'concat', 'copy:dev']
+            },
+            uglify: {
+                files: ['ionic/www/js/**/*.js', 'ionic/www/lib/**/*.js'],
+                tasks: ['uglify']
+            },
+            ngtemplates: {
+                files: ['ionic/www/**/*.html'],
+                tasks: ['ngtemplates']
             },
             less: {
-                files: ['ionic/less/**/*.less', 'ionic/www/css/**/style.css'],
+                files: ['ionic/less/**/*.less', 'ionic/www/css/**/style.css', 'static/css/form-elements.css', 'static/css/**/*.less'],
                 tasks: ['less:transpile', 'copy:dev']
             },
             test: {
@@ -421,7 +300,7 @@ module.exports = function(grunt) {
                 options: {
                     file: 'server.js',
                     nodeArgs: ['--debug'],
-                    watchedFolders: ['controllers', 'app'],
+                    watchedFolders: ['controllers', 'app', 'views'],
                     env: {
                         PORT: '3300'
                     }
@@ -467,7 +346,7 @@ module.exports = function(grunt) {
 
         concurrent: {
             dev: {
-                tasks: ['nodemon:dev', 'watch:scripts', 'watch:less'],
+                tasks: ['nodemon:dev', 'watch:less', 'watch:uglify', 'watch:ngtemplates'],
                 options: {
                     logConcurrentOutput: true
                 }

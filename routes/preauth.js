@@ -372,6 +372,7 @@ module.exports = function(app, settings){
                             }
                         })
                             .catch(function(err) {
+                                slack.error(req, "Error accepting a group invitation", err);
                                 showPage('messsage.internalerror');
                             });
                     }

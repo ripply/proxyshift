@@ -20,5 +20,28 @@
 </head>
   <body ng-app="scheduling-app">
     <ion-nav-view></ion-nav-view>
+    <noscript>
+        <div class="login-container centered-input">
+            <div>
+                <form>
+                    <div class="list list-inset">
+                        <a href="/"><img src="img/logo.png" class="logo"></a>
+                        <label class="item item-input">
+                            <i class="icon ion-email placeholder-icon"></i>
+                            <input  type="text" ng-model="user.username" placeholder="Username or email">
+                        </label>
+                        <label class="item item-input">
+                            <i class="icon ion-locked placeholder-icon"></i>
+                            <input  type="password" ng-model="user.password" placeholder="Password">
+                        </label>
+                        <label class="item login-error-message" ng-show="message != null">
+                            <span>Proxy/Shift requires Javascript to be enabled.</span>
+                        </label>
+                        <button disabled class="button button-block" type="submit">Log in</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </noscript>
   </body>
 </html>
