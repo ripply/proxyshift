@@ -152,7 +152,7 @@ var config_data = {
     }
 };
 
-config_module = angular.module('scheduling-app.config', []);
+var config_module = angular.module('scheduling-app.config', []);
 angular.forEach(config_data,function(key,value) {
     config_module.constant(value,key);
 });
