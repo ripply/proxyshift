@@ -445,22 +445,12 @@ module.exports = function(app, settings){
     app.post('/session/login', requireHealthyServer, requireJson, function(req, res, next) {
         passport.authenticate('local', {session: true}, function (err, user, info) {
             if (err) { return next(err); }
-            console.log("login request:");
-            console.log(req.body);
             // authentication failed, send 401 unauthorized
             if (!user) { return res.sendStatus(401); }
             if (req.body.deviceid && req.body.deviceid != '') {
                 console.log("User sent a deviceid, attempting to send message after 10s");
                 console.log("Sending device a push notification... " + req.body.deviceid);
                 appLogic.fireEvent('loggedIn', user.id);
-                /*
-                setTimeout(function () {
-                        console.log("Sending device a push notification... " + req.body.deviceid);
-                        appLogic.fireEvent('loggedIn', user.id);
-                    },
-                    10 * 1000
-                );
-                */
             }
             req.login(user, function (err) {
                 if (err) { return next(err); }
