@@ -16,7 +16,7 @@ angular.forEach(window.Validations, function (modelValues, modelName) {
             validationEntries = [validationEntries];
         }
 
-        messages = {};
+        var messages = {};
 
         angular.forEach(validationEntries, function (validationEntry) {
 
