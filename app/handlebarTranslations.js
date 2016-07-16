@@ -34,6 +34,13 @@ I18n.translations["en"] = {
             unknown: 'Unknown invitation'
         },
     },
+    password: {
+        reset: {
+            success: "Password reset successfully",
+            unknown: "Unknown password reset token",
+            description: "Please type in your new password",
+        }
+    },
     accept: {
         invitation: {
             thisaccount: {

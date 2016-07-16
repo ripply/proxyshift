@@ -37,11 +37,11 @@
                         <input type="hidden" name="token" value="{{invitation.token}}">
                         <input type="hidden" name="action" value="signin">
                         <div class="form-group">
-                            <label class="sr-only" for="form-username">{{_ 'form.username' }}</label>
+                            <label class="sr-only" for="username">{{_ 'form.username' }}</label>
                             <input type="text" name="username" placeholder="{{_ 'form.username'}}..." value="{{inputUsername}}" class="form-username form-control" id="form-username">
                         </div>
                         <div class="form-group">
-                            <label class="sr-only" for="form-password">{{_ 'form.password' }}</label>
+                            <label class="sr-only" for="password">{{_ 'form.password' }}</label>
                             <input type="password" name="password" placeholder="{{_ 'form.password' }}..." class="form-password form-control" id="form-password">
                         </div>
                         <button type="submit" class="btn">{{_ 'form.submit.join.group.existing' group.name }}</button>
@@ -100,43 +100,43 @@
                     <form role="form" action="/acceptinvitation" method="post" class="registration-form">
                         <input type="hidden" name="token" value="{{invitation.token}}">
                         <div class="form-group">
-                            <label class="sr-only" for="form-first-name">{{_ 'form.username' }}</label>
+                            <label class="sr-only" for="username">{{_ 'form.username' }}</label>
                             <input type="text" name="username" placeholder="{{_ 'form.username' }}..." class="form-first-name form-control" id="form-first-name">
                         </div>
                         <div class="form-group">
-                            <label class="sr-only" for="form-first-name">{{_ 'form.firstname' }}</label>
+                            <label class="sr-only" for="firstname">{{_ 'form.firstname' }}</label>
                             <input type="text" name="firstname" placeholder="{{_ 'form.firstname' }}..." class="form-first-name form-control" id="form-first-name">
                         </div>
                         <div class="form-group">
-                            <label class="sr-only" for="form-last-name">{{_ 'form.lastname' }}</label>
+                            <label class="sr-only" for="lastname">{{_ 'form.lastname' }}</label>
                             <input type="text" name="lastname" placeholder="{{_ 'form.lastname' }}..." class="form-last-name form-control" id="form-last-name">
                         </div>
                         <div class="form-group">
-                            <label class="sr-only" for="form-email">{{_ 'form.email' }}</label>
+                            <label class="sr-only" for="email">{{_ 'form.email' }}</label>
                             <input type="text" name="email" placeholder="{{_ 'form.email' }}..." class="form-email form-control" id="form-email">
                         </div>
                         <div class="form-group">
-                            <label class="sr-only" for="form-email">{{_ 'form.password' }}</label>
+                            <label class="sr-only" for="password">{{_ 'form.password' }}</label>
                             <input type="text" name="password" placeholder="{{_ 'form.password' }}..." class="form-email form-control" id="form-email">
                         </div>
                         <div class="form-group">
-                            <label class="sr-only" for="form-email">{{_ 'form.secretquestion' }}</label>
+                            <label class="sr-only" for="squestion">{{_ 'form.secretquestion' }}</label>
                             <input type="text" name="squestion" placeholder="{{_ 'form.secretquestion' }}..." class="form-email form-control" id="form-email">
                         </div>
                         <div class="form-group">
-                            <label class="sr-only" for="form-email">{{_ 'form.secretanswer' }}</label>
+                            <label class="sr-only" for="sanswer">{{_ 'form.secretanswer' }}</label>
                             <input type="text" name="sanswer" placeholder="{{_ 'form.secretanswer' }}..." class="form-email form-control" id="form-email">
                         </div>
                         <div class="form-group">
-                            <label class="sr-only" for="form-email">{{_ 'form.phone.home' }}</label>
+                            <label class="sr-only" for="phonehome">{{_ 'form.phone.home' }}</label>
                             <input type="text" name="phonehome" placeholder="{{_ 'form.phone.home' }}..." class="form-email form-control" id="form-email">
                         </div>
                         <div class="form-group">
-                            <label class="sr-only" for="form-email">{{_ 'form.phone.mobile' }}</label>
+                            <label class="sr-only" for="phonemobile">{{_ 'form.phone.mobile' }}</label>
                             <input type="text" name="phonemobile" placeholder="{{_ 'form.phone.mobile' }}..." class="form-email form-control" id="form-email">
                         </div>
                         <div class="form-group">
-                            <label class="sr-only" for="form-email">{{_ 'form.phone.pager' }}</label>
+                            <label class="sr-only" for="pagernumber">{{_ 'form.phone.pager' }}</label>
                             <input type="text" name="pagernumber" placeholder="{{_ 'form.phone.pager' }}..." class="form-email form-control" id="form-email">
                         </div>
                         <button type="submit" class="btn">{{_ 'form.submit.join.group.new' group.name }}</button>
