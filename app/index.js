@@ -64,7 +64,7 @@ App.prototype.getUserSettings = function getUserSettings(user_ids, next, error) 
         .catch(function (err) {
             slack.error(undefined, 'Error getting user settings', err);
             if (error) {
-                return error(err);0
+                return error(err);
             }
         });
 };
@@ -216,7 +216,7 @@ App.prototype.sendToUsers = function sendToUsers(user_ids, messages, args, test,
                             }
                             var to = user.email;
                             console.log("Sending email.....");
-                            self.sendEmail(from, to, subject, text, html);
+                            self.sendEmail(from, to, subject, text, html, self.combineFirstLastName(args.firstname, args.lastname));
                             successfulNotifications++;
                         }
                     },
@@ -347,7 +347,7 @@ App.prototype.notifyGroupPromoted = function(user_id, inviter_user, group_id) {
 
 App.prototype.sendInviteEmail = function(token, to, inviter_user, message) {
     var inviteUrl = this.createTokenUrl("/acceptinvitation", token);
-    this.sendEmail('thamer@proxyshift.com', to, 'Company invitation', inviteUrl + ' ' + message, '<a href="' + inviteUrl + '">' + inviteUrl + '</a>' + message)
+    this.sendEmail(this.transactionalEmailAddress(), to, 'Company invitation', inviteUrl + ' ' + message, '<a href="' + inviteUrl + '">' + inviteUrl + '</a>' + message)
 };
 
 App.prototype.sendNotification = function sendNotification(service, endpoints, expires, message) {
@@ -380,13 +380,14 @@ App.prototype.handleNotificationJob = function handleNotificationJob(job) {
     job.ack();
 };
 
-App.prototype.sendEmail = function(from, to, subject, text, html) {
+App.prototype.sendEmail = function(from, to, subject, text, html, toName) {
     if (to === null || to === undefined) {
         throw new Error("Email recipient required (not specified)");
     }
     var email = {
         from: from,
         to: to,
+        toName: toName,
         subject: subject,
         text: text,
         html: html
@@ -431,7 +432,7 @@ App.prototype.handleEmailJob = function(job) {
                     console.log(error);
                     slack.alert("Failed to send email to: " + body.to, error);
                 } else {
-                    console.log("Mail successfully sent: " + info.response);
+                    console.log("Mail successfully sent: " + JSON.stringify(info.response));
                     slack.info("Sent mail to: " + body.to, '#email');
                 }
             });

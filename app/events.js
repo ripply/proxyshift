@@ -1,4 +1,5 @@
 var _ = require('underscore'),
+    config = require('config'),
     models = require('./models'),
     slack = require('./slack'),
     moment = require('moment-timezone'),
@@ -18,6 +19,22 @@ var categories = {
         ]
     }
 };
+
+var transactionalEmailAddress;
+
+if (config.has('email.transactional.address')) {
+    transactionalEmailAddress = config.get('email.transactional.address');
+} else {
+    transactionalEmailAddress = 'noreply@proxyshift.com';
+}
+
+var contactUsEmailAddress;
+
+if (config.has('email.contactus.address')) {
+    contactUsEmailAddress = config.get('email.contactus.address');
+} else {
+    contactUsEmailAddress = 'admin@proxyshift.com';
+}
 
 function createNotification(default_, title, message, bodyAndroidOnly, badge, timeToLive, category, action, data) {
     var compiledMessage = _.template(message);
@@ -111,7 +128,7 @@ var eventPasswordReset = {
 
 var verifyEmail = {
     email: {
-        from: 'thamer@proxyshift.com',
+        from: transactionalEmailAddress,
         subject: _.template("Proxyshift Email verification"),
         text: _.template("Verify email at <%- link %>"),
         html: _.template('Verify email at <a href="<%- link %>"><%- link %></a>')
@@ -989,6 +1006,9 @@ function newShiftApplicationApprovedToDeniedUsers(
 }
 
 module.exports = {
+    transactionalEmailAddress: function() {return transactionalEmailAddress; }, // function because of _.bindAll
+    contactUsEmailAddress: function() {return contactUsEmailAddress; }, // function because of _.bindAll
+    combineFirstLastName: combineFirstLastName,
     newShiftApplication: newShiftApplication,
     acceptOrDeniedShiftApplication: acceptOrDeniedShiftApplication,
 
@@ -1085,7 +1105,7 @@ module.exports = {
                 next(true);
                 body.ip = req.ip;
                 slack.info(contactUsSlackTemplate(body), '#contactus');
-                self.sendEmail(body.from, 'admin@proxyshift.com', 'CONTACTUS: ' + body.name, body.message);
+                self.sendEmail(body.from, contactUsEmailAddress, 'CONTACTUS: ' + body.name, body.message);
             } else {
                 next(false);
             }

@@ -531,6 +531,11 @@ module.exports = function(app, settings){
         });
     });
 
+    // used by sendgrid for spam checking failures, see sendgrid.js
+    app.post('/compliance', function(req, res, next) {
+        slack.error(req, JSON.stringify(req.body));
+    });
+
     // creating users is ok to do without being logged in
     app.post('/api/users', notLoggedIn, users['/'].post.route);
     app.get('/passwordreset', users['/passwordreset'].get.route);

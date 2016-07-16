@@ -33,6 +33,7 @@ if (config.has('google.api.gmail.client_id') &&
         }
     });
     console.log("Email is configured to use OAuth for " + user);
+    module.exports = smtpTransport;
 } else if (config.has('google.api.gmail.pass') && config.has('google.api.gmail.user')) {
     user = config.get('google.api.gmail.user');
     var pass = config.get('google.api.gmail.pass');
@@ -48,11 +49,18 @@ if (config.has('google.api.gmail.client_id') &&
     });
 
     console.log("Email is configured for " + user + " in less secure mode");
+    module.exports = smtpTransport;
 } else {
-    console.log("Email is not configured properly, cannot send emails.");
+    // try to use sendgrid
+    var sendgrid = require('./sendgrid');
+    if (sendgrid.ready) {
+        console.log("Email is configured to use sendgrid");
+        module.exports = sendgrid;
+    } else {
+        console.log("Email is not configured properly, cannot send emails.");
+        module.exports = smtpTransport;
+    }
 }
-
-module.exports = smtpTransport;
 /*
 var passport = require('passport'),
     GoogleStrategy = require('passport-google-oauth').OAuthStrategy,

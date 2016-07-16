@@ -31,6 +31,19 @@
             }
         }
     },
+    "sendgrid": {
+        "api": {
+            "key": "SENDGRID_API_KEY"
+        }
+    },
+    "email": {
+        "transactional": {
+            "address": "TRANSACTIONAL_EMAIL"
+        },
+        "contactus": {
+            "address": "CONTACTUS_EMAIL"
+        }
+    },
     "web": {
         "url": "WEB_URL"
     },
