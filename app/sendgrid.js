@@ -64,6 +64,13 @@ module.exports = {
             }
         }
 
+        var substitutions;
+        if (body.substitutions !== undefined) {
+            substitutions = body.substitutions;
+        } else {
+            substitutions = {};
+        }
+
         var request = sg.emptyRequest();
         request.body = {
             "content": content,
@@ -82,11 +89,17 @@ module.exports = {
                         "X-Mailer": "Proxyshift"
                     },
                     "subject": body.subject,
-                    "to": to
+                    "to": to,
+                    "substitutions": substitutions
                 }
             ],
             "subject": body.subject,
         };
+
+        if (body.template_id) {
+            request.body.template_id = body.template_id;
+        }
+
         request.method = 'POST';
         request.path = '/v3/mail/send';
         sg.API(request, function (response) {

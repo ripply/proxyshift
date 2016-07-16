@@ -216,7 +216,7 @@ App.prototype.sendToUsers = function sendToUsers(user_ids, messages, args, test,
                             }
                             var to = user.email;
                             console.log("Sending email.....");
-                            self.sendEmail(from, to, subject, text, html, self.combineFirstLastName(args.firstname, args.lastname));
+                            self.sendEmail(from, to, subject, text, html, self.combineFirstLastName(args.firstname, args.lastname), args);
                             successfulNotifications++;
                         }
                     },
@@ -345,9 +345,9 @@ App.prototype.notifyGroupPromoted = function(user_id, inviter_user, group_id) {
     console.log("PROMOTEDD");
 };
 
-App.prototype.sendInviteEmail = function(token, to, inviter_user, message) {
+App.prototype.sendInviteEmail = function(token, to, inviter_user, message, emailArgs) {
     var inviteUrl = this.createTokenUrl("/acceptinvitation", token);
-    this.sendEmail(this.transactionalEmailAddress(), to, 'Company invitation', inviteUrl + ' ' + message, '<a href="' + inviteUrl + '">' + inviteUrl + '</a>' + message)
+    this.sendEmail(this.transactionalEmailAddress(), to, 'Company invitation', inviteUrl + ' ' + message, '<a href="' + inviteUrl + '">' + inviteUrl + '</a>' + message, undefined, emailArgs);
 };
 
 App.prototype.sendNotification = function sendNotification(service, endpoints, expires, message) {
@@ -380,18 +380,36 @@ App.prototype.handleNotificationJob = function handleNotificationJob(job) {
     job.ack();
 };
 
-App.prototype.sendEmail = function(from, to, subject, text, html, toName) {
+const bannedSubstitutions = [
+    'password',
+    'user_id'
+];
+
+App.prototype.sendEmail = function(from, to, subject, text, html, toName, args) {
     if (to === null || to === undefined) {
         throw new Error("Email recipient required (not specified)");
     }
+
+    var modifiedSubstitutions = {};
+    _.each(_.omit(args, bannedSubstitutions), function(value, key) {
+        modifiedSubstitutions["VAR_" + key.toUpperCase()] = value;
+    });
+
     var email = {
         from: from,
         to: to,
         toName: toName,
         subject: subject,
         text: text,
-        html: html
+        html: html,
+        substitutions: modifiedSubstitutions,
+        template_id: 'e9566703-da1f-4c60-b9f4-957352251472'
     };
+
+    console.log('*****************');
+    console.log(email);
+    console.log('*****************');
+    console.log(args);
 
     if (!this.connections) {
         console.log("RabbitMQ not configured, sending email now in web process");

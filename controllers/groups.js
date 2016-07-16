@@ -470,6 +470,11 @@ module.exports = {
                                         // grouppermission_id is valid
                                     }
 
+                                    var group_name = fetchedGrouppermission.get('group_name');
+                                    var emailArgs = {
+                                        group: group_name
+                                    };
+
                                     return getGroupsPermissionSet(sqlOptions, group_id, function inviteUserToGroupGetPermissionSet(foundGrouppermissions) {
                                         var foundGrouppermissionsJson = foundGrouppermissions.toJSON();
                                         var grouppermissionLevelToGrouppermissionMap = orderGroupPermissionSetByPermissionLevel(foundGrouppermissionsJson);
@@ -603,7 +608,7 @@ module.exports = {
                                                                     } else {
                                                                         email = existingGroupInvitation.email;
                                                                     }
-                                                                    sendEmail(existingGroupInvitation.token, email, inviter_user_json, message);
+                                                                    sendEmail(existingGroupInvitation.token, email, inviter_user_json, message, emailArgs);
                                                                 });
                                                                 _.each(newGroupInvitations, function(newGroupInvitation) {
                                                                     didAnything = true;
@@ -613,7 +618,7 @@ module.exports = {
                                                                     } else {
                                                                         email = newGroupInvitation.email;
                                                                     }
-                                                                    sendEmail(newGroupInvitation.token, email, inviter_user_json, message);
+                                                                    sendEmail(newGroupInvitation.token, email, inviter_user_json, message, emailArgs);
                                                                 });
                                                                 _.each(usersToInstantlyPromote, function(promotedUser) {
                                                                     didAnything = true;
@@ -1483,13 +1488,19 @@ function getFoundGroupinvitationToUserIdMap(groupinvitations_json) {
 
 function validateGrouppermissionIdIsPartOfGroup(sqlOptions, group_id, grouppermission_id, user_id, next) {
     return models.GroupPermission.query(function inviteUserToGroupFilterInvalidGrouppermissionsQuery(q) {
-        q.select()
+        q.select([
+            'grouppermissions.*',
+            'groups.name as group_name'
+        ])
             .from('grouppermissions')
             .innerJoin('usergroups as a', function() {
                 this.on('a.group_id', '=', 'grouppermissions.group_id');
             })
             .innerJoin('grouppermissions as b', function() {
                 this.on('b.id', '=', 'a.grouppermission_id');
+            })
+            .innerJoin('groups', function() {
+                this.on('groups.id', '=', 'grouppermissions.group_id');
             })
             .where('grouppermissions.group_id', '=', group_id)
             .andWhere('grouppermissions.id', '=', grouppermission_id)
@@ -1687,12 +1698,12 @@ function createMultipleGroupInvitationUserClasses(sqlOptions, groupInvitationUse
         .tap(next);
 }
 
-function sendEmail(token, to, inviter_user, message) {
+function sendEmail(token, to, inviter_user, message, emailArgs) {
     if (to === null || to === undefined) {
         throw new Error("Internal error, email recipient is not defined");
     }
     return new Promise(function sendInviteEmailPromise(resolve, reject) {
-        appLogic.sendInviteEmail(token, to, inviter_user, message);
+        appLogic.sendInviteEmail(token, to, inviter_user, message, emailArgs);
         resolve();
     });
 }
