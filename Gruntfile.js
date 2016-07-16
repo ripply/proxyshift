@@ -54,10 +54,10 @@ module.exports = function(grunt) {
                     'static/partials/main.header.html',
                     'static/partials/main.header.includes.html',
                     'static/partials/main.header.body.html',
-                    'static/partials/main.index.html',
+                    'static/partials/main.body.html',
                     'static/partials/main.footer.nonsticky.html',
                     'static/partials/main.footer.content.html',
-                    'static/partials/main.index.javascript.html',
+                    'static/partials/main.body.javascript.html',
                     'static/partials/main.end.html'
                 ],
                 dest : 'static/index.html'
