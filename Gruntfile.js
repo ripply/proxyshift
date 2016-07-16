@@ -418,7 +418,7 @@ module.exports = function(grunt) {
 
         concurrent: {
             dev: {
-                tasks: ['nodemon:dev', 'watch:less', 'watch:uglify', 'watch:ngtemplates', 'watch:concat'],
+                tasks: ['nodemon:dev', 'watch:less', 'watch:uglify', 'watch:ngtemplates', 'watch:concat', 'watch:ngtemplates'],
                 options: {
                     logConcurrentOutput: true
                 }
