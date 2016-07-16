@@ -49,31 +49,63 @@ module.exports = function(grunt) {
             options : {
                 //sourceMap :true
             },
-            dist : {
+            index: {
                 src  : [
-                    <!-- In windows apps this fixes dynamic content errors -->
-                    'ionic/www/lib/ionic/release/js/ionic.bundle.js',
-                    'ionic/www/lib/jquery/dist/jquery.js',
-                    'ionic/www/lib/lodash/lodash.js',
-                    'ionic/www/lib/angular-cookies/angular-cookies.min.js',
-                    'ionic/www/lib/angular-http-auth/src/http-auth-interceptor.js',
-                    'ionic/www/lib/angular-messages/angular-messages.js',
-                    'ionic/www/lib/moment/min/moment.min.js',
-                    'ionic/www/lib/moment-timezone/builds/moment-timezone-with-data.js',
-                    'ionic/www/lib/tzdetect/tzdetect.js',
-                    'ionic/www/lib/jstz/jstz.js',
-                    'ionic/www/lib/angular-ui-grid/ui-grid.js',
-
-                    'ionic/www/lib/angular-gettext/dist/angular-gettext.js',
-                    'ionic/www/lib/angular-local-storage/dist/angular-local-storage.js',
-                    'ionic/www/lib/ionic-fancy-select/src/ionic-fancy-select.js',
-                    'ionic/www/lib/angular-resource/angular-resource.js',
-                    'ionic/www/lib/ionic-timepicker/dist/ionic-timepicker.bundle.min.js',
-                    'ionic/www/lib/ionic-datepicker/dist/ionic-datepicker.bundle.min.js',
-
-
+                    'static/partials/main.header.html',
+                    'static/partials/main.header.includes.html',
+                    'static/partials/main.header.body.html',
+                    'static/partials/main.index.html',
+                    'static/partials/main.footer.nonsticky.html',
+                    'static/partials/main.footer.content.html',
+                    'static/partials/main.index.javascript.html',
+                    'static/partials/main.end.html'
                 ],
-                dest : '.tmp/main.js'
+                dest : 'static/index.html'
+            },
+            contactusfail: {
+                src  : [
+                    'static/partials/main.header.html',
+                    'static/partials/main.header.body.html',
+                    'static/partials/contactusfail.body.html',
+                    'static/partials/main.footer.sticky.html',
+                    'static/partials/main.footer.content.html',
+                    'static/partials/main.end.html'
+                ],
+                dest : 'static/contactusfail.html'
+            },
+            contactussuccess: {
+                src  : [
+                    'static/partials/main.header.html',
+                    'static/partials/main.header.body.html',
+                    'static/partials/contactussuccess.body.html',
+                    'static/partials/main.footer.sticky.html',
+                    'static/partials/main.footer.content.html',
+                    'static/partials/main.end.html'
+                ],
+                dest : 'static/contactussuccess.html'
+            },
+            privacypolicy: {
+                src: [
+                    'static/partials/main.header.html',
+                    'static/partials/privacypolicy.header.html',
+                    'static/partials/main.header.body.html',
+                    'static/partials/privacypolicy.body.html',
+                    'static/partials/main.footer.sticky.html',
+                    'static/partials/main.footer.content.html',
+                    'static/partials/main.end.html'
+                ],
+                dest : 'static/privacy-policy.html'
+            },
+            handlebarsMain : {
+                src  : [
+                    'static/partials/main.header.html',
+                    'static/partials/main.header.body.html',
+                    'static/partials/main.handlebars',
+                    'static/partials/main.footer.sticky.html',
+                    'static/partials/main.footer.content.html',
+                    'static/partials/main.end.html'
+                ],
+                dest : 'views/layouts/main.handlebars'
             }
         },
 

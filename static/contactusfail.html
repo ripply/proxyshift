@@ -37,93 +37,130 @@
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     <noscript>
-        <style>#tf-menu{
-            background-color: #222222 !important;
-            padding: 0 !important;
-        }</style>
+        <style>
+            #tf-menu {
+                background-color: #222222 !important;
+                padding: 0 !important;
+            }
+            .noscript-hide {
+                display: none;
+            }
+            .noscript-header ul {
+                border-width: 0;
+                margin: 0;
+                margin-right: -15;
+                padding: 0;
+            }
+            .noscript-header li {
+                float: left;
+            }
+            .noscript-header li a {
+                text-transform: uppercase;
+                color: #FFF;
+                font-size: 12px;
+                letter-spacing: 1px;
+                line-height: 20px;
+            }
+        </style>
     </noscript>
+
 </head>
 <body>
-    <nav id="tf-menu" class="navbar navbar-default navbar-fixed-top on">
-        <div class="container">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="index.html">Proxy / Shift</a>
-            </div>
-
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a href="/#tf-home" class="page-scroll">Home</a></li>
-                    <li><a href="/#tf-services" class="page-scroll">Services</a></li>
-                    <li><a href="/#tf-testimonials" class="page-scroll">Facts</a></li>
-                    <li><a href="/#tf-about" class="page-scroll">About</a></li>
-                    <li class="active"><a href="#tf-contact" class="page-scroll">Contact</a></li>
+<nav id="tf-menu" class="navbar navbar-default navbar-fixed-top on">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed noscript-hide" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <noscript class="noscript-header">
+                <ul class="nav navbar-toggle">
+                    <li><a href="#tf-home" class="page-scroll">Home</a></li>
+                    <li><a href="#tf-services" class="page-scroll">Services</a></li>
+                    <li><a href="#tf-testimonials" class="page-scroll">Facts</a></li>
+                    <li><a href="#tf-about" class="page-scroll">About</a></li>
+                    <li><a href="#tf-contact" class="page-scroll">Contact</a></li>
                     <li><a href="/mobile">LOGIN</a></li>
                 </ul>
-            </div><!-- /.navbar-collapse -->
-        </div><!-- /.container-fluid -->
-    </nav>
+            </noscript>
+            <a class="navbar-brand" href="index.html">Proxy / Shift</a>
+        </div>
 
-    <div id="tf-contact" class="text-center">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-8 col-md-offset-2">
-                    <div class="section-title center">
-                        <h2>Please fill in all fields.</h2>
-                    </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/#tf-home" class="page-scroll">Home</a></li>
+                <li><a href="/#tf-services" class="page-scroll">Services</a></li>
+                <li><a href="/#tf-testimonials" class="page-scroll">Facts</a></li>
+                <li><a href="/#tf-about" class="page-scroll">About</a></li>
+                <li><a href="/#tf-contact" class="page-scroll">Contact</a></li>
+                <li><a href="/mobile">LOGIN</a></li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+<div id="tf-contact" class="text-center">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="section-title center">
+                    <h2>Please fill in all fields.</h2>
                 </div>
             </div>
+        </div>
 
-            <div class="row">
-                <div class="col-md-8 col-md-offset-2">
-                    <div class="section-title center">
-                        <h2><strong>contact us</strong></h2>
-                        <div class="line">
-                            <hr>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="section-title center">
+                    <h2><strong>contact us</strong></h2>
+                    <div class="line">
+                        <hr>
+                    </div>
+                </div>
+
+                <form action="/contactus" method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="from">Email address</label>
+                                <input type="email" class="form-control" name="from" placeholder="Enter email">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="Name" class="form-control" name="name" placeholder="Your Name">
+                            </div>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea class="form-control" rows="10" name="message"></textarea>
+                    </div>
 
-                    <form action="/contactus" method="POST">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="from">Email address</label>
-                                    <input type="email" class="form-control" name="from" placeholder="Enter email">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="name">Name</label>
-                                    <input type="Name" class="form-control" name="name" placeholder="Your Name">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="message">Message</label>
-                            <textarea class="form-control" rows="10" name="message"></textarea>
-                        </div>
+                    <button type="submit" class="btn tf-btn btn-default">Submit</button>
+                </form>
 
-                        <button type="submit" class="btn tf-btn btn-default">Submit</button>
-                    </form>
-
-                </div>
             </div>
         </div>
     </div>
+</div>
 
-    <nav class="absolute-footer" id="footer">
-        <div class="container">
-            <div class="pull-left fnav">
-                <p>&#169; 2016 Proxy Shift</p>
-            </div>
+<nav class="absolute-footer" id="footer">
+
+    <div class="container">
+        <div class="pull-left fnav">
+            <p>&#169; 2016 Proxy Shift</p>
         </div>
-    </nav>
+        <div class="pull-right fnav">
+            <p><a href="/privacy-policy.html">Privacy Policy</a></p>
+        </div>
+    </div>
+</nav>
+
 </body>
 </html>

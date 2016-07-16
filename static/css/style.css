@@ -597,6 +597,12 @@ nav#footer p{
     border-color: #FCAC45;
     color: #ffffff;
 }
+#footer a:hover {
+    color: #ffffff;
+}
+#footer a {
+    color: #ffffff;
+}
 
 /* others */
 #page{
