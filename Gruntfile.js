@@ -36,6 +36,14 @@ module.exports = function(grunt) {
                     'static/css/login-form-style.css': [
                         'static/css/form-elements.css',
                         'static/css/login-form-style.less'
+                    ],
+                    'static/css/style.css': [
+                        'bower_components/font-awesome/css/font-awesome.css',
+                        'bower_components/bootstrap/dist/css/bootstrap.css',
+                        'static/css/owl.carousel.css',
+                        'static/css/owl.theme.css',
+                        'static/css/responsive.css',
+                        'static/css/style.less'
                     ]
                 }
             }
@@ -46,11 +54,11 @@ module.exports = function(grunt) {
         },
 
         concat : {
-            options : {
+            options: {
                 //sourceMap :true
             },
             index: {
-                src  : [
+                src: [
                     'static/partials/main.header.html',
                     'static/partials/main.header.includes.html',
                     'static/partials/main.header.body.html',
@@ -60,10 +68,10 @@ module.exports = function(grunt) {
                     'static/partials/main.body.javascript.html',
                     'static/partials/main.end.html'
                 ],
-                dest : 'static/index.html'
+                dest: 'static/index.html'
             },
             contactusfail: {
-                src  : [
+                src: [
                     'static/partials/main.header.html',
                     'static/partials/main.header.body.html',
                     'static/partials/contactusfail.body.html',
@@ -71,10 +79,10 @@ module.exports = function(grunt) {
                     'static/partials/main.footer.content.html',
                     'static/partials/main.end.html'
                 ],
-                dest : 'static/contactusfail.html'
+                dest: 'static/contactusfail.html'
             },
             contactussuccess: {
-                src  : [
+                src: [
                     'static/partials/main.header.html',
                     'static/partials/main.header.body.html',
                     'static/partials/contactussuccess.body.html',
@@ -82,7 +90,7 @@ module.exports = function(grunt) {
                     'static/partials/main.footer.content.html',
                     'static/partials/main.end.html'
                 ],
-                dest : 'static/contactussuccess.html'
+                dest: 'static/contactussuccess.html'
             },
             privacypolicy: {
                 src: [
@@ -94,10 +102,10 @@ module.exports = function(grunt) {
                     'static/partials/main.footer.content.html',
                     'static/partials/main.end.html'
                 ],
-                dest : 'static/privacy-policy.html'
+                dest: 'static/privacy-policy.html'
             },
             handlebarsMain : {
-                src  : [
+                src: [
                     'static/partials/main.header.html',
                     'static/partials/main.header.body.html',
                     'static/partials/main.handlebars',
@@ -105,7 +113,7 @@ module.exports = function(grunt) {
                     'static/partials/main.footer.content.html',
                     'static/partials/main.end.html'
                 ],
-                dest : 'views/layouts/main.handlebars'
+                dest: 'views/layouts/main.handlebars'
             }
         },
 
@@ -159,7 +167,19 @@ module.exports = function(grunt) {
                     mangle: false
                 },
                 files: [{
-                    'ionic/www/libs.js': [
+                    'static/js/mainlibs.min.js': [
+                        'static/js/modernizr.custom.js',
+                        'bower_components/jquery/dist/jquery.js',
+                        'static/js/jquery.isotope.js',
+                        'bower_components/bootstrap/dist/js/bootstrap.js',
+                        'bower_components/smoothscroll/smoothscroll.js',
+                        'static/js/owl.carousel.js'
+                    ],
+                    'static/js/ltie9.min.js': [
+                        'bower_components/html5shiv/dist/html5shiv.js',
+                        'bower_components/respond/dest/respond.src.js'
+                    ],
+                    'ionic/www/libs.min.js': [
                         <!-- In windows apps this fixes dynamic content errors -->
                         //'ionic/www/lib/ionic/release/js/ionic.bundle.js',
                         'ionic/www/lib/jquery/dist/jquery.js',
@@ -277,11 +297,6 @@ module.exports = function(grunt) {
                         'ionic/www/js/services/RemoteUserSettingsService.js',
                         'ionic/www/js/services/ResourceService.js',
                         'ionic/www/js/services/CreateShiftService.js',
-
-                    ],
-                    'ionic/www/app.js': [
-                        //'ionic/www/lib/validator-js/validator.min.js',
-
                     ]
                 }]
             }

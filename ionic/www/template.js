@@ -19,7 +19,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "    <script src=\"lib/validator-js/validator.min.js\"></script>\n" +
     "    <script src=\"lib/angular-toastr/dist/angular-toastr.tpls.js\"></script>\n" +
     "    <script src=\"lib/ng-material-floating-button/src/mfb-directive.js\"></script>\n" +
-    "    <script src=\"libs.js\"></script>\n" +
+    "    <script src=\"libs.min.js\"></script>\n" +
     "    <script src=\"template.js\"></script>\n" +
     "</head>\n" +
     "  <body ng-app=\"scheduling-app\">\n" +
