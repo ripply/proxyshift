@@ -603,6 +603,12 @@ nav#footer p{
 #footer a {
     color: #ffffff;
 }
+#footer .pull-left {
+    float: left !important;
+}
+#footer .pull-right {
+    float: right !important;
+}
 
 /* others */
 #page{
