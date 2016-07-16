@@ -319,6 +319,10 @@ module.exports = function(grunt) {
                 files: ['client/templates/**/*', 'client/src/**/*.js', 'views/**/*'],
                 tasks: ['clean:dev', 'concat', 'copy:dev']
             },
+            concat: {
+                files: ['static/partials/**/*'],
+                tasks: ['concat']
+            },
             uglify: {
                 files: ['ionic/www/js/**/*.js', 'ionic/www/lib/**/*.js'],
                 tasks: ['uglify']
@@ -328,7 +332,12 @@ module.exports = function(grunt) {
                 tasks: ['ngtemplates']
             },
             less: {
-                files: ['ionic/less/**/*.less', 'ionic/www/css/**/style.css', 'static/css/form-elements.css', 'static/css/**/*.less'],
+                files: [
+                    'ionic/less/**/*.less',
+                    'ionic/www/css/**/style.css',
+                    'static/css/**/*.css',
+                    'static/css/**/*.less'
+                ],
                 tasks: ['less:transpile', 'copy:dev']
             },
             test: {
@@ -393,7 +402,7 @@ module.exports = function(grunt) {
 
         concurrent: {
             dev: {
-                tasks: ['nodemon:dev', 'watch:less', 'watch:uglify', 'watch:ngtemplates'],
+                tasks: ['nodemon:dev', 'watch:less', 'watch:uglify', 'watch:ngtemplates', 'watch:concat', 'watch:less'],
                 options: {
                     logConcurrentOutput: true
                 }
