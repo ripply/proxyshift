@@ -347,7 +347,16 @@ App.prototype.notifyGroupPromoted = function(user_id, inviter_user, group_id) {
 
 App.prototype.sendInviteEmail = function(token, to, inviter_user, message, emailArgs) {
     var inviteUrl = this.createTokenUrl("/acceptinvitation", token);
-    this.sendEmail(this.transactionalEmailAddress(), to, 'Company invitation', inviteUrl + ' ' + message, '<a href="' + inviteUrl + '">' + inviteUrl + '</a>' + message, undefined, emailArgs);
+    emailArgs.invite = inviteUrl;
+    this.sendEmail(
+        this.transactionalEmailAddress(),
+        to,
+        'Company invitation',
+        inviteUrl + ' ' + message,
+        '<a href="' + inviteUrl + '">' + inviteUrl + '</a>' + message,
+        undefined,
+        emailArgs
+    );
 };
 
 App.prototype.sendNotification = function sendNotification(service, endpoints, expires, message) {
