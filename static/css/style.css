@@ -117,7 +117,7 @@ font-weight: 900;
 	}
 /* Home Style */
 #tf-home{
-	background: url(../img/01.jpg);
+	background: url(../img/01_med.jpg);
 	background-size: cover;
 	background-position: center;
 	background-attachment: fixed;
@@ -447,7 +447,7 @@ ol.type li a.active { font-weight: 700; }
 }
 /* Testimonials Section */
 #tf-testimonials{
-	background: url(../img/05.jpg);
+	background: url(../img/05_med.jpg);
 	background-size: cover;
 	background-position: center;
 	background-attachment: fixed;
