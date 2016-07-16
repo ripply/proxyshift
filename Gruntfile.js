@@ -104,6 +104,18 @@ module.exports = function(grunt) {
                 ],
                 dest: 'static/privacy-policy.html'
             },
+            termsofservice: {
+                src: [
+                    'static/partials/main.header.html',
+                    'static/partials/privacypolicy.header.html',
+                    'static/partials/main.header.body.html',
+                    'static/partials/tos.body.html',
+                    'static/partials/main.footer.sticky.html',
+                    'static/partials/main.footer.content.html',
+                    'static/partials/main.end.html'
+                ],
+                dest: 'static/terms-of-service.html'
+            },
             handlebarsMain : {
                 src: [
                     'static/partials/main.header.html',
@@ -335,8 +347,12 @@ module.exports = function(grunt) {
                 files: [
                     'ionic/less/**/*.less',
                     'ionic/www/css/**/style.css',
-                    'static/css/**/*.css',
-                    'static/css/**/*.less'
+                    'static/css/form-elements.css',
+                    'static/css/owl.carousel.css',
+                    'static/css/owl.theme.css',
+                    'static/css/**/*.less',
+                    'bower_components/font-awesome/css/font-awesome.css',
+                    'bower_components/bootstrap/dist/css/bootstrap.css'
                 ],
                 tasks: ['less:transpile', 'copy:dev']
             },
@@ -402,7 +418,7 @@ module.exports = function(grunt) {
 
         concurrent: {
             dev: {
-                tasks: ['nodemon:dev', 'watch:less', 'watch:uglify', 'watch:ngtemplates', 'watch:concat', 'watch:less'],
+                tasks: ['nodemon:dev', 'watch:less', 'watch:uglify', 'watch:ngtemplates', 'watch:concat'],
                 options: {
                     logConcurrentOutput: true
                 }
