@@ -153,6 +153,7 @@ function getTemplateId(key) {
         return config.get(key);
     } else {
         console.log("Sendgrid template '" + key + "' is not configured.");
+        console.log(process.env);
         return undefined;
     }
 }
