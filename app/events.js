@@ -238,7 +238,9 @@ var accountActivated = {
     email: {
         from: transactionalEmailAddress,
         template_id: getTemplateId("sendgrid.templates.successful_account_activation"),
-        subject: _.template("Your Proxy Shift Account is activated and ready to use!")
+        subject: _.template("Your Proxy Shift Account is activated and ready to use!"),
+        text: _.template("Your Proxy Shift Account is activated and ready to use!"),
+        html: _.template("Your Proxy Shift Account is activated and ready to use!")
     }
 };
 
@@ -1257,8 +1259,8 @@ module.exports = {
         args.link = this.createTokenUrl("/emailverify", args.token);
         return this.sendToUsers(user_ids, verifyEmail, args);
     },
-    accountActivated: function accountActivated(user_id, next) {
-        return this.sendToUsers(user_id, accountActivated, args);
+    accountActivated: function accountActivated(user_id) {
+        return this.sendToUsers(user_id, accountActivated, {});
     },
     loggedOut: function loggedOut(pushtokens) {
         if (!(pushtokens instanceof Array)) {

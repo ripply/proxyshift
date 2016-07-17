@@ -806,7 +806,8 @@ function getWhenVerifyTokenWasSent(expires) {
 }
 
 function sendAccountActivatedEmail(user, next) {
-
+    appLogic.accountActivated(user);
+    return next();
 }
 
 function sendEmailVerificationEmail(userJson, sqlOptions, next) {
