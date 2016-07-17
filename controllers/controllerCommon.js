@@ -122,12 +122,12 @@ module.exports = {
                 }
             });
     },
-    deleteModel: function(modelName, queryArgs, req, res, successMessage, sqlOptions) {
+    deleteModel: function(modelName, queryArgs, req, res, successMessage, sqlOptions, successCallback) {
         models[modelName].forge()
             .where(queryArgs)
             .destroy(sqlOptions)
             .then(function () {
-                respond(res, false, successMessage);
+                return respond(res, false, successMessage, successCallback);
             })
             .catch(function (err) {
                 error(req, res, err);
@@ -144,8 +144,9 @@ module.exports = {
     createSelectQueryForAllColumns: createSelectQueryForAllColumns
 };
 
-function respond(res, error, message) {
+function respond(res, error, message, next) {
     res.json({error: error, data: {message: message}});
+    return next();
 }
 
 /*

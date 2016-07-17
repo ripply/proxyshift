@@ -59,13 +59,21 @@ module.exports = {
                                         user_id: req.user.id,
                                         group_id: group.id
                                     })
-                                        .save(null, {transacting: t});
+                                        .save(null, {transacting: t})
+                                        .tap(function groupCreated() {
+                                            res.json({id: group.get('id')});
+                                            appLogic.companyActivated(
+                                                req.user.id,
+                                                _.extend({
+                                                        group: req.body.name
+                                                    },
+                                                    req.body
+                                                )
+                                            );
+                                        });
                                 })
                         })
                 })
-                    .then(function (group) {
-                        res.json({id: group.get('id')});
-                    })
                     .catch(function (err) {
                         error(req, res, err);
                     });
@@ -608,7 +616,7 @@ module.exports = {
                                                                     } else {
                                                                         email = existingGroupInvitation.email;
                                                                     }
-                                                                    sendEmail(existingGroupInvitation.token, email, inviter_user_json, message, emailArgs);
+                                                                    sendEmail(existingGroupInvitation.token, email, existingGroupInvitation.user_id, inviter_user_json, message, emailArgs);
                                                                 });
                                                                 _.each(newGroupInvitations, function(newGroupInvitation) {
                                                                     didAnything = true;
@@ -618,11 +626,12 @@ module.exports = {
                                                                     } else {
                                                                         email = newGroupInvitation.email;
                                                                     }
-                                                                    sendEmail(newGroupInvitation.token, email, inviter_user_json, message, emailArgs);
+                                                                    sendEmail(newGroupInvitation.token, email, newGroupInvitation.user_id, inviter_user_json, message, emailArgs);
                                                                 });
+                                                                console.log(usersToInstantlyPromote);
                                                                 _.each(usersToInstantlyPromote, function(promotedUser) {
                                                                     didAnything = true;
-                                                                    appLogic.notifyGroupPromoted(promotedUser.id, inviter_user_json, group_id);
+                                                                    appLogic.notifyGroupPromoted(promotedUser.id, emailArgs);
                                                                 });
                                                                 res.sendStatus(didAnything ? 201:200);
                                                             });
@@ -697,7 +706,15 @@ module.exports = {
                     },
                     req,
                     res,
-                    'Successfully removed user from group'
+                    'Successfully removed user from group',
+                    undefined,
+                    function userRemovedFromGroup() {
+                        getGroupInformationById(req.params.group_id, undefined, function gotGroupInformation(group) {
+                            appLogic.removedFromGroup(req.params.user_id, {
+                                group: group.name
+                            });
+                        });
+                    }
                 );
             }
         }
@@ -831,8 +848,11 @@ module.exports = {
                 // TODO: Make this an inner join with an update
                 Bookshelf.transaction(function (t) {
                     // make sure permission_id is part of group
-                    model.GroupPermission.query(function (q) {
-                        q.select()
+                    return model.GroupPermission.query(function (q) {
+                        q.select([
+                            'grouppermissions.permissionlevel',
+                            'groups.name as name'
+                        ])
                             .from('grouppermissions')
                             .innerJoin('groups', function () {
                                 this.on('groups.groupsetting_id', '=', 'grouppermissions.groupsettings_id');
@@ -845,24 +865,32 @@ module.exports = {
                                 // grouppermission is tied to group
                                 // ok to update the user with that permission
                                 // after we verify that they are not already a member
-                                model.UserGroup.forge({
-                                    user_id: req.params.user_id,
-                                    group_id: req.params.group_id
+                                return model.GroupPermission.query(function(q) {
+                                    q.select([
+                                        'id',
+                                        'permissionlevel'
+                                    ])
+                                        .from('grouppermissions')
+                                        .innerJoin('usergroups', function() {
+                                            this.on('usergroups.grouppermission_id', '=', 'grouppermissions.id');
+                                        })
+                                        .where('usergroups.user_id', '=', req.params.user_id)
+                                        .andWhere('usergroups.group_id', '=', req.params.group_id);
                                 })
                                     .fetch({transacting: t})
-                                    .then(function (usergroup) {
-                                        if (!usergroup) {
+                                    .then(function (user_grouppermission) {
+                                        if (!user_grouppermission) {
                                             // does not exist, error
                                             res.sendStatus(412);
                                         } else {
                                             // exists, update
                                             // check if permission level is identical
-                                            if (usergroup.get('grouppermission_id') == req.params.permission_id) {
+                                            if (user_grouppermission.get('id') == req.params.permission_id) {
                                                 res.sendStatus(200);
                                             } else {
                                                 // doesn't match
                                                 // update it
-                                                patchModel(
+                                                return patchModel(
                                                     'UserGroup',
                                                     {
                                                         grouppermission_id: req.params.permission_id
@@ -872,6 +900,21 @@ module.exports = {
                                                     undefined,
                                                     {
                                                         transacting: t
+                                                    },
+                                                    function patchModelSuccess() {
+                                                        // send notification to user
+                                                        var newPermissionLevel = grouppermission.get('permissionlevel');
+                                                        if (newPermissionLevel > existingPermissionLevel) {
+                                                            // upgrade
+                                                            appLogic.notifyGroupPromoted(req.params.user_id, {
+                                                                group: grouppermission.name
+                                                            });
+                                                        } else {
+                                                            // downgrade
+                                                            appLogic.notifyGroupDemoted(req.params.user_id, {
+                                                                group: grouppermission.name
+                                                            });
+                                                        }
                                                     }
                                                 );
                                             }
@@ -1422,19 +1465,24 @@ function convertFoundUsersEmailsToUserIds(emails, users) {
 
 function findExistingInvitationsForTheFoundUserIdsAndSpecifiedEmails(sqlOptions, emails, user_ids, next) {
     return models.GroupInvitation.query(function inviteUserToGroupFindExistingInvitationQuery(q) {
-        q.select([
-            'groupinvitations.id as id',
-            'groupinvitations.token as token',
-            'groupinvitations.user_id as user_id',
-            'groupinvitations.email as email',
-            'groupinvitations.expires as expires',
-            'users.email as usersemail'
-        ])
+        q.select(
+            Bookshelf.knex.raw(
+                [
+                    'groupinvitations.id as id',
+                    'groupinvitations.token as token',
+                    'COALESCE(groupinvitations.user_id, users.id) as user_id',
+                    'groupinvitations.email as email',
+                    'groupinvitations.expires as expires',
+                    'users.email as usersemail'
+                ].join(', ')
+            )
+        )
             .from('groupinvitations')
             .whereIn('groupinvitations.user_id', user_ids)
             .orWhereIn('groupinvitations.email', emails)
             .innerJoin('users', function() {
-                this.on('users.id', '=', 'groupinvitations.user_id');
+                this.on('users.id', '=', 'groupinvitations.user_id')
+                    .orOn('users.email', '=', 'groupinvitations.email');
             })
             .union(function() {
                 this.select(
@@ -1465,6 +1513,7 @@ function filterFillerUsersemails(groupinvitationsJson) {
             groupinvitations.usersemail = '';
         }
     });
+    return groupinvitationsJson;
 }
 
 function getFoundGroupinvitationToUserIdMap(groupinvitations_json) {
@@ -1698,14 +1747,31 @@ function createMultipleGroupInvitationUserClasses(sqlOptions, groupInvitationUse
         .tap(next);
 }
 
-function sendEmail(token, to, inviter_user, message, emailArgs) {
-    if (to === null || to === undefined) {
-        throw new Error("Internal error, email recipient is not defined");
+function sendEmail(token, to, user_id, inviter_user, message, emailArgs) {
+    if ((to === null && to === undefined) && (user_id === null && user_id === undefined)) {
+        throw new Error("Internal error, email recipient/user_id is not defined:\nuser_id: " + user_id + "\nto: " + to);
     }
     return new Promise(function sendInviteEmailPromise(resolve, reject) {
-        appLogic.sendInviteEmail(token, to, inviter_user, message, emailArgs);
+        if (user_id) {
+            console.log('yeey');
+            // user has an account already
+            appLogic.existingUserInvitedToGroup(token, user_id, inviter_user, message, emailArgs);
+        } else {
+            console.log('nop, to: ' + to + " " + user_id);
+            // user does not have an account, send different notifications
+            appLogic.sendInviteEmail(token, to, inviter_user, message, emailArgs);
+        }
         resolve();
     });
+}
+
+function getGroupInformationById(group_id, sqlOptions, next) {
+    // TODO: MEMCACHED?
+    return models.Group.forge({id: group_id})
+        .fetch(sqlOptions)
+        .tap(function gotGroupInformationById(group) {
+            return next(group.toJSON());
+        });
 }
 
 /**

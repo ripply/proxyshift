@@ -223,7 +223,7 @@ App.prototype.sendToUsers = function sendToUsers(user_ids, messages, args, test,
                             }
                             var to = user.email;
                             console.log("Sending email.....");
-                            self.sendEmail(from, to, subject, text, html, self.combineFirstLastName(args.firstname, args.lastname), args);
+                            self.sendEmail(from, to, subject, text, html, self.combineFirstLastName(args.firstname, args.lastname), _.omit(args, 'order', 'limit'));
                             successfulNotifications++;
                         }
                     },
@@ -442,6 +442,7 @@ App.prototype.handleEmailJob = function(job) {
     // setup
     if (body.to.endsWith("@example.com")) {
         console.log("Not sending email to " + body.to + " as it is example.com (FIXTURE DATA)");
+        console.log(body);
         job.ack();
     } else {
         if (mailer) {

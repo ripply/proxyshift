@@ -5,6 +5,10 @@ var _ = require('underscore'),
     moment = require('moment-timezone'),
     time = require('./time');
 
+const push = 'push';
+const email = 'email';
+const text = 'text';
+
 var categories = {
     'newShift': {
         actions: [
@@ -104,6 +108,96 @@ var eventInvitedToGroupMessages = {
         subject: _.template("Invited to group <%- group %>"),
         text: _.template("Invited to group <%- group %>"),
         html: _.template("Invited to group <%- group %>")
+    }
+};
+
+var eventInvitedToGroupExistingAccount = {
+    push: createNotification(
+        {test: 'test'},
+        "Invited to group <%- group %> check your email",
+        "Invited to group <%- group %> check your email",
+        "Invited to group <%- group %> check your email",
+        3,
+        3
+    ),
+    email: {
+        from: transactionalEmailAddress,
+        template_id: getTemplateId("sendgrid.templates.added_to_group"),
+        subject: _.template("Invited to group <%- group %>"),
+        text: _.template("Invited to group <%- group %>"),
+        html: _.template("Invited to group <%- group %>")
+    }
+};
+
+var groupPromotion = {
+    push: createNotification(
+        {test: 'test'},
+        "Your Proxy Shift Account Permission Level has increased at <%- group %>",
+        "Your Proxy Shift Account Permission Level has increased at <%- group %>",
+        "Your Proxy Shift Account Permission Level has increased at <%- group %>",
+        3,
+        3
+    ),
+    email: {
+        from: transactionalEmailAddress,
+        template_id: getTemplateId("sendgrid.templates.permission_level_increase"),
+        subject: _.template("Account permission level has increased at <%- group %>"),
+        text: _.template("Account permission level has increased at <%- group %>"),
+        html: _.template("Account permission level has increased at <%- group %>")
+    }
+};
+
+var groupDemotion = {
+    push: createNotification(
+        {test: 'test'},
+        "Your Proxy Shift Account Permission Level has decreased at <%- group %>",
+        "Your Proxy Shift Account Permission Level has decreased at <%- group %>",
+        "Your Proxy Shift Account Permission Level has decreased at <%- group %>",
+        3,
+        3
+    ),
+    email: {
+        from: transactionalEmailAddress,
+        template_id: getTemplateId("sendgrid.templates.permission_level_decrease"),
+        subject: _.template("Account permission level has decreased at <%- group %>"),
+        text: _.template("Account permission level has decreased at <%- group %>"),
+        html: _.template("Account permission level has decreased at <%- group %>")
+    }
+};
+
+var removedFromGroup = {
+    push: createNotification(
+        {test: 'test'},
+        "You have left the <%- group %> Proxy Shift Group",
+        "You have left the <%- group %> Proxy Shift Group",
+        "You have left the <%- group %> Proxy Shift Group",
+        3,
+        3
+    ),
+    email: {
+        from: transactionalEmailAddress,
+        template_id: getTemplateId("sendgrid.templates.removed_from_group"),
+        subject: _.template("You have left the <%- group %> Proxy Shift Group"),
+        text: _.template("You have left the <%- group %> Proxy Shift Group"),
+        html: _.template("You have left the <%- group %> Proxy Shift Group")
+    }
+};
+
+var companyActivated = {
+    push: createNotification(
+        {test: 'test'},
+        "Successful <%- group %> Proxy Shift Account Activation",
+        "Successful <%- group %> Proxy Shift Account Activation",
+        "Successful <%- group %> Proxy Shift Account Activation",
+        3,
+        3
+    ),
+    email: {
+        from: transactionalEmailAddress,
+        template_id: getTemplateId("sendgrid.templates.successful_group_activation"),
+        subject: _.template("Successful <%- group %> Proxy Shift Account Activation"),
+        text: _.template("Successful <%- group %> Proxy Shift Account Activation"),
+        html: _.template("Successful <%- group %> Proxy Shift Account Activation")
     }
 };
 
@@ -1029,6 +1123,8 @@ function newShiftApplicationApprovedToDeniedUsers(
     };
 }
 
+const orderPushAndMail = [push, mail];
+
 module.exports = {
     transactionalEmailAddress: function() {return transactionalEmailAddress; }, // function because of _.bindAll
     contactUsEmailAddress: function() {return contactUsEmailAddress; }, // function because of _.bindAll
@@ -1097,12 +1193,72 @@ module.exports = {
             emailArgs
         );
     },
+    existingUserInvitedToGroup: function(token, user_id, inviter_user, message, args) {
+        var inviteUrl = this.createTokenUrl("/acceptinvitation", token);
+        var emailArgs = _.clone(args);
+        emailArgs.invite_url = inviteUrl;
+        emailArgs.message = message;
+        emailArgs.inviter_firstname = inviter_user.firstname;
+        emailArgs.inviter_lastname = inviter_user.lastname;
+        emailArgs.template_id = eventInvitedToGroupMessages.email.template_id;
+        emailArgs.order = orderPushAndMail;
+        emailArgs.limit = orderPushAndMail.length; // push + email
+        return this.sendToUsers([user_id], eventInvitedToGroupExistingAccount, emailArgs);
+    },
+    notifyGroupPromoted: function(user_id, args) {
+        return this.sendToUsers(
+            [user_id],
+            groupPromotion,
+            _.extend({
+                    order: orderPushAndMail,
+                    limit: orderPushAndMail.length
+                },
+                args
+            )
+        );
+    },
+    notifyGroupDemoted: function(user_id, args) {
+        return this.sendToUsers(
+            [user_id],
+            groupDemotion,
+            _.extend({
+                    order: orderPushAndMail,
+                    limit: orderPushAndMail.length
+                },
+                args
+            )
+        );
+    },
+    removedFromGroup: function(user_id, args) {
+        return this.sendToUsers(
+            [user_id],
+            removedFromGroup,
+            _.extend({
+                    order: orderPushAndMail,
+                    limit: orderPushAndMail.length
+                },
+                args
+            )
+        );
+    },
+    companyActivated: function(user_id, args) {
+        return this.sendToUsers(
+            [user_id],
+            companyActivated,
+            _.extend({
+                    order: orderPushAndMail,
+                    limit: orderPushAndMail.length
+                },
+                args
+            )
+        );
+    },
     verifyEmail: function verifyEmail(user_ids, args) {
         args.link = this.createTokenUrl("/emailverify", args.token);
         return this.sendToUsers(user_ids, verifyEmail, args);
     },
     accountActivated: function accountActivated(user_id, next) {
-        return this.sendToUsers(user_id, verifyEmail, args);
+        return this.sendToUsers(user_id, accountActivated, args);
     },
     loggedOut: function loggedOut(pushtokens) {
         if (!(pushtokens instanceof Array)) {
