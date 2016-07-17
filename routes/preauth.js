@@ -127,6 +127,7 @@ module.exports = function(app, settings){
         var action = req.body.action;
         var signin = action == 'signin';
         var signup = action == 'signup';
+        var accept = action == 'accept';
         var getting = true;
         if (req.method == 'GET') {
             token = req.query.token;
@@ -167,7 +168,7 @@ module.exports = function(app, settings){
                         if (now >= groupinvitationJson.expires) {
                             return res.render('layouts/groupinvite/expired', data);
                         }
-                        if (loggedIn) {
+                        if (loggedIn && accept) {
                             return models.Users.query(function acceptGroupInviteGetLoggedInUser(q) {
                                 q.select(models.usersColumns)
                                     .from('users')
@@ -220,7 +221,7 @@ module.exports = function(app, settings){
                         if (getting) {
                             showPage();
                         } else {
-                            if ((loggedIn && !signin) || signup) {
+                            if ((loggedIn && accept) || signup) {
                                 return afterLoggedInConsumeToken();
                             } else if (signin) {
                                 return passport.authenticate('local', {session: true}, function (err, user, info) {
