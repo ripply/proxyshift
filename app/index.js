@@ -347,7 +347,11 @@ App.prototype.notifyGroupPromoted = function(user_id, inviter_user, group_id) {
 
 App.prototype.sendInviteEmail = function(token, to, inviter_user, message, emailArgs) {
     var inviteUrl = this.createTokenUrl("/acceptinvitation", token);
-    emailArgs.invite = inviteUrl;
+    emailArgs.invite_url = inviteUrl;
+    emailArgs.message = message;
+    emailArgs.inviter_firstname = inviter_user.firstname;
+    emailArgs.inviter_lastname = inviter_user.lastname;
+
     this.sendEmail(
         this.transactionalEmailAddress(),
         to,
