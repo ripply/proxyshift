@@ -904,20 +904,19 @@ function createUser(sqlOptions, req, verified, next) {
             if (verified) {
                 fullArgs.verified_email = true;
             }
-            var userJson = user.toJSON();
             return models.User.forge(fullArgs)
                 .save(undefined, sqlOptions)
                 .tap(function(user) {
                     if (verified) {
                         return sendAccountActivatedEmail(
-                            userJson.id,
+                            user.get('id'),
                             function accountActivatedEmailSent() {
                                 return next(user);
                             }
                         );
                     } else {
                         return sendEmailVerificationEmail(
-                            userJson,
+                            user.toJSON(),
                             sqlOptions,
                             function emailVerificationSent() {
                                 return next(user);
