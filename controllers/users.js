@@ -795,7 +795,7 @@ function createEmailTokenRecurse(user_id, sqlOptions, next, attemptsLeft) {
         });
 }
 
-var emailVerifyTokenExpiresIn = 60 * 60 * 6; // 6 hours
+var emailVerifyTokenExpiresIn = (60 * 60 * 24 * 7 * 2) + (60 * 60 * 24); // 2 weeks + 1 day
 
 function getWhenVerifyTokenShouldExpireFromNow() {
     return time.nowInUtc() + emailVerifyTokenExpiresIn;
