@@ -35,7 +35,7 @@ module.exports = {
             return slack.send({
                 text: prefixCluster(
                     message + "\nip: " + (req ? req.ip : 'undefined') + "\nroute: " + (req ? req.originalUrl : 'undefined') +
-                    "\nreq.body = " + JSON.stringify(req ? req.body : 'undefined') +
+                    "\nreq.body = " + JSON.stringify(req ? stripSensitiveData(req.body) : 'undefined') +
                     "\nuserid: " + (req ? (req.user ? req.user.id:'none') : 'undefined') +
                     (err ?
                         (err.stack ? ("\nstack trace:\n -" + JSON.stringify(err.stack).replace(/\\n/g, '\n -')):'\nno stacktrace') :
@@ -104,6 +104,16 @@ function prefixCluster(message) {
 function whichCluster() {
     return cluster.isMaster ?
         'master' : 'worker#' + cluster.worker.id;
+}
+
+function stripSensitiveData(body) {
+    if (body && body.password) {
+        body.password = '******';
+    }
+    if (body && body.sanswer) {
+        body.sanswer = '*****';
+    }
+    return body;
 }
 
 function send(message) {
