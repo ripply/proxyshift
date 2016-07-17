@@ -893,7 +893,11 @@ function consumeEmailVerifyToken(token, sqlOptions, next) {
 }
 
 function createUser(sqlOptions, req, verified, next) {
-    return models.UserSetting.forge({})
+    return models.UserSetting.forge({
+        pushnotifications: true,
+        emailnotifications: true,
+        textnotifications: false
+    })
         .save(null, sqlOptions)
         .tap(function usersPostUserSettingsSaved(usersettings) {
             var modelKeys = getModelKeys('User', ['id', 'usersetting_id']);

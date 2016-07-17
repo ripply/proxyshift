@@ -1,5 +1,6 @@
 var middleware = require('./misc/middleware'),
     _ = require('underscore'),
+    Promise = require('bluebird'),
     models = require('../app/models'),
     Notifications = models.Notifications,
     path = require('path'),
@@ -345,8 +346,11 @@ module.exports = function(app, settings){
 
                                                 if (newGroupUserClassToUser.length > 0) {
                                                     // grant the user the specified job types
-                                                    return models.GroupUserClassToUser.forge(newGroupUserClassToUser)
-                                                        .save(undefined, sqlOptions)
+                                                    console.log("GRANTING JOB TYPE");
+                                                    console.log(newGroupUserClassToUser);
+                                                    console.log('##########################');
+                                                    var jobTypes = models.GroupUserClassToUsers.forge(newGroupUserClassToUser);
+                                                    return Promise.all(jobTypes.invoke('save', undefined, sqlOptions))
                                                         .tap(consumeInviteTokenUsergroupsGranted);
                                                 } else {
                                                     return consumeInviteTokenUsergroupsGranted();
