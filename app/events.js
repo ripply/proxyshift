@@ -99,6 +99,8 @@ var eventInvitedToGroupMessages = {
         3
     ),
     email: {
+        from: transactionalEmailAddress,
+        template_id: getTemplateId("email.transactional.templates.group_invitation"),
         subject: _.template("Invited to group <%- group %>"),
         text: _.template("Invited to group <%- group %>"),
         html: _.template("Invited to group <%- group %>")
@@ -120,7 +122,9 @@ var eventLoggedInMesages = {
 
 var eventPasswordReset = {
     email: {
+        from: transactionalEmailAddress,
         subject: _.template("Proxyshift Password reset"),
+        template_id: getTemplateId("email.transactional.templates.password_reset"),
         text: _.template("Click to reset your password: <%- link %>"),
         html: _.template("Click to reset your password: <a href=\"<%- link %>\"><%- link -></a>")
     }
@@ -129,11 +133,29 @@ var eventPasswordReset = {
 var verifyEmail = {
     email: {
         from: transactionalEmailAddress,
+        template_id: getTemplateId("email.transactional.templates.verify_email"),
         subject: _.template("Proxyshift Email verification"),
         text: _.template("Verify email at <%- link %>"),
         html: _.template('Verify email at <a href="<%- link %>"><%- link %></a>')
     }
 };
+
+var accountActivated = {
+    email: {
+        from: transactionalEmailAddress,
+        template_id: getTemplateId("email.transactional.templates.account_activated"),
+        subject: _.template("Your Proxy Shift Account is activated and ready to use!")
+    }
+};
+
+function getTemplateId(key) {
+    if (config.has(key)) {
+        return config.get(key);
+    } else {
+        console.log("Sendgrid template '" + key + "' is not configured.");
+        return undefined;
+    }
+}
 
 var timeFormats= {
     'years': 'year',
@@ -1011,7 +1033,7 @@ module.exports = {
     combineFirstLastName: combineFirstLastName,
     newShiftApplication: newShiftApplication,
     acceptOrDeniedShiftApplication: acceptOrDeniedShiftApplication,
-
+    getTemplateId: getTemplateId,
     newShift: newShift,
     newShiftForManagers: newShiftForManagers,
     newShiftButNoManagersCanApprove: newShiftButNoManagersCanApprove,
@@ -1055,9 +1077,30 @@ module.exports = {
     loggedIn: function loggedIn(user_ids, args) {
         return this.sendToUsers(user_ids, eventLoggedInMesages, args);
     },
+    sendInviteEmail: function(token, to, inviter_user, message, emailArgs) {
+        var inviteUrl = this.createTokenUrl("/acceptinvitation", token);
+        emailArgs.invite_url = inviteUrl;
+        emailArgs.message = message;
+        emailArgs.inviter_firstname = inviter_user.firstname;
+        emailArgs.inviter_lastname = inviter_user.lastname;
+        emailArgs.template_id = eventInvitedToGroupMessages.email.template_id;
+
+        this.sendEmail(
+            this.transactionalEmailAddress(),
+            to,
+            eventInvitedToGroupMessages.email.subject(emailArgs),
+            inviteUrl + ' ' + message,
+            '<a href="' + inviteUrl + '">' + inviteUrl + '</a>' + message,
+            undefined,
+            emailArgs
+        );
+    },
     verifyEmail: function verifyEmail(user_ids, args) {
         args.link = this.createTokenUrl("/emailverify", args.token);
         return this.sendToUsers(user_ids, verifyEmail, args);
+    },
+    accountActivated: function accountActivated(user_id, next) {
+        return this.sendToUsers(user_id, verifyEmail, args);
     },
     loggedOut: function loggedOut(pushtokens) {
         if (!(pushtokens instanceof Array)) {

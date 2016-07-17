@@ -271,7 +271,8 @@ module.exports = function(app, settings){
                         if (signup) {
                             // signup
                             signup = false;
-                            return users.createUser(undefined, req, function consumeInviteSignupUser(user) {
+                            var verified_email = groupinvitationJson.email !== undefined && groupinvitationJson.email == req.body.email;
+                            return users.createUser(undefined, req, verified_email, function consumeInviteSignupUser(user) {
                                 // need to sign in as user
                                 return req.login(user, function (err) {
                                     if (err) {

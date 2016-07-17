@@ -43,6 +43,7 @@ module.exports = {
     bannedFields: fieldsToNotSendToClient,
     consumeEmailVerifyToken: consumeEmailVerifyToken,
     createUser: createUser,
+    sendEmailVerificationEmail: sendEmailVerificationEmail,
     route: '/api/users',
     '/': {
         'get': { // get info about your account
@@ -65,13 +66,8 @@ module.exports = {
                     var sqlOptions = {
                         transacting: t
                     };
-                    return createUser(sqlOptions, req, function usersPostUserCreated(user) {
-                        return sendEmailVerificationEmail(
-                            user.toJSON(),
-                            sqlOptions,
-                            function emailVerificationSent() {
-                                clientCreate(req, res, 201, user.get('id'));
-                            });
+                    return createUser(sqlOptions, req, false, function usersPostUserCreated(user) {
+                        clientCreate(req, res, 201, user.get('id'));
                     });
                 })
                     .catch(function usersPostTransactionCatch(err) {
@@ -809,6 +805,10 @@ function getWhenVerifyTokenWasSent(expires) {
     return expires - emailVerifyTokenExpiresIn;
 }
 
+function sendAccountActivatedEmail(user, next) {
+
+}
+
 function sendEmailVerificationEmail(userJson, sqlOptions, next) {
     var user_id = userJson.id;
     var email = userJson.email;
@@ -875,9 +875,11 @@ function consumeEmailVerifyToken(token, sqlOptions, next) {
                                 })
                                     .fetch(sqlOptions)
                                     .tap(function consumeEmailVerifyFetchUserInfoSuccess(user) {
-                                        console.log(user_id);
-                                        console.log(user);
-                                        next(user);
+                                        return sendAccountActivatedEmail(user_id, function accountActivatedEmailSent() {
+                                            console.log(user_id);
+                                            console.log(user);
+                                            next(user);
+                                        });
                                     });
                             });
                     });
@@ -889,7 +891,7 @@ function consumeEmailVerifyToken(token, sqlOptions, next) {
         });
 }
 
-function createUser(sqlOptions, req, next) {
+function createUser(sqlOptions, req, verified, next) {
     return models.UserSetting.forge({})
         .save(null, sqlOptions)
         .tap(function usersPostUserSettingsSaved(usersettings) {
@@ -898,9 +900,29 @@ function createUser(sqlOptions, req, next) {
             var fullArgs = _.extend(keysToSave, {
                 usersetting_id: usersettings.get('id')
             });
+            if (verified) {
+                fullArgs.verified_email = true;
+            }
+            var userJson = user.toJSON();
             return models.User.forge(fullArgs)
                 .save(undefined, sqlOptions)
-                .tap(next);
+                .tap(function(user) {
+                    if (verified) {
+                        return sendAccountActivatedEmail(
+                            userJson.id,
+                            function accountActivatedEmailSent() {
+                                return next(user);
+                            }
+                        );
+                    } else {
+                        return sendEmailVerificationEmail(
+                            userJson,
+                            sqlOptions,
+                            function emailVerificationSent() {
+                                return next(user);
+                            });
+                    }
+                });
         });
 }
 

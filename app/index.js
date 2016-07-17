@@ -128,6 +128,9 @@ App.prototype.sendToUsers = function sendToUsers(user_ids, messages, args, test,
         return;
     }
 
+    console.log('###########');
+    console.log(args);
+
     var hasLocationId = args.hasOwnProperty('location_id');
     var self = this;
     if (!args.order) {
@@ -213,6 +216,10 @@ App.prototype.sendToUsers = function sendToUsers(user_ids, messages, args, test,
                             var from = email.from;
                             if (!from && args.from) {
                                 from = args.from;
+                            }
+                            var template_id = email.template_id;
+                            if (template_id) {
+                                args.template_id = template_id;
                             }
                             var to = user.email;
                             console.log("Sending email.....");
@@ -345,24 +352,6 @@ App.prototype.notifyGroupPromoted = function(user_id, inviter_user, group_id) {
     console.log("PROMOTEDD");
 };
 
-App.prototype.sendInviteEmail = function(token, to, inviter_user, message, emailArgs) {
-    var inviteUrl = this.createTokenUrl("/acceptinvitation", token);
-    emailArgs.invite_url = inviteUrl;
-    emailArgs.message = message;
-    emailArgs.inviter_firstname = inviter_user.firstname;
-    emailArgs.inviter_lastname = inviter_user.lastname;
-
-    this.sendEmail(
-        this.transactionalEmailAddress(),
-        to,
-        'Company invitation',
-        inviteUrl + ' ' + message,
-        '<a href="' + inviteUrl + '">' + inviteUrl + '</a>' + message,
-        undefined,
-        emailArgs
-    );
-};
-
 App.prototype.sendNotification = function sendNotification(service, endpoints, expires, message) {
     var notification = {
         service: service,
@@ -415,8 +404,8 @@ App.prototype.sendEmail = function(from, to, subject, text, html, toName, args) 
         subject: subject,
         text: text,
         html: html,
-        substitutions: modifiedSubstitutions,
-        template_id: 'e9566703-da1f-4c60-b9f4-957352251472'
+        template_id: args.template_id,
+        substitutions: modifiedSubstitutions
     };
 
     console.log('*****************');

@@ -38,7 +38,13 @@
     },
     "email": {
         "transactional": {
-            "address": "TRANSACTIONAL_EMAIL"
+            "address": "TRANSACTIONAL_EMAIL",
+            "templates": {
+                "group_invitation": "SENDGRID_EMAIL_TEMPLATE_GROUP_INVITATION",
+                "password_reset": "SENDGRID_EMAIL_TEMPLATE_PASSWORD_RESET",
+                "verify_email": "SENDGRID_EMAIL_TEMPLATE_VERIFY_EMAIL",
+                "account_activated": "SENDGRID_EMAIL_TEMPLATE_ACCOUNT_ACTIVATED",
+            }
         },
         "contactus": {
             "address": "CONTACTUS_EMAIL"
