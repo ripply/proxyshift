@@ -34,17 +34,25 @@
     "sendgrid": {
         "api": {
             "key": "SENDGRID_API_KEY"
+        },
+        "templates": {
+            "failed_group_activation": "SENDGRID_TEMPLATE_FAILED_GROUP_ACTIVATION",
+            "successful_group_activation": "SENDGRID_TEMPLATE_SUCCESSFUL_GROUP_ACTIVATION",
+            "added_to_group": "SENDGRID_TEMPLATE_ADDED_TO_GROUP",
+            "removed_from_group": "SENDGRID_TEMPLATE_REMOVED_FROM_GROUP",
+            "password_reset": "SENDGRID_TEMPLATE_PASSWORD_RESET",
+            "permission_level_decrease": "SENDGRID_TEMPLATE_PERMISSION_LEVEL_DECREASE",
+            "permission_level_increase": "SENDGRID_TEMPLATE_PERMISSION_LEVEL_INCREASE",
+            "failed_account_activation": "SENDGRID_TEMPLATE_FAILED_ACCOUNT_ACTIVATION",
+            "successful_account_activation": "SENDGRID_TEMPLATE_SUCCESSFUL_ACCOUNT_ACTIVATION",
+            "email_verification": "SENDGRID_TEMPLATE_EMAIL_VERIFICATION",
+            "account_invitation": "SENDGRID_TEMPLATE_ACCOUNT_INVITATION",
         }
     },
     "email": {
         "transactional": {
             "address": "TRANSACTIONAL_EMAIL",
-            "templates": {
-                "group_invitation": "SENDGRID_EMAIL_TEMPLATE_GROUP_INVITATION",
-                "password_reset": "SENDGRID_EMAIL_TEMPLATE_PASSWORD_RESET",
-                "verify_email": "SENDGRID_EMAIL_TEMPLATE_VERIFY_EMAIL",
-                "account_activated": "SENDGRID_EMAIL_TEMPLATE_ACCOUNT_ACTIVATED",
-            }
+
         },
         "contactus": {
             "address": "CONTACTUS_EMAIL"

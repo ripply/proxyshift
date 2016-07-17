@@ -100,7 +100,7 @@ var eventInvitedToGroupMessages = {
     ),
     email: {
         from: transactionalEmailAddress,
-        template_id: getTemplateId("email.transactional.templates.group_invitation"),
+        template_id: getTemplateId("sendgrid.templates.account_invitation"),
         subject: _.template("Invited to group <%- group %>"),
         text: _.template("Invited to group <%- group %>"),
         html: _.template("Invited to group <%- group %>")
@@ -124,7 +124,7 @@ var eventPasswordReset = {
     email: {
         from: transactionalEmailAddress,
         subject: _.template("Proxyshift Password reset"),
-        template_id: getTemplateId("email.transactional.templates.password_reset"),
+        template_id: getTemplateId("sendgrid.templates.password_reset"),
         text: _.template("Click to reset your password: <%- link %>"),
         html: _.template("Click to reset your password: <a href=\"<%- link %>\"><%- link -></a>")
     }
@@ -133,7 +133,7 @@ var eventPasswordReset = {
 var verifyEmail = {
     email: {
         from: transactionalEmailAddress,
-        template_id: getTemplateId("email.transactional.templates.verify_email"),
+        template_id: getTemplateId("sendgrid.templates.email_verification"),
         subject: _.template("Proxyshift Email verification"),
         text: _.template("Verify email at <%- link %>"),
         html: _.template('Verify email at <a href="<%- link %>"><%- link %></a>')
@@ -143,17 +143,18 @@ var verifyEmail = {
 var accountActivated = {
     email: {
         from: transactionalEmailAddress,
-        template_id: getTemplateId("email.transactional.templates.account_activated"),
+        template_id: getTemplateId("sendgrid.templates.successful_account_activation"),
         subject: _.template("Your Proxy Shift Account is activated and ready to use!")
     }
 };
 
 function getTemplateId(key) {
     if (config.has(key)) {
-        return config.get(key);
+        var value = config.get(key);
+        console.log("Sendgrid template '" + key + "' = " + value);
+        return value;
     } else {
         console.log("Sendgrid template '" + key + "' is not configured.");
-        console.log(process.env);
         return undefined;
     }
 }
