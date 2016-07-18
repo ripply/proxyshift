@@ -66,7 +66,7 @@ module.exports = {
                     var sqlOptions = {
                         transacting: t
                     };
-                    return createUser(sqlOptions, req, false, function usersPostUserCreated(user) {
+                    return createUser(sqlOptions, req, false, function usersPostUserCreated(err, user) {
                         clientCreate(req, res, 201, user.get('id'));
                     });
                 })
@@ -893,41 +893,52 @@ function consumeEmailVerifyToken(token, sqlOptions, next) {
 }
 
 function createUser(sqlOptions, req, verified, next) {
-    return models.UserSetting.forge({
-        pushnotifications: true,
-        emailnotifications: true,
-        textnotifications: false
+    return models.User.query(function(q) {
+        q = q.select('id')
+            .from('users')
+            .where('username', '=', req.body.username.toLowerCase())
+            .orWhere('email', '=', req.body.email.toLowerCase());
     })
-        .save(null, sqlOptions)
-        .tap(function usersPostUserSettingsSaved(usersettings) {
-            var modelKeys = getModelKeys('User', ['id', 'usersetting_id']);
-            var keysToSave = _.pick(req.body, _.keys(modelKeys));
-            var fullArgs = _.extend(keysToSave, {
-                usersetting_id: usersettings.get('id')
-            });
-            if (verified) {
-                fullArgs.verified_email = true;
+        .tap(function existingUserCheck(existingUser) {
+            if (existingUser) {
+                return next('exists');
             }
-            return models.User.forge(fullArgs)
-                .save(undefined, sqlOptions)
-                .tap(function(user) {
+            return models.UserSetting.forge({
+                pushnotifications: true,
+                emailnotifications: true,
+                textnotifications: false
+            })
+                .save(null, sqlOptions)
+                .tap(function usersPostUserSettingsSaved(usersettings) {
+                    var modelKeys = getModelKeys('User', ['id', 'usersetting_id']);
+                    var keysToSave = _.pick(req.body, _.keys(modelKeys));
+                    var fullArgs = _.extend(keysToSave, {
+                        usersetting_id: usersettings.get('id')
+                    });
                     if (verified) {
-                        console.log("Created account: sending account activated email to " + user.get('id'));
-                        return sendAccountActivatedEmail(
-                            user.get('id'),
-                            function accountActivatedEmailSent() {
-                                console.log("email sent!?");
-                                return next(user);
-                            }
-                        );
-                    } else {
-                        return sendEmailVerificationEmail(
-                            user.toJSON(),
-                            sqlOptions,
-                            function emailVerificationSent() {
-                                return next(user);
-                            });
+                        fullArgs.verified_email = true;
                     }
+                    return models.User.forge(fullArgs)
+                        .save(undefined, sqlOptions)
+                        .tap(function(user) {
+                            if (verified) {
+                                console.log("Created account: sending account activated email to " + user.get('id'));
+                                return sendAccountActivatedEmail(
+                                    user.get('id'),
+                                    function accountActivatedEmailSent() {
+                                        console.log("email sent!?");
+                                        return next(undefined, user);
+                                    }
+                                );
+                            } else {
+                                return sendEmailVerificationEmail(
+                                    user.toJSON(),
+                                    sqlOptions,
+                                    function emailVerificationSent() {
+                                        return next(undefined, user);
+                                    });
+                            }
+                        });
                 });
         });
 }
