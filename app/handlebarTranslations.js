@@ -128,6 +128,9 @@ I18n.translations["en"] = {
         password: {
             notmatch: "Passwords don't match",
             invalid: 'Password is invalid'
+        },
+        username_or_email: {
+            exists: 'Username or Email exists'
         }
     }
 };
