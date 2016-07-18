@@ -187,9 +187,15 @@ module.exports = function(app, settings){
                                         data.loggedIn = data.loggedIn[0]
                                     }
                                     return afterGettingLoggedInUsersStuff();
+                                })
+                                .catch(function failedToRenderAcceptInvitationAccepting(err) {
+                                    renderPage(err.message);
                                 });
                         } else {
-                            return afterGettingLoggedInUsersStuff();
+                            return afterGettingLoggedInUsersStuff()
+                                .catch(function failedToRenderAcceptInvitationNotAccepting(err) {
+                                    renderPage(err.message);
+                                });
                         }
                     } else {
                         renderPage('layouts/groupinvite/unknown');
@@ -396,7 +402,11 @@ module.exports = function(app, settings){
                                 showPage('messsage.internalerror');
                             });
                     }
-                });
+                })
+                .catch(function(err) {
+                    res.sendStatus(500);
+                    slack.error(req, 'Failed to render /acceptinvitation', err);
+                })
         } else {
             res.redirect('/');
         }
