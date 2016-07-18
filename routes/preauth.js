@@ -158,8 +158,6 @@ module.exports = function(app, settings){
                     var data = {};
                     if (groupinvitation) {
                         var groupinvitationJson = groupinvitation.toJSON();
-                        console.log('))))))))))))))))))');
-                        console.log(groupinvitationJson);
                         //return;
                         var now = time.nowInUtc();
                         data = {
@@ -329,11 +327,7 @@ module.exports = function(app, settings){
                                 })
                                     .save(undefined, sqlOptions)
                                     .tap(function consumeInviteTokenCreateUserGroups() {
-                                        console.log("############################USERCLASSES:");
-                                        console.log(data);
                                         var groupuserclass_ids = _.reduce(data.userclasses, function(memo, userclass) {
-                                            console.log("USERCLASS::::");
-                                            console.log(userclass);
                                             memo.push(userclass.groupuserclass.id);
                                             return memo;
                                         }, []);
@@ -351,14 +345,8 @@ module.exports = function(app, settings){
                                                     return memo;
                                                 }, {});
 
-                                                console.log('((((((((((((((');
-                                                console.log(groupuserclass_ids);
-                                                console.log('userclassesitsmap');
-                                                console.log(userclassesIdsMap);
                                                 var newGroupUserClassToUser = _.reduce(groupuserclass_ids, function(memo, groupuserclass_id) {
-                                                    console.log("hasOwnProeprty(" + groupuserclass_id + ')');
                                                     if (!userclassesIdsMap.hasOwnProperty('' + groupuserclass_id)) {
-                                                        console.log("YEP!");
                                                         memo.push({
                                                             user_id: data.invited.id,
                                                             groupuserclass_id: groupuserclass_id
@@ -369,14 +357,10 @@ module.exports = function(app, settings){
 
                                                 if (newGroupUserClassToUser.length > 0) {
                                                     // grant the user the specified job types
-                                                    console.log("GRANTING JOB TYPE");
-                                                    console.log(newGroupUserClassToUser);
-                                                    console.log('##########################');
                                                     var jobTypes = models.GroupUserClassToUsers.forge(newGroupUserClassToUser);
                                                     return Promise.all(jobTypes.invoke('save', undefined, sqlOptions))
                                                         .tap(consumeInviteTokenUsergroupsGranted);
                                                 } else {
-                                                    console.log("NOT GRANTING JOB TYPE");
                                                     return consumeInviteTokenUsergroupsGranted();
                                                 }
 
