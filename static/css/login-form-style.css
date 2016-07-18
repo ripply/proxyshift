@@ -307,7 +307,7 @@ body {
 }
 /***** Media queries *****/
 @media (max-width: 767px) {
-  .middle-border {
+  .login-form .middle-border {
     min-height: auto;
     margin: 65px 30px 0 30px;
     border-right: 0;
