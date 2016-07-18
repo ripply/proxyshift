@@ -192,10 +192,11 @@ module.exports = function(app, settings){
                                     renderPage(err.message);
                                 });
                         } else {
-                            return afterGettingLoggedInUsersStuff()
-                                .catch(function failedToRenderAcceptInvitationNotAccepting(err) {
-                                    renderPage(err.message);
-                                });
+                            try {
+                                return afterGettingLoggedInUsersStuff()
+                            } catch (err) {
+                                renderPage(err.message);
+                            }
                         }
                     } else {
                         renderPage('layouts/groupinvite/unknown');
