@@ -224,7 +224,7 @@ var eventPasswordReset = {
     }
 };
 
-var verifyEmail = {
+var emailVerification = {
     email: {
         from: transactionalEmailAddress,
         template_id: getTemplateId("sendgrid.templates.email_verification"),
@@ -234,7 +234,7 @@ var verifyEmail = {
     }
 };
 
-var accountActivated = {
+var successfulAccountActivated = {
     email: {
         from: transactionalEmailAddress,
         template_id: getTemplateId("sendgrid.templates.successful_account_activation"),
@@ -1257,10 +1257,10 @@ module.exports = {
     },
     verifyEmail: function verifyEmail(user_ids, args) {
         args.link = this.createTokenUrl("/emailverify", args.token);
-        return this.sendToUsers(user_ids, verifyEmail, args);
+        return this.sendToUsers(user_ids, emailVerification, args);
     },
     accountActivated: function accountActivated(user_id) {
-        return this.sendToUsers(user_id, accountActivated, {});
+        return this.sendToUsers(user_id, successfulAccountActivated, {});
     },
     loggedOut: function loggedOut(pushtokens) {
         if (!(pushtokens instanceof Array)) {
