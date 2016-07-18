@@ -158,6 +158,9 @@ module.exports = function(app, settings){
                     var data = {};
                     if (groupinvitation) {
                         var groupinvitationJson = groupinvitation.toJSON();
+                        console.log('))))))))))))))))))');
+                        console.log(groupinvitationJson);
+                        //return;
                         var now = time.nowInUtc();
                         data = {
                             invitation: groupinvitationJson,
@@ -316,8 +319,12 @@ module.exports = function(app, settings){
                                 })
                                     .save(undefined, sqlOptions)
                                     .tap(function consumeInviteTokenCreateUserGroups() {
+                                        console.log("############################USERCLASSES:");
+                                        console.log(data);
                                         var groupuserclass_ids = _.reduce(data.userclasses, function(memo, userclass) {
-                                            memo.push(userclass.id);
+                                            console.log("USERCLASS::::");
+                                            console.log(userclass);
+                                            memo.push(userclass.groupuserclass.id);
                                             return memo;
                                         }, []);
                                         // figure out what job types they already have
@@ -334,8 +341,14 @@ module.exports = function(app, settings){
                                                     return memo;
                                                 }, {});
 
+                                                console.log('((((((((((((((');
+                                                console.log(groupuserclass_ids);
+                                                console.log('userclassesitsmap');
+                                                console.log(userclassesIdsMap);
                                                 var newGroupUserClassToUser = _.reduce(groupuserclass_ids, function(memo, groupuserclass_id) {
+                                                    console.log("hasOwnProeprty(" + groupuserclass_id + ')');
                                                     if (!userclassesIdsMap.hasOwnProperty('' + groupuserclass_id)) {
+                                                        console.log("YEP!");
                                                         memo.push({
                                                             user_id: data.invited.id,
                                                             groupuserclass_id: groupuserclass_id
@@ -353,6 +366,7 @@ module.exports = function(app, settings){
                                                     return Promise.all(jobTypes.invoke('save', undefined, sqlOptions))
                                                         .tap(consumeInviteTokenUsergroupsGranted);
                                                 } else {
+                                                    console.log("NOT GRANTING JOB TYPE");
                                                     return consumeInviteTokenUsergroupsGranted();
                                                 }
 

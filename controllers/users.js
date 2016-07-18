@@ -912,9 +912,11 @@ function createUser(sqlOptions, req, verified, next) {
                 .save(undefined, sqlOptions)
                 .tap(function(user) {
                     if (verified) {
+                        console.log("Created account: sending account activated email to " + user.get('id'));
                         return sendAccountActivatedEmail(
                             user.get('id'),
                             function accountActivatedEmailSent() {
+                                console.log("email sent!?");
                                 return next(user);
                             }
                         );

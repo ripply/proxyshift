@@ -129,6 +129,7 @@ App.prototype.sendToUsers = function sendToUsers(user_ids, messages, args, test,
     }
 
     console.log('###########');
+    console.log(messages);
     console.log(args);
 
     var hasLocationId = args.hasOwnProperty('location_id');
