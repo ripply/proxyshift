@@ -189,13 +189,13 @@ module.exports = function(app, settings){
                                     return afterGettingLoggedInUsersStuff();
                                 })
                                 .catch(function failedToRenderAcceptInvitationAccepting(err) {
-                                    renderPage(err.message);
+                                    showPage(err.message);
                                 });
                         } else {
                             try {
                                 return afterGettingLoggedInUsersStuff()
                             } catch (err) {
-                                renderPage(err.message);
+                                showPage(err.message);
                             }
                         }
                     } else {
