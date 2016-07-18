@@ -894,11 +894,12 @@ function consumeEmailVerifyToken(token, sqlOptions, next) {
 
 function createUser(sqlOptions, req, verified, next) {
     return models.User.query(function(q) {
-        q = q.select('id')
+        q.select('id')
             .from('users')
             .where('username', '=', req.body.username.toLowerCase())
             .orWhere('email', '=', req.body.email.toLowerCase());
     })
+        .fetch(sqlOptions)
         .tap(function existingUserCheck(existingUser) {
             if (existingUser) {
                 return next('exists');
