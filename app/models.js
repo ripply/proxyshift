@@ -338,6 +338,8 @@ var specialFieldList = {
 
 var databaseInitialized = false;
 
+const initializedResolvedPromise = new Promise.resolve('initialized');
+
 function initDb(dropAllTables) {
 
     if (!master) {
@@ -345,7 +347,9 @@ function initDb(dropAllTables) {
     }
 
     if (databaseInitialized) {
-        return Promise.resolve('initialized');
+        return initializedResolvedPromise;
+    } else {
+        console.log('Initializing db...');
     }
 
     if (dropAllTables) {
