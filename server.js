@@ -1,3 +1,10 @@
+if (process.env.PROFILE == 'true') {
+    console.log("ENABLING PROFILING ON PORT 5959");
+    require('look').start();
+} else if (process.env.PROFILE) {
+    console.log('PROFILE SET but not true `' + process.env.PROFILE + '`');
+}
+
 process.env.WEB = true;
 
 var path = require('path');
