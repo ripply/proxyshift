@@ -18,7 +18,7 @@ module.exports = function(grunt) {
         'lib/angular-toastr/dist/angular-toastr.css',
         'fonts/ionicons.ttf',
         'fonts/ionicons.woff',
-        'lib/cordova-app-loader/dist/autoupdate.js'
+        'autoupdate.js'
     ];
 
     var jsonmanifestBasePath = 'ionic/www';
