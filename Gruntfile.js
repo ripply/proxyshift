@@ -3,6 +3,26 @@ module.exports = function(grunt) {
     require('time-grunt')(grunt);
     require('load-grunt-tasks')(grunt);
 
+    var jsonmainfestSrc = [
+        'css/ionic.css',
+        'css/proxyshift.css',
+        'lib/winstore-jscompat/winstore-jscompat.js',
+        'lib/validator-js/validator.min.js',
+        'lib/ionic/release/js/ionic.bundle.js',
+        'lib/angular-toastr/dist/angular-toastr.tpls.js',
+        'lib/ng-material-floating-button/src/mfb-directive.js',
+        'libs.min.js',
+        'template.js',
+        'lib/angular-toastr/dist/angular-toastr.css',
+        'fonts/ionicons.ttf',
+        'fonts/ionicons.woff'
+    ];
+
+    var cordovaFonts = [
+        'ionic/www/lib/ionic/release/fonts/ionicons.ttf',
+        'ionic/www/lib/ionic/release/fonts/ionicons.woff'
+    ];
+
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 
@@ -12,6 +32,28 @@ module.exports = function(grunt) {
                     targetDir: 'client/requires',
                     layout: 'byComponent'
                 }
+            }
+        },
+
+        jsonmanifest: {
+            generate: {
+                options: {
+                    basePath: 'ionic/www',
+                    exclude: [],
+                    //load all found assets
+                    loadall: true,
+                    //manually add files to the manifest
+                    files: {
+                        /*'ionic.css': 'lib/ionic/css/ionic.css',
+                        'proxyshift.css': 'lib/ionic/css/proyshift.css'*/
+                    },
+                    //manually define the files that should be injected into the page
+                    load: [],
+                    // root location of files to be loaded in the load array.
+                    root: "./"
+                },
+                src: jsonmainfestSrc,
+                dest: ['ionic/www/manifest.json']
             }
         },
 
@@ -32,6 +74,9 @@ module.exports = function(grunt) {
                         'ionic/www/lib/angular-ui-grid/ui-grid.min.css',
                         'ionic/www/lib/ng-material-floating-button/mfb/dist/mfb.css',
                         'ionic/less/main.less'
+                    ],
+                    'ionic/www/css/ionic.css': [
+                        'ionic/www/lib/ionic/release/css/ionic.css'
                     ],
                     'static/css/login-form-style.css': [
                         'static/css/form-elements.css',
@@ -308,7 +353,16 @@ module.exports = function(grunt) {
                         'ionic/www/js/services/UserInfoService.js',
                         'ionic/www/js/services/RemoteUserSettingsService.js',
                         'ionic/www/js/services/ResourceService.js',
-                        'ionic/www/js/services/CreateShiftService.js',
+                        'ionic/www/js/services/CreateShiftService.js'
+                    ],
+                    'ionic/www/ionic.bundle.min.js': [
+                        'ionic/www/lib/ionic/release/js/ionic.bundle.js'
+                    ],
+                    'ionic/www/bootstrap.js': [
+                        'ionic/www/lib/bluebird/js/browser/bluebird.js',
+                        'ionic/www/lib/cordova-app-loader/dist/cordova-app-loader-complete.js',
+                        'ionic/www/lib/cordova-app-loader/dist/bootstrap.js',
+                        'ionic/www/lib/cordova-app-loader/dist/autoupdate.js'
                     ]
                 }]
             }
@@ -363,6 +417,10 @@ module.exports = function(grunt) {
             karma: {
                 files: ['build/tests.js'],
                 tasks: ['jshint:test', 'karma:watcher:run']
+            },
+            jsonmanifest: {
+                files: jsonmainfestSrc,
+                tasks: ['jsonmanifest']
             }
         },
 
@@ -418,7 +476,15 @@ module.exports = function(grunt) {
 
         concurrent: {
             dev: {
-                tasks: ['nodemon:dev', 'watch:less', 'watch:uglify', 'watch:ngtemplates', 'watch:concat', 'watch:ngtemplates'],
+                tasks: [
+                    'nodemon:dev',
+                    'watch:less',
+                    'watch:uglify',
+                    'watch:ngtemplates',
+                    'watch:concat',
+                    'watch:ngtemplates',
+                    'watch:jsonmanifest'
+                ],
                 options: {
                     logConcurrentOutput: true
                 }
@@ -470,4 +536,85 @@ module.exports = function(grunt) {
     grunt.registerTask('test', ['test:server', 'test:client']);
 
     grunt.loadNpmTasks('grunt-angular-templates');
+
+    grunt.registerMultiTask('jsonmanifest', 'Generate JSON Manifest for Hot Updates', function () {
+
+        var options = this.options({loadall:true, root: "./", files: {}, load: []});
+        var done = this.async();
+
+        var path = require('path');
+
+        this.files.forEach(function (file) {
+            var files;
+
+            //manifest format
+            var json = {
+                "files": options.files,
+                "load": options.load,
+                "root": options.root
+            };
+
+            //clear load array if loading all found assets
+            if(options.loadall) {
+                json.load = [];
+            }
+
+            // check to see if src has been set
+            if (typeof file.src === "undefined") {
+                grunt.fatal('Need to specify which files to include in the json manifest.', 2);
+            }
+
+            // if a basePath is set, expand using the original file pattern
+            if (options.basePath) {
+                files = grunt.file.expand({cwd: options.basePath}, file.orig.src);
+            } else {
+                files = file.src;
+            }
+
+            // Exclude files
+            if (options.exclude) {
+                files = files.filter(function (item) {
+                    return options.exclude.indexOf(item) === -1;
+                });
+            }
+
+            // Set default destination file
+            if (!file.dest) {
+                file.dest = ['manifest.json'];
+            }
+
+            // add files
+            if (files) {
+                files.forEach(function (item) {
+
+                    var isDir = grunt.file.isDir(path.join(options.basePath, item));
+
+                    if (!isDir)
+                    {
+                        var hasher = require('crypto').createHash('sha256');
+                        var filename = encodeURI(item);
+                        var key = filename.split("-").slice(1).join('-');
+                        if (key == '') {
+                            key = filename;
+                        }
+                        json.files[key] = {};
+                        json.files[key]['filename'] = filename;
+                        json.files[key]['version'] = hasher.update(grunt.file.read(path.join(options.basePath, item))).digest("hex");
+
+                        if(options.loadall)
+                        {
+                            json.load.push(filename);
+                        }
+                    }
+                });
+            }
+            //write out the JSON to the manifest files
+            file.dest.forEach(function(f) {
+                grunt.file.write(f, JSON.stringify(json, null, 2));
+            });
+
+            done();
+        });
+
+    });
 };

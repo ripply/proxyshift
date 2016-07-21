@@ -22,7 +22,10 @@
     "angular-resource": "1.4.3",
     "ionic": "1.1.1",
     "lodash": "^4.4.0",
-    "angular-toastr": "1.7.0"
+    "angular-toastr": "1.7.0",
+    "cordova-app-loader": "1.2.0",
+    "cordova-promise-fs": "1.1.1",
+    "bluebird": "3.4.1"
   },
   "resolutions": {
     "ionic": "^1.2.4",

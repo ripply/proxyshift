@@ -9,18 +9,17 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "    <meta name=\"viewport\" content=\"initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width\">\n" +
     "    <title></title>\n" +
     "\n" +
-    "    <link href=\"lib/ionic/release/css/ionic.css\" rel=\"stylesheet\">\n" +
-    "    <link href=\"css/proxyshift.css\" rel=\"stylesheet\">\n" +
-    "    <link rel=\"stylesheet\" type=\"text/css\" href=\"lib/angular-toastr/dist/angular-toastr.css\">\n" +
+    "    <meta name=\"mobile-web-app-capable\" content=\"yes\" />\n" +
+    "    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\" />\n" +
+    "    <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\" />\n" +
     "\n" +
     "    <!-- In windows apps this fixes dynamic content errors -->\n" +
-    "    <script src=\"lib/winstore-jscompat/winstore-jscompat.js\"></script>\n" +
-    "    <script src=\"lib/ionic/release/js/ionic.bundle.min.js\"></script>\n" +
-    "    <script src=\"lib/validator-js/validator.min.js\"></script>\n" +
-    "    <script src=\"lib/angular-toastr/dist/angular-toastr.tpls.js\"></script>\n" +
-    "    <script src=\"lib/ng-material-floating-button/src/mfb-directive.js\"></script>\n" +
-    "    <script src=\"libs.min.js\"></script>\n" +
-    "    <script src=\"template.js\"></script>\n" +
+    "    <script type=\"text/javascript\" src=\"cordova.js\"></script>\n" +
+    "    <script type=\"text/javascript\"\n" +
+    "            timeout=\"5000\"\n" +
+    "            manifest=\"manifest.json\"\n" +
+    "            server=\"https://guarded-waters-4321.herokuapp.com\"\n" +
+    "            src=\"bootstrap.js\"></script>\n" +
     "</head>\n" +
     "  <body ng-app=\"scheduling-app\">\n" +
     "    <ion-nav-view></ion-nav-view>\n" +
@@ -301,6 +300,269 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "  </div>\n" +
     "  <progress-bar ng-if=\"progressBar\"></progress-bar>\n" +
     "</div>\n"
+  );
+
+
+  $templateCache.put('lib/bluebird/docs/_layouts/api.html',
+    "---\n" +
+    "layout: default\n" +
+    "---\n" +
+    "\n" +
+    "<div class=\"post\">\n" +
+    "  <article class=\"post-content\">\n" +
+    "    {{ content }}\n" +
+    "  </article>\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('lib/bluebird/docs/_layouts/default.html',
+    "<!DOCTYPE html>\n" +
+    "<!--[if lt IE 7]>      <html class=\"no-js lt-ie9 lt-ie8 lt-ie7\"> <![endif]-->\n" +
+    "<!--[if IE 7]>         <html class=\"no-js lt-ie9 lt-ie8\"> <![endif]-->\n" +
+    "<!--[if IE 8]>         <html class=\"no-js lt-ie9\"> <![endif]-->\n" +
+    "<!--[if gt IE 8]><!-->\n" +
+    "<html class=\"no-js\">\n" +
+    " <!--<![endif]-->\n" +
+    "<head>\n" +
+    "    <meta charset=\"utf-8\">\n" +
+    "    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge,chrome=1\">\n" +
+    "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n" +
+    "    <link href='http://fonts.googleapis.com/css?family=Raleway:400,300,200,700,500,100,800,600,900' rel='stylesheet' type='text/css'>\n" +
+    "    <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css\" />\n" +
+    "    <title>{% if page.title %}{{ page.title }} | {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>\n" +
+    "    <meta name=\"description\" content=\"{% if page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate: 160 }}{% else %}{{ site.description }}{% endif %}\">\n" +
+    "    <link href=\"//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css\" rel=\"stylesheet\">\n" +
+    "    <link rel=\"stylesheet\" href=\"{{ \"/css/mono-blue.css\" | prepend: site.baseurl }}\" type='text/css' />\n" +
+    "    <link rel=\"stylesheet\" href=\"{{ \"/css/hover-min.css\" | prepend: site.baseurl }}\" media=\"all\">\n" +
+    "    <link rel=\"stylesheet\" href=\"{{ \"/css/main.css\" | prepend: site.baseurl }}\">\n" +
+    "    <link rel=\"canonical\" href=\"{{ page.url | replace:'index.html','' | prepend: site.baseurl | prepend: site.url }}\">\n" +
+    "    <link rel=\"icon\" href=\"{{ \"/img/favicon.png\" | prepend: site.baseurl }}\" type=\"image/png\" />\n" +
+    "  </head>\n" +
+    "\n" +
+    "  <body>\n" +
+    "\n" +
+    "    <nav class=\"navbar\" role=\"navigation\">\n" +
+    "        <div class=\"container\">\n" +
+    "            <div class=\"navbar-header\">\n" +
+    "                <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#navbar\" aria-expanded=\"false\" aria-controls=\"navbar\">\n" +
+    "                    <span class=\"sr-only\">Toggle navigation</span>\n" +
+    "                    <span class=\"icon-bar\"></span>\n" +
+    "                    <span class=\"icon-bar\"></span>\n" +
+    "                    <span class=\"icon-bar\"></span>\n" +
+    "                </button>\n" +
+    "\n" +
+    "                <a href=\"/\" class=\"title\">\n" +
+    "                    <img src=\"{{ \"/img/logo.png\" | prepend: site.baseurl }}\" class=\"hidden-xs\" />\n" +
+    "\n" +
+    "                    <span class=\"tagline\">bluebird</span>\n" +
+    "                </a>\n" +
+    "            </div>\n" +
+    "            <div id=\"navbar\" class=\"navbar-collapse navbar-bluebird navbar-right collapse\">\n" +
+    "                <ul class=\"nav navbar-nav bb-nav\">\n" +
+    "                    {% if page.path == 'docs/support.md' %}\n" +
+    "                        {% assign name = 'support' %}\n" +
+    "                    {% elsif page.path == 'docs/install.md' %}\n" +
+    "                        {% assign name = 'install' %}\n" +
+    "                    {% else %}\n" +
+    "                        {% assign name = 'docs' %}\n" +
+    "                    {% endif %}\n" +
+    "\n" +
+    "                    <li class=\"{% if name == 'docs' %}active{% endif %}\"><a href=\"{{ \"/docs/getting-started.html\" | prepend: site.baseurl }}\">Docs</a></li>\n" +
+    "                    <li class=\"{% if name == 'support' %}active{% endif %}\"><a href=\"{{ \"/docs/support.html\" | prepend: site.baseurl }}\">Support</a></li>\n" +
+    "                    <li class=\"{% if name == 'install' %}active{% endif %}\"><a href=\"{{ \"/docs/install.html\" | prepend: site.baseurl }}\">Install</a></li>\n" +
+    "                    <li><a href=\"https://github.com/petkaantonov/bluebird/\">Github</a></li>\n" +
+    "                </ul>\n" +
+    "            </div><!--/.navbar-collapse -->\n" +
+    "        </div>\n" +
+    "    </nav>\n" +
+    "\n" +
+    "   <div class=\"container\">\n" +
+    "      <div class=\"row\">\n" +
+    "        <div class=\"col-sm-3\">\n" +
+    "            <ul class=\"nav left-nav\">\n" +
+    "                <li><a href=\"{{ \"/docs/getting-started.html\" | prepend: site.baseurl }}\">Getting Started</a></li>\n" +
+    "                <li><a href=\"{{ \"/docs/features.html\" | prepend: site.baseurl }}\">Features</a></li>\n" +
+    "                <li><a href=\"{{ \"/docs/changelog.html\" | prepend: site.baseurl }}\">Changelog</a></li>\n" +
+    "                <li><a href=\"{{ \"/docs/api-reference.html\" | prepend: site.baseurl }}\"><strong>API Reference</strong></a></li>\n" +
+    "                <li><a href=\"{{ \"/docs/new-in-bluebird-3.html\" | prepend: site.baseurl }}\"><strong>New in 3.0</strong></a></li>\n" +
+    "                <li><a href=\"{{ \"/docs/warning-explanations.html\" | prepend: site.baseurl }}\">Warning Explanations</a></li>\n" +
+    "                <li><a href=\"{{ \"/docs/error-explanations.html\" | prepend: site.baseurl }}\">Error Explanations</a></li>\n" +
+    "                <li><a href=\"{{ \"/docs/contribute.html\" | prepend: site.baseurl }}\">Contribute</a></li>\n" +
+    "                <li><a href=\"{{ \"/docs/benchmarks.html\" | prepend: site.baseurl }}\">Benchmarks</a></li>\n" +
+    "                <li><a href=\"{{ \"/docs/deprecated-apis.html\" | prepend: site.baseurl }}\">Deprecated APIs</a></li>\n" +
+    "                <li><a href=\"{{ \"/docs/download-api-reference.html\" | prepend: site.baseurl }}\">Download API Reference</a></li>\n" +
+    "                <li><hr></li>\n" +
+    "                <li>Why?\n" +
+    "                    <ul class=\"nav nav-child\">\n" +
+    "                        <li><a href=\"{{ \"/docs/why-promises.html\" | prepend: site.baseurl }}\">Why Promises?</a></li>\n" +
+    "                        <li><a href=\"{{ \"/docs/why-bluebird.html\" | prepend: site.baseurl }}\">Why bluebird?</a></li>\n" +
+    "                        <li><a href=\"{{ \"/docs/why-performance.html\" | prepend: site.baseurl }}\">Why Performance?</a></li>\n" +
+    "                        <li><a href=\"{{ \"/docs/what-about-generators.html\" | prepend: site.baseurl }}\">What About Generators?</a></li>\n" +
+    "                    </ul>\n" +
+    "                </li>\n" +
+    "                <li><hr></li>\n" +
+    "                <li>\n" +
+    "                    Tutorials\n" +
+    "                    <ul class=\"nav nav-child\">\n" +
+    "                        <li><a href=\"{{ \"/docs/async-dialogs.html\" | prepend: site.baseurl }}\">Async Dialogs</a></li>\n" +
+    "                    </ul>\n" +
+    "                </li>\n" +
+    "                <li><hr></li>\n" +
+    "                <li>\n" +
+    "                    Guides\n" +
+    "                    <ul class=\"nav nav-child\">\n" +
+    "                        <li><a href=\"{{ \"/docs/beginners-guide.html\" | prepend: site.baseurl }}\">Beginner's Guide</a></li>\n" +
+    "                        <li><a href=\"{{ \"/docs/anti-patterns.html\" | prepend: site.baseurl }}\">Anti-patterns</a></li>\n" +
+    "                        <li><a href=\"{{ \"/docs/working-with-callbacks.html\" | prepend: site.baseurl }}\">Working with Callbacks</a></li>\n" +
+    "                        <li><a href=\"{{ \"/docs/coming-from-other-languages.html\" | prepend: site.baseurl }}\">Coming from Other Languages</a></li>\n" +
+    "                        <li><a href=\"{{ \"/docs/coming-from-other-libraries.html\" | prepend: site.baseurl }}\">Coming from Other Libraries</a></li>\n" +
+    "                    </ul>\n" +
+    "                </li>\n" +
+    "            </ul>\n" +
+    "        </div>\n" +
+    "        <div class=\"col-sm-9\">\n" +
+    "            {% if page.path %}\n" +
+    "            <div class=\"post-info\">\n" +
+    "                <a href=\"{{ page.path | prepend: \"https://github.com/petkaantonov/bluebird/edit/master/docs/\" }}\">\n" +
+    "                    <i class=\"fa fa-edit\"></i>\n" +
+    "                    Edit on Github</a>\n" +
+    "                <br>\n" +
+    "                <i>Updated {{ page.path | file_date | date_to_string }}</i>\n" +
+    "            </div>\n" +
+    "            <div class=\"clearfix\"></div>\n" +
+    "            {% endif %}\n" +
+    "            {{ content }}\n" +
+    "        </div>\n" +
+    "      </div>\n" +
+    "    </div>\n" +
+    "    <footer></footer>\n" +
+    "    <script src=\"https://code.jquery.com/jquery-2.1.3.min.js\"></script>\n" +
+    "    <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js\"></script>\n" +
+    "    <script src=\"//cdn.jsdelivr.net/bluebird/{{ site.version }}/bluebird.js\"></script>\n" +
+    "    <script>\n" +
+    "      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){\n" +
+    "      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),\n" +
+    "      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)\n" +
+    "      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');\n" +
+    "\n" +
+    "      ga('create', 'UA-46253177-1', 'auto');\n" +
+    "      ga('send', 'pageview');\n" +
+    "\n" +
+    "    </script>\n" +
+    "</body>\n" +
+    "\n" +
+    "</html>\n"
+  );
+
+
+  $templateCache.put('lib/bluebird/docs/_layouts/page.html',
+    "---\n" +
+    "layout: default\n" +
+    "---\n" +
+    "<div class=\"post\">\n" +
+    "\n" +
+    "  <header class=\"post-header\">\n" +
+    "    <h1 class=\"post-title\">{{ page.title }}</h1>\n" +
+    "  </header>\n" +
+    "\n" +
+    "  <article class=\"post-content\">\n" +
+    "    {{ content }}\n" +
+    "  </article>\n" +
+    "\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('lib/bluebird/docs/index.html',
+    "<!DOCTYPE html>\n" +
+    "<meta charset=utf-8>\n" +
+    "<title>Redirecting...</title>\n" +
+    "<link rel=canonical href=\"/docs/getting-started.html\">\n" +
+    "<meta http-equiv=refresh content=\"0; url=/docs/getting-started.html\">\n" +
+    "<h1>Redirecting...</h1>\n" +
+    "<a href=\"/docs/getting-started.html\">Click here if you are not redirected.</a>\n" +
+    "<script>location='/docs/getting-started.html'</script>\n"
+  );
+
+
+  $templateCache.put('lib/cordova-app-loader/www/autoupdate.html',
+    "<!DOCTYPE HTML>\n" +
+    "<html>\n" +
+    "    <head>\n" +
+    "        <title>Cordova App Loader</title>\n" +
+    "        <meta name=\"viewport\" content=\"width=device-width, maximum-scale=1, user-scalable=no\" />\n" +
+    "        <meta name=\"mobile-web-app-capable\" content=\"yes\" />\n" +
+    "        <meta name=\"apple-mobile-web-app-capable\" content=\"yes\" />\n" +
+    "        <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\" />\n" +
+    "        <script type=\"text/javascript\" src=\"cordova.js\"></script>\n" +
+    "        <script type=\"text/javascript\" \n" +
+    "            timeout=\"5100\" \n" +
+    "            server=\"http://data.madebymark.nl/cordova-app-loader/\"\n" +
+    "            manifest=\"manifest.json\" \n" +
+    "            src=\"bootstrap.js\"></script>\n" +
+    "    </head>\n" +
+    "    <body>\n" +
+    "    </body>\n" +
+    "</html>\n"
+  );
+
+
+  $templateCache.put('lib/cordova-app-loader/www/index.html',
+    "<!DOCTYPE HTML>\n" +
+    "<html>\n" +
+    "    <head>\n" +
+    "        <title>Cordova App Loader</title>\n" +
+    "        <meta name=\"viewport\" content=\"width=device-width, maximum-scale=1, user-scalable=no\" />\n" +
+    "        <meta name=\"mobile-web-app-capable\" content=\"yes\" />\n" +
+    "        <meta name=\"apple-mobile-web-app-capable\" content=\"yes\" />\n" +
+    "        <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\" />\n" +
+    "        <script type=\"text/javascript\" src=\"cordova.js\"></script>\n" +
+    "        <script type=\"text/javascript\" \n" +
+    "            timeout=\"5100\" \n" +
+    "            manifest=\"manifest.json\" \n" +
+    "            src=\"bootstrap.js\"></script>\n" +
+    "    </head>\n" +
+    "    <body>\n" +
+    "    </body>\n" +
+    "</html>\n"
+  );
+
+
+  $templateCache.put('lib/cordova-app-loader/www/template.html',
+    "\n" +
+    "<h5>App: <span id=\"msg\"></span></h5>\n" +
+    "\n" +
+    "<div class=\"form-group\">\n" +
+    "  <a href=\"#\" class=\"check\" manifest=\"manifest.json\">Original</a> | \n" +
+    "  <a href=\"#\" class=\"check\" manifest=\"update/manifest.php\">Update</a> | \n" +
+    "  <a href=\"#\" class=\"check\" manifest=\"slow-download/manifest.json\">Slow download</a> | \n" +
+    "  <a href=\"#\" class=\"check\" manifest=\"broken-app/manifest.json\">Broken app</a> | \n" +
+    "  <a href=\"#\" class=\"check\" manifest=\"broken-url/manifest.json\">Broken download</a>\n" +
+    "  <input type=\"text\" class=\"form-control\" id=\"manifest\" placeholder=\"url to manifest.json\">\n" +
+    "</div>\n" +
+    "\n" +
+    "<div class=\"form-group\">\n" +
+    "  <button class=\"btn btn-default doCheck\">Check</button> &gt; \n" +
+    "  <button class=\"btn btn-default download\">Download</button> &gt; \n" +
+    "  <button class=\"btn btn-default update\">Update</button>\n" +
+    "</div>\n" +
+    "<div class=\"form-group\">\n" +
+    "  <button class=\"btn btn-link factory\">reset to original</button>\n" +
+    "  <button class=\"btn btn-link reload\">reload</button>\n" +
+    "</div>\n" +
+    "\n" +
+    "<h5>Download: <span class=\"target\"></span></h5>\n" +
+    "<div class=\"progress\">\n" +
+    "  <div class=\"progress-bar\" role=\"progressbar\" style=\"width: 0%;\">\n" +
+    "  </div>\n" +
+    "</div>\n" +
+    "\n" +
+    "<h5>Status:</h5>\n" +
+    "<pre id=\"status\">\n" +
+    "</pre>\n" +
+    "\n" +
+    "\n"
   );
 
 
@@ -4185,6 +4447,57 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
   $templateCache.put('loaderio-9d5682a238a599101f965cae44771e88.html',
     "loaderio-9d5682a238a599101f965cae44771e88\n"
+  );
+
+
+  $templateCache.put('mobile.html',
+    "<!DOCTYPE html>\n" +
+    "<html>\n" +
+    "<head>\n" +
+    "    <meta charset=\"utf-8\">\n" +
+    "    <meta name=\"viewport\" content=\"initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width\">\n" +
+    "    <title></title>\n" +
+    "\n" +
+    "    <link href=\"lib/ionic/release/css/ionic.css\" rel=\"stylesheet\">\n" +
+    "    <link href=\"css/proxyshift.css\" rel=\"stylesheet\">\n" +
+    "    <link rel=\"stylesheet\" type=\"text/css\" href=\"lib/angular-toastr/dist/angular-toastr.css\">\n" +
+    "\n" +
+    "    <!-- In windows apps this fixes dynamic content errors -->\n" +
+    "    <script src=\"lib/winstore-jscompat/winstore-jscompat.js\"></script>\n" +
+    "    <script src=\"lib/ionic/release/js/ionic.bundle.min.js\"></script>\n" +
+    "    <script src=\"lib/validator-js/validator.min.js\"></script>\n" +
+    "    <script src=\"lib/angular-toastr/dist/angular-toastr.tpls.js\"></script>\n" +
+    "    <script src=\"lib/ng-material-floating-button/src/mfb-directive.js\"></script>\n" +
+    "    <script src=\"libs.min.js\"></script>\n" +
+    "    <script src=\"template.js\"></script>\n" +
+    "</head>\n" +
+    "<body ng-app=\"scheduling-app\">\n" +
+    "<ion-nav-view></ion-nav-view>\n" +
+    "<noscript>\n" +
+    "    <div class=\"login-container centered-input\">\n" +
+    "        <div>\n" +
+    "            <form>\n" +
+    "                <div class=\"list list-inset\">\n" +
+    "                    <a href=\"/\"><img src=\"img/logo.png\" class=\"logo\"></a>\n" +
+    "                    <label class=\"item item-input\">\n" +
+    "                        <i class=\"icon ion-email placeholder-icon\"></i>\n" +
+    "                        <input  type=\"text\" ng-model=\"user.username\" placeholder=\"Username or email\">\n" +
+    "                    </label>\n" +
+    "                    <label class=\"item item-input\">\n" +
+    "                        <i class=\"icon ion-locked placeholder-icon\"></i>\n" +
+    "                        <input  type=\"password\" ng-model=\"user.password\" placeholder=\"Password\">\n" +
+    "                    </label>\n" +
+    "                    <label class=\"item login-error-message\" ng-show=\"message != null\">\n" +
+    "                        <span>Proxy/Shift requires Javascript to be enabled.</span>\n" +
+    "                    </label>\n" +
+    "                    <button disabled class=\"button button-block\" type=\"submit\">Log in</button>\n" +
+    "                </div>\n" +
+    "            </form>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</noscript>\n" +
+    "</body>\n" +
+    "</html>\n"
   );
 
 

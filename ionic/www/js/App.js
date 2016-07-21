@@ -103,6 +103,8 @@ angular.module('scheduling-app', [
                  // of the previous and current state
                  //StateHistoryService
         ) {
+            // https://github.com/markmarijnissen/cordova-app-loader#step-1-bootstrap-your-app
+            window.BOOTSTRAP_OK = true;
             $httpProvider.interceptors.push('timeoutHttpIntercept');
             // enables caching of calendar which takes 1-2 seconds to render initially
             $ionicConfigProvider.views.forwardCache(true);

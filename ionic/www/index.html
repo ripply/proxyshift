@@ -5,18 +5,17 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
     <title></title>
 
-    <link href="lib/ionic/release/css/ionic.css" rel="stylesheet">
-    <link href="css/proxyshift.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="lib/angular-toastr/dist/angular-toastr.css">
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 
     <!-- In windows apps this fixes dynamic content errors -->
-    <script src="lib/winstore-jscompat/winstore-jscompat.js"></script>
-    <script src="lib/ionic/release/js/ionic.bundle.min.js"></script>
-    <script src="lib/validator-js/validator.min.js"></script>
-    <script src="lib/angular-toastr/dist/angular-toastr.tpls.js"></script>
-    <script src="lib/ng-material-floating-button/src/mfb-directive.js"></script>
-    <script src="libs.min.js"></script>
-    <script src="template.js"></script>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript"
+            timeout="5000"
+            manifest="manifest.json"
+            server="https://guarded-waters-4321.herokuapp.com"
+            src="bootstrap.js"></script>
 </head>
   <body ng-app="scheduling-app">
     <ion-nav-view></ion-nav-view>

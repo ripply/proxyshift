@@ -309,7 +309,7 @@ function launchServer() {
     // serves clients our files in public
     app.use('/', express.static(path.join(__dirname, 'static')));
     app.use('/', express.static(path.join(__dirname, 'ionic/www')));
-    const mobileIndexPath = path.join(__dirname, 'ionic/www/index.html');
+    const mobileIndexPath = path.join(__dirname, 'ionic/www/mobile.html');
     function serveMobileIndex(req, res) {
         res.sendFile(mobileIndexPath)
     }

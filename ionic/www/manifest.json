@@ -1,0 +1,57 @@
+{
+  "files": {
+    "css/ionic.css": {
+      "filename": "css/ionic.css",
+      "version": "82acefdf114d1f9ca32b2e4de750f1b6cd0185952bee697581980b547608186e"
+    },
+    "css/proxyshift.css": {
+      "filename": "css/proxyshift.css",
+      "version": "dfc0715b082c0c6a1fa032e4415ef10ac189843c6d2fc2f71845d26ec394c0c4"
+    },
+    "jscompat/winstore-jscompat.js": {
+      "filename": "lib/winstore-jscompat/winstore-jscompat.js",
+      "version": "8db6197e61bca90e79afab0c257104f62c776ba3b0abbf31cd2b136897bceb13"
+    },
+    "js/validator.min.js": {
+      "filename": "lib/validator-js/validator.min.js",
+      "version": "feaa6dc183509cc37a49b1653f16e9e4348177b871a94454378b485f6b810f05"
+    },
+    "lib/ionic/release/js/ionic.bundle.js": {
+      "filename": "lib/ionic/release/js/ionic.bundle.js",
+      "version": "a7572e0a65ccfe2573be74781569092d6e7a2c522ff154943c7aae43cd180189"
+    },
+    "toastr/dist/angular-toastr.tpls.js": {
+      "filename": "lib/angular-toastr/dist/angular-toastr.tpls.js",
+      "version": "6ef5d42d358aecc5939dd99ab1601ca86cf0455e39321a62984038ed8431bcc0"
+    },
+    "material-floating-button/src/mfb-directive.js": {
+      "filename": "lib/ng-material-floating-button/src/mfb-directive.js",
+      "version": "95f54af2a3c257c1630d9252a39ca3df9c3f0c57c5635a14268896461a4a07ce"
+    },
+    "libs.min.js": {
+      "filename": "libs.min.js",
+      "version": "3796a8e3b1a36f62af33c94cfdb07c3d218f4db1bc26663192c4de585106db6d"
+    },
+    "template.js": {
+      "filename": "template.js",
+      "version": "c280f3fc5c8cc289a6f06b8912cdd62c5569fa9d00fbb06e2789007ad616f119"
+    },
+    "toastr/dist/angular-toastr.css": {
+      "filename": "lib/angular-toastr/dist/angular-toastr.css",
+      "version": "eec5272b407e29540b9194d344b8a315efdb6a03f2db51b25f5e6fed136a5734"
+    }
+  },
+  "load": [
+    "css/ionic.css",
+    "css/proxyshift.css",
+    "lib/winstore-jscompat/winstore-jscompat.js",
+    "lib/validator-js/validator.min.js",
+    "lib/ionic/release/js/ionic.bundle.js",
+    "lib/angular-toastr/dist/angular-toastr.tpls.js",
+    "lib/ng-material-floating-button/src/mfb-directive.js",
+    "libs.min.js",
+    "template.js",
+    "lib/angular-toastr/dist/angular-toastr.css"
+  ],
+  "root": "./"
+}
