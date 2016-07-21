@@ -8,6 +8,14 @@
       "filename": "css/proxyshift.css",
       "version": "dfc0715b082c0c6a1fa032e4415ef10ac189843c6d2fc2f71845d26ec394c0c4"
     },
+    "app-loader/dist/cordova-app-loader-complete.js": {
+      "filename": "lib/cordova-app-loader/dist/cordova-app-loader-complete.js",
+      "version": "b57b526c97ddfd3a6d5b989652cddfd9cb1c211172f72cb663f358c6b2cb2641"
+    },
+    "lib/bluebird/js/browser/bluebird.js": {
+      "filename": "lib/bluebird/js/browser/bluebird.js",
+      "version": "d490ef161aef2a8e1af40c3df366ee86b5ff861ff12a1ffd77541aa968393e8f"
+    },
     "jscompat/winstore-jscompat.js": {
       "filename": "lib/winstore-jscompat/winstore-jscompat.js",
       "version": "8db6197e61bca90e79afab0c257104f62c776ba3b0abbf31cd2b136897bceb13"
@@ -47,11 +55,17 @@
     "fonts/ionicons.woff": {
       "filename": "fonts/ionicons.woff",
       "version": "abc19feb782cb671254f25fd9c0ccc6a5cdebf243f7ce6e03f3ae9c6190189a8"
+    },
+    "app-loader/dist/autoupdate.js": {
+      "filename": "lib/cordova-app-loader/dist/autoupdate.js",
+      "version": "97be09838fdc6e32604d3cfbbd666e7161e9124c828b7b22aaced64e5fd4d1a5"
     }
   },
   "load": [
     "css/ionic.css",
     "css/proxyshift.css",
+    "lib/cordova-app-loader/dist/cordova-app-loader-complete.js",
+    "lib/bluebird/js/browser/bluebird.js",
     "lib/winstore-jscompat/winstore-jscompat.js",
     "lib/validator-js/validator.min.js",
     "lib/ionic/release/js/ionic.bundle.js",
@@ -61,7 +75,8 @@
     "template.js",
     "lib/angular-toastr/dist/angular-toastr.css",
     "fonts/ionicons.ttf",
-    "fonts/ionicons.woff"
+    "fonts/ionicons.woff",
+    "lib/cordova-app-loader/dist/autoupdate.js"
   ],
   "root": "./"
 }
