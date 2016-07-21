@@ -18,6 +18,8 @@ module.exports = function(grunt) {
         'fonts/ionicons.woff'
     ];
 
+    var jsonmanifestBasePath = 'ionic/www';
+
     var cordovaFonts = [
         'ionic/www/lib/ionic/release/fonts/ionicons.ttf',
         'ionic/www/lib/ionic/release/fonts/ionicons.woff'
@@ -38,7 +40,7 @@ module.exports = function(grunt) {
         jsonmanifest: {
             generate: {
                 options: {
-                    basePath: 'ionic/www',
+                    basePath: jsonmanifestBasePath,
                     exclude: [],
                     //load all found assets
                     loadall: true,
@@ -419,7 +421,9 @@ module.exports = function(grunt) {
                 tasks: ['jshint:test', 'karma:watcher:run']
             },
             jsonmanifest: {
-                files: jsonmainfestSrc,
+                files: jsonmainfestSrc.map(function(src) {
+                    return jsonmanifestBasePath + '/' + src;
+                }),
                 tasks: ['jsonmanifest']
             }
         },

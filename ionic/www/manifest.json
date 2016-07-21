@@ -30,15 +30,23 @@
     },
     "libs.min.js": {
       "filename": "libs.min.js",
-      "version": "3796a8e3b1a36f62af33c94cfdb07c3d218f4db1bc26663192c4de585106db6d"
+      "version": "c1bdd476dc4713b027f66bbb99f29276f4e6a83821c9298d3c0e35b01be5e671"
     },
     "template.js": {
       "filename": "template.js",
-      "version": "c280f3fc5c8cc289a6f06b8912cdd62c5569fa9d00fbb06e2789007ad616f119"
+      "version": "f26b230897c7a21b73f2930fceb5d3627e9b6a5c09afcfe3436d7b1173b04dab"
     },
     "toastr/dist/angular-toastr.css": {
       "filename": "lib/angular-toastr/dist/angular-toastr.css",
       "version": "eec5272b407e29540b9194d344b8a315efdb6a03f2db51b25f5e6fed136a5734"
+    },
+    "fonts/ionicons.ttf": {
+      "filename": "fonts/ionicons.ttf",
+      "version": "24e03caa4f08265506ad810a6a8921cd10622c644c70fd223ecbd16ec01b82fa"
+    },
+    "fonts/ionicons.woff": {
+      "filename": "fonts/ionicons.woff",
+      "version": "abc19feb782cb671254f25fd9c0ccc6a5cdebf243f7ce6e03f3ae9c6190189a8"
     }
   },
   "load": [
@@ -51,7 +59,9 @@
     "lib/ng-material-floating-button/src/mfb-directive.js",
     "libs.min.js",
     "template.js",
-    "lib/angular-toastr/dist/angular-toastr.css"
+    "lib/angular-toastr/dist/angular-toastr.css",
+    "fonts/ionicons.ttf",
+    "fonts/ionicons.woff"
   ],
   "root": "./"
 }
