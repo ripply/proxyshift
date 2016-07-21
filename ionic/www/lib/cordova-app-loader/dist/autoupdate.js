@@ -33,14 +33,19 @@
 
   // Check > Download > Update
   function check(){
+      alert('checking...');
     loader.check()
     .then(function(){
-      return loader.download();
-    })
-    .then(function(){
-      return loader.update();
-    },function(err){
-      console.error('Auto-update error:',err);
+            alert('Downloading..');
+      loader.download()
+          .then(function(){
+              alert('UPDATING');
+              return loader.update();
+          },function(err){
+              alert('error');
+              alert(err);
+              console.error('Auto-update error:',err);
+          });
     });
   }
 
