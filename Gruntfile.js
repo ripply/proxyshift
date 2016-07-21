@@ -6,6 +6,8 @@ module.exports = function(grunt) {
     var jsonmainfestSrc = [
         'css/ionic.css',
         'css/proxyshift.css',
+        'lib/cordova-app-loader/dist/cordova-app-loader-complete.js',
+        'lib/bluebird/js/browser/bluebird.js',
         'lib/winstore-jscompat/winstore-jscompat.js',
         'lib/validator-js/validator.min.js',
         'lib/ionic/release/js/ionic.bundle.js',
@@ -15,7 +17,8 @@ module.exports = function(grunt) {
         'template.js',
         'lib/angular-toastr/dist/angular-toastr.css',
         'fonts/ionicons.ttf',
-        'fonts/ionicons.woff'
+        'fonts/ionicons.woff',
+        'lib/cordova-app-loader/dist/autoupdate.js'
     ];
 
     var jsonmanifestBasePath = 'ionic/www';
@@ -361,10 +364,9 @@ module.exports = function(grunt) {
                         'ionic/www/lib/ionic/release/js/ionic.bundle.js'
                     ],
                     'ionic/www/bootstrap.js': [
-                        'ionic/www/lib/bluebird/js/browser/bluebird.js',
-                        'ionic/www/lib/cordova-app-loader/dist/cordova-app-loader-complete.js',
+                        //'ionic/www/lib/bluebird/js/browser/bluebird.js',
                         'ionic/www/lib/cordova-app-loader/dist/bootstrap.js',
-                        'ionic/www/lib/cordova-app-loader/dist/autoupdate.js'
+                        //'ionic/www/lib/cordova-app-loader/dist/autoupdate.js'
                     ]
                 }]
             }
