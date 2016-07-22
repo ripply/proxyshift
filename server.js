@@ -229,6 +229,17 @@ function launchServer() {
     } else {
         app.use(morgan('dev')); // log every request to the console
     }
+
+    if (process.env.NODE_ENV !== "development") {
+        app.use(function redirectToHttps(req, res, next) {
+            if(req.headers['x-forwarded-proto'] == 'http') {
+                res.redirect('https://' + req.headers.host + req.path);
+            } else {
+                next();
+            }
+        });
+    }
+
     app.use(bodyParser.urlencoded({
         extended: true
     }));
