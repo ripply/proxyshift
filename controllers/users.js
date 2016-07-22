@@ -44,7 +44,7 @@ module.exports = {
     consumeEmailVerifyToken: consumeEmailVerifyToken,
     createUser: createUser,
     sendEmailVerificationEmail: sendEmailVerificationEmail,
-    route: '/api/users',
+    route: '/api/v1/users',
     '/': {
         'get': { // get info about your account
             // auth: // anyone logged in

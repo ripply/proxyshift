@@ -425,6 +425,7 @@ angular.forEach({
                 console.log("CREATED CREATING SERVICE: " + modelName);
                 console.log(GENERAL_CONFIG.APP_URL);
                 var url = GENERAL_CONFIG.APP_URL + GENERAL_CONFIG.APP_URL_API;
+                console.log(url);
                 var urlDefinition = definition(url);
                 return $resource(
                     urlDefinition.route,

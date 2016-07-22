@@ -37,7 +37,7 @@ shiftAndAppliedSelectKeys.push('shiftapplications.id as applied');
 shiftAndAppliedSelectKeys.push('shiftapplicationacceptdeclinereasons.accept as approved');
 
 module.exports = {
-    route: '/api/shifts',
+    route: '/api/v1/shifts',
     '/after/:after/before/:before': {
         'get': { // return all shifts you are connected to
             auth: ['mark if user is a group owner or privileged location member for this shift'],// logged in

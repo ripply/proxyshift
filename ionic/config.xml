@@ -8,13 +8,10 @@
     <description>
         Scheduling app
     </description>
-    <author email="chase.ripplinger@gmail.com" href="http://www.proxyshift.com/">
+    <author email="chase.ripplinger@gmail.com" href="https://www.proxyshift.com/">
         Chase Ripplinger
     </author>
     <content src="index.html"/>
-    <access origin="https://guarded-waters-4321.herokuapp.com"/>
-    <access origin="http://proxyshift-env.us-east-1.elasticbeanstalk.com"/>
-    <access origin="http://www.proxyshift.com"/>
     <access origin="https://www.proxyshift.com"/>
     <access origin="cdvfile://*" />
     <allow-intent href="cdvfile://*" />

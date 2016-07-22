@@ -22,7 +22,7 @@ var getShiftsYouAreManaging = require('./shifts').getShiftsYouAreManaging;
 var createNewShift = require('./shifts').createNewShift;
 
 module.exports = {
-    route: '/api/locations',
+    route: '/api/v1/locations',
     '/': {
         'get': { // list all locations a part of
             //auth: ['anyone'], // anyone can query what locations they are a part of

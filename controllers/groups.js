@@ -19,7 +19,7 @@ var models = require('../app/models'),
     Bookshelf = models.Bookshelf;
 
 module.exports = {
-    route: '/api/groups',
+    route: '/api/v1/groups',
     '/': {
         'get': { // list all groups a part of
             auth: ['anyone'], // anyone can query what groups they are a part of/own

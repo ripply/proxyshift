@@ -556,8 +556,9 @@ module.exports = function(app, settings){
 
     // creating users is ok to do without being logged in
     app.post('/api/users', notLoggedIn, users['/'].post.route);
+    app.post('/api/v1/users', notLoggedIn, users['/'].post.route);
     app.get('/passwordreset', users['/passwordreset'].get.route);
     app.post('/passwordreset', users['/passwordreset'].post.route);
-    app.post('/api/users/passwordreset', users['/passwordreset'].post.route);
+    app.post('/api/v1/users/passwordreset', users['/passwordreset'].post.route);
 
 };
