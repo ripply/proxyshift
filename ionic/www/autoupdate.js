@@ -62,8 +62,8 @@
     function stringHashcode(string) {
         var hash = 0, i, chr, len;
         if (this.length === 0) return hash;
-        for (i = 0, len = this.length; i < len; i++) {
-            chr   = this.charCodeAt(i);
+        for (i = 0, len = string.length; i < len; i++) {
+            chr   = string.charCodeAt(i);
             hash  = ((hash << 5) - hash) + chr;
             hash |= 0; // Convert to 32bit integer
         }
@@ -126,62 +126,92 @@
         var hours = 24;
         var minutes = 60;
         var seconds = 60;
-        nextUpdate = getNow() + (days * hours * minutes * seconds);
+        var fromNow = days * hours * minutes * seconds;
+
+        // check for updates more frequently in 'alpha'
+        var alphaStart = 1466467200;
+        var alphaEnd = 1474416000;
+        var alphaLength = alphaEnd - alphaStart;
+
+        var now = getNow();
+
+        var start = Math.max(alphaStart, now);
+        var alphaTime = alphaEnd - start;
+
+        if (alphaTime < 0) {
+            // alpha is over, do nothing
+        } else {
+            // alpha in progress, shorten check interval based on how far we are into it
+            var alphaProgress = alphaTime / alphaLength;
+            console.log('Shortening update check interval to ' + alphaProgress + '%');
+            fromNow = fromNow * alphaProgress;
+        }
+
+        nextUpdate = now + fromNow;
         if (hasStorage) {
             localStorage.setItem('next_update_time', nextUpdate);
         }
 
         loader.check()
             .then(function(newManifest){
-                var manifestHash = stringHashcode(JSON.stringify(newManifest));
-                if (isCordova) {
-                    function updateIgnored(manifestHash) {
-                        nextUpdate = getNow() + ((days / 2) * hours * minutes * seconds);
-                        if (hasStorage) {
-                            localStorage.setItem('ignore_update', '' + manifestHash);
-                            localStorage.setItem('next_update_time', '' + nextUpdate);
-                        }
-                    }
-
-                    if (hasStorage) {
-                        var ignoredManifestHash = localStorage.getItem('ignore_update');
-                        if (ignoredManifestHash == manifestHash) {
+                try {
+                    var manifestHash = stringHashcode(JSON.stringify(newManifest));
+                    if (isCordova) {
+                        function updateIgnored(manifestHash) {
+                            nextUpdate = now + fromNow / 2;
                             if (hasStorage) {
-                                updateIgnored(manifestHash);
+                                localStorage.setItem('ignore_update', '' + manifestHash);
+                                localStorage.setItem('next_update_time', '' + nextUpdate);
                             }
-                            return;
                         }
-                    }
-                    var buttonLabels = [
-                        'Update',
-                        'Maybe Later'
-                    ];
-                    if (hasStorage) {
-                        buttonLabels.push('Ignore');
-                    }
-                    if (hasCordovaDialogs) {
-                        navigator.notification.prompt(
-                            'There is an update available!',
-                            function updatePromptCallback(buttonClicked) {
-                                if (buttonClicked == 0) {
-                                    doUpdate();
-                                } else if (buttonClicked == 1) {
-                                    // do nothing
-                                } else if (buttonClicked == 2) {
+
+                        if (hasStorage) {
+                            var ignoredManifestHash = localStorage.getItem('ignore_update');
+                            if (ignoredManifestHash == manifestHash) {
+                                if (hasStorage) {
                                     updateIgnored(manifestHash);
                                 }
-                                if (hasStorage) {
-                                    localStorage.setItem('next_update_time', '' + nextUpdate);
-                                }
-                            },
-                            'Update Available',
-                            buttonLabels
-                        );
+                                return;
+                            }
+                        }
+                        var buttonLabels = [
+                            'Update',
+                            'Maybe Later'
+                        ];
+                        if (hasStorage) {
+                            buttonLabels.push('Ignore');
+                        }
+                        if (hasCordovaDialogs) {
+                            navigator.notification.confirm(
+                                'There is an update available!',
+                                function updatePromptCallback(buttonClicked) {
+                                    if (buttonClicked == 1) {
+                                        doUpdate();
+                                    } else if (buttonClicked == 2) {
+                                        // do nothing
+                                    } else if (buttonClicked == 3) {
+                                        updateIgnored(manifestHash);
+                                    }
+                                    if (hasStorage) {
+                                        localStorage.setItem('next_update_time', '' + nextUpdate);
+                                    }
+                                },
+                                'Update Available',
+                                buttonLabels
+                            );
+                        } else {
+                            doUpdate();
+                        }
                     } else {
                         doUpdate();
                     }
-                } else {
-                    doUpdate();
+                } catch (err) {
+                    var error = 'An error occurred while trying to update';
+                    if (hasCordovaDialogs) {
+                        navigator.notification.alert(error);
+                    } else {
+                        alert(error);
+                    }
                 }
             });
     }

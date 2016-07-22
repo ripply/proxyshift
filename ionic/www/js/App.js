@@ -106,7 +106,6 @@ angular.module('scheduling-app', [
             // https://github.com/markmarijnissen/cordova-app-loader#step-1-bootstrap-your-app
             window.BOOTSTRAP_OK = true;
             $httpProvider.interceptors.push('timeoutHttpIntercept');
-            alert("TESTTESTTEST");
             // enables caching of calendar which takes 1-2 seconds to render initially
             $ionicConfigProvider.views.forwardCache(true);
             $ionicConfigProvider.views.transition('none');

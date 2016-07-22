@@ -38,7 +38,7 @@
     },
     "libs.min.js": {
       "filename": "libs.min.js",
-      "version": "1d4964b2a6a9d020d8ab8320479768ce13293b4a6c9d8b7ca28c419b5c8c7e5d"
+      "version": "3796a8e3b1a36f62af33c94cfdb07c3d218f4db1bc26663192c4de585106db6d"
     },
     "template.js": {
       "filename": "template.js",
@@ -58,7 +58,7 @@
     },
     "autoupdate.js": {
       "filename": "autoupdate.js",
-      "version": "725aede16e33c45945895d8eb36be6c8836d3650647e74cd78147e42cc6841f0"
+      "version": "042fc305884f90a73466063ecd148a25e471d65d1a4bb1e9f8142fb8e657e5c0"
     }
   },
   "load": [
