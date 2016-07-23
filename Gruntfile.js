@@ -260,6 +260,7 @@ module.exports = function(grunt) {
                         'ionic/www/lib/angular-resource/angular-resource.js',
                         'ionic/www/lib/ionic-timepicker/dist/ionic-timepicker.bundle.min.js',
                         'ionic/www/lib/ionic-datepicker/dist/ionic-datepicker.bundle.min.js',
+                        'ionic/www/js/thegooglethings.js',
 
                         //'ionic/www/lib/angular-toastr/dist/angular-toastr.tpls.js',
                         'ionic/www/js/directives/ionic-timepicker-nonmodal.directive.js',

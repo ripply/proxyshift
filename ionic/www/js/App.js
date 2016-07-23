@@ -14,6 +14,7 @@ angular.module('scheduling-app', [
     'ng-mfb',
     'gettext',
     'LocalStorageModule',
+    'angular-google-analytics',
     'ionic-fancy-select',
     'scheduling-app.controllers',
     'scheduling-app.authentication',
@@ -41,6 +42,7 @@ angular.module('scheduling-app', [
         'SessionService',
         'GENERAL_EVENTS',
         'STATES',
+        'Analytics',
         'StateHistoryService',
         'InitializeServices',
         function($rootScope,
@@ -48,6 +50,7 @@ angular.module('scheduling-app', [
                  SessionService,
                  GENERAL_EVENTS,
                  STATES,
+                 Analytics,
                  StateHistoryService,
                  InitializeServices) {
             sessionHack.push(SessionService);
@@ -82,6 +85,7 @@ angular.module('scheduling-app', [
         '$httpProvider',
         'toastrConfig',
         'localStorageServiceProvider',
+        'AnalyticsProvider',
         'STATES',
         'GENERAL_CONFIG',
         'CORDOVA_SETTINGS',
@@ -95,6 +99,7 @@ angular.module('scheduling-app', [
                  $httpProvider,
                  toastrConfig,
                  localStorageServiceProvider,
+                 AnalyticsProvider,
                  STATES,
                  GENERAL_CONFIG,
                  CORDOVA_SETTINGS
@@ -129,6 +134,36 @@ angular.module('scheduling-app', [
             } else {
                 GENERAL_CONFIG.APP_URL = GENERAL_CONFIG.APP_URL_DEV;
                 console.log("Running in browser using dev api source: " + GENERAL_CONFIG.APP_URL);
+            }
+
+            var doNotTrack = false;
+
+            if (navigator.doNotTrack == 1) {
+                doNotTrack = true;
+            } else {
+                if (typeof(Storage) !== "undefined") {
+                    doNotTrack = localStorage.getItem('doNotTrack') == 1;
+                } else {
+                    // Sorry! No Web Storage support..
+                }
+            }
+
+            AnalyticsProvider
+                .logAllCalls(true)
+                .setHybridMobileSupport(true);
+
+            if (doNotTrack) {
+                console.log("DO NOT TRACK DETECTED: DISABLING ANALYTICS");
+                AnalyticsProvider
+                    .startOffline(true)
+                    .disableAnalytics(true);
+            } else {
+                console.log("ENABLING GOOGLE ANALYTICS: ENABLE DO NOT TRACK TO OPT OUT");
+                AnalyticsProvider
+                    .setAccount('UA-81239001-1')
+                    .setPageEvent('$stateChangeSuccess')
+                    .readFromRoute(true)
+                    .startOffline(false);
             }
 
             console.log("APP-uRL=" + GENERAL_CONFIG.APP_URL);
@@ -225,6 +260,7 @@ angular.module('scheduling-app', [
 
                 .state(STATES.LOGIN, {
                     url: '/login',
+                    pageTrack: '/app/login',
                     templateUrl: "templates/login.html",
                     controller: 'LoginController',
                     resolve: {
@@ -236,6 +272,7 @@ angular.module('scheduling-app', [
                     url: '/signup',
                     templateUrl: "templates/signup.html",
                     controller: 'LoginController',
+                    pageTrack: '/app/signup',
                     resolve: {
                         notAuthenticated: requireNoSessionOrBack
                     }
@@ -245,6 +282,7 @@ angular.module('scheduling-app', [
                     url: '/logout',
                     templateUrl: 'templates/logout.html',
                     controller: 'LogoutController',
+                    pageTrack: '/app/logout',
                     resolve: {
                         //authenticated: requireSessionOrBack
                     }
@@ -268,6 +306,7 @@ angular.module('scheduling-app', [
                             controller: 'AppCtrl',
                         }
                     },
+                    pageTrack: '/app/home',
                     resolve: {
                         authenticated: requireSessionOrGoLogin
                     }
@@ -281,6 +320,7 @@ angular.module('scheduling-app', [
                             controller: 'ShiftInfoController'
                         }
                     },
+                    pageTrack: '/app/shift/:shift_id',
                     resolve: {
                         authenticated: requireSessionOrGoLogin
                     }
@@ -295,6 +335,7 @@ angular.module('scheduling-app', [
                             controller: 'OpenShiftsTabController'
                         }
                     },
+                    pageTrack: '/app/shifts',
                     resolve: {
                         authenticated: requireSessionOrGoLogin
                     }
@@ -302,6 +343,7 @@ angular.module('scheduling-app', [
 
                 .state('app.shifts.open', {
                     url: "/open",
+                    pageTrack: '/app/shifts/open',
                     views: {
                         'shiftTabContent': {
                             templateUrl: "templates/shifts.html",
@@ -311,11 +353,13 @@ angular.module('scheduling-app', [
                 })
 
                 .state('app.shifts.open.scroll', {
-                    url: "/scroll/:scroll_date"
+                    url: "/scroll/:scroll_date",
+                    pageTrack: '/app/shifts/open/scroll'
                 })
 
                 .state('app.shifts.mine', {
                     url: "/mine",
+                    pageTrack: '/app/shifts/mine',
                     views: {
                         'shiftTabContent': {
                             templateUrl: "templates/myshifts.html",
@@ -325,11 +369,13 @@ angular.module('scheduling-app', [
                 })
 
                 .state('app.shifts.mine.scroll', {
-                    url: "/scroll/:scroll_date"
+                    url: "/scroll/:scroll_date",
+                    pageTrack: '/app/shifts/mine/scroll'
                 })
 
                 .state('app.shifts.manage', {
                     url: "/manage",
+                    pageTrack: '/app/shifts/manage',
                     views: {
                         'shiftTabContent': {
                             templateUrl: "templates/manage.html",
@@ -339,7 +385,8 @@ angular.module('scheduling-app', [
                 })
 
                 .state('app.shifts.manage.scroll', {
-                    url: "/scroll/:scroll_date"
+                    url: "/scroll/:scroll_date",
+                    pageTrack: '/app/shifts/manage/scroll'
                 })
 
                 .state('app.newshift', {
@@ -355,6 +402,7 @@ angular.module('scheduling-app', [
 
                 .state('app.newshift.dates', {
                     url: "/dates",
+                    pageTrack: '/app/newshift/dates',
                     views: {
                         'newShiftTabContent': {
                             templateUrl: "templates/newshift/dates.html",
@@ -365,6 +413,7 @@ angular.module('scheduling-app', [
 
                 .state('app.newshift.when', {
                     url: "/when/dates/:dates",
+                    pageTrack: '/app/newshift/when',
                     views: {
                         'newShiftTabContent': {
                             templateUrl: "templates/newshift/when.html",
@@ -375,6 +424,7 @@ angular.module('scheduling-app', [
 
                 .state('app.newshift.where', {
                     url: "/where/dates/:dates/when/:when",
+                    pageTrack: '/app/newshift/where',
                     views: {
                         'newShiftTabContent': {
                             templateUrl: "templates/newshift/where.html",
@@ -385,6 +435,7 @@ angular.module('scheduling-app', [
 
                 .state('app.newshift.who', {
                     url: "/who/dates/:dates/when/:when/where/:where",
+                    pageTrack: '/app/newshift/who',
                     views: {
                         'newShiftTabContent': {
                             templateUrl: "templates/newshift/who.html",
@@ -395,6 +446,7 @@ angular.module('scheduling-app', [
 
                 .state('app.newshift.review', {
                     url: "/review/dates/:dates/when/:when/where/:where/who/:who/description/:description/title/:title",
+                    pageTrack: '/app/newshift/review',
                     views: {
                         'newShiftTabContent': {
                             templateUrl: "templates/newshift/review.html",
@@ -415,6 +467,7 @@ angular.module('scheduling-app', [
 
                 .state('requestshift.locations', {
                     url: "/locations",
+                    pageTrack: '/app/requestshift/locations',
                     resolve: {
                         //TODO: Check /userinfo
                     },
@@ -428,6 +481,7 @@ angular.module('scheduling-app', [
 
                 .state('requestshift.sublocation', {
                     url: "/sublocation/:sublocation_id",
+                    pageTrack: '/app/requestshift/sublocation',
                     resolve: {
                         //TODO: Check /userinfo
                     },
@@ -440,7 +494,8 @@ angular.module('scheduling-app', [
                 })
 
                 .state('requestshift.sublocationjob', {
-                    url: "/sublocation/:sublocation_id/job/:userclass_id",
+                    url: '/sublocation/:sublocation_id/job/:userclass_id',
+                    pageTrack: '/app/requestshift/sublocationjob/sublocation/job',
                     resolve: {
                         //TODO: Check /userinfo
                     },
@@ -454,6 +509,7 @@ angular.module('scheduling-app', [
 
                 .state('requestshift.location', {
                     url: "/location/:location_id",
+                    pageTrack: '/app/requestshift/location',
                     resolve: {
                         //TODO: Check /userinfo
                     },
@@ -467,6 +523,7 @@ angular.module('scheduling-app', [
 
                 .state('requestshift.locationjob', {
                     url: "/location/:location_id/job/:userclass_id",
+                    pageTrack: '/app/requestshift/locationjob/location/job',
                     resolve: {
                         //TODO: Check /userinfo
                     },
@@ -480,6 +537,7 @@ angular.module('scheduling-app', [
 
                 .state('settings', {
                     url: "/settings",
+                    pageTrack: '/app/settings',
                     templateUrl: "templates/settings/settings.html",
                     controller: 'SettingsController',
                     abstract: true,
@@ -490,6 +548,7 @@ angular.module('scheduling-app', [
 
                 .state('settings.user', {
                     url: "/user",
+                    pageTrack: '/app/settings/user',
                     templateUrl: "templates/usersettings.html",
                     controller: 'SettingsController',
                     views: {
@@ -505,6 +564,7 @@ angular.module('scheduling-app', [
 
                 .state('settings.group', {
                     url: "/group/:group_id",
+                    pageTrack: '/app/settings/group',
                     views: {
                         'content': {
                             templateUrl: "templates/settings/settingsgroup.html"
@@ -517,6 +577,7 @@ angular.module('scheduling-app', [
 
                 .state('settings.group.settings', {
                     url: "/settings",
+                    pageTrack: '/app/settings/group/settings',
                     views: {
                         'groupContent': {
                             templateUrl: "templates/groupsettings.html",
@@ -530,6 +591,7 @@ angular.module('scheduling-app', [
 
                 .state('settings.group.members', {
                     url: "/members",
+                    pageTrack: '/app/settings/group/members',
                     resolve: {
                         //TODO: Check /userinfo
                     },
@@ -543,6 +605,7 @@ angular.module('scheduling-app', [
 
                 .state('settings.group.managemembers', {
                     url: "/members/:user_id/manage",
+                    pageTrack: '/app/settings/group/managemembers',
                     resolve: {
                         //TODO: Check /userinfo
                     },
@@ -556,6 +619,7 @@ angular.module('scheduling-app', [
 
                 .state('settings.group.invite', {
                     url: "/invite",
+                    pageTrack: '/app/settings/group/invite',
                     resolve: {
                         //TODO: Check /userinfo
                     },
@@ -569,6 +633,7 @@ angular.module('scheduling-app', [
 
                 .state('settings.group.createtype', {
                     url: "/createtype",
+                    pageTrack: '/app/settings/group/createtype',
                     resolve: {
                         //TODO: Check /userinfo
                     },
@@ -582,6 +647,7 @@ angular.module('scheduling-app', [
 
                 .state('settings.group.types', {
                     url: "/types",
+                    pageTrack: '/app/settings/group/types',
                     views: {
                         'groupContent': {
                             templateUrl: "templates/types/typelist.html",
@@ -595,6 +661,7 @@ angular.module('scheduling-app', [
 
                 .state('settings.group.type', {
                     url: "/type/:type_id",
+                    pageTrack: '/app/settings/group/type',
                     views: {
                         'groupContent': {
                             templateUrl: "templates/types/typeedit.html",
@@ -608,6 +675,7 @@ angular.module('scheduling-app', [
 
                 .state('settings.group.newlocation', {
                     url: "/newlocation",
+                    pageTrack: '/app/settings/group/newlocation',
                     views: {
                         'groupContent': {
                             templateUrl: "templates/locations/locationcreate.html",
@@ -621,6 +689,7 @@ angular.module('scheduling-app', [
 
                 .state('settings.group.jobs', {
                     url: "/jobs",
+                    pageTrack: '/app/settings/group/jobs',
                     views: {
                         'groupContent': {
                             templateUrl: "templates/jobsubscriptions.html",
@@ -647,6 +716,7 @@ angular.module('scheduling-app', [
 
                 .state('settings.group.locations.managing', {
                     url: "/managing",
+                    pageTrack: '/app/settings/group/locations/managing',
                     views: {
                         'locationContent': {
                             templateUrl: "templates/managablelocations.html",
@@ -660,6 +730,7 @@ angular.module('scheduling-app', [
 
                 .state('settings.group.locations.managingsubscriptions', {
                     url: "/managingsubscriptions/:location_id",
+                    pageTrack: '/app/settings/group/locations/managingsubscriptions',
                     views: {
                         'locationContent': {
                             templateUrl: "templates/managingjobsubscriptions.html",
@@ -673,6 +744,7 @@ angular.module('scheduling-app', [
 
                 .state('settings.group.locations.subscriptions', {
                     url: "/subscription",
+                    pageTrack: '/app/settings/group/locations/subscriptions',
                     resolve: {
                         //TODO: Check /userinfo
                     },
@@ -686,6 +758,7 @@ angular.module('scheduling-app', [
 
                 .state('settings.group.locations.current', {
                     url: "/current",
+                    pageTrack: '/app/settings/group/locations/current',
                     resolve: {
                         //TODO: Check /userinfo
                     },
@@ -699,6 +772,7 @@ angular.module('scheduling-app', [
 
                 .state('settings.group.locations.list', {
                     url: "/:location_id/list",
+                    pageTrack: '/app/settings/group/locations/list',
                     resolve: {
                         //TODO: Check /userinfo
                     },
@@ -712,6 +786,7 @@ angular.module('scheduling-app', [
 
                 .state('settings.group.locations.manage', {
                     url: "/:location_id/manage",
+                    pageTrack: '/app/settings/group/locations/manage',
                     resolve: {
                         //TODO: Check /userinfo
                     },
@@ -725,6 +800,7 @@ angular.module('scheduling-app', [
 
                 .state('settings.group.locations.newsublocation', {
                     url: "/:location_id/new",
+                    pageTrack: '/app/settings/group/locations/newsublocations',
                     resolve: {
                         //TODO: Check /userinfo
                     },
@@ -751,6 +827,7 @@ angular.module('scheduling-app', [
 
                 .state('settings.group.locations.sublocations.list', {
                     url: "/:sublocation_id/list",
+                    pageTrack: '/app/settings/group/locations/sublocations/list',
                     resolve: {
                         //TODO: Check /userinfo
                     },
@@ -764,6 +841,7 @@ angular.module('scheduling-app', [
 
                 .state('settings.group.locations.sublocations.manage', {
                     url: "/:sublocation_id/manage",
+                    pageTrack: '/app/settings/group/locations/sublocations/manage',
                     resolve: {
                         //TODO: Check /userinfo
                     },
@@ -777,6 +855,7 @@ angular.module('scheduling-app', [
 
                 .state('settings.group.locations.users', {
                     url: "/:location_id/users",
+                    pageTrack: '/app/settings/group/locations/users',
                     resolve: {
                         //TODO: CHECK USERINFO, MUST BE PRIVILEGED USER OF THE LOCATION
                     },
@@ -784,43 +863,6 @@ angular.module('scheduling-app', [
                         'locationContent': {
                             templateUrl: "templates/grouplocationsmanageusers.html",
                             controller: 'BaseUsersListController'
-                        }
-                    }
-                })
-
-                .state('app.privacypolicy', {
-                    url: "/privacypolicy",
-                    views: {
-                        'menuContent': {
-                            templateUrl: "templates/privacypolicy.html"
-                        }
-                    }
-                })
-
-                .state('app.legal', {
-                    url: "/legal",
-                    views: {
-                        'menuContent': {
-                            templateUrl: "templates/legal.html"
-                        }
-                    }
-                })
-
-                .state('app.contactus', {
-                    url: "/contactus",
-                    views: {
-                        'menuContent': {
-                            templateUrl: "templates/contactus.html"
-                        }
-                    }
-                })
-
-                .state('app.single', {
-                    url: "/playlists/:playlistId",
-                    views: {
-                        'menuContent': {
-                            templateUrl: "templates/playlist.html",
-                            controller: 'PlaylistCtrl'
                         }
                     }
                 })
