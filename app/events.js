@@ -2,6 +2,7 @@ var _ = require('underscore'),
     config = require('config'),
     models = require('./models'),
     slack = require('./slack'),
+    utils = require('./utils'),
     moment = require('moment-timezone'),
     time = require('./time');
 
@@ -1125,7 +1126,33 @@ function newShiftApplicationApprovedToDeniedUsers(
     };
 }
 
+function inviteToCreateCompanyInProxyshift(
+    email,
+    message,
+    inviteUrl
+) {
+    return {
+        email: {
+            template_id: getTemplateId("sendgrid.templates.create_group_invitation"),
+            url: inviteUrl,
+            subject: _.template("You have been invited to create a proxyshift company"),
+            text: _.template("You have been invited to create a proxyshift company, " + inviteUrl),
+            html: _.template("You have been invited to create a proxyshift company, " + inviteUrl)
+        }
+    };
+}
+
 const orderPushAndMail = [push, mail];
+// filters mailto from slack
+const MAILTO_PATTERN = /<mailto:([^|>]*)|[^>]*>/i;
+
+function filterEmail(email) {
+    var match = MAILTO_PATTERN.exec(email);
+    if (match != null) {
+        email = match[1];
+    }
+    return email;
+}
 
 module.exports = {
     transactionalEmailAddress: function() {return transactionalEmailAddress; }, // function because of _.bindAll
@@ -1179,6 +1206,7 @@ module.exports = {
     },
     sendInviteEmail: function(token, to, inviter_user, message, emailArgs) {
         var inviteUrl = this.createTokenUrl("/acceptinvitation", token);
+        to = filterEmail(to);
         emailArgs.invite_url = inviteUrl;
         emailArgs.message = message;
         emailArgs.inviter_firstname = inviter_user.firstname;
@@ -1194,6 +1222,33 @@ module.exports = {
             undefined,
             emailArgs
         );
+    },
+    inviteUserToCreateCompany: function inviteUserToCreateCompany(email, message) {
+        var token = utils.createToken();
+        email = filterEmail(email);
+        console.log(email);
+        var inviteUrl = this.createTokenUrl("/creategroup", token);
+        var expires = time.nowInUtc() + (60 * 60 * 24 * 15); // 2 weeks + 1 day
+        var self = this;
+        var invite = inviteToCreateCompanyInProxyshift(email, message, inviteUrl);
+        return models.GroupCreationInvitation.forge({
+            email: email,
+            message: message,
+            expires: expires,
+            token: token
+        })
+            .save()
+            .tap(function successfullyCreatedGroupCreationToken() {
+                self.sendEmail(
+                    self.transactionalEmailAddress(),
+                    email,
+                    invite.subject,
+                    invite.text,
+                    invite.html,
+                    undefined,
+                    invite
+                );
+            });
     },
     existingUserInvitedToGroup: function(token, user_id, inviter_user, message, args) {
         var inviteUrl = this.createTokenUrl("/acceptinvitation", token);

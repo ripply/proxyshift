@@ -15,7 +15,12 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function createToken() {
+    return randomString(64);
+}
+
 module.exports = {
+    createToken: createToken,
     randomString: randomString,
     getRandomInt: getRandomInt
 };

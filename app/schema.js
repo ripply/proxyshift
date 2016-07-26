@@ -441,6 +441,28 @@ var Schema = {
             comment: 'How privileged is this job type'
         }
     },
+    GroupCreationInvitation: {
+        id: {
+            type: increments
+        },
+        message: {
+            type: string
+        },
+        email: {
+            type: string,
+            unique: false,
+            nullable: false
+        },
+        expires: {
+            type: date,
+            nullable: false
+        },
+        token: {
+            type: string,
+            unique: true,
+            nullable: false
+        }
+    },
     GroupInvitation: {
         id: {
             type: increments
@@ -489,6 +511,7 @@ var Schema = {
         },
         token: {
             type: string,
+            unique: true,
             nullable: false
         }
     },

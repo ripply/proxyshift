@@ -47,6 +47,7 @@
             "successful_account_activation": "SENDGRID_TEMPLATE_SUCCESSFUL_ACCOUNT_ACTIVATION",
             "email_verification": "SENDGRID_TEMPLATE_EMAIL_VERIFICATION",
             "account_invitation": "SENDGRID_TEMPLATE_ACCOUNT_INVITATION",
+            "create_group_invitation": "SENDGRID_TEMPLATE_CREATE_GROUP_INVITATION"
         }
     },
     "email": {
@@ -71,7 +72,15 @@
         }
     },
     "slack": {
-        "webhook": "SLACK_WEBHOOK"
+        "webhook": "SLACK_WEBHOOK",
+        "bot": {
+            "token": "SLACK_BOT_TOKEN",
+            "name": "SLACK_BOT_NAME",
+            "channel": {
+                "election": "SLACK_BOT_CHANNEL_ELECTION",
+                "control": "SLACK_BOT_CHANNEL_CONTROL"
+            }
+        }
     },
     "tokens": {
         "expires": "TOKENS_EXPIRE_IN_X_SECONDS",

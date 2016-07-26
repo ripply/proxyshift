@@ -2134,3 +2134,4 @@ function forgeRabbitMessage(body) {
 }
 
 module.exports = new App();
+slack.appLogic = module.exports;

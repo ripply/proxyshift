@@ -1702,7 +1702,7 @@ function createGroupInvitation(inviter, user_id, email, grouppermission_id, mess
         grouppermission_id: grouppermission_id,
         message: message,
         expires: expires,
-        token: utils.randomString(64)
+        token: utils.createToken()
     };
 }
 
