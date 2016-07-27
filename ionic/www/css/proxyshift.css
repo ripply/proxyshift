@@ -1056,7 +1056,9 @@ ion-header-bar.bar.bar-positive {
 .calendar-month {
   display: block;
   background-color: #159deb;
-  color: #000000;
+  color: #ffffff;
+  border-bottom-width: 1px;
+  border-bottom-color: #ffffff;
 }
 .calendar-month .arrow-btn-container {
   position: relative;
@@ -1065,7 +1067,6 @@ ion-header-bar.bar.bar-positive {
   position: absolute;
   display: block;
   width: 60px;
-  height: 60px;
   -webkit-transition: background .3s;
   transition: background .3s;
 }
@@ -1094,7 +1095,7 @@ ion-header-bar.bar.bar-positive {
   line-height: 35px;
   margin: 0;
   text-align: center;
-  color: #000000;
+  color: #ffffff;
 }
 .calendar-month .calendar-day {
   height: 320px;
@@ -1114,10 +1115,14 @@ ion-header-bar.bar.bar-positive {
   background: #35aadc;
 }
 .calendar-month .titler {
-  background: #38414e;
+  background: #159deb;
 }
 .calendar-month .calendar-month .arrow-btn:hover {
   background: #1a4e95;
+}
+.calendar-month .calendar-week {
+  background: #ffffff;
+  color: #000;
 }
 .calendar-month .calendar {
   margin-left: auto;
@@ -1153,14 +1158,15 @@ ion-header-bar.bar.bar-positive {
   left: 18px;
 }
 .calendar-month .calendar .calendar-day-othermonth > p {
-  color: rgba(255, 255, 255, 0.4);
+  color: #d1d1d1;
 }
 .calendar-month .calendar .days-week {
-  color: #4fc4f6;
+  color: #ffffff;
 }
 .calendar-month .calendar .calendar-day-currentmonth.calendar-day-today {
   display: block;
-  background: #38414e;
+  background: #159deb;
+  color: #ffffff;
   border-radius: 100%;
   -moz-box-shadow: 0 0 3px #159deb;
   -webkit-box-shadow: 0 0 3px #159deb;
@@ -1555,7 +1561,7 @@ ion-header-bar.bar.bar-positive {
   color: #000000;
 }
 #progressbar .locked:before {
-  background: #38414e;
+  background: #159deb;
 }
 .header-extend {
   background-color: #159deb;

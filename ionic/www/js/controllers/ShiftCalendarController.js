@@ -176,7 +176,7 @@ angular.module('scheduling-app.controllers')
 
                 var weekData = [];
                 for (var i = 0; i < 7; i++) {
-                    weekData.push(startOfWeek.format("ddd"));
+                    weekData.push(startOfWeek.format("ddd").toUpperCase());
                     startOfWeek.add(1, "day");
                 }
 

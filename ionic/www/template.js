@@ -4576,18 +4576,18 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
   $templateCache.put('templates/_shiftcalendar.html',
     "<div class=\"calendarWrapper\" ng-show=\"show\">\n" +
     "    <div ng-show=\"calendarData\" class=\"calendar-month\" ng-class=\"{'calendar-loading': calendarData.loading}\">\n" +
-    "        <div class=\"arrow-btn-container\">\n" +
-    "            <a ng-click=\"previousMonth()\" class=\"arrow-btn calendar-back\">\n" +
-    "                <span class=\"icon ion-chevron-left\"></span>\n" +
+    "        <div class=\"arrow-btn-container click-doesnt-close\">\n" +
+    "            <a ng-click=\"previousMonth()\" class=\"arrow-btn calendar-back click-doesnt-close\">\n" +
+    "                <span class=\"icon ion-chevron-left click-doesnt-close\"></span>\n" +
     "            </a>\n" +
-    "                <h4 class=\"titler calendar-now\" ng-click=\"currentMonth()\">{{monthData.name}} {{monthData.year}}</h4>\n" +
-    "            <a ng-click=\"nextMonth()\" class=\"arrow-btn calendar-next\">\n" +
-    "                <span class=\"icon ion-chevron-right\"></span>\n" +
+    "                <h4 class=\"titler calendar-now click-doesnt-close\" ng-click=\"currentMonth()\">{{monthData.name}} {{monthData.year}}</h4>\n" +
+    "            <a ng-click=\"nextMonth()\" class=\"arrow-btn calendar-next click-doesnt-close\">\n" +
+    "                <span class=\"icon ion-chevron-right click-doesnt-close\"></span>\n" +
     "            </a>\n" +
     "        </div>\n" +
     "        <table class=\"calendar\">\n" +
-    "            <tr class=\"days-week\">\n" +
-    "                <th ng-repeat=\"day in weekData\">{{day}}</th>\n" +
+    "            <tr class=\"days-week click-doesnt-close\">\n" +
+    "                <th ng-repeat=\"day in weekData\" class=\"click-doesnt-close\">{{day}}</th>\n" +
     "            </tr>\n" +
     "            <tr class=\"calendar-week\" ng-repeat=\"week in calendarData\">\n" +
     "                <td class=\"calendar-day\" ng-repeat=\"day in week\" ng-class=\"{'calendar-day-currentmonth': day.thisMonth, 'calendar-day-othermonth': !day.thisMonth, 'calendar-day-today': day.today}\">\n" +

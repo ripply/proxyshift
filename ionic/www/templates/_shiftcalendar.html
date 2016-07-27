@@ -1,17 +1,17 @@
 <div class="calendarWrapper" ng-show="show">
     <div ng-show="calendarData" class="calendar-month" ng-class="{'calendar-loading': calendarData.loading}">
-        <div class="arrow-btn-container">
-            <a ng-click="previousMonth()" class="arrow-btn calendar-back">
-                <span class="icon ion-chevron-left"></span>
+        <div class="arrow-btn-container click-doesnt-close">
+            <a ng-click="previousMonth()" class="arrow-btn calendar-back click-doesnt-close">
+                <span class="icon ion-chevron-left click-doesnt-close"></span>
             </a>
-                <h4 class="titler calendar-now" ng-click="currentMonth()">{{monthData.name}} {{monthData.year}}</h4>
-            <a ng-click="nextMonth()" class="arrow-btn calendar-next">
-                <span class="icon ion-chevron-right"></span>
+                <h4 class="titler calendar-now click-doesnt-close" ng-click="currentMonth()">{{monthData.name}} {{monthData.year}}</h4>
+            <a ng-click="nextMonth()" class="arrow-btn calendar-next click-doesnt-close">
+                <span class="icon ion-chevron-right click-doesnt-close"></span>
             </a>
         </div>
         <table class="calendar">
-            <tr class="days-week">
-                <th ng-repeat="day in weekData">{{day}}</th>
+            <tr class="days-week click-doesnt-close">
+                <th ng-repeat="day in weekData" class="click-doesnt-close">{{day}}</th>
             </tr>
             <tr class="calendar-week" ng-repeat="week in calendarData">
                 <td class="calendar-day" ng-repeat="day in week" ng-class="{'calendar-day-currentmonth': day.thisMonth, 'calendar-day-othermonth': !day.thisMonth, 'calendar-day-today': day.today}">

@@ -26,6 +26,9 @@ angular.module('scheduling-app.directives')
                     attributes['toggle'] = true;
                     $document.bind('click', function (event) {
                         if (scope.show) {
+                            if (event.target.classList.contains('click-doesnt-close')) {
+                                return;
+                            }
                             var isClickedElementChildOfPopup = element
                                     .find(event.target)
                                     .length > 0;
