@@ -9,17 +9,13 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "    <meta name=\"viewport\" content=\"initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width\">\n" +
     "    <title></title>\n" +
     "\n" +
-    "    <meta name=\"mobile-web-app-capable\" content=\"yes\" />\n" +
-    "    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\" />\n" +
-    "    <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\" />\n" +
+    "    <meta name=\"mobile-web-app-capable\" content=\"yes\">\n" +
+    "    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\">\n" +
+    "    <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\">\n" +
     "\n" +
     "    <!-- In windows apps this fixes dynamic content errors -->\n" +
     "    <script type=\"text/javascript\" src=\"cordova.js\"></script>\n" +
-    "    <script type=\"text/javascript\"\n" +
-    "            timeout=\"10000\"\n" +
-    "            manifest=\"manifest.json\"\n" +
-    "            server=\"https://www.proxyshift.com\"\n" +
-    "            src=\"bootstrap.js\"></script>\n" +
+    "    <script type=\"text/javascript\" timeout=\"10000\" manifest=\"manifest.json\" server=\"https://www.proxyshift.com\" src=\"bootstrap.js\"></script>\n" +
     "</head>\n" +
     "  <body ng-app=\"scheduling-app\">\n" +
     "    <ion-nav-view></ion-nav-view>\n" +
@@ -31,11 +27,11 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                        <a href=\"/\"><img src=\"img/logo.png\" class=\"logo\"></a>\n" +
     "                        <label class=\"item item-input\">\n" +
     "                            <i class=\"icon ion-email placeholder-icon\"></i>\n" +
-    "                            <input  type=\"text\" ng-model=\"user.username\" placeholder=\"Username or email\">\n" +
+    "                            <input type=\"text\" ng-model=\"user.username\" placeholder=\"Username or email\">\n" +
     "                        </label>\n" +
     "                        <label class=\"item item-input\">\n" +
     "                            <i class=\"icon ion-locked placeholder-icon\"></i>\n" +
-    "                            <input  type=\"password\" ng-model=\"user.password\" placeholder=\"Password\">\n" +
+    "                            <input type=\"password\" ng-model=\"user.password\" placeholder=\"Password\">\n" +
     "                        </label>\n" +
     "                        <label class=\"item login-error-message\" ng-show=\"message != null\">\n" +
     "                            <span>Proxy/Shift requires Javascript to be enabled.</span>\n" +

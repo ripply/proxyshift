@@ -2,20 +2,21 @@
 
 ////@gradient-top: #1C74BC;
 //@gradient-top: #0c60ee;
-@gradient-top: #38414e;
+@gradient-top: #159DEB;
 @gradient-middle: #3794BC;
-@gradient-bottom: #38414e;
-@background-input: #fff;
+@gradient-bottom: #159DEB;
+@background-input: #000;
 @background-softer: @gradient-top;
+@background-foreground: #fff;
 @background-light: #38414e;
 @placeholder-color: #fff;
-@input-text-color: #fff;
-@offtext-color: #fff;
+@input-text-color: #000;
+@offtext-color: rgba(255, 255, 255, 0.4);
 @offtext-link-color: #746d97;
-@tab-color: #17c7d1;
+@tab-color: #159DEB;
 @button-color: #D64541;
 @color-assertive: #f00;
-@text-color: #fff;
+@text-color: #000;
 @text-bright: #4fc4f6;
 @progress-bar-review: #090;
 @progress-bar-active: #900;
@@ -23,10 +24,11 @@
 @progress-bar-unlocked: #fff;
 @shift-left-icon-color: @button-color;
 
-@header-color: #159DEB;
+@header-color: @tab-color;
 
-@settings-background: @gradient-top;
-@settings-offset-color: #fff;
+@settings-background: @background-softer;
+@settings-main-color: #fff;
+@settings-offset-color: @offtext-color;
 @background: @settings-background;
 /*
 //@background: #373447;
@@ -544,18 +546,28 @@ ion-header-bar.bar.bar-positive {
 #settings-page {
 
     .bar-header {
-        background-color: @settings-offset-color;
-        color: @text-color;
+        background-color: @settings-background;
+        background-image: none;
+        color: @settings-main-color;
+        border: 0;
+
+        .button {
+            color: @settings-main-color;
+        }
     }
 
 }
 
 .tabs {
-    border-color: @gradient-top;
+    border-color: @gradient-top !important;
+
+    .tab-item.active {
+        border-color: @gradient-top !important;
+    }
 }
 
 .list {
-    background-color: @settings-background;
+    background-color: @background-softer;
 
     .activated {
         background-color: @settings-offset-color;
@@ -570,8 +582,9 @@ ion-header-bar.bar.bar-positive {
         padding-left: 20px;
 
         .item {
+            background-color: inherit;
             padding-left: 0;
-            color: @text-color;
+            color: @settings-main-color;
 
             a {
                 padding-left: 0;
@@ -580,13 +593,16 @@ ion-header-bar.bar.bar-positive {
 
     }
 
+
     .item-complex {
         .item-content {
             background-color: @settings-background;
+            color: @settings-main-color;
+            padding-right: 16px;
         }
         //position: relative;
         :after {
-            content: ">";
+            content: "";
             position: absolute;
             display: block;
             right: 20px;
@@ -595,7 +611,7 @@ ion-header-bar.bar.bar-positive {
     }
 
     .item, .card {
-        background-color: inherit;
+        background-color: @settings-background;
         border-top-width: 0;
         border-bottom-color: @settings-offset-color;
         border-bottom-width: 0px;
@@ -610,9 +626,22 @@ ion-header-bar.bar.bar-positive {
         }
     }
 
+    .divider-card {
+        background-color: @background-softer;
+        .item, .card {
+            background-color: inherit;
+            .item-content {
+                background-color: inherit;
+                color: @offtext-color;
+            }
+        }
+    }
+
     .card {
         .item-content {
+            background-color: @background-foreground;
             .item {
+                background-color: @background-foreground;
                 padding: 5px;
             }
         }
@@ -624,6 +653,7 @@ ion-header-bar.bar.bar-positive {
 
     .item-divider {
         padding-top: 30px;
+        color: @offtext-color;
     }
 
 }
@@ -632,7 +662,7 @@ ion-header-bar.bar.bar-positive {
     color: @text-color;
 }
 
-@shift-padding: 5px;
+@shift-padding: 0px;
 @shift-padding-top-bottom: @shift-padding / 5;
 
 .shift-info {
@@ -650,9 +680,9 @@ ion-header-bar.bar.bar-positive {
     }
 }
 
-@list-padding-top-bottom: 4px;
-@list-padding: 20px;
-@list-item: 64px;
+@list-padding-top-bottom: 0px;
+@list-padding: 0px;
+@list-item: 0px;
 
 #shift-description-content {
     padding-right: @shift-padding;

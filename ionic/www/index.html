@@ -5,17 +5,13 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
     <title></title>
 
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
     <!-- In windows apps this fixes dynamic content errors -->
     <script type="text/javascript" src="cordova.js"></script>
-    <script type="text/javascript"
-            timeout="10000"
-            manifest="manifest.json"
-            server="https://www.proxyshift.com"
-            src="bootstrap.js"></script>
+    <script type="text/javascript" timeout="10000" manifest="manifest.json" server="https://www.proxyshift.com" src="bootstrap.js"></script>
 </head>
   <body ng-app="scheduling-app">
     <ion-nav-view></ion-nav-view>
@@ -27,11 +23,11 @@
                         <a href="/"><img src="img/logo.png" class="logo"></a>
                         <label class="item item-input">
                             <i class="icon ion-email placeholder-icon"></i>
-                            <input  type="text" ng-model="user.username" placeholder="Username or email">
+                            <input type="text" ng-model="user.username" placeholder="Username or email">
                         </label>
                         <label class="item item-input">
                             <i class="icon ion-locked placeholder-icon"></i>
-                            <input  type="password" ng-model="user.password" placeholder="Password">
+                            <input type="password" ng-model="user.password" placeholder="Password">
                         </label>
                         <label class="item login-error-message" ng-show="message != null">
                             <span>Proxy/Shift requires Javascript to be enabled.</span>
