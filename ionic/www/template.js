@@ -6521,16 +6521,20 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "<div id=\"app-header-tab\" class=\"tabs-striped tabs-background-positive tabs-color-light\">\n" +
     "    <div class=\"tabs\">\n" +
     "        <a class=\"tab-item\" href=\"#{{states.HOME_URL}}\" ng-class=\"{'active': currentState == states.HOME}\">\n" +
+    "            <i class=\"icon ion-home\"></i>\n" +
     "            Home\n" +
     "        </a>\n" +
     "        <a class=\"tab-item\" href=\"{{currentTabPage || '#' + states.SHIFTS_URL}}\" ng-class=\"{'active': currentState.indexOf('app.shifts.') == 0}\">\n" +
+    "            <i class=\"icon ion-android-time\"></i>\n" +
     "            Shifts\n" +
     "        </a>\n" +
     "        <a class=\"tab-item\" ui-sref=\"{{states.SHIFT_REQUEST}}\" ng-class=\"{'active': currentState.indexOf('app.newshift') == 0}\">\n" +
+    "            <i class=\"icon ion-radio-waves\"></i>\n" +
     "            Shift Request\n" +
     "        </a>\n" +
     "        <a class=\"tab-item\" href=\"{{currentTabPage || '#' + states.SHIFTS_URL}}\" ng-class=\"{'active': $rootScope.calendarShown}\"\n" +
     "            ng-click=\"toggleCalendar($event)\">\n" +
+    "            <i class=\"icon ion-android-calendar\"></i>\n" +
     "            Calendar\n" +
     "        </a>\n" +
     "    </div>\n" +
