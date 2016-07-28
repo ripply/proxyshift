@@ -182,7 +182,7 @@
                             buttonLabels.push('Ignore');
                         }
                         if (hasCordovaDialogs) {
-                            navigator.notification.alert(
+                            navigator.notification.confirm(
                                 'There is an update available!',
                                 function updatePromptCallback(buttonClicked) {
                                     if (buttonClicked == 1) {

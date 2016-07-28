@@ -6,7 +6,7 @@
     },
     "css/proxyshift.css": {
       "filename": "css/proxyshift.css",
-      "version": "c38d9fa650fb1254f7e552d295338d11a1be934a11355f2202767050902fcd4c"
+      "version": "a7be87f1ed1dc85a3a29e53116871981c37fc6d875051d7e198dcb8b2ea34c8e"
     },
     "app-loader/dist/cordova-app-loader-complete.js": {
       "filename": "lib/cordova-app-loader/dist/cordova-app-loader-complete.js",
@@ -58,7 +58,7 @@
     },
     "autoupdate.js": {
       "filename": "autoupdate.js",
-      "version": "66dbb0548763f21d9bb6a1f85dfba5189e03c5a1e8c489e884ffd50c167f2308"
+      "version": "042fc305884f90a73466063ecd148a25e471d65d1a4bb1e9f8142fb8e657e5c0"
     }
   },
   "load": [

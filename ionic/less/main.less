@@ -371,7 +371,7 @@ ion-header-bar.bar.bar-positive {
 /* A Previous button in calendar */
 .calendar-month {
     display: block;
-    background-color: @background;
+    background-color: @background-foreground;
     color: @text-bright;
     border-bottom-width: 1px;
     border-bottom-color: @text-bright;
@@ -467,7 +467,7 @@ ion-header-bar.bar.bar-positive {
     .calendar-week {
         background: @background-foreground;
         //color: #9e9e9e;
-        color: #000;
+        color: @text-color;
     }
 
     .calendar {
@@ -475,6 +475,7 @@ ion-header-bar.bar.bar-positive {
         margin-right: auto;
         text-align: center;
         width: 100%;
+        background-color: @background-foreground;
 
         a, p {
             font-size: 17px;
@@ -515,6 +516,7 @@ ion-header-bar.bar.bar-positive {
 
         .days-week {
             color: @text-bright;
+            background-color: @background;
         }
 
         .calendar-day-currentmonth.calendar-day-today {
