@@ -5853,14 +5853,16 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
   $templateCache.put('templates/newshift/when.html',
     "<ion-view view-title=\"When\" hide-back-button=\"true\">\n" +
     "    <ion-content class=\"has-header has-footer\">\n" +
+    "        <!--\n" +
     "        <h4 class=\"new-shift-title\">Select shift duration and number of employees needed</h4>\n" +
-    "        <div class=\"list list-inset full-width-inputs\"\n" +
+    "        -->\n" +
+    "        <div class=\"list compacted-list list-inset full-width-inputs\"\n" +
     "            ng-repeat=\"date in getDates()\">\n" +
-    "            <div class=\"item item-divider\">\n" +
-    "                {{date}}\n" +
+    "            <div class=\"item item-divider item-divider-bright-text\">\n" +
+    "                <h2>{{getMoment(date).format('MMMM Do, YYYY')}} - Shift Details:</h2>\n" +
     "            </div>\n" +
     "            <div class=\"item row\">\n" +
-    "                <div class=\"col col-50 uniform-padding\">\n" +
+    "                <div class=\"col col-50 list-item-padding\">\n" +
     "                    <h4 class=\"sub-subheader\">Start time</h4>\n" +
     "                </div>\n" +
     "                <div class=\"col\">\n" +
@@ -5869,7 +5871,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "            </div>\n" +
     "\n" +
     "            <div class=\"item row\">\n" +
-    "                <div class=\"col col-50 uniform-padding\">\n" +
+    "                <div class=\"col col-50 list-item-padding\">\n" +
     "                    <h4 class=\"sub-subheader\">End time</h4>\n" +
     "                </div>\n" +
     "                <div class=\"col\">\n" +
@@ -5878,7 +5880,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "            </div>\n" +
     "\n" +
     "            <div class=\"item row\">\n" +
-    "                <div class=\"col col-50 uniform-padding\">\n" +
+    "                <div class=\"col col-50 list-item-padding\">\n" +
     "                    <h4 class=\"sub-subheader\">Date the shift ends</h4>\n" +
     "                </div>\n" +
     "                <div class=\"col\">\n" +
@@ -5887,7 +5889,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "            </div>\n" +
     "\n" +
     "            <div class=\"item row\">\n" +
-    "                <div class=\"col col-50 uniform-padding\">\n" +
+    "                <div class=\"col col-50 list-item-padding\">\n" +
     "                    <h4 class=\"sub-subheader nowrap\">How many employees are needed?</h4>\n" +
     "                </div>\n" +
     "                <div class=\"col\">\n" +
@@ -5895,18 +5897,21 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                </div>\n" +
     "            </div>\n" +
     "        </div>\n" +
-    "\n" +
-    "        <button ng-disabled=\"!progressable()\"\n" +
-    "                style=\"width: 100%\"\n" +
-    "                class=\"button button-block button-positive activated\"\n" +
-    "                ui-sref=\"app.newshift.where(whereStateParams())\">\n" +
-    "            <div ng-if=\"progressable()\">\n" +
-    "                Next\n" +
+    "        <div class=\"row\">\n" +
+    "            <div class=\"col\">\n" +
+    "                <button ng-disabled=\"!progressable()\"\n" +
+    "                        style=\"width: 100%\"\n" +
+    "                        class=\"button button-block button-positive activated\"\n" +
+    "                        ui-sref=\"app.newshift.where(whereStateParams())\">\n" +
+    "                    <div ng-if=\"progressable()\">\n" +
+    "                        Next\n" +
+    "                    </div>\n" +
+    "                    <div ng-if=\"!progressable()\">\n" +
+    "                        Please complete the form\n" +
+    "                    </div>\n" +
+    "                </button>\n" +
     "            </div>\n" +
-    "            <div ng-if=\"!progressable()\">\n" +
-    "                Please complete the form\n" +
-    "            </div>\n" +
-    "        </button>\n" +
+    "        </div>\n" +
     "    </ion-content>\n" +
     "</ion-view>\n"
   );

@@ -1316,6 +1316,32 @@ ion-header-bar.bar.bar-positive {
   padding-top: 30px;
   color: rgba(255, 255, 255, 0.4);
 }
+.list .item-divider-bright-text h2 {
+  color: #ffffff;
+}
+.list input[type="time"],
+.list input[type="date"],
+.list input[type="number"] {
+  text-align: center;
+  min-width: 100%;
+}
+.list .list-item-padding {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+.list .row .list-item-padding {
+  padding-left: 11px;
+  padding-right: 11px;
+  position: relative;
+}
+.list .row .list-item-padding h4 {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.compacted-list .item-divider-bright-text {
+  padding-top: 15px;
+}
 .shift-item p {
   color: #000000;
 }

@@ -707,6 +707,42 @@ ion-header-bar.bar.bar-positive {
         color: @offtext-color;
     }
 
+    .item-divider-bright-text {
+        h2 {
+            color: @text-bright;
+        }
+    }
+
+    input[type="time"], input[type="date"], input[type="number"] {
+        // ios safari does not properly set the width with just width: 100%
+        text-align: center;
+        min-width: 100%;
+    }
+
+    .list-item-padding {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .row {
+        .list-item-padding {
+            padding-left: 11px;
+            padding-right: 11px;
+            position: relative;
+            h4 {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+        }
+    }
+
+}
+
+.compacted-list {
+    .item-divider-bright-text {
+        padding-top: 15px;
+    }
 }
 
 .shift-item p {

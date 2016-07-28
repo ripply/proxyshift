@@ -15,8 +15,6 @@ angular.module('scheduling-app.controllers')
 
             var requiredWhenData = ['starttime', 'endtime', 'length', 'employees'];
 
-            console.log("WATTTTTTTTTTTTTTTTT");
-
             $scope.whereStateParams = function() {
                 return angular.extend({
                     when: getWhen()
@@ -26,6 +24,10 @@ angular.module('scheduling-app.controllers')
             $scope.getDates = function() {
                 return $scope.decodeDates($stateParams.dates);
             };
+
+            $scope.getMoment = function(date) {
+                return moment(date);
+            }
 
             function getWhen() {
                 return $scope.encodeWhens($scope.when);

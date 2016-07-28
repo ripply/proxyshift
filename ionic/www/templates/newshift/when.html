@@ -1,13 +1,15 @@
 <ion-view view-title="When" hide-back-button="true">
     <ion-content class="has-header has-footer">
+        <!--
         <h4 class="new-shift-title">Select shift duration and number of employees needed</h4>
-        <div class="list list-inset full-width-inputs"
+        -->
+        <div class="list compacted-list list-inset full-width-inputs"
             ng-repeat="date in getDates()">
-            <div class="item item-divider">
-                {{date}}
+            <div class="item item-divider item-divider-bright-text">
+                <h2>{{getMoment(date).format('MMMM Do, YYYY')}} - Shift Details:</h2>
             </div>
             <div class="item row">
-                <div class="col col-50 uniform-padding">
+                <div class="col col-50 list-item-padding">
                     <h4 class="sub-subheader">Start time</h4>
                 </div>
                 <div class="col">
@@ -16,7 +18,7 @@
             </div>
 
             <div class="item row">
-                <div class="col col-50 uniform-padding">
+                <div class="col col-50 list-item-padding">
                     <h4 class="sub-subheader">End time</h4>
                 </div>
                 <div class="col">
@@ -25,7 +27,7 @@
             </div>
 
             <div class="item row">
-                <div class="col col-50 uniform-padding">
+                <div class="col col-50 list-item-padding">
                     <h4 class="sub-subheader">Date the shift ends</h4>
                 </div>
                 <div class="col">
@@ -34,7 +36,7 @@
             </div>
 
             <div class="item row">
-                <div class="col col-50 uniform-padding">
+                <div class="col col-50 list-item-padding">
                     <h4 class="sub-subheader nowrap">How many employees are needed?</h4>
                 </div>
                 <div class="col">
@@ -42,17 +44,20 @@
                 </div>
             </div>
         </div>
-
-        <button ng-disabled="!progressable()"
-                style="width: 100%"
-                class="button button-block button-positive activated"
-                ui-sref="app.newshift.where(whereStateParams())">
-            <div ng-if="progressable()">
-                Next
+        <div class="row">
+            <div class="col">
+                <button ng-disabled="!progressable()"
+                        style="width: 100%"
+                        class="button button-block button-positive activated"
+                        ui-sref="app.newshift.where(whereStateParams())">
+                    <div ng-if="progressable()">
+                        Next
+                    </div>
+                    <div ng-if="!progressable()">
+                        Please complete the form
+                    </div>
+                </button>
             </div>
-            <div ng-if="!progressable()">
-                Please complete the form
-            </div>
-        </button>
+        </div>
     </ion-content>
 </ion-view>
