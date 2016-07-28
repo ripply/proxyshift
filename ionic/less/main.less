@@ -1,5 +1,7 @@
 //@background: #394264;
 
+@proxyshift-emphasize: #ff8500;
+
 ////@gradient-top: #1C74BC;
 //@gradient-top: #0c60ee;
 @gradient-top: #159DEB;
@@ -15,7 +17,8 @@
 @offtext-link-color: #746d97;
 @tab-color: #159DEB;
 @button-color: #D64541;
-@color-assertive: #f00;
+@color-positive: #ffd560;
+@color-emphasize: @proxyshift-emphasize;
 @text-color: #000;
 @text-bright: #fff;
 @progress-bar-review: #090;
@@ -50,7 +53,31 @@
 @width-massive: 500px;
 
 body, .pane, .scroll-content, .list, .logo {
-    background: @background
+    background: @background;
+    color: @text-bright;
+}
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    color: @text-bright;
+}
+
+.button.button-positive {
+    border-color: @text-bright;
+    background-color: @text-bright;
+    color: @background;
+}
+
+.button.button-positive.activated {
+    border-color: @text-bright;
+    background-color: @text-bright;
+    color: @background;
+}
+
+.scroll-refresher .ionic-refresher-content {
+    color: @offtext-color;
+    .spinner {
+        color: @text-bright;
+    }
 }
 
 /* Header Title */
@@ -368,6 +395,12 @@ ion-header-bar.bar.bar-positive {
 @calendar-header-line-height: 35px;
 @calendar-header-font-size: @header-font-size - 2;
 
+.calendarWrapper {
+    background: @background;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 /* A Previous button in calendar */
 .calendar-month {
     display: block;
@@ -534,7 +567,15 @@ ion-header-bar.bar.bar-positive {
     }
 
     .calendar-day-selected {
-        background: @color-assertive;
+        display: block;
+        //width: 34px;
+        //line-height: 34px;
+        background: @color-emphasize;
+        color: @text-bright;
+        border-radius: 100%;
+        -moz-box-shadow: 0 0 3px @color-emphasize;
+        -webkit-box-shadow: 0 0 3px @color-emphasize;
+        box-shadow: 0 0 3px @color-emphasize;
     }
 
 }

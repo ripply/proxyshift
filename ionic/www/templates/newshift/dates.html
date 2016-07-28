@@ -2,19 +2,25 @@
     <ion-content class="has-header has-footer">
         <h4 class="new-shift-title">Select one or more dates that need shift coverage</h4>
         <shift-calendar toggle="false" show="true" name="create-shift-calendar" multiple="true" clickable="true" cant-click-yesterday="true"></shift-calendar>
+        <!--
         <div ng-if="getDates()">
             Selected Shift Dates: {{getDatesString().join(', ')}}
         </div>
-        <button ng-disabled="date.length == 0"
-                style="width: 100%"
-                class="button button-block button-positive activated "
-                ui-sref="app.newshift.when({dates: getDates()})">
-            <div ng-if="date.length != 0">
-                Next
+        -->
+        <div class="row">
+            <div class="col">
+                <button ng-disabled="date.length == 0"
+                        style="width: 100%"
+                        class="button button-block button-positive activated "
+                        ui-sref="app.newshift.when({dates: getDates()})">
+                    <div ng-if="date.length != 0">
+                        Next
+                    </div>
+                    <div ng-if="date.length == 0">
+                        Please complete the form
+                    </div>
+                </button>
             </div>
-            <div ng-if="date.length == 0">
-                Please complete the form
-            </div>
-        </button>
+        </div>
     </ion-content>
 </ion-view>

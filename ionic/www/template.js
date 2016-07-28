@@ -5776,20 +5776,26 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "    <ion-content class=\"has-header has-footer\">\n" +
     "        <h4 class=\"new-shift-title\">Select one or more dates that need shift coverage</h4>\n" +
     "        <shift-calendar toggle=\"false\" show=\"true\" name=\"create-shift-calendar\" multiple=\"true\" clickable=\"true\" cant-click-yesterday=\"true\"></shift-calendar>\n" +
+    "        <!--\n" +
     "        <div ng-if=\"getDates()\">\n" +
     "            Selected Shift Dates: {{getDatesString().join(', ')}}\n" +
     "        </div>\n" +
-    "        <button ng-disabled=\"date.length == 0\"\n" +
-    "                style=\"width: 100%\"\n" +
-    "                class=\"button button-block button-positive activated \"\n" +
-    "                ui-sref=\"app.newshift.when({dates: getDates()})\">\n" +
-    "            <div ng-if=\"date.length != 0\">\n" +
-    "                Next\n" +
+    "        -->\n" +
+    "        <div class=\"row\">\n" +
+    "            <div class=\"col\">\n" +
+    "                <button ng-disabled=\"date.length == 0\"\n" +
+    "                        style=\"width: 100%\"\n" +
+    "                        class=\"button button-block button-positive activated \"\n" +
+    "                        ui-sref=\"app.newshift.when({dates: getDates()})\">\n" +
+    "                    <div ng-if=\"date.length != 0\">\n" +
+    "                        Next\n" +
+    "                    </div>\n" +
+    "                    <div ng-if=\"date.length == 0\">\n" +
+    "                        Please complete the form\n" +
+    "                    </div>\n" +
+    "                </button>\n" +
     "            </div>\n" +
-    "            <div ng-if=\"date.length == 0\">\n" +
-    "                Please complete the form\n" +
-    "            </div>\n" +
-    "        </button>\n" +
+    "        </div>\n" +
     "    </ion-content>\n" +
     "</ion-view>\n"
   );

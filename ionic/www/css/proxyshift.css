@@ -827,6 +827,37 @@ body,
 .list,
 .logo {
   background: #159deb;
+  color: #ffffff;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+  color: #ffffff;
+}
+.button.button-positive {
+  border-color: #ffffff;
+  background-color: #ffffff;
+  color: #159deb;
+}
+.button.button-positive.activated {
+  border-color: #ffffff;
+  background-color: #ffffff;
+  color: #159deb;
+}
+.scroll-refresher .ionic-refresher-content {
+  color: rgba(255, 255, 255, 0.4);
+}
+.scroll-refresher .ionic-refresher-content .spinner {
+  color: #ffffff;
 }
 /* Header Title */
 ion-header-bar.bar.bar-positive {
@@ -1052,6 +1083,11 @@ ion-header-bar.bar.bar-positive {
     width: 80%;
   }
 }
+.calendarWrapper {
+  background: #159deb;
+  padding-left: 10px;
+  padding-right: 10px;
+}
 /* A Previous button in calendar */
 .calendar-month {
   display: block;
@@ -1175,7 +1211,13 @@ ion-header-bar.bar.bar-positive {
   box-shadow: 0 0 3px #159deb;
 }
 .calendar-month .calendar-day-selected {
-  background: #ff0000;
+  display: block;
+  background: #ff8500;
+  color: #ffffff;
+  border-radius: 100%;
+  -moz-box-shadow: 0 0 3px #ff8500;
+  -webkit-box-shadow: 0 0 3px #ff8500;
+  box-shadow: 0 0 3px #ff8500;
 }
 .new-shift-title {
   margin-left: auto;
