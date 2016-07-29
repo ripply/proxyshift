@@ -8,14 +8,14 @@
             <i class="icon ion-android-time"></i>
             Shifts
         </a>
+        <a class="tab-item" href="{{currentTabPage || '#' + states.SHIFTS_URL}}" ng-class="{'active': $rootScope.calendarShown}"
+           ng-click="toggleCalendar($event)">
+            <i class="icon ion-android-calendar"></i>
+            Calendar
+        </a>
         <a class="tab-item" ui-sref="{{states.SHIFT_REQUEST}}" ng-class="{'active': currentState.indexOf('app.newshift') == 0}">
             <i class="icon ion-radio-waves"></i>
             Shift Request
-        </a>
-        <a class="tab-item" href="{{currentTabPage || '#' + states.SHIFTS_URL}}" ng-class="{'active': $rootScope.calendarShown}"
-            ng-click="toggleCalendar($event)">
-            <i class="icon ion-android-calendar"></i>
-            Calendar
         </a>
     </div>
 </div>
