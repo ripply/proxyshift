@@ -39,24 +39,26 @@
                 <div class="col col-50 list-item-padding">
                     <h4 class="sub-subheader nowrap">How many employees are needed?</h4>
                 </div>
-                <div class="col">
+                <div class="col col-25 col-offset-25">
                     <input ng-model="when[date].employees" min="1" type="number">
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col">
-                <button ng-disabled="!progressable()"
-                        style="width: 100%"
-                        class="button button-block button-positive activated"
-                        ui-sref="app.newshift.where(whereStateParams())">
-                    <div ng-if="progressable()">
-                        Next
-                    </div>
-                    <div ng-if="!progressable()">
-                        Please complete the form
-                    </div>
-                </button>
+        <div class="list compacted-list list-inset full-width-inputs">
+            <div class="row">
+                <div class="col">
+                    <button ng-disabled="!progressable()"
+                            style="width: 100%"
+                            class="button button-block button-positive activated"
+                            ui-sref="app.newshift.where(whereStateParams())">
+                        <div ng-if="progressable()">
+                            Next
+                        </div>
+                        <div ng-if="!progressable()">
+                            Please complete the form
+                        </div>
+                    </button>
+                </div>
             </div>
         </div>
     </ion-content>

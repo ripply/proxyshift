@@ -2,9 +2,6 @@
     <ion-content class="has-header has-footer">
         <h4 class="new-shift-title">Where is the shift located</h4>
         <div class="list list-inset">
-            <div class="item">
-                <h2>Search for the building the shift is located in</h2>
-            </div>
             <label class="item item-input">
                 <i class="icon ion-search placeholder-icon"></i>
                 <input type="text" ng-model="query" ng-style="{'width' : '100%'}"
@@ -17,13 +14,15 @@
                         show-delete="false"
                         show-reorder="false"
                         can-swipe="false">
-                        <ion-item
-                            class="item clear-padding"
+                        <ion-radio
+                            class="item clear-padding item-divider-bright-text"
                             ng-class="{'location-selected': location.selected}"
                             ng-click="locationClicked(location)"
+                            ng-model="selectedLocationRadio"
+                            ng-value="location.id"
                             ng-repeat="location in users | filter:query">
                             {{location.address}}
-                        </ion-item>
+                        </ion-radio>
                     </ion-list>
                     <ion-infinite-scroll
                         ng-if="moreToLoad()"
@@ -32,16 +31,17 @@
                     </ion-infinite-scroll>
                 </ion-scroll>
             </div>
+            <h4 ng-if="sublocations.length > 0"
+                class="new-shift-title">Select the specific department</h4>
             <div class="item">
                 <div ng-if="sublocations.length > 0">
-                    <h2>Select the specific department, floor or area the shift is located</h2>
                     <ion-list
                         type="list-inset"
                         show-delete="false"
                         show-reorder="false"
                         can-swipe="false">
                         <ion-item
-                            class="item clear-padding"
+                            class="item clear-padding item-divider-bright-text"
                             ng-class="{'location-selected': sublocation.selected}"
                             ng-click="sublocationClicked(sublocation)"
                             ng-repeat="sublocation in sublocations">

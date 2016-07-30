@@ -69,13 +69,7 @@ angular.module('scheduling-app.controllers')
             }
 
             $scope.progressable = function() {
-                return $scope.other.title !== undefined &&
-                    $scope.other.title !== null &&
-                    $scope.other.title != '' &&
-                    $scope.other.description !== undefined &&
-                    $scope.other.description !== null &&
-                    $scope.other.description != '' &&
-                    $scope.other.job !== undefined &&
+                return $scope.other.job !== undefined &&
                     $scope.other.job !== null;
             };
 

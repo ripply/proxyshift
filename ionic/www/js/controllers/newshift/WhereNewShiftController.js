@@ -91,6 +91,15 @@ angular.module('scheduling-app.controllers')
                 return deferred.promise;
             }
 
+            function clearClickedJobType() {
+                unselect($scope.locations);
+                unselect($scope.sublocations);
+                $scope.selected = undefined;
+                $scope.sublocation = undefined;
+                $scope.locationSelected = false;
+                $scope.selectedLocationRadio = undefined;
+            }
+
             $scope.locationClicked = function(location) {
                 unselect($scope.locations);
                 unselect($scope.sublocations);

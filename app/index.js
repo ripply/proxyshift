@@ -579,7 +579,6 @@ App.prototype.shiftApplicationApprovedOrDenied = function shiftApplicationApprov
             'shiftapplicationacceptdeclinereasons.accept as shift_accepted',
             'shiftapplications.id as shiftapplication_id',
             'shifts.id as shift_id',
-            'shifts.title as shift_title',
             'shifts.description as shift_description',
             'shifts.start as shift_start',
             'shifts.end as shift_end',
@@ -1602,7 +1601,6 @@ _.each([
     'usersettings.textnotifications as textOk',
     'usersettings.emailnotifications as emailOk',
     // shift information
-    'shifts.title as title',
     'shifts.start as start',
     'shifts.end as end',
     'shifts.location_id as location_id',
@@ -1728,7 +1726,6 @@ function getUsersInterestedInAShift(shift_ids, sqlOptions, success, error) {
             'usersettings.pushnotifications as pushOk',
             'usersettings.textnotifications as textOk',
             'usersettings.emailnotifications as emailOk',
-            'shifts.title as title',
             'shifts.start as start',
             'shifts.end as end',
             'shifts.location_id as location_id',

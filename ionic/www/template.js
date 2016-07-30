@@ -5805,10 +5805,10 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "<div id=\"app-header-tab\" class=\"tabs-striped tabs-top tabs-background-positive tabs-color-light\">\n" +
     "    <div class=\"tabs\" style=\"top: 0\">\n" +
     "        <a class=\"tab-item\" ui-sref=\"{{states.SHIFT_REQUEST}}($rootScope.newShiftTabsStateParams)\" ng-class=\"{'active': currentState == states.SHIFT_REQUEST}\">\n" +
-    "            DATE(S)\n" +
+    "            WHEN\n" +
     "        </a>\n" +
     "        <a class=\"tab-item\" ui-sref=\"{{states.SHIFT_REQUEST_WHEN}}($rootScope.newShiftTabsStateParams)\" ng-class=\"{'active': currentState == states.SHIFT_REQUEST_WHEN}\">\n" +
-    "            WHEN\n" +
+    "            DETAILS\n" +
     "        </a>\n" +
     "        <a class=\"tab-item\" ui-sref=\"{{states.SHIFT_REQUEST_WHERE}}($rootScope.newShiftTabsStateParams)\" ng-class=\"{'active': currentState == states.SHIFT_REQUEST_WHERE}\">\n" +
     "            WHERE\n" +
@@ -5829,22 +5829,32 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "<ion-view view-title=\"When\" hide-back-button=\"true\">\n" +
     "    <ion-content class=\"has-header has-footer\">\n" +
     "        <h4 class=\"new-shift-title\">Please review the shift request before submitting</h4>\n" +
-    "        <div class=\"list list-inset\">\n" +
-    "            <div class=\"item item-stacked-label\">\n" +
-    "                <span class=\"input-label\">Shift Title</span>\n" +
-    "                {{title}}\n" +
-    "            </div>\n" +
-    "            <div class=\"item item-stacked-label\">\n" +
-    "                <span class=\"input-label\">Shift Description</span>\n" +
-    "                {{description}}\n" +
+    "        <div class=\"list compacted-list list-inset full-width-inputs\">\n" +
+    "            <div ng-if=\"description.length > 0\">\n" +
+    "                <div class=\"item item-stacked-label row\">\n" +
+    "                    <div class=\"col list-item-padding\">\n" +
+    "                        <h4 class=\"\">Shift Description</h4>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <div class=\"item row\">\n" +
+    "                    <div class=\"col list-item-padding\">\n" +
+    "                        <textarea rows=\"4\" cols=\"50\" style=\"width: 100%;\" disabled>{{description}}</textarea>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
     "            </div>\n" +
     "        </div>\n" +
     "        <shift-list dismissable=\"true\" name=\"newShifts\" swipable=\"false\"></shift-list>\n" +
-    "        <button ng-click=\"create()\"\n" +
-    "                    style=\"width: 100%\"\n" +
-    "                    class=\"button button-block button-positive activated\">\n" +
-    "            Create\n" +
-    "        </button>\n" +
+    "        <div class=\"list compacted-list list-inset full-width-inputs\">\n" +
+    "            <div class=\"item row\">\n" +
+    "                <div class=\"col\">\n" +
+    "                    <button ng-click=\"create()\"\n" +
+    "                            style=\"width: 100%\"\n" +
+    "                            class=\"button button-block button-positive activated\">\n" +
+    "                        Create\n" +
+    "                    </button>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
     "    </ion-content>\n" +
     "</ion-view>\n"
   );
@@ -5892,24 +5902,26 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                <div class=\"col col-50 list-item-padding\">\n" +
     "                    <h4 class=\"sub-subheader nowrap\">How many employees are needed?</h4>\n" +
     "                </div>\n" +
-    "                <div class=\"col\">\n" +
+    "                <div class=\"col col-25 col-offset-25\">\n" +
     "                    <input ng-model=\"when[date].employees\" min=\"1\" type=\"number\">\n" +
     "                </div>\n" +
     "            </div>\n" +
     "        </div>\n" +
-    "        <div class=\"row\">\n" +
-    "            <div class=\"col\">\n" +
-    "                <button ng-disabled=\"!progressable()\"\n" +
-    "                        style=\"width: 100%\"\n" +
-    "                        class=\"button button-block button-positive activated\"\n" +
-    "                        ui-sref=\"app.newshift.where(whereStateParams())\">\n" +
-    "                    <div ng-if=\"progressable()\">\n" +
-    "                        Next\n" +
-    "                    </div>\n" +
-    "                    <div ng-if=\"!progressable()\">\n" +
-    "                        Please complete the form\n" +
-    "                    </div>\n" +
-    "                </button>\n" +
+    "        <div class=\"list compacted-list list-inset full-width-inputs\">\n" +
+    "            <div class=\"row\">\n" +
+    "                <div class=\"col\">\n" +
+    "                    <button ng-disabled=\"!progressable()\"\n" +
+    "                            style=\"width: 100%\"\n" +
+    "                            class=\"button button-block button-positive activated\"\n" +
+    "                            ui-sref=\"app.newshift.where(whereStateParams())\">\n" +
+    "                        <div ng-if=\"progressable()\">\n" +
+    "                            Next\n" +
+    "                        </div>\n" +
+    "                        <div ng-if=\"!progressable()\">\n" +
+    "                            Please complete the form\n" +
+    "                        </div>\n" +
+    "                    </button>\n" +
+    "                </div>\n" +
     "            </div>\n" +
     "        </div>\n" +
     "    </ion-content>\n" +
@@ -5922,9 +5934,6 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "    <ion-content class=\"has-header has-footer\">\n" +
     "        <h4 class=\"new-shift-title\">Where is the shift located</h4>\n" +
     "        <div class=\"list list-inset\">\n" +
-    "            <div class=\"item\">\n" +
-    "                <h2>Search for the building the shift is located in</h2>\n" +
-    "            </div>\n" +
     "            <label class=\"item item-input\">\n" +
     "                <i class=\"icon ion-search placeholder-icon\"></i>\n" +
     "                <input type=\"text\" ng-model=\"query\" ng-style=\"{'width' : '100%'}\"\n" +
@@ -5937,13 +5946,15 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                        show-delete=\"false\"\n" +
     "                        show-reorder=\"false\"\n" +
     "                        can-swipe=\"false\">\n" +
-    "                        <ion-item\n" +
-    "                            class=\"item clear-padding\"\n" +
+    "                        <ion-radio\n" +
+    "                            class=\"item clear-padding item-divider-bright-text\"\n" +
     "                            ng-class=\"{'location-selected': location.selected}\"\n" +
     "                            ng-click=\"locationClicked(location)\"\n" +
+    "                            ng-model=\"selectedLocationRadio\"\n" +
+    "                            ng-value=\"location.id\"\n" +
     "                            ng-repeat=\"location in users | filter:query\">\n" +
     "                            {{location.address}}\n" +
-    "                        </ion-item>\n" +
+    "                        </ion-radio>\n" +
     "                    </ion-list>\n" +
     "                    <ion-infinite-scroll\n" +
     "                        ng-if=\"moreToLoad()\"\n" +
@@ -5952,16 +5963,17 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                    </ion-infinite-scroll>\n" +
     "                </ion-scroll>\n" +
     "            </div>\n" +
+    "            <h4 ng-if=\"sublocations.length > 0\"\n" +
+    "                class=\"new-shift-title\">Select the specific department</h4>\n" +
     "            <div class=\"item\">\n" +
     "                <div ng-if=\"sublocations.length > 0\">\n" +
-    "                    <h2>Select the specific department, floor or area the shift is located</h2>\n" +
     "                    <ion-list\n" +
     "                        type=\"list-inset\"\n" +
     "                        show-delete=\"false\"\n" +
     "                        show-reorder=\"false\"\n" +
     "                        can-swipe=\"false\">\n" +
     "                        <ion-item\n" +
-    "                            class=\"item clear-padding\"\n" +
+    "                            class=\"item clear-padding item-divider-bright-text\"\n" +
     "                            ng-class=\"{'location-selected': sublocation.selected}\"\n" +
     "                            ng-click=\"sublocationClicked(sublocation)\"\n" +
     "                            ng-repeat=\"sublocation in sublocations\">\n" +
@@ -5979,38 +5991,48 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
   $templateCache.put('templates/newshift/who.html',
     "<ion-view view-title=\"When\" hide-back-button=\"true\">\n" +
     "    <ion-content class=\"has-header has-footer\">\n" +
-    "        <h4 class=\"new-shift-title\">Please select the job title and add any additional information</h4>\n" +
-    "        <div class=\"list list-inset\">\n" +
-    "            <div class=\"item item-stacked-label\">\n" +
-    "                <span class=\"input-label\">Shift Title</span>\n" +
-    "                <input type=\"text\" style=\"width: 100%;\" ng-model=\"other.title\"></input>\n" +
+    "        <h4 class=\"new-shift-title\">Please select the job type and add any additional information</h4>\n" +
+    "        <div class=\"list compacted-list list-inset full-width-inputs\">\n" +
+    "            <div class=\"item item-input row\">\n" +
+    "                <div class=\"col col-50 list-item-padding\">\n" +
+    "                    <h4 class=\"sub-subheader\">Select Job Type</h4>\n" +
+    "                </div>\n" +
+    "                <div class=\"col\">\n" +
+    "                    <select ng-model=\"other.job\">\n" +
+    "                        <option ng-repeat=\"job in jobTypes\"\n" +
+    "                                ng-selected=\"jobTypes.indexOf(job) == 0\"\n" +
+    "                                value=\"{{job.id}}\">\n" +
+    "                            {{job.title}} - {{job.description}}\n" +
+    "                        </option>\n" +
+    "                    </select>\n" +
+    "                </div>\n" +
     "            </div>\n" +
-    "            <div class=\"item item-stacked-label\">\n" +
-    "                <span class=\"input-label\">Shift Description</span>\n" +
-    "                <textarea rows=\"4\" cols=\"50\" style=\"width: 100%; height: 20%;\" ng-model=\"other.description\"></textarea>\n" +
+    "            <div class=\"item item-stacked-label row\">\n" +
+    "                <div class=\"col list-item-padding\">\n" +
+    "                    <h4 class=\"\">Shift Description (Optional)</h4>\n" +
+    "                </div>\n" +
     "            </div>\n" +
-    "            <div class=\"item item-input\">\n" +
-    "                <span class=\"input-label\">Select Job Title</span>\n" +
-    "                <select ng-model=\"other.job\">\n" +
-    "                    <option ng-repeat=\"job in jobTypes\"\n" +
-    "                            ng-selected=\"jobTypes.indexOf(job) == 0\"\n" +
-    "                        value=\"{{job.id}}\">\n" +
-    "                        {{job.title}} - {{job.description}}\n" +
-    "                    </option>\n" +
-    "                </select>\n" +
+    "            <div class=\"item row\">\n" +
+    "                <div class=\"col list-item-padding\">\n" +
+    "                    <textarea rows=\"4\" cols=\"50\" style=\"width: 100%;\" ng-model=\"other.description\"></textarea>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "            <div class=\"item row\">\n" +
+    "                <div class=\"col\">\n" +
+    "                    <button ng-disabled=\"!progressable()\"\n" +
+    "                            style=\"width: 100%\"\n" +
+    "                            class=\"button button-block button-positive activated\"\n" +
+    "                            ng-click=\"next()\">\n" +
+    "                        <div ng-if=\"progressable()\">\n" +
+    "                            Next\n" +
+    "                        </div>\n" +
+    "                        <div ng-if=\"!progressable()\">\n" +
+    "                            Please complete the form\n" +
+    "                        </div>\n" +
+    "                    </button>\n" +
+    "                </div>\n" +
     "            </div>\n" +
     "        </div>\n" +
-    "        <button ng-disabled=\"!progressable()\"\n" +
-    "                style=\"width: 100%\"\n" +
-    "                class=\"button button-block button-positive activated\"\n" +
-    "                ng-click=\"next()\">\n" +
-    "            <div ng-if=\"progressable()\">\n" +
-    "                Next\n" +
-    "            </div>\n" +
-    "            <div ng-if=\"!progressable()\">\n" +
-    "                Please complete the form\n" +
-    "            </div>\n" +
-    "        </button>\n" +
     "    </ion-content>\n" +
     "</ion-view>\n"
   );

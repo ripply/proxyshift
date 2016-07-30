@@ -478,7 +478,6 @@ module.exports = {
         ],
         shifts: [
             {
-                title: 'monthshiftisover',
                 description: 'month long shift ending now',
                 start: formatDateForDb(moment(new Date()).subtract('1', 'month').unix()),
                 end: formatDateForDb(moment(new Date()).unix()),
@@ -490,7 +489,6 @@ module.exports = {
                 groupuserclass_id: '@groupuserclasses:title:classtest'
             },
             {
-                title: 'newshift',
                 description: 'shift that starts in the future',
                 start: formatDateForDb(moment(new Date()).add('1', 'hour').unix()),
                 end: formatDateForDb(moment(new Date()).add('3', 'hour').unix()),
@@ -503,7 +501,6 @@ module.exports = {
             },
             {
                 // FIXME: This shift gets inserted into db (sqlite3) as id 3 when it is 5th in the list, so for now set it to 3rd item
-                title: 'shift_in_other_location',
                 description: 'shift in another location',
                 start: formatDateForDb(moment(new Date()).add('1', 'hour').unix()),
                 end: formatDateForDb(moment(new Date()).add('3', 'hour').unix()),
@@ -515,7 +512,6 @@ module.exports = {
                 groupuserclass_id: '@groupuserclasses:title:classtest'
             },
             {
-                title: 'sublocationshift',
                 description: 'shift in sublocation',
                 start: formatDateForDb(moment(new Date()).add('1', 'hour').unix()),
                 end: formatDateForDb(moment(new Date()).add('3', 'hour').unix()),
@@ -527,7 +523,6 @@ module.exports = {
                 groupuserclass_id: '@groupuserclasses:title:classtest'
             },
             {
-                title: 'sublocationshiftwithuser',
                 description: 'shift in sublocation',
                 start: formatDateForDb(moment(new Date()).add('1', 'hour').unix()),
                 end: formatDateForDb(moment(new Date()).add('3', 'hour').unix()),
@@ -539,7 +534,6 @@ module.exports = {
                 groupuserclass_id: '@groupuserclasses:title:classtest'
             },
             {
-                title: 'different_classtype',
                 description: 'shift in sublocation',
                 start: formatDateForDb(moment(new Date()).add('1', 'hour').unix()),
                 end: formatDateForDb(moment(new Date()).add('3', 'hour').unix()),
@@ -553,7 +547,7 @@ module.exports = {
         ],
         shiftapplications:[
             {
-                shift_id: '@shifts:title:monthshiftisover',
+                shift_id: '@shifts:description:month long shift ending now',
                 user_id: '@users:username:shiftapplied',
                 date: formatDateForDb(moment(new Date()).unix()),
                 recinded: false

@@ -104,10 +104,6 @@ var Validations = {
         ]
     },
     Shift: {
-        title: [
-            { validator: 'notEmpty', message: 'A shift must have a title' },
-            { validator: 'isLength', args: [0, 30], message: 'Cannot be larger than 30 characters'},
-        ],
         description: [
             { validator: 'isLength', args: [0, 30], message: 'Cannot be larger than 30 characters'},
         ]

@@ -11,10 +11,10 @@
 @background-softer: @gradient-top;
 @background-foreground: #fff;
 @background-light: @gradient-top;
-@placeholder-color: #fff;
-@input-text-color: #000;
+@input-text-color: #fff;
 @offtext-color: rgba(255, 255, 255, 0.4);
 @offtext-link-color: #746d97;
+@placeholder-color: @offtext-color;
 @tab-color: #159DEB;
 @button-color: #D64541;
 @color-positive: #ffd560;
@@ -140,6 +140,9 @@ ion-header-bar.bar.bar-positive {
     color: @offtext-color;
     margin-left: auto;
     margin-right: auto;
+    a {
+        color: @offtext-color;
+    }
 }
 
 .login-container {
@@ -151,7 +154,7 @@ ion-header-bar.bar.bar-positive {
     }
 
     p {
-        color: @offtext-color;
+        color: @text-bright;
     }
 
     a {
@@ -216,27 +219,41 @@ ion-header-bar.bar.bar-positive {
     }
 }
 
+::-webkit-input-placeholder { /* WebKit browsers */
+    color: @placeholder-color !important;
+}
+:-moz-input-placeholder { /* Mozilla Firefox 4 to 18 */
+    color: @placeholder-color !important;
+}
+:-moz-input-placeholder { /* Mozilla Firefox 19+ */
+    color: @placeholder-color !important;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+    color: @placeholder-color !important;
+}
+
+input[type="text"], input[type="password"] {
+    color: @input-text-color;
+
+    :focus {
+        outline: none; /* removes the default orange border when focus */
+        border: 1px solid #11a8ab;
+    }
+}
+
+.item-radio .item-content {
+    background: transparent;
+    background-color: transparent;
+}
+
+.item-radio input:checked + .radio-content .item-content {
+    background: transparent;
+    background-color: transparent;
+}
+
 .centered-input {
     input {
         text-align: center;
-        color: @input-text-color;
-
-        ::-webkit-input-placeholder { /* WebKit browsers */
-            color: @placeholder-color;
-        }
-        :-moz-input-placeholder { /* Mozilla Firefox 4 to 18 */
-            color: @placeholder-color;
-        }
-        ::-moz-input-placeholder { /* Mozilla Firefox 19+ */
-            color: @placeholder-color;
-        }
-        :-ms-input-placeholder { /* Internet Explorer 10+ */
-            color: @placeholder-color;
-        }
-        :focus {
-            outline: none; /* removes the default orange border when focus */
-            border: 1px solid #11a8ab;
-        }
     }
 }
 
@@ -587,7 +604,7 @@ ion-header-bar.bar.bar-positive {
 }
 
 .full-width-inputs {
-    input {
+    input, select, textarea {
         width: 100%;
     }
 }
@@ -669,7 +686,7 @@ ion-header-bar.bar.bar-positive {
         border-left-width: 0;
         border-right-width: 0;
         //margin: 0;
-        color: @settings-offset-color;
+        color: @text-bright;
         //margin-left: 50px;
 
         a {
@@ -1025,7 +1042,7 @@ ion-header-bar.bar.bar-positive {
 
 .sub-subheader {
     //margin: auto;
-    color: @text-color;
+    color: @text-bright;
     //text-align: center;
     height: 22px;
 }

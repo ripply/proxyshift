@@ -903,11 +903,14 @@ ion-header-bar.bar.bar-positive {
   margin-left: auto;
   margin-right: auto;
 }
+.login-container .forgot-password a {
+  color: rgba(255, 255, 255, 0.4);
+}
 .login-container {
   display: table;
 }
 .login-container p {
-  color: rgba(255, 255, 255, 0.4);
+  color: #ffffff;
 }
 .login-container a {
   color: #746d97;
@@ -917,7 +920,7 @@ ion-header-bar.bar.bar-positive {
 }
 .login-container > div form .button {
   background: #d64541;
-  color: #000000;
+  color: #ffffff;
   margin: 10px auto;
   border-radius: 0;
   border-width: 0;
@@ -955,30 +958,42 @@ ion-header-bar.bar.bar-positive {
 .login-container .login-error-message {
   text-align: center;
 }
-.centered-input input {
-  text-align: center;
-  color: #000000;
-}
-.centered-input input ::-webkit-input-placeholder {
+::-webkit-input-placeholder {
   /* WebKit browsers */
-  color: #ffffff;
+  color: rgba(255, 255, 255, 0.4) !important;
 }
-.centered-input input :-moz-input-placeholder {
+:-moz-input-placeholder {
   /* Mozilla Firefox 4 to 18 */
-  color: #ffffff;
+  color: rgba(255, 255, 255, 0.4) !important;
 }
-.centered-input input ::-moz-input-placeholder {
+:-moz-input-placeholder {
   /* Mozilla Firefox 19+ */
-  color: #ffffff;
+  color: rgba(255, 255, 255, 0.4) !important;
 }
-.centered-input input :-ms-input-placeholder {
+:-ms-input-placeholder {
   /* Internet Explorer 10+ */
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+input[type="text"],
+input[type="password"] {
   color: #ffffff;
 }
-.centered-input input :focus {
+input[type="text"] :focus,
+input[type="password"] :focus {
   outline: none;
   /* removes the default orange border when focus */
   border: 1px solid #11a8ab;
+}
+.item-radio .item-content {
+  background: transparent;
+  background-color: transparent;
+}
+.item-radio input:checked + .radio-content .item-content {
+  background: transparent;
+  background-color: transparent;
+}
+.centered-input input {
+  text-align: center;
 }
 .input-label {
   color: #000000;
@@ -1224,7 +1239,9 @@ ion-header-bar.bar.bar-positive {
   margin-right: auto;
   text-align: center;
 }
-.full-width-inputs input {
+.full-width-inputs input,
+.full-width-inputs select,
+.full-width-inputs textarea {
   width: 100%;
 }
 #settings-page .bar-header {
@@ -1284,7 +1301,7 @@ ion-header-bar.bar.bar-positive {
   border-bottom-width: 0px;
   border-left-width: 0;
   border-right-width: 0;
-  color: rgba(255, 255, 255, 0.4);
+  color: #ffffff;
 }
 .list .item a,
 .list .card a {
@@ -1541,7 +1558,7 @@ ion-header-bar.bar.bar-positive {
   padding-bottom: 0;
 }
 .sub-subheader {
-  color: #000000;
+  color: #ffffff;
   height: 22px;
 }
 .create-shift-form-visible {

@@ -549,11 +549,13 @@ var Schema = {
             onUpdate: cascade,
             onDelete: cascade
         },
+        /*
         title: {
             type: string,
             maxlen: 30,
             nullable: false
         },
+        */
         description: {
             type: string,
             maxlen: 256
