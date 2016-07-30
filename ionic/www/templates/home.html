@@ -1,4 +1,43 @@
 <ion-view view-title="Open shifts" hide-back-button="true">
+    <div class="row">
+        <div class="col welcome">
+            <div>WELCOME</div>
+            <div class="welcome"><strong>{{userinfo.firstname}}</strong></div>
+        </div>
+    </div>
+    <div>
+        <div class='square-box'>
+            <div class='square-content'>
+                <div class="square-content-icon">
+                    <span><i class="icon ion-android-contact"></i></span>
+                </div>
+                <div class="square-content-footer">
+                    <span>My Profile</span>
+                </div>
+            </div>
+        </div>
+        <div class='square-box'>
+            <a class='square-content' href="#{{states.SETTINGS_URL}}">
+                <div class="square-content-icon">
+                    <span><i class="icon ion-aperture"></i></span>
+                </div>
+                <div class="square-content-footer">
+                    <span>Settings</span>
+                </div>
+            </a>
+        </div>
+    </div>
+    <!--
+    <div>
+        <div class='square-box'>
+            <div class='square-content'><div><span>I'm a responsive CSS square with centered content!</span></div></div>
+        </div>
+        <div class='square-box'>
+            <div class='square-content'><div><span>I'm a responsive CSS square with centered content!</span></div></div>
+        </div>
+    </div>
+    -->
+    <!--
     <ion-content class="">
         <ion-list>
             <ion-item nav-clear menu-close href="#{{states.SETTINGS_URL}}">
@@ -12,4 +51,5 @@
             </ion-item>
         </ion-list>
     </ion-content>
+    -->
 </ion-view>

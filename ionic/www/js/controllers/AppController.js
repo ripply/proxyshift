@@ -6,6 +6,7 @@ angular.module('scheduling-app.controllers')
         '$timeout',
         '$rootScope',
         '$state',
+        'UserInfoService',
         'CreateShiftService',
         'STATES',
         'GENERAL_EVENTS',
@@ -14,6 +15,7 @@ angular.module('scheduling-app.controllers')
                  $timeout,
                  $rootScope,
                  $state,
+                 UserInfoService,
                  CreateShiftService,
                  STATES,
                  GENERAL_EVENTS) {

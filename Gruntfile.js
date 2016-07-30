@@ -154,6 +154,16 @@ module.exports = function(grunt) {
                 ],
                 dest: 'static/privacy-policy.html'
             },
+            'mobile.privacypolicy': {
+                src: [
+                    'static/partials/ionic/ion.privacypolicy.header.html',
+                    'static/partials/ionic/ion.content.header.html',
+                    'static/partials/privacypolicy.body.html',
+                    'static/partials/ionic/ion.content.footer.html',
+                    'static/partials/ionic/ion.view.footer.html'
+                ],
+                dest: 'ionic/www/templates/settings/privacy-policy.html'
+            },
             termsofservice: {
                 src: [
                     'static/partials/main.header.html',
@@ -165,6 +175,16 @@ module.exports = function(grunt) {
                     'static/partials/main.end.html'
                 ],
                 dest: 'static/terms-of-service.html'
+            },
+            'mobile.termsofservice': {
+                src: [
+                    'static/partials/ionic/ion.tos.header.html',
+                    'static/partials/ionic/ion.content.header.html',
+                    'static/partials/tos.body.html',
+                    'static/partials/ionic/ion.content.footer.html',
+                    'static/partials/ionic/ion.view.footer.html'
+                ],
+                dest: 'ionic/www/templates/settings/terms-of-service.html'
             },
             handlebarsMain : {
                 src: [

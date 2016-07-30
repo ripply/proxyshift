@@ -124,6 +124,8 @@ var config_data = {
         'SHIFT_REQUEST_WHO': 'app.newshift.who',
         'SHIFT_REQUEST_REVIEW': 'app.newshift.review',
         'SETTINGS': 'settings.user',
+        'PRIVACYPOLICY': 'settings.privacypolicy',
+        'TOS': 'settings.tos',
         'GROUPSETTINGS': 'settings.group',
         'GROUPMEMBERS': 'settings.group.members',
         'SENDINVITE': 'settings.group.invite',

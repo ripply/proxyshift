@@ -5045,6 +5045,45 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
   $templateCache.put('templates/home.html',
     "<ion-view view-title=\"Open shifts\" hide-back-button=\"true\">\n" +
+    "    <div class=\"row\">\n" +
+    "        <div class=\"col welcome\">\n" +
+    "            <div>WELCOME</div>\n" +
+    "            <div class=\"welcome\"><strong>{{userinfo.firstname}}</strong></div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "    <div>\n" +
+    "        <div class='square-box'>\n" +
+    "            <div class='square-content'>\n" +
+    "                <div class=\"square-content-icon\">\n" +
+    "                    <span><i class=\"icon ion-android-contact\"></i></span>\n" +
+    "                </div>\n" +
+    "                <div class=\"square-content-footer\">\n" +
+    "                    <span>My Profile</span>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "        <div class='square-box'>\n" +
+    "            <a class='square-content' href=\"#{{states.SETTINGS_URL}}\">\n" +
+    "                <div class=\"square-content-icon\">\n" +
+    "                    <span><i class=\"icon ion-aperture\"></i></span>\n" +
+    "                </div>\n" +
+    "                <div class=\"square-content-footer\">\n" +
+    "                    <span>Settings</span>\n" +
+    "                </div>\n" +
+    "            </a>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "    <!--\n" +
+    "    <div>\n" +
+    "        <div class='square-box'>\n" +
+    "            <div class='square-content'><div><span>I'm a responsive CSS square with centered content!</span></div></div>\n" +
+    "        </div>\n" +
+    "        <div class='square-box'>\n" +
+    "            <div class='square-content'><div><span>I'm a responsive CSS square with centered content!</span></div></div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "    -->\n" +
+    "    <!--\n" +
     "    <ion-content class=\"\">\n" +
     "        <ion-list>\n" +
     "            <ion-item nav-clear menu-close href=\"#{{states.SETTINGS_URL}}\">\n" +
@@ -5058,6 +5097,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "            </ion-item>\n" +
     "        </ion-list>\n" +
     "    </ion-content>\n" +
+    "    -->\n" +
     "</ion-view>\n"
   );
 
@@ -6248,6 +6288,441 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
   );
 
 
+  $templateCache.put('templates/settings/privacy-policy.html',
+    "<ion-view view-title=\"Privacy Policy\">\n" +
+    "\n" +
+    "<ion-content>\n" +
+    "\n" +
+    "<div id=\"tf-contact\">\n" +
+    "    <div class=\"container\">\n" +
+    "\n" +
+    "        <div class=\"row\">\n" +
+    "            <div class=\"col-md-8 col-md-offset-2\">\n" +
+    "                <div id=\"ppHeader\">\n" +
+    "                    Privacy Policy\n" +
+    "                </div>\n" +
+    "                <div id=\"ppBody\">\n" +
+    "                    <div class=\"ppConsistencies\">\n" +
+    "                        <div class=\"col-2\">\n" +
+    "                            <div class=\"quick-links text-center\">\n" +
+    "                                Information Collection\n" +
+    "                            </div>\n" +
+    "                        </div>\n" +
+    "                        <div class=\"col-2\">\n" +
+    "                            <div class=\"quick-links text-center\">\n" +
+    "                                Information Usage\n" +
+    "                            </div>\n" +
+    "                        </div>\n" +
+    "                        <div class=\"col-2\">\n" +
+    "                            <div class=\"quick-links text-center\">\n" +
+    "                                Information Protection\n" +
+    "                            </div>\n" +
+    "                        </div>\n" +
+    "                        <div class=\"col-2\">\n" +
+    "                            <div class=\"quick-links text-center\">\n" +
+    "                                Cookie Usage\n" +
+    "                            </div>\n" +
+    "                        </div>\n" +
+    "                        <div class=\"col-2\">\n" +
+    "                            <div class=\"quick-links text-center\">\n" +
+    "                                3rd Party Disclosure\n" +
+    "                            </div>\n" +
+    "                        </div>\n" +
+    "                        <div class=\"col-2\">\n" +
+    "                            <div class=\"quick-links text-center\">\n" +
+    "                                3rd Party Links\n" +
+    "                            </div>\n" +
+    "                        </div>\n" +
+    "                        <div class=\"col-2\"></div>\n" +
+    "                    </div>\n" +
+    "                    <div style=\"clear:both;height:10px;\"></div>\n" +
+    "                    <div class=\"ppConsistencies\">\n" +
+    "                        <div class=\"col-2\">\n" +
+    "                            <div class=\"col-12 quick-links2 gen-text-center\">\n" +
+    "                                Google Analytics\n" +
+    "                            </div>\n" +
+    "                        </div>\n" +
+    "                        <div class=\"col-2\">\n" +
+    "                            <div class=\"col-12 quick-links2 gen-text-center\">\n" +
+    "                                Fair Information Practices\n" +
+    "                                <div class=\"col-8 gen-text-left gen-xs-text-center\" style=\"font-size:12px;position:relative;left:20px;\">\n" +
+    "                                    Fair information\n" +
+    "                                    <br /> Practices\n" +
+    "                                </div>\n" +
+    "                            </div>\n" +
+    "                        </div>\n" +
+    "                        <div class=\"col-2\">\n" +
+    "                            <div class=\"col-12 quick-links2 gen-text-center coppa-pad\">\n" +
+    "                                COPPA\n" +
+    "                            </div>\n" +
+    "                        </div>\n" +
+    "                        <div class=\"col-2\">\n" +
+    "                            <div class=\"col-12 quick-links2 quick4 gen-text-center caloppa-pad\">\n" +
+    "                                CalOPPA\n" +
+    "                            </div>\n" +
+    "                        </div>\n" +
+    "                        <div class=\"col-2\">\n" +
+    "                            <div class=\"quick-links2 gen-text-center\">\n" +
+    "                                Our Contact Information\n" +
+    "                                <br />\n" +
+    "                            </div>\n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
+    "                    <div style=\"clear:both;height:10px;\"></div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        This privacy policy has been compiled to better serve those who are concerned with how their 'Personally Identifiable Information' (PII) is being used online. PII, as described in US privacy law and information security, is information that can be used on its own or with other information to identify, contact, or locate a single person, or to identify an individual in context. Please read our privacy policy carefully to get a clear understanding of how we collect, use, protect or otherwise handle your Personally Identifiable Information in accordance with our website.\n" +
+    "                        <br />\n" +
+    "                    </div>\n" +
+    "                    <span id=\"infoCo\"></span>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"grayText\">\n" +
+    "                        <strong>What personal information do we collect from the people that visit our blog, website or app?</strong>\n" +
+    "                    </div>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        We do not collect information from visitors of our site.\n" +
+    "                    </div>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"grayText\">\n" +
+    "                        <strong>When do we collect information?</strong>\n" +
+    "                    </div>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        We collect information from you when you register on our site or enter information on our site.\n" +
+    "                    </div>\n" +
+    "                    <br />\n" +
+    "                    <span id=\"infoUs\"></span>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"grayText\">\n" +
+    "                        <strong>How do we use your information? </strong>\n" +
+    "                    </div>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        We may use the information we collect from you when you register, sign up for our newsletter, respond to a survey or marketing communication, surf the website, or use certain other site features in the following ways:\n" +
+    "                        <br />\n" +
+    "                        <br />\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n" +
+    "                        <strong>•</strong> To personalize your experience and to allow us to deliver the type of content and product offerings in which you are most interested.\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n" +
+    "                        <strong>•</strong> To improve our website in order to better serve you.\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n" +
+    "                        <strong>•</strong> To allow us to better service you in responding to your customer service requests.\n" +
+    "                    </div>\n" +
+    "                    <span id=\"infoPro\"></span>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"grayText\">\n" +
+    "                        <strong>How do we protect your information?</strong>\n" +
+    "                    </div>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        We do not use vulnerability scanning and/or scanning to PCI standards since we do not collect any credit card information.\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        We only provide articles and information. We never ask for credit card numbers.\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        We use regular Malware Scanning.\n" +
+    "                        <br />\n" +
+    "                        <br />\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        Your personal information is contained behind secured networks and is only accessible by a limited number of persons who have special access rights to such systems, and are required to keep the information confidential. In addition, all sensitive/credit information you supply is encrypted via Secure Socket Layer (SSL) technology.\n" +
+    "                    </div>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        We implement a variety of security measures when a user enters, submits, or accesses their information to maintain the safety of your personal information.\n" +
+    "                    </div>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        All transactions are processed through a gateway provider and are not stored or processed on our servers.\n" +
+    "                    </div>\n" +
+    "                    <span id=\"coUs\"></span>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"grayText\">\n" +
+    "                        <strong>Do we use 'cookies'?</strong>\n" +
+    "                    </div>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        Yes. Cookies are small files that a site or its service provider transfers to your computer's hard drive through your Web browser (if you allow) that enables the site's or service provider's systems to recognize your browser and capture and remember certain information. For instance, we use cookies to help us remember that you are logged in. They are also used to help us understand your preferences based on previous or current site activity, which enables us to provide you with improved services. We also use cookies to help us compile aggregate data about site traffic and site interaction so that we can offer better site experiences and tools in the future.\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        <br />\n" +
+    "                        <strong>We use cookies to:</strong>\n" +
+    "                    </div>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n" +
+    "                        <strong>•</strong> Keep you logged in.\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n" +
+    "                        <strong>•</strong> Understand and save user's preferences for future visits.\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        <br />You can choose to have your computer warn you each time a cookie is being sent, or you can choose to turn off all cookies. You do this through your browser settings. Please note that by disabling cookies you may have issues logging into and using the site. Since each browser is a little different, look at your browser's Help Menu to learn the correct way to modify your cookies.\n" +
+    "                        <br />\n" +
+    "                    </div>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        If you turn cookies off, some features will be disabled. It won't affect the user's experience that make your site experience more efficient and may not function properly.\n" +
+    "                    </div>\n" +
+    "                    <br />\n" +
+    "                    <br />\n" +
+    "                    <span id=\"trDi\"></span>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"grayText\">\n" +
+    "                        <strong>Third-party disclosure</strong>\n" +
+    "                    </div>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        We do not sell, trade, or otherwise transfer to outside parties your Personally Identifiable Information.\n" +
+    "                    </div>\n" +
+    "                    <span id=\"trLi\"></span>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"grayText\">\n" +
+    "                        <strong>Third-party links</strong>\n" +
+    "                    </div>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        We do not include or offer third-party products or services on our website.\n" +
+    "                    </div>\n" +
+    "                    <span id=\"gooAd\"></span>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"blueText\">\n" +
+    "                        <strong>Google</strong>\n" +
+    "                    </div>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        Google's Analytics' requirements can be summed up by Google's Analytics Principles. They are put in place to provide a positive experience for users. https://support.google.com/analytics#topic=3544906\n" +
+    "                        <br />\n" +
+    "                        <br />\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        <br />\n" +
+    "                        <strong>We have implemented the following:</strong>\n" +
+    "                    </div>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n" +
+    "                        <strong>•</strong> Demographics and Interests Reporting\n" +
+    "                    </div>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        We, along with third-party vendors such as Google use first-party cookies (such as the Google Analytics cookies) and third-party cookies (such as the DoubleClick cookie) or other third-party identifiers together to compile data regarding user interactions with ad impressions and other ad service functions as they relate to our website.\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        <br />\n" +
+    "                        <strong>Opting out:</strong><br />\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        <br />\n" +
+    "                        Users can set preferences for how Google advertises to you using the Google Ad Settings page. Alternatively, you can opt out by visiting the Network Advertising Initiative Opt Out page or by using the Google Analytics Opt Out Browser add on.\n" +
+    "                    </div>\n" +
+    "                    <span id=\"calOppa\"></span><br />\n" +
+    "                    <div class=\"blueText\">\n" +
+    "                        <strong>California Online Privacy Protection Act</strong>\n" +
+    "                    </div>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        CalOPPA is the first state law in the nation to require commercial websites and online services to post a privacy policy. The law's reach stretches well beyond California to require any person or company in the United States (and conceivably the world) that operates websites collecting Personally Identifiable Information from California consumers to post a conspicuous privacy policy on its website stating exactly the information being collected and those individuals or companies with whom it is being shared. - See more at: http://consumercal.org/california-online-privacy-protection-act-caloppa/#sthash.0FdRbT51.dpuf\n" +
+    "                        <br />\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        <br />\n" +
+    "                        <strong>According to CalOPPA, we agree to the following:</strong>\n" +
+    "                        <br />\n" +
+    "                    </div>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        Users can visit our site anonymously.\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        Once this privacy policy is created, we will add a link to it on our home page or as a minimum, on the first significant page after entering our website.\n" +
+    "                        <br />\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        Our Privacy Policy link includes the word 'Privacy' and can be easily be found on the page specified above.\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        <br />You will be notified of any Privacy Policy changes:\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n" +
+    "                        <strong>•</strong> On our Privacy Policy Page\n" +
+    "                        <br />\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        Can change your personal information:\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n" +
+    "                        <strong>•</strong> By logging in to your account\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        <br />\n" +
+    "                        <strong>How does our site handle Do Not Track signals?</strong>\n" +
+    "                        <br />\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        We honor Do Not Track signals and Do Not Track, plant cookies, or use advertising when a Do Not Track (DNT) browser mechanism is in place.\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        <br />\n" +
+    "                        <strong>Does our site allow third-party behavioral tracking?</strong>\n" +
+    "                        <br />\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        It's also important to note that we do not allow third-party behavioral tracking\n" +
+    "                    </div><span id=\"coppAct\"></span><br />\n" +
+    "                    <div class=\"blueText\">\n" +
+    "                        <strong>COPPA (Children Online Privacy Protection Act)</strong>\n" +
+    "                    </div><br />\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        When it comes to the collection of personal information from children under the age of 13 years old, the Children's Online Privacy Protection Act (COPPA) puts parents in control. The Federal Trade Commission, United States' consumer protection agency, enforces the COPPA Rule, which spells out what operators of websites and online services must do to protect children's privacy and safety online.\n" +
+    "                        <br />\n" +
+    "                        <br />\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        We do not specifically market to children under the age of 13 years old.\n" +
+    "                    </div><span id=\"ftcFip\"></span><br />\n" +
+    "                    <div class=\"blueText\">\n" +
+    "                        <strong>Fair Information Practices</strong>\n" +
+    "                    </div><br />\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        The Fair Information Practices Principles form the backbone of privacy law in the United States and the concepts they include have played a significant role in the development of data protection laws around the globe. Understanding the Fair Information Practice Principles and how they should be implemented is critical to comply with the various privacy laws that protect personal information.\n" +
+    "                        <br />\n" +
+    "                        <br />\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        <strong>In order to be in line with Fair Information Practices we will take the following responsive action, should a data breach occur:</strong>\n" +
+    "                    </div>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        We will notify you via email\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n" +
+    "                        <strong>•</strong> Within 1 business day\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        We will notify the users via in-site notification\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n" +
+    "                        <strong>•</strong> Within 1 business day\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        <br />We also agree to the Individual Redress Principle which requires that individuals have the right to legally pursue enforceable rights against data collectors and processors who fail to adhere to the law. This principle requires not only that individuals have enforceable rights against data users, but also that individuals have recourse to courts or government agencies to investigate and/or prosecute non-compliance by data processors.\n" +
+    "                    </div><span id=\"canSpam\"></span><br />\n" +
+    "                    <div class=\"blueText\">\n" +
+    "                        <strong>CAN SPAM Act</strong>\n" +
+    "                    </div><br />\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        The CAN-SPAM Act is a law that sets the rules for commercial email, establishes requirements for commercial messages, gives recipients the right to have emails stopped from being sent to them, and spells out tough penalties for violations.\n" +
+    "                        <br />\n" +
+    "                        <br />\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        <strong>We collect your email address in order to:</strong>\n" +
+    "                    </div>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n" +
+    "                        <strong>•</strong> Send information, respond to inquiries, and/or other requests or questions\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n" +
+    "                        <strong>•</strong> Process orders and to send information and updates pertaining to orders.\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n" +
+    "                        <strong>•</strong> Send you additional information related to your product and/or service\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        <br />\n" +
+    "                        <strong>To be in accordance with CANSPAM, we agree to the following:</strong>\n" +
+    "                        <br />\n" +
+    "                    </div>\n" +
+    "                    <br />\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n" +
+    "                        <strong>•</strong> Not use false or misleading subjects or email addresses.\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n" +
+    "                        <strong>•</strong> Identify the message as an advertisement in some reasonable way.\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n" +
+    "                        <strong>•</strong> Include the physical address of our business or site headquarters.\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n" +
+    "                        <strong>•</strong> Monitor third-party email marketing services for compliance, if one is used.\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n" +
+    "                        <strong>•</strong> Honor opt-out/unsubscribe requests quickly.\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n" +
+    "                        <strong>•</strong> Allow users to unsubscribe by using the link at the bottom of each email.\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        <strong><br />If at any time you would like to unsubscribe from receiving future emails, you can email us at</strong>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\"><br />\n" +
+    "                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n" +
+    "                        <strong>•</strong> Follow the instructions at the bottom of each email and we will promptly remove you from <strong>ALL</strong> correspondence.<br /><span id=\"ourCon\"></span><br />\n" +
+    "                    </div>\n" +
+    "                    <div class=\"blueText\">\n" +
+    "                        <strong>Contacting Us</strong>\n" +
+    "                    </div><br />\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        If there are any questions regarding this privacy policy, you may contact us using the information below.\n" +
+    "                        <br />\n" +
+    "                        <br />\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        www.Proxyshift.com\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        Available Upon Request\n" +
+    "                    </div>Chicago, IL 60602\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        USA\n" +
+    "                    </div>\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        Support@Proxyshift.com\n" +
+    "                    </div>\n" +
+    "                    <br />\n" +
+    "                    <br />\n" +
+    "                    <div class=\"blueText\">\n" +
+    "                        <strong>Change log</strong>\n" +
+    "                    </div><br />\n" +
+    "                    <div class=\"innerText\">\n" +
+    "                        7-1-16: Privacy Policy Created\n" +
+    "                        <br />\n" +
+    "                        <br />\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</div>\n" +
+    "\n" +
+    "</ion-content>\n" +
+    "\n" +
+    "</ion-view>\n"
+  );
+
+
   $templateCache.put('templates/settings/settings.html',
     "<ion-pane id=\"settings-page\">\n" +
     "    <ion-nav-bar>\n" +
@@ -6267,6 +6742,244 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "<ion-pane>\n" +
     "    <ion-nav-view name=\"groupContent\"></ion-nav-view>\n" +
     "</ion-pane>\n"
+  );
+
+
+  $templateCache.put('templates/settings/terms-of-service.html',
+    "<ion-view view-title=\"TOS\">\n" +
+    "\n" +
+    "<ion-content>\n" +
+    "\n" +
+    "<div id=\"tf-contact\">\n" +
+    "    <div class=\"container\">\n" +
+    "\n" +
+    "        <div class=\"row\">\n" +
+    "            <div class=\"col-md-8 col-md-offset-2\">\n" +
+    "                <p>\n" +
+    "                    <strong>Terms of Service:</strong>\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    The following terms and conditions govern all use of the ProxyShift.com website and all content, services, and products available at or through the\n" +
+    "                    website, including, but not limited to, \"Proxy Shift\". Our Services are offered subject to your acceptance without modification of all of the terms and\n" +
+    "                    conditions contained herein and all other operating rules, policies (including, without limitation,    <a href=\"/privacy-policy.html\"><u>Proxy Shift’s Privacy Policy</u></a>) and procedures that may be published from time to time by Proxy\n" +
+    "                    Shift (collectively, the “Agreement”). You agree that we may automatically upgrade our Services, and these terms will apply to any upgrades. If you reside\n" +
+    "                    in the United States, your agreement is with Proxy Shift (US) (each, “Proxy Shift” or “we”).\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    Please read this Agreement carefully before accessing or using our Services. By accessing or using any part of our services, you agree to become bound by\n" +
+    "                    the terms and conditions of this agreement. If you do not agree to all the terms and conditions of this agreement, then you may not access or use any of\n" +
+    "                    our services. If these terms and conditions are considered an offer by Proxy Shift, acceptance is expressly limited to these terms.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    Our Services are not directed to children younger than 13, and access and use of our Services is only offered to users 13 years of age or older. If you are\n" +
+    "                    under 13 years old, please do not register to use our Services. Any person who registers as a user or provides their personal information to our Services\n" +
+    "                    represents that they are 13 years of age or older.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    Use of our Services requires a ProxyShift.com account. You agree to provide us with complete and accurate information when you register for an account. You\n" +
+    "                    will be solely responsible and liable for any activity that occurs under your username. You are responsible for keeping your password secure.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    1. ProxyShift.com.\n" +
+    "                </p>\n" +
+    "                <ul>\n" +
+    "                    <li>\n" +
+    "                        <p>\n" +
+    "                            <strong>Your Proxyshift.com Account.</strong>\n" +
+    "                            If you create an account Proxyshift.com, you are responsible for maintaining the security of your account and you are fully responsible for all\n" +
+    "                            activities that occur under the account and any other actions taken in connection with the account. You must immediately notify Proxy Shift of any\n" +
+    "                            unauthorized uses of your account or any other breaches of security. Proxy Shift will not be liable for any acts or omissions by you, including any\n" +
+    "                            damages of any kind incurred as a result of such acts or omissions.\n" +
+    "                        </p>\n" +
+    "                    </li>\n" +
+    "                    <li>\n" +
+    "                        <p>\n" +
+    "                            <strong>Responsibility of Employers and Employees.</strong>\n" +
+    "                            If you use the application you are entirely responsible for the content of, and any harm resulting from, your Content or your conduct. That is the\n" +
+    "                            case regardless of what form the Content takes, which includes, but is not limited to text, photo, video, audio, or code. By using ProxyShift.com,\n" +
+    "                            you represent and warrant that your Content and conduct do not violate these terms. By creating an account on Proxy Shift you grant Proxy Shift a\n" +
+    "                            world-wide, royalty-free, and non-exclusive license to use your company logo on the website. Without limiting any of those representations or\n" +
+    "                            warranties, Proxy Shift has the right (though not the obligation) to, in Proxy Shift’s sole discretion, (i) refuse or remove any content that, in\n" +
+    "                            Proxy Shift’s reasonable opinion, violates any Proxy Shift policy or is in any way harmful or objectionable, or (ii) terminate or deny access to\n" +
+    "                            and use of Proxyshift.com to any individual or entity for any reason. Proxy Shift will have no obligation to provide a refund of any amounts\n" +
+    "                            previously paid.\n" +
+    "                        </p>\n" +
+    "                    </li>\n" +
+    "                    <li>\n" +
+    "                        <p>\n" +
+    "                            <strong>Web Traffic.</strong>\n" +
+    "                            We use a third party, Google Analytics, (“Google Analytics”), to measure ProxyShift.com’s audience and usage. By visiting Proxyshift.com or using\n" +
+    "                            the application on you agree to assign the traffic relating to your account to Proxy Shift and authorize us to sign a Traffic Assignment Letter on\n" +
+    "                            your behalf for Google Analytics audience measurement reports.\n" +
+    "                        </p>\n" +
+    "                    </li>\n" +
+    "                    <li>\n" +
+    "                        <p>\n" +
+    "                            <strong>HTTPS.</strong>\n" +
+    "                            We use HTTPS on ProxyShift.com by default, including those using custom domains, via <a href=\"https://letsencrypt.org/\"><u>Let’s Encrypt</u></a>.\n" +
+    "                        </p>\n" +
+    "                    </li>\n" +
+    "                    <li>\n" +
+    "                        <p>\n" +
+    "                            <strong>Advertisements.</strong>\n" +
+    "                            Proxy Shift currently does not use any advertisements in the application or website however we reserves the right to display advertisements on the\n" +
+    "                            application and website in the future.\n" +
+    "                        </p>\n" +
+    "                    </li>\n" +
+    "                    <li>\n" +
+    "                        <p>\n" +
+    "                            <strong>Payment and Renewal.</strong>\n" +
+    "                        </p>\n" +
+    "                        <ul>\n" +
+    "                            <li>\n" +
+    "                                <p>\n" +
+    "                                    <strong>General Terms. </strong>\n" +
+    "                                    <br/>\n" +
+    "                                    Optional paid services such as custom integration purchases are available (any such services, an “Upgrade”). By selecting an Upgrade you\n" +
+    "                                    agree to pay Proxy Shift the monthly or annual subscription fees indicated for that service. Payments will be charged on a pre-pay basis on\n" +
+    "                                    the day you sign up for an Upgrade and will cover the use of that service for a monthly or annual subscription period as indicated.\n" +
+    "                                </p>\n" +
+    "                            </li>\n" +
+    "                            <li>\n" +
+    "                                <p>\n" +
+    "                                    <strong>Automatic Renewal.</strong>\n" +
+    "                                </p>\n" +
+    "                            </li>\n" +
+    "                        </ul>\n" +
+    "                    </li>\n" +
+    "                </ul>\n" +
+    "                <p>\n" +
+    "                    Unless you notify Proxy Shift before the end of the applicable subscription period that you want to cancel an Upgrade, your Upgrade subscription will\n" +
+    "                    automatically renew and you authorize us to collect the then-applicable annual or monthly subscription fee for such Upgrade (as well as any taxes) using\n" +
+    "                    any credit card or other payment mechanism we have on record for you. Upgrades can be canceled at any time in the Upgrades section of your website’s\n" +
+    "                    dashboard.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    2. Responsibility of Visitors.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    Proxy Shift has not reviewed, and cannot review, all of the material, including computer software, posted to our Services, and cannot therefore be\n" +
+    "                    responsible for that material’s content, use or effects. By operating our Services, Proxy Shift does not represent or imply that it endorses the material\n" +
+    "                    there posted, or that it believes such material to be accurate, useful, or non-harmful. You are responsible for taking precautions as necessary to protect\n" +
+    "                    yourself and your computer systems from viruses, worms, Trojan horses, and other harmful or destructive content. Our Services may contain technical\n" +
+    "                    inaccuracies, typographical mistakes, and other errors. Proxy Shift disclaims any responsibility for any harm resulting from the use by visitors of our\n" +
+    "                    Services, or from any downloading by those visitors of content there posted.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    3. Copyright Infringement and DMCA Policy.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    As Proxy Shift asks others to respect its intellectual property rights, it respects the intellectual property rights of others. If you believe that\n" +
+    "                    material located on or linked to by ProxyShift.com violates your copyright, you are encouraged to notify Proxy Shift. Proxy Shift will respond to all such\n" +
+    "                    notices, including as required or appropriate by removing the infringing material or disabling all links to the infringing material.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    4. Intellectual Property.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    This Agreement does not transfer from Proxy Shift to you any Proxy Shift or third party intellectual property, and all right, title, and interest in and to\n" +
+    "                    such property will remain (as between the parties) solely with Proxy Shift. Proxy Shift, ProxyShift.com, the ProxyShift.com logo, and all other trademarks,\n" +
+    "                    service marks, graphics and logos used in connection with ProxyShift.com or our Services, are trademarks or registered trademarks of Proxy Shift or Proxy\n" +
+    "                    Shift’s licensors. Other trademarks, service marks, graphics and logos used in connection with our Services may be the trademarks of other third parties.\n" +
+    "                    Your use of our Services grants you no right or license to reproduce or otherwise use any Proxy Shift or third-party trademarks.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    5. Changes.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    We are constantly updating our Services, and that means sometimes we have to change the legal terms under which our Services are offered. If we make\n" +
+    "                    changes that are material, we will let you know by posting on one of our blogs, or by sending you an email or other communication before the changes take\n" +
+    "                    effect. The notice will designate a reasonable period of time after which the new terms will take effect. If you disagree with our changes, then you should\n" +
+    "                    stop using our Services within the designated notice period. Your continued use of our Services will be subject to the new terms. However, any dispute that\n" +
+    "                    arose before the changes shall be governed by the Terms (including the binding individual arbitration clause) that were in place when the dispute arose.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    11. Termination.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    Proxy Shift may terminate your access to all or any part of our Services at any time, with or without cause, with or without notice, effective immediately.\n" +
+    "                    If you wish to terminate this Agreement or your ProxyShift.com account (if you have one), you may simply discontinue using our Services. All provisions of\n" +
+    "                    this Agreement which by their nature should survive termination shall survive termination, including, without limitation, ownership provisions, warranty\n" +
+    "                    disclaimers, indemnity and limitations of liability.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    12. Disclaimer of Warranties.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    Our Services are provided “as is.” Proxy Shift and its suppliers and licensors hereby disclaim all warranties of any kind, express or implied, including,\n" +
+    "                    without limitation, the warranties of merchantability, fitness for a particular purpose and non-infringement. Neither Proxy Shift nor its suppliers and\n" +
+    "                    licensors, makes any warranty that our Services will be error free or that access thereto will be continuous or uninterrupted. You understand that you\n" +
+    "                    download from, or otherwise obtain content or services through, our Services at your own discretion and risk.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    13. Limitation of Liability.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    In no event will Proxy Shift, or its suppliers or licensors, be liable with respect to any subject matter of this Agreement under any contract, negligence,\n" +
+    "                    strict liability or other legal or equitable theory for: (i) any special, incidental or consequential damages; (ii) the cost of procurement for substitute\n" +
+    "                    products or services; (iii) for interruption of use or loss or corruption of data; or (iv) for any amounts that exceed the fees paid by you to Proxy Shift\n" +
+    "                    under this agreement during the twelve (12) month period prior to the cause of action. Proxy Shift shall have no liability for any failure or delay due to\n" +
+    "                    matters beyond their reasonable control. The foregoing shall not apply to the extent prohibited by applicable law.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    14. General Representation and Warranty.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    You represent and warrant that (i) your use of our Services will be in strict accordance with the Proxy Shift Privacy Policy, with this Agreement, and with\n" +
+    "                    all applicable laws and regulations (including without limitation any local laws or regulations in your country, state, city, or other governmental area,\n" +
+    "                    regarding online conduct and acceptable content, and including all applicable laws regarding the transmission of technical data exported from the United\n" +
+    "                    States or the country in which you reside) and (ii) your use of our Services will not infringe or misappropriate the intellectual property rights of any\n" +
+    "                    third party.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    15. US Economic Sanctions.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    You expressly represent and warrant that your use of our Services and or associated services and products is not contrary to applicable U.S. Sanctions.\n" +
+    "                    Such use is prohibited, and Proxy Shift reserve the right to terminate accounts or access of those in the event of a breach of this condition.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    16. Indemnification.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    You agree to indemnify and hold harmless Proxy Shift, its contractors, and its licensors, and their respective directors, officers, employees, and agents\n" +
+    "                    from and against any and all claims and expenses, including attorneys’ fees, arising out of your use of our Services, including but not limited to your\n" +
+    "                    violation of this Agreement.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    17. Translation.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    These Terms of Service were originally written in English (US). We may translate these terms into other languages. In the event of a conflict between a\n" +
+    "                    translated version of these Terms of Service and the English version, the English version will control.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    18. Miscellaneous.\n" +
+    "                </p>\n" +
+    "                <p>\n" +
+    "                    This Agreement constitutes the entire agreement between Proxy Shift and you concerning the subject matter hereof, and they may only be modified by a\n" +
+    "                    written amendment signed by an authorized executive of Proxy Shift, or by the posting by Proxy Shift of a revised version. Except to the extent applicable\n" +
+    "                    law, if any, provides otherwise, this Agreement, any access to or use of our Services will be governed by the laws of the state of California, U.S.A.,\n" +
+    "                    excluding its conflict of law provisions, and the proper venue for any disputes arising out of or relating to any of the same will be the state and federal\n" +
+    "                    courts located in San Francisco County, California. Except for claims for injunctive or equitable relief or claims regarding intellectual property rights\n" +
+    "                    (which may be brought in any competent court without the posting of a bond), any dispute arising under this Agreement shall be finally settled in\n" +
+    "                    accordance with the Comprehensive Arbitration Rules of the Judicial Arbitration and Mediation Service, Inc. (“JAMS”) by three arbitrators appointed in\n" +
+    "                    accordance with such Rules. The arbitration shall take place in San Francisco, California, in the English language and the arbitral decision may be\n" +
+    "                    enforced in any court. The prevailing party in any action or proceeding to enforce this Agreement shall be entitled to costs and attorneys’ fees. If any\n" +
+    "                    part of this Agreement is held invalid or unenforceable, that part will be construed to reflect the parties’ original intent, and the remaining portions\n" +
+    "                    will remain in full force and effect. A waiver by either party of any term or condition of this Agreement or any breach thereof, in any one instance, will\n" +
+    "                    not waive such term or condition or any subsequent breach thereof. You may assign your rights under this Agreement to any party that consents to, and\n" +
+    "                    agrees to be bound by, its terms and conditions; Proxy Shift may assign its rights under this Agreement without condition. This Agreement will be binding\n" +
+    "                    upon and will inure to the benefit of the parties, their successors and permitted assigns.\n" +
+    "                </p>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</div>\n" +
+    "\n" +
+    "</ion-content>\n" +
+    "\n" +
+    "</ion-view>\n"
   );
 
 
@@ -6771,6 +7484,30 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                          item=\"group\"\n" +
     "                          href=\"#{{states.GROUPSETTINGS_URL}}/{{group.id}}/settings\" class=\"item-remove-animate\">\n" +
     "                    {{ group.name }}\n" +
+    "                </ion-item>\n" +
+    "            </div>\n" +
+    "            <div class=\"item item-divider\">\n" +
+    "                More Information\n" +
+    "            </div>\n" +
+    "            <ion-item>\n" +
+    "                Support\n" +
+    "            </ion-item>\n" +
+    "            <ion-item href=\"#{{states.PRIVACYPOLICY_URL}}\">\n" +
+    "                Privacy Policy\n" +
+    "            </ion-item>\n" +
+    "            <ion-item href=\"#{{states.TOS_URL}}\">\n" +
+    "                Terms of Service\n" +
+    "            </ion-item>\n" +
+    "            <ion-item>\n" +
+    "                Licenses\n" +
+    "            </ion-item>\n" +
+    "            <div class=\"item item-divider\">\n" +
+    "                Account Actions\n" +
+    "            </div>\n" +
+    "            <div class=\"item-indent\">\n" +
+    "                <ion-item href=\"#{{states.LOGOUT_URL}}\">\n" +
+    "                    <i class=\"icon ion-log-out\"></i>\n" +
+    "                    Logout\n" +
     "                </ion-item>\n" +
     "            </div>\n" +
     "        </div>\n" +

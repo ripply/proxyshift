@@ -277,6 +277,63 @@ input[type="text"], input[type="password"] {
     background-color: #FF0000 !important;
 }
 
+.welcome {
+    font-size: 150%;
+}
+
+.square-box{
+    float: left;
+    position: relative;
+    width: 50%;
+    overflow: hidden;
+    //background: #4679BD;
+}
+
+.square-box:before{
+    content: "";
+    display: block;
+    padding-top: 100%;
+}
+
+.square-content{
+    position:  absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    color: white;
+}
+
+.square-content .square-content-icon {
+    display: table;
+    width: 100%;
+    height: 80%;
+}
+
+.square-content .square-content-footer {
+    display: table;
+    width: 100%;
+    height: 20%;
+}
+
+@larger-font-size: 6em;
+
+.square-content a {
+    text-decoration: none;
+}
+
+.square-content span {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+    color: white;
+    text-decoration: none;
+
+    .icon {
+        font-size: @larger-font-size;
+    }
+}
+
 @media only screen and (max-width: @width-small) {
 
     .login-container {
@@ -316,6 +373,10 @@ input[type="text"], input[type="password"] {
         width: 98%;
     }
 
+    .square-content span .icon {
+        font-size: @larger-font-size * 1.5;
+    }
+
 }
 
 @media only screen and (min-width: (@width-medium + 1)) and (max-width: @width-big) {
@@ -345,6 +406,10 @@ input[type="text"], input[type="password"] {
                 padding-top: 30px;
             }
         }
+    }
+
+    .square-content span .icon {
+        font-size: @larger-font-size * 1.8;
     }
 
 }
@@ -377,6 +442,10 @@ input[type="text"], input[type="password"] {
         }
     }
 
+    .square-content span .icon {
+        font-size: @larger-font-size * 2.1;
+    }
+
 }
 
 @media only screen and (min-width: (@width-massive + 1)) {
@@ -398,6 +467,10 @@ input[type="text"], input[type="password"] {
 
     .shift-description {
         width: 80%;
+    }
+
+    .square-content span .icon {
+        font-size: @larger-font-size * 3;
     }
 
 }
@@ -1216,3 +1289,26 @@ input[type="text"], input[type="password"] {
     top: 50%;
     transform: translateY(-50%);
 }
+
+// PRIVACY POLICY
+#ppBody
+{
+    font-size:11pt;
+    width:100%;
+    margin:0 auto;
+    text-align:justify;
+}
+
+#ppHeader
+{
+    font-family:verdana;
+    font-size:21pt;
+    width:100%;
+    margin:0 auto;
+}
+
+.ppConsistencies
+{
+    display:none;
+}
+// END PRIVACY POLICY

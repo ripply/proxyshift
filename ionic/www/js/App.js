@@ -563,6 +563,36 @@ angular.module('scheduling-app', [
                     }
                 })
 
+                .state('settings.privacypolicy', {
+                    url: "/privacypolicy",
+                    pageTrack: '/app/settings/privacypolicy',
+                    controller: 'SettingsController',
+                    views: {
+                        'content': {
+                            templateUrl: "templates/settings/privacy-policy.html",
+                            controller: 'SettingsController'
+                        }
+                    },
+                    resolve: {
+                        //TODO: Check /userinfo
+                    }
+                })
+
+                .state('settings.tos', {
+                    url: "/tos",
+                    pageTrack: '/app/settings/tos',
+                    controller: 'SettingsController',
+                    views: {
+                        'content': {
+                            templateUrl: "templates/settings/terms-of-service.html",
+                            controller: 'SettingsController'
+                        }
+                    },
+                    resolve: {
+                        //TODO: Check /userinfo
+                    }
+                })
+
                 .state('settings.group', {
                     url: "/group/:group_id",
                     pageTrack: '/app/settings/group',

@@ -35,6 +35,30 @@
                     {{ group.name }}
                 </ion-item>
             </div>
+            <div class="item item-divider">
+                More Information
+            </div>
+            <ion-item>
+                Support
+            </ion-item>
+            <ion-item href="#{{states.PRIVACYPOLICY_URL}}">
+                Privacy Policy
+            </ion-item>
+            <ion-item href="#{{states.TOS_URL}}">
+                Terms of Service
+            </ion-item>
+            <ion-item>
+                Licenses
+            </ion-item>
+            <div class="item item-divider">
+                Account Actions
+            </div>
+            <div class="item-indent">
+                <ion-item href="#{{states.LOGOUT_URL}}">
+                    <i class="icon ion-log-out"></i>
+                    Logout
+                </ion-item>
+            </div>
         </div>
     </ion-content>
 </ion-view>
