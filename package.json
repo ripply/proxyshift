@@ -59,7 +59,8 @@
     "underscore": "~1.7.0",
     "wascally": "^0.2.10",
     "wns": "^0.5.3",
-    "xoauth2": "^1.1.0"
+    "xoauth2": "^1.1.0",
+    "zlib": "^1.0.5"
   },
   "devDependencies": {
     "bower": "~1.2.8",
