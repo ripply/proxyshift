@@ -9,7 +9,6 @@ var middleware = require('./misc/middleware'),
     error = require('../controllers/controllerCommon').error,
     appLogic = require('../app'),
     slack = require('../app/slack'),
-    zlib = require('zlib'),
     passport = require('passport');
 
 require('./../app/configure_passport');
@@ -123,6 +122,7 @@ module.exports = function(app, settings){
         res.send(sitemap);
     });
 
+    /*
     app.get('/sitemap.xml.gz', function(req, res) {
         // get the dynamically generated XML sitemap
         var sitemap = generateXmlSitemap();
@@ -134,6 +134,7 @@ module.exports = function(app, settings){
             res.send(data);
         });
     });
+    */
 
     function generateXmlSitemap() {
         // this is the source of the URLs on your site, in this case we use a simple array, actually it could come from the database
