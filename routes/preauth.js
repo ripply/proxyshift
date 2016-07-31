@@ -9,6 +9,7 @@ var middleware = require('./misc/middleware'),
     error = require('../controllers/controllerCommon').error,
     appLogic = require('../app'),
     slack = require('../app/slack'),
+    zlib = require('zlib'),
     passport = require('passport');
 
 require('./../app/configure_passport');
@@ -115,6 +116,48 @@ module.exports = function(app, settings){
             }
         }
     });
+
+    app.get('/sitemap.xml', function(req, res) {
+        var sitemap = generateXmlSitemap(); // get the dynamically generated XML sitemap
+        res.header('Content-Type', 'text/xml');
+        res.send(sitemap);
+    });
+
+    app.get('/sitemap.xml.gz', function(req, res) {
+        // get the dynamically generated XML sitemap
+        var sitemap = generateXmlSitemap();
+        // Set the appropriate HTTP headers to help old and new browsers equally to how to handle the output
+        res.header('Content-Type: application/x-gzip');
+        res.header('Content-Encoding: gzip');
+        res.header('Content-Disposition: attachment; filename="sitemap.xml.gz"');
+        zlib.gzip(new Buffer(sitemap, 'utf8'), function(error, data) {
+            res.send(data);
+        });
+    });
+
+    function generateXmlSitemap() {
+        // this is the source of the URLs on your site, in this case we use a simple array, actually it could come from the database
+        var urls = {
+            '': 1.0,
+            'mobile': 0.9,
+            'privacy-policy.html': 0.5,
+            'terms-of-service.html': 0.5
+        };
+        // the root of your website - the protocol and the domain name with a trailing slash
+        var root_path = 'https://www.proxyshift.com/';
+        // XML sitemap generation starts here
+        var freq = 'weekly';
+        var xml = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+        _.each(urls, function(priority, url) {
+            xml += '<url>';
+            xml += '<loc>'+ root_path + url + '</loc>';
+            xml += '<changefreq>'+ freq +'</changefreq>';
+            xml += '<priority>'+ priority +'</priority>';
+            xml += '</url>';
+        });
+        xml += '</urlset>';
+        return xml;
+    }
 
     app.get('/acceptinvitation', acceptGroupInvite);
     app.post('/acceptinvitation', acceptGroupInvite);
