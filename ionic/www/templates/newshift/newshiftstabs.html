@@ -1,18 +1,33 @@
 <div id="app-header-tab" class="tabs-striped tabs-top tabs-background-positive tabs-color-light">
     <div class="tabs" style="top: 0">
-        <a class="tab-item" ui-sref="{{states.SHIFT_REQUEST}}($rootScope.newShiftTabsStateParams)" ng-class="{'active': currentState == states.SHIFT_REQUEST}">
+        <a class="tab-item"
+           ng-disabled="!tabState.WHEN"
+           ui-sref="{{states.SHIFT_REQUEST}}($rootScope.newShiftTabsStateParams)"
+           ng-class="{'active': currentState == states.SHIFT_REQUEST}">
             WHEN
         </a>
-        <a class="tab-item" ui-sref="{{states.SHIFT_REQUEST_WHEN}}($rootScope.newShiftTabsStateParams)" ng-class="{'active': currentState == states.SHIFT_REQUEST_WHEN}">
+        <a class="tab-item"
+           ng-disabled="!tabState.DETAILS"
+           ui-sref="{{states.SHIFT_REQUEST_WHEN}}($rootScope.newShiftTabsStateParams)"
+           ng-class="{'active': currentState == states.SHIFT_REQUEST_WHEN}">
             DETAILS
         </a>
-        <a class="tab-item" ui-sref="{{states.SHIFT_REQUEST_WHERE}}($rootScope.newShiftTabsStateParams)" ng-class="{'active': currentState == states.SHIFT_REQUEST_WHERE}">
+        <a class="tab-item"
+           ng-disabled="!tabState.WHERE"
+           ui-sref="{{states.SHIFT_REQUEST_WHERE}}($rootScope.newShiftTabsStateParams)"
+           ng-class="{'active': currentState == states.SHIFT_REQUEST_WHERE}">
             WHERE
         </a>
-        <a class="tab-item" ui-sref="{{states.SHIFT_REQUEST_WHO}}($rootScope.newShiftTabsStateParams)" ng-class="{'active': currentState == states.SHIFT_REQUEST_WHO}">
+        <a class="tab-item"
+           ng-disabled="!tabState.WHO"
+           ui-sref="{{states.SHIFT_REQUEST_WHO}}($rootScope.newShiftTabsStateParams)"
+           ng-class="{'active': currentState == states.SHIFT_REQUEST_WHO}">
             WHO
         </a>
-        <a class="tab-item" ui-sref="{{states.SHIFT_REQUEST_REVIEW}}($rootScope.newShiftTabsStateParams)" ng-class="{'active': currentState == states.SHIFT_REQUEST_REVIEW}">
+        <a class="tab-item"
+           ng-disabled="!tabState.REVIEW"
+           ui-sref="{{states.SHIFT_REQUEST_REVIEW}}($rootScope.newShiftTabsStateParams)"
+           ng-class="{'active': currentState == states.SHIFT_REQUEST_REVIEW}">
             REVIEW
         </a>
     </div>

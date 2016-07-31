@@ -6,6 +6,7 @@ angular.module('scheduling-app.controllers')
         '$controller',
         '$q',
         '$state',
+        'GENERAL_EVENTS',
         'ResourceService',
         function($scope,
                  $rootScope,
@@ -13,6 +14,7 @@ angular.module('scheduling-app.controllers')
                  $controller,
                  $q,
                  $state,
+                 GENERAL_EVENTS,
                  ResourceService
         ) {
             $controller('BaseNewShiftController', {$scope: $scope, $stateParams: $stateParams});
@@ -27,6 +29,8 @@ angular.module('scheduling-app.controllers')
                         // TODO: We need this information
                     }
                 );
+
+                $rootScope.$emit(GENERAL_EVENTS.NEWSHIFTS.WHO);
             };
 
             $scope.other = {};

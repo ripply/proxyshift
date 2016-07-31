@@ -4,16 +4,22 @@ angular.module('scheduling-app.controllers')
         '$rootScope',
         '$stateParams',
         '$controller',
+        'GENERAL_EVENTS',
         function($scope,
                  $rootScope,
                  $stateParams,
-                 $controller
+                 $controller,
+                 GENERAL_EVENTS
         ) {
             $controller('BaseNewShiftController', {$scope: $scope, $stateParams: $stateParams});
             $scope.state = $stateParams;
             $scope.when = {};
 
             var requiredWhenData = ['starttime', 'endtime', 'length', 'employees'];
+
+            $scope.beforeEnter = function() {
+                $rootScope.$emit(GENERAL_EVENTS.NEWSHIFTS.DETAILS);
+            };
 
             function guessStartTime() {
                 var now = moment();

@@ -77,6 +77,13 @@ var config_data = {
         'MODAL': {
             'REQUESTED': 'events:modal:requested'
         },
+        'NEWSHIFTS': {
+            'RESET': 'events:newshift:reset',
+            'DETAILS': 'events:newshift:details',
+            'WHERE': 'events:newshift:where',
+            'WHO': 'events:newshift:who',
+            'REVIEW': 'events:newshift:review'
+        },
         'CALENDAR': {
             // events for controlling calendar from outside calendar scope
             'NEXTMONTH': 'events:calendar:nextmonthe',

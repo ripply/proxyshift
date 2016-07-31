@@ -5844,19 +5844,34 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
   $templateCache.put('templates/newshift/newshiftstabs.html',
     "<div id=\"app-header-tab\" class=\"tabs-striped tabs-top tabs-background-positive tabs-color-light\">\n" +
     "    <div class=\"tabs\" style=\"top: 0\">\n" +
-    "        <a class=\"tab-item\" ui-sref=\"{{states.SHIFT_REQUEST}}($rootScope.newShiftTabsStateParams)\" ng-class=\"{'active': currentState == states.SHIFT_REQUEST}\">\n" +
+    "        <a class=\"tab-item\"\n" +
+    "           ng-disabled=\"!tabState.WHEN\"\n" +
+    "           ui-sref=\"{{states.SHIFT_REQUEST}}($rootScope.newShiftTabsStateParams)\"\n" +
+    "           ng-class=\"{'active': currentState == states.SHIFT_REQUEST}\">\n" +
     "            WHEN\n" +
     "        </a>\n" +
-    "        <a class=\"tab-item\" ui-sref=\"{{states.SHIFT_REQUEST_WHEN}}($rootScope.newShiftTabsStateParams)\" ng-class=\"{'active': currentState == states.SHIFT_REQUEST_WHEN}\">\n" +
+    "        <a class=\"tab-item\"\n" +
+    "           ng-disabled=\"!tabState.DETAILS\"\n" +
+    "           ui-sref=\"{{states.SHIFT_REQUEST_WHEN}}($rootScope.newShiftTabsStateParams)\"\n" +
+    "           ng-class=\"{'active': currentState == states.SHIFT_REQUEST_WHEN}\">\n" +
     "            DETAILS\n" +
     "        </a>\n" +
-    "        <a class=\"tab-item\" ui-sref=\"{{states.SHIFT_REQUEST_WHERE}}($rootScope.newShiftTabsStateParams)\" ng-class=\"{'active': currentState == states.SHIFT_REQUEST_WHERE}\">\n" +
+    "        <a class=\"tab-item\"\n" +
+    "           ng-disabled=\"!tabState.WHERE\"\n" +
+    "           ui-sref=\"{{states.SHIFT_REQUEST_WHERE}}($rootScope.newShiftTabsStateParams)\"\n" +
+    "           ng-class=\"{'active': currentState == states.SHIFT_REQUEST_WHERE}\">\n" +
     "            WHERE\n" +
     "        </a>\n" +
-    "        <a class=\"tab-item\" ui-sref=\"{{states.SHIFT_REQUEST_WHO}}($rootScope.newShiftTabsStateParams)\" ng-class=\"{'active': currentState == states.SHIFT_REQUEST_WHO}\">\n" +
+    "        <a class=\"tab-item\"\n" +
+    "           ng-disabled=\"!tabState.WHO\"\n" +
+    "           ui-sref=\"{{states.SHIFT_REQUEST_WHO}}($rootScope.newShiftTabsStateParams)\"\n" +
+    "           ng-class=\"{'active': currentState == states.SHIFT_REQUEST_WHO}\">\n" +
     "            WHO\n" +
     "        </a>\n" +
-    "        <a class=\"tab-item\" ui-sref=\"{{states.SHIFT_REQUEST_REVIEW}}($rootScope.newShiftTabsStateParams)\" ng-class=\"{'active': currentState == states.SHIFT_REQUEST_REVIEW}\">\n" +
+    "        <a class=\"tab-item\"\n" +
+    "           ng-disabled=\"!tabState.REVIEW\"\n" +
+    "           ui-sref=\"{{states.SHIFT_REQUEST_REVIEW}}($rootScope.newShiftTabsStateParams)\"\n" +
+    "           ng-class=\"{'active': currentState == states.SHIFT_REQUEST_REVIEW}\">\n" +
     "            REVIEW\n" +
     "        </a>\n" +
     "    </div>\n" +

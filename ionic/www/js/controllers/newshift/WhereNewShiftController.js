@@ -6,6 +6,7 @@ angular.module('scheduling-app.controllers')
         '$controller',
         '$q',
         '$state',
+        'GENERAL_EVENTS',
         'ResourceService',
         function($scope,
                  $rootScope,
@@ -13,6 +14,7 @@ angular.module('scheduling-app.controllers')
                  $controller,
                  $q,
                  $state,
+                 GENERAL_EVENTS,
                  ResourceService
         ) {
             $controller('BaseNewShiftController', {$scope: $scope, $stateParams: $stateParams});
@@ -21,9 +23,11 @@ angular.module('scheduling-app.controllers')
             $scope.state = $stateParams;
             $scope.when = {};
 
-            var requiredWhenData = ['starttime', 'endtime', 'length', 'employees'];
+            $scope.beforeEnter = function() {
+                $rootScope.$emit(GENERAL_EVENTS.NEWSHIFTS.WHERE);
+            };
 
-            console.log("WATTTTTTTTTTTTTTTTT");
+            var requiredWhenData = ['starttime', 'endtime', 'length', 'employees'];
 
             $scope.get = ResourceService.getLocationsSlice;
             $scope.getSearch = ResourceService.getLocationsSearchSlice;

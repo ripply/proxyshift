@@ -4,15 +4,44 @@ angular.module('scheduling-app.controllers')
         '$rootScope',
         '$stateParams',
         '$controller',
+        'GENERAL_EVENTS',
         'UserInfoService',
         function($scope,
                  $rootScope,
                  $stateParams,
                  $controller,
+                 GENERAL_EVENTS,
                  UserInfoService
         ) {
             $controller('BaseModelController', {$scope: $scope});
             $scope.$rootScope = $rootScope;
+
+            $scope.tabState = {
+                WHEN: true
+            };
+
+            $rootScope.$on(GENERAL_EVENTS.NEWSHIFTS.RESET, function(state) {
+                $scope.tabState = {
+                    WHEN: true
+                };
+            });
+
+            var previousPages = [];
+
+            angular.forEach([
+                'DETAILS',
+                'WHERE',
+                'WHO',
+                'REVIEW'
+            ], function(key) {
+                previousPages.push(key);
+                var pagesBeforeThisOne = previousPages.slice();
+                $rootScope.$on(GENERAL_EVENTS.NEWSHIFTS[key], function(state) {
+                    angular.forEach(pagesBeforeThisOne, function(page) {
+                        $scope.tabState[page] = true;
+                    })
+                });
+            });
 
             $scope.afterEnter = function() {
                 var keyCount = Object.keys($stateParams).length;

@@ -22,6 +22,8 @@ angular.module('scheduling-app.controllers')
             $controller('BaseNewShiftController', {$scope: $scope, $stateParams: $stateParams});
 
             $scope.beforeEnter = function() {
+                $rootScope.$emit(GENERAL_EVENTS.NEWSHIFTS.REVIEW);
+
                 $scope.dates = $scope.decodeDates($stateParams.dates);
                 $scope.when = $scope.decodeWhens($stateParams.when);
                 $scope.where = $scope.decodeWhere($stateParams.where);
@@ -83,6 +85,7 @@ angular.module('scheduling-app.controllers')
                     console.log("SUCCESS");
                     console.log(result);
                     $rootScope.$emit(GENERAL_EVENTS.TOAST, 'info', "You're all set", 'All eligible employees have been notified of your shift request.');
+                    $rootScope.$emit(GENERAL_EVENTS.NEWSHIFTS.RESET);
                     $state.go('app.shifts.open');
                 }, function(err) {
                     console.log("ERR");
