@@ -9920,3 +9920,15 @@ nav#footer p {
     margin-bottom: 30px;
   }
 }
+.row-color {
+  background: #159DEB;
+  color: #fff;
+}
+@media (min-width: 992px) and (max-width: 1199px) {
+  .about-text h1 {
+    font-size: 25px;
+  }
+  .about-text p {
+    font-size: 15px;
+  }
+}
