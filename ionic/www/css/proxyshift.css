@@ -843,6 +843,10 @@ h6,
 .h6 {
   color: #ffffff;
 }
+.button.active,
+.button.activated {
+  box-shadow: none !important;
+}
 .button.button-positive {
   border-color: #ffffff;
   background-color: #ffffff;
@@ -852,6 +856,24 @@ h6,
   border-color: #ffffff;
   background-color: #ffffff;
   color: #159deb;
+}
+.button.button-assertive {
+  background-color: #e74c3c;
+  border-color: #e74c3c !important;
+  color: #ffffff;
+}
+.button.button-assertive.activated {
+  background-color: #e74c3c;
+  border-color: #e74c3c !important;
+  color: #ffffff;
+}
+.button.button-emphasize {
+  background-color: #ff8500;
+  color: #ffffff;
+}
+.button.button-emphasize.activated {
+  background-color: #ff8500;
+  color: #ffffff;
 }
 .scroll-refresher .ionic-refresher-content {
   color: rgba(255, 255, 255, 0.4);
@@ -1002,13 +1024,9 @@ input[type="password"] :focus {
   border-radius: 5px;
 }
 .shiftapplication {
-  background-color: #333333 !important;
-}
-.shiftapplication.shift-approved {
-  background-color: #00FF00 !important;
-}
-.shiftapplication.shift-declined {
-  background-color: #FF0000 !important;
+  border-left-width: 2px !important;
+  border-left-color: #fff !important;
+  border-radius: 0 !important;
 }
 .welcome {
   font-size: 150%;

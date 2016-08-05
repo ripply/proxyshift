@@ -7039,63 +7039,89 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
   $templateCache.put('templates/shiftinfo.html',
     "<ion-view>\n" +
     "    <ion-header-bar align-title=\"left\" class=\"bar-positive\">\n" +
-    "        <h1 class=\"title\">{{shift.title || 'Loading'}}</h1>\n" +
+    "        <h1 class=\"title\">Shift Information</h1>\n" +
     "        <div class=\"buttons\" side=\"right\">\n" +
     "            <button class=\"button button-icon ion-close\" ng-click=\"close()\"></button>\n" +
     "        </div>\n" +
     "    </ion-header-bar>\n" +
     "    <ion-content class=\"has-header\">\n" +
     "        <div ng-if=\"shift\">\n" +
-    "            <div class=\"row\">\n" +
-    "                <div class=\"col\">\n" +
-    "                    {{shift.title}}\n" +
+    "            <h4 class=\"new-shift-title\" ng-if=\"shift.description\">{{shift.description}}</h4>\n" +
+    "            <div class=\"list compacted-list list-inset full-width-inputs\">\n" +
+    "                <div class=\"item item-input row\">\n" +
+    "                    <div class=\"col col-50 list-item-padding\">\n" +
+    "                        <h4 class=\"sub-subheader\">Start</h4>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col list-item-padding\">\n" +
+    "                        {{getReadableLocalShiftStartTime(shift)}}\n" +
+    "                    </div>\n" +
     "                </div>\n" +
-    "            </div>\n" +
-    "            <div class=\"row\">\n" +
-    "                <div class=\"col col-25\">\n" +
-    "                    Start time\n" +
+    "                <div class=\"item item-input row\">\n" +
+    "                    <div class=\"col col-50 list-item-padding\">\n" +
+    "                        <h4 class=\"sub-subheader\">Length</h4>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col list-item-padding\">\n" +
+    "                        {{getReadableShiftDuration(shift)}}\n" +
+    "                    </div>\n" +
     "                </div>\n" +
-    "                <div class=\"col col-75\">\n" +
-    "                    {{getReadableLocalShiftStartTime(shift)}}\n" +
+    "                <div class=\"item item-input row\"\n" +
+    "                    ng-if=\"shift.shiftapplications.length > 0\">\n" +
+    "                    <div class=\"col col-50 list-item-padding\">\n" +
+    "                        <h4 class=\"sub-subheader\">Shift Applications</h4>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col list-item-padding\">\n" +
+    "                        &nbsp;\n" +
+    "                    </div>\n" +
     "                </div>\n" +
-    "            </div>\n" +
-    "            <div class=\"row\">\n" +
-    "                <div class=\"col col-25\">\n" +
-    "                    Length\n" +
-    "                </div>\n" +
-    "                <div class=\"col col-75\">\n" +
-    "                    {{getReadableShiftDuration(shift)}}\n" +
-    "                </div>\n" +
-    "            </div>\n" +
-    "            <div ng-if=\"shift.shiftapplications.length > 0\">\n" +
-    "                Shift applications\n" +
-    "                <ul class=\"list list-inset\" ng-repeat=\"shiftapplication in shift.shiftapplications\"\n" +
-    "                    ng-if=\"!shiftapplication.recinded\">\n" +
-    "                    <li class=\"item shiftapplication\" ng-class=\"{'shift-approved': shiftApplicationIsAccepted(shiftapplication), 'shift-declined': shiftApplicationIsDeclined(shiftapplication)}\">\n" +
-    "                        <div style=\"display: inline-block; vertical-align: middle;\">\n" +
-    "                            {{shiftapplication.user.username}}\n" +
-    "                        </div>\n" +
-    "                        <div style=\"display: inline-block; float: right;\">\n" +
-    "                            <button class=\"button button-assertive\" style=\"float: right;\"\n" +
-    "                                    ng-disabled=\"shiftApplicationIsDeclined(shiftapplication)\"\n" +
-    "                                    ng-click=\"declineShiftApplication(shiftapplication)\">\n" +
-    "                                <i class=\"icon ion-close\"></i>\n" +
-    "                            </button>\n" +
-    "                            <button class=\"button button-positive\" style=\"float: right;\"\n" +
-    "                                    ng-disabled=\"shiftApplicationIsAccepted(shiftapplication)\"\n" +
-    "                                    ng-click=\"approveShiftApplication(shiftapplication)\">\n" +
-    "                                <i class=\"icon ion-checkmark\"></i>\n" +
-    "                            </button>\n" +
-    "                        </div>\n" +
-    "                    </li>\n" +
+    "                <ul class=\"item item-input row\"\n" +
+    "                    ng-repeat=\"shiftapplication in shift.shiftapplications\"\n" +
+    "                    ng-if=\"shift.shiftapplications.length > 0\">\n" +
+    "                    <div class=\"col list-item-padding\"\n" +
+    "                         ng-if=\"!shiftapplication.recinded\">\n" +
+    "                        <li class=\"item shiftapplication\" ng-class=\"{'shift-approved': shiftApplicationIsAccepted(shiftapplication), 'shift-declined': shiftApplicationIsDeclined(shiftapplication)}\">\n" +
+    "                            <div style=\"float:right;\">\n" +
+    "                                <button class=\"button button-assertive\" style=\"float: right;\"\n" +
+    "                                        ng-disabled=\"shiftApplicationIsDeclined(shiftapplication)\"\n" +
+    "                                        ng-click=\"declineShiftApplication(shiftapplication)\">\n" +
+    "                                    <i class=\"icon ion-close\"></i>\n" +
+    "                                </button>\n" +
+    "                                <button class=\"button button-positive\" style=\"float: right;\"\n" +
+    "                                        ng-disabled=\"shiftApplicationIsAccepted(shiftapplication)\"\n" +
+    "                                        ng-click=\"approveShiftApplication(shiftapplication)\">\n" +
+    "                                    <i class=\"icon ion-checkmark\"></i>\n" +
+    "                                </button>\n" +
+    "                            </div>\n" +
+    "                            <div style=\"vertical-align: middle; white-space: normal; overflow-wrape: normal;\">\n" +
+    "                                {{shiftapplication.user.username}}<br>\n" +
+    "                                Applied on <span style=\"white-space: nowrap\">{{getReadableLocalShiftApplicationTime(shift, shiftapplication)}}</span>\n" +
+    "                            </div>\n" +
+    "                        </li>\n" +
+    "                    </div>\n" +
     "                </ul>\n" +
-    "            </div>\n" +
-    "            <div class=\"list list-inset\">\n" +
-    "                <div class=\"item\">\n" +
-    "                    <button class=\"button button-assertive\"\n" +
-    "                        ng-click=\"removeShift(shift)\">\n" +
-    "                        DELETE SHIFT\n" +
-    "                    </button>\n" +
+    "                <div class=\"item row\">\n" +
+    "                    <div class=\"col\">\n" +
+    "                        <button style=\"width: 100%\"\n" +
+    "                                class=\"button button-block button-positive activated\"\n" +
+    "                                ng-click=\"next()\">\n" +
+    "                            Apply\n" +
+    "                        </button>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col\">\n" +
+    "                        <button style=\"width: 100%\"\n" +
+    "                                class=\"button button-block button-positive activated\"\n" +
+    "                                ng-click=\"next()\">\n" +
+    "                            Decline\n" +
+    "                        </button>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <div class=\"item row\">\n" +
+    "                    <div class=\"col\">\n" +
+    "                        <button style=\"width: 100%\"\n" +
+    "                                class=\"button button-block button-assertive activated\"\n" +
+    "                                ng-click=\"removeShift(shift)\">\n" +
+    "                            DELETE SHIFT\n" +
+    "                        </button>\n" +
+    "                    </div>\n" +
     "                </div>\n" +
     "            </div>\n" +
     "        </div>\n" +
@@ -7121,7 +7147,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/shifttabs.html',
-    "<div id=\"app-header-tab\" class=\"tabs-striped tabs-top tabs-background-positive tabs-color-light\">\n" +
+    "<div id=\"app-header-tab\" class=\"tabs-striped tabs-top tabs-background-positive tabs-color-light app-header-tab\">\n" +
     "    <div class=\"tabs\" style=\"top: 0\">\n" +
     "        <a class=\"tab-item\" href=\"#{{states.SHIFTS_URL}}\" ng-class=\"{'active': currentState == states.SHIFTS}\">\n" +
     "            Open Shifts\n" +
@@ -7279,7 +7305,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/tabs.html',
-    "<div id=\"app-header-tab\" class=\"tabs-striped tabs-background-positive tabs-color-light\">\n" +
+    "<div id=\"app-footer-tab\" class=\"tabs-striped tabs-background-positive tabs-color-light app-footer-tab\">\n" +
     "    <div class=\"tabs\">\n" +
     "        <a class=\"tab-item\" href=\"#{{states.HOME_URL}}\" ng-class=\"{'active': currentState == states.HOME}\">\n" +
     "            <i class=\"icon ion-home\"></i>\n" +

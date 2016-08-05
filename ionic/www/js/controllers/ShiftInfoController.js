@@ -82,6 +82,7 @@ angular.module('scheduling-app.controllers')
             $scope.userIsInDifferentTimeZone = ShiftProcessingService.userIsInDifferentTimeZone;
             $scope.getShiftsLocation = ShiftProcessingService.getShiftsLocation;
             $scope.getShiftsSublocation = ShiftProcessingService.getShiftsSublocation;
+            $scope.getReadableLocalShiftApplicationTime = ShiftProcessingService.getReadableLocalShiftApplicationTime;
             $scope.shiftHasNonRecindedApplications = ShiftProcessingService.shiftHasNonRecindedApplications;
             $scope.ignoreShift = ResourceService.ignoreShift;
             $scope._approveShiftApplication = ResourceService.approveShiftApplication;

@@ -70,6 +70,11 @@ angular.module('scheduling-app.services')
                 return list.join(' ');
             };
 
+            this.getReadableLocalShiftApplicationTime = function(shift, shiftapplication, format) {
+                var startLocal = getShiftApplicationTime(shift, shiftapplication);
+                return getDisplayableFormat(startLocal, format);
+            };
+
             this.getReadableLocalShiftStartTime = function(shift, format) {
                 var startLocal = getStartOfShift(shift);
                 return getDisplayableFormat(startLocal, format);
@@ -310,7 +315,7 @@ angular.module('scheduling-app.services')
 
             function getDisplayableFormat(time, format) {
                 if (!format) {
-                    format = "MMM D YYYY @ h:mma";
+                    format = "MMM D YYYY h:mma";
                 }
                 return time.format(format);
             }
@@ -319,6 +324,10 @@ angular.module('scheduling-app.services')
 
             function getStartOfShift(shift) {
                 return moment.tz(shift.start * 1000, shift.timezone.name);
+            }
+
+            function getShiftApplicationTime(shift, shiftapplication) {
+                return moment.tz(shiftapplication.date * 1000, shift.timezone.name);
             }
 
             this.getEndOfShift = getEndOfShift;

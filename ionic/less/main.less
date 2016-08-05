@@ -18,6 +18,7 @@
 @tab-color: #159DEB;
 @button-color: #D64541;
 @color-positive: #ffd560;
+@color-assertive: #e74c3c;
 @color-emphasize: @proxyshift-emphasize;
 @text-color: #000;
 @text-bright: #fff;
@@ -61,6 +62,10 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     color: @text-bright;
 }
 
+.button.active, .button.activated {
+    box-shadow: none !important;
+}
+
 .button.button-positive {
     border-color: @text-bright;
     background-color: @text-bright;
@@ -71,6 +76,28 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     border-color: @text-bright;
     background-color: @text-bright;
     color: @background;
+}
+
+.button.button-assertive {
+    background-color: @color-assertive;
+    border-color: @color-assertive !important;
+    color: @text-bright;
+}
+
+.button.button-assertive.activated {
+    background-color: @color-assertive;
+    border-color: @color-assertive !important;
+    color: @text-bright;
+}
+
+.button.button-emphasize {
+    background-color: @color-emphasize;
+    color: @text-bright;
+}
+
+.button.button-emphasize.activated {
+    background-color: @color-emphasize;
+    color: @text-bright;
 }
 
 .scroll-refresher .ionic-refresher-content {
@@ -266,15 +293,19 @@ input[type="text"], input[type="password"] {
 }
 
 .shiftapplication {
-    background-color: #333333 !important;
+    //background-color: #333333 !important;
+    //border-color: #fff !important;
+    border-left-width: 2px !important;
+    border-left-color: #fff !important;
+    border-radius: 0 !important;
 }
 
 .shiftapplication.shift-approved {
-    background-color: #00FF00 !important;
+    //background-color: #00FF00 !important;
 }
 
 .shiftapplication.shift-declined {
-    background-color: #FF0000 !important;
+    //background-color: #FF0000 !important;
 }
 
 .welcome {

@@ -105,7 +105,7 @@ var Validations = {
     },
     Shift: {
         description: [
-            { validator: 'isLength', args: [0, 30], message: 'Cannot be larger than 30 characters'},
+            { validator: 'isLength', args: [0, 256], message: 'Cannot be larger than 30 characters'},
         ]
         // TODO: Validate start < end
         // TODO: Client side - if shift too short then make notification window, but allow it
