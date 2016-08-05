@@ -67,6 +67,7 @@ angular.module('scheduling-app.controllers')
                 $scope._removeShift(shift.id);
             };
 
+            $scope.getReadableLocalShiftStartEndTime = ShiftProcessingService.getReadableLocalShiftStartEndTime;
             $scope.getReadableLocalShiftStartTime = ShiftProcessingService.getReadableLocalShiftStartTime;
             $scope.getReadableLocalShiftEndTime = ShiftProcessingService.getReadableLocalShiftEndTime;
             $scope.getReadableLocalShiftDiffTime = ShiftProcessingService.getReadableLocalShiftDiffTime;

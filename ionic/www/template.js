@@ -4645,14 +4645,14 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                        <div class=\"shift-left-icon\"><i class=\"icon ion-ios-checkmark-outline\"></i></div>\n" +
     "                        <div ng-class=\"{'shift-expanded': shift.expanded, 'shift-collapsed': !shift.expanded}\">\n" +
     "                            <div class=\"shift-right\">\n" +
-    "                                <p class=\"shift-star\" ng-hide=\"{{userIsInDifferentTimeZone(shift)}}\">{{getReadableLocalShiftStartTime(shift)}}</p>\n" +
-    "                                <p class=\"shift-star\" ng-show=\"{{userIsInDifferentTimeZone(shift)}}\">{{getReadableLocalShiftStartTime(shift)}} (local)</p>\n" +
+    "                                <p class=\"shift-star\" ng-hide=\"{{userIsInDifferentTimeZone(shift)}}\">{{getReadableLocalShiftStartEndTime(shift)}}</p>\n" +
+    "                                <p class=\"shift-star\" ng-show=\"{{userIsInDifferentTimeZone(shift)}}\">{{getReadableLocalShiftStartEndTime(shift)}} (local)</p>\n" +
     "                                <p class=\"shift-duration\">{{getReadableShiftDuration(shift)}}</p>\n" +
     "                            </div>\n" +
     "                            <div class=\"shift-info\">\n" +
-    "                                <p class=\"shift-location\" ng-show=\"{{!shift.sublocation_id}}\">{{getShiftsLocation(shift).address}}</p>\n" +
-    "                                <p class=\"shift-location shift-location-floor\" ng-show=\"{{shift.sublocation_id}}\">{{getShiftsLocation(shift).address}} - {{getShiftsSublocation(shift).title}}</p>\n" +
-    "                                <p class=\"shift-title\">{{getReadableClassType(shift)}}</p>\n" +
+    "                                <p class=\"shift-location\">{{getShiftsLocation(shift).address}}</p>\n" +
+    "                                <p class=\"shift-title shift-location-floor\" ng-show=\"{{shift.sublocation_id}}\">{{getShiftsSublocation(shift).title}} - {{getReadableClassType(shift)}}</p>\n" +
+    "                                <p class=\"shift-title\" ng-hide=\"{{shift.sublocation_id}}\">{{getReadableClassType(shift)}}</p>\n" +
     "                                <p class=\"shift-desc\">{{shift.description}}</p>\n" +
     "                            </div>\n" +
     "                        </div>\n" +
@@ -7061,7 +7061,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
   $templateCache.put('templates/shiftinfo.html',
     "<ion-view>\n" +
     "    <ion-header-bar align-title=\"left\" class=\"bar-positive\">\n" +
-    "        <h1 class=\"title\">Shift Information</h1>\n" +
+    "        <h1 class=\"title\">Shift Details</h1>\n" +
     "        <div class=\"buttons\" side=\"right\">\n" +
     "            <button class=\"button button-icon ion-close\" ng-click=\"close()\"></button>\n" +
     "        </div>\n" +
@@ -7075,7 +7075,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                        <h4 class=\"sub-subheader\">Start</h4>\n" +
     "                    </div>\n" +
     "                    <div class=\"col list-item-padding\">\n" +
-    "                        {{getReadableLocalShiftStartTime(shift)}}\n" +
+    "                        {{getReadableLocalShiftStartEndTime(shift)}}\n" +
     "                    </div>\n" +
     "                </div>\n" +
     "                <div class=\"item item-input row\">\n" +

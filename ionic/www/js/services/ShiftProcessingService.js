@@ -41,7 +41,7 @@ angular.module('scheduling-app.services')
                 'year': ' year',
                 'month': ' month',
                 'day': ' day',
-                'hour': 'h',
+                'hour': 'hr',
                 'minute': 'm'
             };
 
@@ -78,6 +78,14 @@ angular.module('scheduling-app.services')
             this.getReadableLocalShiftStartTime = function(shift, format) {
                 var startLocal = getStartOfShift(shift);
                 return getDisplayableFormat(startLocal, format);
+            };
+
+            this.getReadableLocalShiftStartEndTime = function(shift, format) {
+                var startLocal = getStartOfShift(shift);
+                var endLocal = getEndOfShift(shift);
+                var start = getDisplayableFormat(startLocal, format);
+                var end = getDisplayableFormat(endLocal, 'h:mma');
+                return start + ' - ' + end;
             };
 
             this.getReadableLocalShiftEndTime = function(shift, format) {
@@ -315,7 +323,10 @@ angular.module('scheduling-app.services')
 
             function getDisplayableFormat(time, format) {
                 if (!format) {
-                    format = "MMM D YYYY h:mma";
+                    // only show year if it is different than the current year
+                    var currentYear = moment().year();
+                    var shiftYear = time.year();
+                    format = "MM/DD" + (currentYear == shiftYear ? '':' YYYY') + " h:mma";
                 }
                 return time.format(format);
             }

@@ -35,14 +35,14 @@
                         <div class="shift-left-icon"><i class="icon ion-ios-checkmark-outline"></i></div>
                         <div ng-class="{'shift-expanded': shift.expanded, 'shift-collapsed': !shift.expanded}">
                             <div class="shift-right">
-                                <p class="shift-star" ng-hide="{{userIsInDifferentTimeZone(shift)}}">{{getReadableLocalShiftStartTime(shift)}}</p>
-                                <p class="shift-star" ng-show="{{userIsInDifferentTimeZone(shift)}}">{{getReadableLocalShiftStartTime(shift)}} (local)</p>
+                                <p class="shift-star" ng-hide="{{userIsInDifferentTimeZone(shift)}}">{{getReadableLocalShiftStartEndTime(shift)}}</p>
+                                <p class="shift-star" ng-show="{{userIsInDifferentTimeZone(shift)}}">{{getReadableLocalShiftStartEndTime(shift)}} (local)</p>
                                 <p class="shift-duration">{{getReadableShiftDuration(shift)}}</p>
                             </div>
                             <div class="shift-info">
-                                <p class="shift-location" ng-show="{{!shift.sublocation_id}}">{{getShiftsLocation(shift).address}}</p>
-                                <p class="shift-location shift-location-floor" ng-show="{{shift.sublocation_id}}">{{getShiftsLocation(shift).address}} - {{getShiftsSublocation(shift).title}}</p>
-                                <p class="shift-title">{{getReadableClassType(shift)}}</p>
+                                <p class="shift-location">{{getShiftsLocation(shift).address}}</p>
+                                <p class="shift-title shift-location-floor" ng-show="{{shift.sublocation_id}}">{{getShiftsSublocation(shift).title}} - {{getReadableClassType(shift)}}</p>
+                                <p class="shift-title" ng-hide="{{shift.sublocation_id}}">{{getReadableClassType(shift)}}</p>
                                 <p class="shift-desc">{{shift.description}}</p>
                             </div>
                         </div>

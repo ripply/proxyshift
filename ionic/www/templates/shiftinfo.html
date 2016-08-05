@@ -1,6 +1,6 @@
 <ion-view>
     <ion-header-bar align-title="left" class="bar-positive">
-        <h1 class="title">Shift Information</h1>
+        <h1 class="title">Shift Details</h1>
         <div class="buttons" side="right">
             <button class="button button-icon ion-close" ng-click="close()"></button>
         </div>
@@ -14,7 +14,7 @@
                         <h4 class="sub-subheader">Start</h4>
                     </div>
                     <div class="col list-item-padding">
-                        {{getReadableLocalShiftStartTime(shift)}}
+                        {{getReadableLocalShiftStartEndTime(shift)}}
                     </div>
                 </div>
                 <div class="item item-input row">

@@ -1486,6 +1486,10 @@ input[type="password"] :focus {
   padding-left: 0px;
   padding-right: 0px;
 }
+.shift-location,
+.shift-star {
+  font-weight: bold;
+}
 .shift-left {
   display: block;
   float: left;

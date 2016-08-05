@@ -547,6 +547,7 @@ angular.module('scheduling-app.controllers')
                 $rootScope.$broadcast('events:shift:info', shift, $scope.name);
             };
 
+            $scope.getReadableLocalShiftStartEndTime = ShiftProcessingService.getReadableLocalShiftStartEndTime;
             $scope.getReadableLocalShiftStartTime = ShiftProcessingService.getReadableLocalShiftStartTime;
             $scope.getReadableLocalShiftEndTime = ShiftProcessingService.getReadableLocalShiftEndTime;
             $scope.getReadableLocalShiftDiffTime = ShiftProcessingService.getReadableLocalShiftDiffTime;
