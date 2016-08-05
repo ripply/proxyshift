@@ -6066,6 +6066,11 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "            <div class=\"item row\">\n" +
     "                <div class=\"col list-item-padding\">\n" +
     "                    <textarea rows=\"4\" cols=\"50\" style=\"width: 100%;\" ng-model=\"other.description\"></textarea>\n" +
+    "                    <div ng-if=\"other.description.length > 0\"\n" +
+    "                         class=\"shift-description-character-limit\"\n" +
+    "                         ng-class=\"{'too-many-characters': other.description.length > descriptionMaxLength}\">\n" +
+    "                        {{other.description.length}}/{{descriptionMaxLength}} characters\n" +
+    "                    </div>\n" +
     "                </div>\n" +
     "            </div>\n" +
     "            <div class=\"item row\">\n" +

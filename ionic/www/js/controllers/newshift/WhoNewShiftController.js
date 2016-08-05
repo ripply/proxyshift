@@ -34,6 +34,7 @@ angular.module('scheduling-app.controllers')
             };
 
             $scope.other = {};
+            $scope.descriptionMaxLength = 256;
 
             $scope.jobTypeClicked = function(jobType) {
                 clearClickedJobType();
@@ -74,7 +75,10 @@ angular.module('scheduling-app.controllers')
 
             $scope.progressable = function() {
                 return $scope.other.job !== undefined &&
-                    $scope.other.job !== null;
+                    $scope.other.job !== null &&
+                    ($scope.other.description === null ||
+                    $scope.other.description == '' ||
+                    $scope.other.description.length <= $scope.descriptionMaxLength);
             };
 
             function setupJobTypesForLocationOrSublocation() {

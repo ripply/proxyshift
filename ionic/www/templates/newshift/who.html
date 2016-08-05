@@ -24,6 +24,11 @@
             <div class="item row">
                 <div class="col list-item-padding">
                     <textarea rows="4" cols="50" style="width: 100%;" ng-model="other.description"></textarea>
+                    <div ng-if="other.description.length > 0"
+                         class="shift-description-character-limit"
+                         ng-class="{'too-many-characters': other.description.length > descriptionMaxLength}">
+                        {{other.description.length}}/{{descriptionMaxLength}} characters
+                    </div>
                 </div>
             </div>
             <div class="item row">

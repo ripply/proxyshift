@@ -1452,6 +1452,12 @@ input[type="password"] :focus {
   top: 50%;
   transform: translateY(-50%);
 }
+.shift-description-character-limit {
+  text-align: right;
+}
+.shift-description-character-limit.too-many-characters {
+  color: #e74c3c;
+}
 .compacted-list .item-divider-bright-text {
   padding-top: 15px;
 }
