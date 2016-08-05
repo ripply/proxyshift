@@ -7,22 +7,43 @@
     </div>
     <div>
         <div class='square-box'>
-            <div class='square-content'>
-                <div class="square-content-icon">
-                    <span><i class="icon ion-android-contact"></i></span>
-                </div>
-                <div class="square-content-footer">
-                    <span>My Profile</span>
-                </div>
-            </div>
-        </div>
-        <div class='square-box'>
             <a class='square-content' href="#{{states.SETTINGS_URL}}">
                 <div class="square-content-icon">
                     <span><i class="icon ion-aperture"></i></span>
                 </div>
                 <div class="square-content-footer">
-                    <span>Settings</span>
+                    <span>My Settings</span>
+                </div>
+            </a>
+        </div>
+        <div class='square-box'>
+            <a class='square-content' href="{{currentTabPage || '#' + states.SHIFTS_URL}}" ng-class="{'active': currentState.indexOf('app.shifts.') == 0}">
+                <div class="square-content-icon">
+                    <span><i class="icon ion-android-time"></i></span>
+                </div>
+                <div class="square-content-footer">
+                    <span>Shifts</span>
+                </div>
+            </a>
+        </div>
+        <div class='square-box'>
+            <a class='square-content' href="{{currentTabPage || '#' + states.SHIFTS_URL}}" ng-class="{'active': $rootScope.calendarShown}"
+               ng-click="toggleCalendar($event)">
+                <div class="square-content-icon">
+                    <span><i class="icon ion-android-calendar"></i></span>
+                </div>
+                <div class="square-content-footer">
+                    <span>Calendar</span>
+                </div>
+            </a>
+        </div>
+        <div class='square-box'>
+            <a class='square-content' ui-sref="{{states.SHIFT_REQUEST}}" ng-class="{'active': currentState.indexOf('app.newshift') == 0}">
+                <div class="square-content-icon">
+                    <span><i class="icon ion-radio-waves"></i></span>
+                </div>
+                <div class="square-content-footer">
+                    <span>Shift Request</span>
                 </div>
             </a>
         </div>

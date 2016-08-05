@@ -304,7 +304,7 @@ angular.module('scheduling-app', [
                     views: {
                         'tabContent': {
                             templateUrl: "templates/home.html",
-                            controller: 'AppCtrl',
+                            controller: 'MenuController',
                         }
                     },
                     pageTrack: '/app/home',

@@ -5049,22 +5049,43 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "    </div>\n" +
     "    <div>\n" +
     "        <div class='square-box'>\n" +
-    "            <div class='square-content'>\n" +
-    "                <div class=\"square-content-icon\">\n" +
-    "                    <span><i class=\"icon ion-android-contact\"></i></span>\n" +
-    "                </div>\n" +
-    "                <div class=\"square-content-footer\">\n" +
-    "                    <span>My Profile</span>\n" +
-    "                </div>\n" +
-    "            </div>\n" +
-    "        </div>\n" +
-    "        <div class='square-box'>\n" +
     "            <a class='square-content' href=\"#{{states.SETTINGS_URL}}\">\n" +
     "                <div class=\"square-content-icon\">\n" +
     "                    <span><i class=\"icon ion-aperture\"></i></span>\n" +
     "                </div>\n" +
     "                <div class=\"square-content-footer\">\n" +
-    "                    <span>Settings</span>\n" +
+    "                    <span>My Settings</span>\n" +
+    "                </div>\n" +
+    "            </a>\n" +
+    "        </div>\n" +
+    "        <div class='square-box'>\n" +
+    "            <a class='square-content' href=\"{{currentTabPage || '#' + states.SHIFTS_URL}}\" ng-class=\"{'active': currentState.indexOf('app.shifts.') == 0}\">\n" +
+    "                <div class=\"square-content-icon\">\n" +
+    "                    <span><i class=\"icon ion-android-time\"></i></span>\n" +
+    "                </div>\n" +
+    "                <div class=\"square-content-footer\">\n" +
+    "                    <span>Shifts</span>\n" +
+    "                </div>\n" +
+    "            </a>\n" +
+    "        </div>\n" +
+    "        <div class='square-box'>\n" +
+    "            <a class='square-content' href=\"{{currentTabPage || '#' + states.SHIFTS_URL}}\" ng-class=\"{'active': $rootScope.calendarShown}\"\n" +
+    "               ng-click=\"toggleCalendar($event)\">\n" +
+    "                <div class=\"square-content-icon\">\n" +
+    "                    <span><i class=\"icon ion-android-calendar\"></i></span>\n" +
+    "                </div>\n" +
+    "                <div class=\"square-content-footer\">\n" +
+    "                    <span>Calendar</span>\n" +
+    "                </div>\n" +
+    "            </a>\n" +
+    "        </div>\n" +
+    "        <div class='square-box'>\n" +
+    "            <a class='square-content' ui-sref=\"{{states.SHIFT_REQUEST}}\" ng-class=\"{'active': currentState.indexOf('app.newshift') == 0}\">\n" +
+    "                <div class=\"square-content-icon\">\n" +
+    "                    <span><i class=\"icon ion-radio-waves\"></i></span>\n" +
+    "                </div>\n" +
+    "                <div class=\"square-content-footer\">\n" +
+    "                    <span>Shift Request</span>\n" +
     "                </div>\n" +
     "            </a>\n" +
     "        </div>\n" +
