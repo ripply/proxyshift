@@ -51,26 +51,22 @@
                         <button class="button button-outline button-positive shift-accept shift-left">Accept</button>
                         <button class="button button-outline button-assertive shift-decline shift-right">Decline</button>
                     </div>
-                    <ion-option-button class="button-balanced"
+                    <ion-option-button class="button-balanced shift-manage"
                                        ng-click="info(shift)">
-                        <div ng-if="manageable">
-                            Manage
-                        </div>
-                        <div ng-if="!manageable">
-                            More Info
-                        </div>
+                        Details
                     </ion-option-button>
                     <div ng-if="!manageable">
-                        <ion-option-button class="button-positive"
+                        <ion-option-button class="shift-button-apply"
+                                           ng-if="!shift.applied"
                                            ng-click="accept(shift)">
                             Apply
                         </ion-option-button>
-                        <ion-option-button class="button-assertive"
+                        <ion-option-button class="shift-button-decline"
                                            ng-click="decline(shift)"
                                            ng-if="shift.applied">
-                            Decline
+                            Cancel
                         </ion-option-button>
-                        <ion-option-button class="button-assertive"
+                        <ion-option-button class="shift-button-ignore"
                                            ng-click="ignore(shift)"
                                            ng-if="!shift.applied">
                             Ignore

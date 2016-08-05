@@ -4,6 +4,7 @@ angular.module('scheduling-app.controllers')
         '$scope',
         '$controller',
         '$ionicScrollDelegate',
+        '$ionicListDelegate',
         'GENERAL_CONFIG',
         'GENERAL_EVENTS',
         'UserInfoService',
@@ -13,6 +14,7 @@ angular.module('scheduling-app.controllers')
                  $scope,
                  $controller,
                  $ionicScrollDelegate,
+                 $ionicListDelegate,
                  GENERAL_CONFIG,
                  GENERAL_EVENTS,
                  UserInfoService,
@@ -96,6 +98,10 @@ angular.module('scheduling-app.controllers')
 
             function getMyUserClasses() {
                 myUserClasses = UserInfoService.getUserClasses();
+            }
+
+            function closeButtons() {
+                $ionicListDelegate.closeOptionButtons();
             }
 
             $scope.hasUserClasses = function() {
@@ -353,6 +359,7 @@ angular.module('scheduling-app.controllers')
                         }
                         shift.applied = registrationId;
                         $ionicScrollDelegate.resize();
+                        $rootScope.$emit(GENERAL_EVENTS.TOAST, 'info', 'Applied', 'Applied for shift ' + id);
                     }, function(response) {
                         // failure
                         var failedShift = getShift(id);
@@ -361,6 +368,7 @@ angular.module('scheduling-app.controllers')
                             failedShift.failed = true;
                         }
                         $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);
+                        $rootScope.$emit(GENERAL_EVENTS.TOAST, 'error', 'Applied', 'Error applying for shift ' + id);
                 });
             };
 
@@ -394,6 +402,7 @@ angular.module('scheduling-app.controllers')
                             failedShift.failed = true;
                         }
                         $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);
+                        $rootScope.$emit(GENERAL_EVENTS.TOAST, 'info', 'Recision', 'Successfully recinded shift application ' + id);
                     });
             };
 
@@ -519,18 +528,22 @@ angular.module('scheduling-app.controllers')
             };
 
             $scope.accept = function(shift) {
+                closeButtons();
                 $scope.applyForShift(shift.id);
             };
 
             $scope.decline = function(shift) {
+                closeButtons();
                 $scope.recindApplicationForAShift(shift.id, 'test');
             };
 
             $scope.ignore = function(shift) {
+                closeButtons();
                 $scope.ignoreShift(shift.id);
             };
 
             $scope.info = function(shift) {
+                closeButtons();
                 $rootScope.$broadcast('events:shift:info', shift, $scope.name);
             };
 

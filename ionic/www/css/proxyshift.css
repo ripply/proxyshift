@@ -1031,6 +1031,27 @@ input[type="password"] :focus {
 .welcome {
   font-size: 150%;
 }
+.shift-item .shift-button-info {
+  background-color: #ffffff;
+  color: #159deb;
+}
+.shift-item .shift-button-apply {
+  background-color: #ffffff;
+  color: #159deb;
+  border-color: #159deb !important;
+  border-left-width: 1px !important;
+  border-right-width: 1px !important;
+  border-left-style: solid !important;
+  border-right-style: solid !important;
+}
+.shift-item .shift-button-ignore {
+  background-color: #ffffff;
+  color: #e74c3c;
+}
+.shift-item .shift-button-decline {
+  background-color: #ffffff;
+  color: #e74c3c;
+}
 .square-box {
   float: left;
   position: relative;

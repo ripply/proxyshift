@@ -4661,26 +4661,22 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                        <button class=\"button button-outline button-positive shift-accept shift-left\">Accept</button>\n" +
     "                        <button class=\"button button-outline button-assertive shift-decline shift-right\">Decline</button>\n" +
     "                    </div>\n" +
-    "                    <ion-option-button class=\"button-balanced\"\n" +
+    "                    <ion-option-button class=\"button-balanced shift-manage\"\n" +
     "                                       ng-click=\"info(shift)\">\n" +
-    "                        <div ng-if=\"manageable\">\n" +
-    "                            Manage\n" +
-    "                        </div>\n" +
-    "                        <div ng-if=\"!manageable\">\n" +
-    "                            More Info\n" +
-    "                        </div>\n" +
+    "                        Details\n" +
     "                    </ion-option-button>\n" +
     "                    <div ng-if=\"!manageable\">\n" +
-    "                        <ion-option-button class=\"button-positive\"\n" +
+    "                        <ion-option-button class=\"shift-button-apply\"\n" +
+    "                                           ng-if=\"!shift.applied\"\n" +
     "                                           ng-click=\"accept(shift)\">\n" +
     "                            Apply\n" +
     "                        </ion-option-button>\n" +
-    "                        <ion-option-button class=\"button-assertive\"\n" +
+    "                        <ion-option-button class=\"shift-button-decline\"\n" +
     "                                           ng-click=\"decline(shift)\"\n" +
     "                                           ng-if=\"shift.applied\">\n" +
-    "                            Decline\n" +
+    "                            Cancel\n" +
     "                        </ion-option-button>\n" +
-    "                        <ion-option-button class=\"button-assertive\"\n" +
+    "                        <ion-option-button class=\"shift-button-ignore\"\n" +
     "                                           ng-click=\"ignore(shift)\"\n" +
     "                                           ng-if=\"!shift.applied\">\n" +
     "                            Ignore\n" +
