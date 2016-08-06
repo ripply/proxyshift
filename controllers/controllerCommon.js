@@ -257,7 +257,8 @@ function createSelectQueryForAllColumns(modelName, tablename, bannedKeys) {
     _.each(_.keys(schema[modelName]), function(columnName) {
         if ((bannedKeys === null || bannedKeys === undefined) ||
             ((bannedKeys !== null && bannedKeys !== undefined) &&
-              bannedKeys.indexOf(columnName) == -1)) {
+              bannedKeys.indexOf(columnName) == -1) &&
+            columnName !== 'comment') {
             columns.push(tablename + '.' + columnName + ' as ' + columnName);
         }
     });
