@@ -83,7 +83,7 @@ var Schema = {
             nullable: false,
             // FIXME: Enabling this overwrites our password encryption on save event
             // lowercase: true,
-            maxlen: 20
+            maxlen: 50
         },
         firstname: {
             type: string,
