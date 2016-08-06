@@ -54,8 +54,11 @@ module.exports = {
                 var range = grabNormalShiftRange(now, after, before);
                 var before = range[0];
                 var after = range[1];
+                var start = new Date();
+                var fetchStart;
                 models.Shift.query(function(q) {
                     // grab groups the user is a part of
+                    console.info("start query: %dms", new Date() - start);
                     var relatedGroupsSubQuery =
                         knex.select('usergroups.group_id as wat')
                             .from('usergroups')
@@ -66,11 +69,15 @@ module.exports = {
                                     .where('groups.user_id', '=', req.user.id);
                             });
 
+                    console.info("first subquery: %dms", new Date() - start);
+
                     // grab locations related to all of those groups
                     var relatedLocationsSubQuery =
                         knex.select('locations.id as locationid')
                             .from('locations')
                             .whereIn('locations.group_id', relatedGroupsSubQuery);
+
+                    console.info("second subquery: %dms", new Date() - start);
 
                     // grab all your user classes
                     var relatedUserClassesSubQuery =
@@ -82,8 +89,11 @@ module.exports = {
                             .where('groupuserclasstousers.user_id', '=', req.user.id)
                             .whereIn('groupuserclasses.group_id', relatedGroupsSubQuery);
 
+                    console.info("relatedusersubquery: %dms", new Date() - start);
+
                     // grab all shifts at locations/sublocations that are one of your job types
 
+                    var selectStart = new Date();
                     var query = q.select(shiftAndAppliedSelectKeys)
                         .from('shifts')
                         .innerJoin('locations', function() {
@@ -116,6 +126,9 @@ module.exports = {
                                 .whereIn('sublocations.location_id', relatedLocationsSubQuery);
                             query = joinShiftApplications(query, req.user.id);
                         });
+                    console.info("just select query: %dms", new Date() - selectStart);
+                    console.info("select query: %dms", new Date() - start);
+                    fetchStart = new Date();
                 })
                     .fetchAll({
                         withRelated: [
@@ -127,9 +140,12 @@ module.exports = {
                         ],
                     })
                     .then(function(shifts) {
+                        console.info("fetch: %dms", new Date() - fetchStart);
                         if (shifts) {
                             // TODO: Fetch related group user class information
+                            var end = new Date();
                             res.json(shifts.toJSON());
+                            console.info("tojson(): %dms", new Date() - end);
                         } else {
                             res.json([]);
                         }
