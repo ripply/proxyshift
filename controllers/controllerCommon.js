@@ -94,8 +94,11 @@ module.exports = {
             });
     },
     simpleGetListModel: function(modelName, queryArgs, req, res, options) {
-        models[modelName].forge(queryArgs)
-            .fetchAll(options)
+        var query = models[modelName].forge();
+        if (queryArgs) {
+            query = query.query({where: queryArgs});
+        }
+        query.fetchAll(options)
             .then(function (fetchedResult) {
                 res.json(fetchedResult);
             })
@@ -146,7 +149,9 @@ module.exports = {
 
 function respond(res, error, message, next) {
     res.json({error: error, data: {message: message}});
-    return next();
+    if (next) {
+        return next();
+    }
 }
 
 /*
@@ -255,10 +260,10 @@ function createSelectQueryForAllColumns(modelName, tablename, bannedKeys) {
 
     var columns = [];
     _.each(_.keys(schema[modelName]), function(columnName) {
-        if ((bannedKeys === null || bannedKeys === undefined) ||
+        if (columnName != 'comment' && // comments are not actual column names
+            ((bannedKeys === null || bannedKeys === undefined) ||
             ((bannedKeys !== null && bannedKeys !== undefined) &&
-              bannedKeys.indexOf(columnName) == -1) &&
-            columnName !== 'comment') {
+              bannedKeys.indexOf(columnName) == -1))) {
             columns.push(tablename + '.' + columnName + ' as ' + columnName);
         }
     });

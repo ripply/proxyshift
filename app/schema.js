@@ -471,7 +471,6 @@ var Schema = {
         title: {
             type: string,
             maxlen: 50,
-            unique: true,
             nullable: false
         },
         description: {
