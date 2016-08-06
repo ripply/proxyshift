@@ -258,7 +258,7 @@ var Schema = {
             nullable: false
         },
         contactphone: {
-            type: integer
+            type: string
         },
         groupsetting_id: {
             type: integer,
@@ -367,11 +367,11 @@ var Schema = {
             nullable: false
         },
         zipcode: {
-            type: integer,
+            type: string,
             nullable: false
         },
         phonenumber: {
-            type: integer,
+            type: string,
             nullable: false
         }
     },
