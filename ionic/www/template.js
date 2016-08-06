@@ -4614,11 +4614,11 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "    show-delete=\"false\"\n" +
     "    show-reorder=\"false\"\n" +
     "    can-swipe=\"swipable\">\n" +
-    "    <div collection-repeat=\"shift in Model\" item-height=\"(shift.canceled || ignoredShift(shift)) || (acceptedOnly && (!acceptedOnly || !acceptedOrApprovedShiftOrDivider(shift))) ? 0:(shift.isDivider ? 40:120)\"\n" +
+    "    <div collection-repeat=\"shift in Model\" item-height=\"shift.canceled || (acceptedOnly && (!acceptedOnly || !acceptedOrApprovedShiftOrDivider(shift))) ? 0:(shift.isDivider ? 40:120)\"\n" +
     "         item-width=\"100%\"\n" +
-    "         id=\"hey\"\n" +
-    "         ng-show=\"((!shift.canceled && !ignoredShift(shift)) && (!acceptedOnly || (acceptedOnly && acceptedOrApprovedShiftOrDivider(shift))) && markShiftVisible(shift)) || markShiftNotVisible(shift)\">\n" +
-    "        <div ng-class=\"{'card': !shift.isDivider, 'divider-card': shift.isDivider}\">\n" +
+    "         class=\"shift-list\"\n" +
+    "         ng-show=\"(!shift.canceled && (!acceptedOnly || (acceptedOnly && acceptedOrApprovedShiftOrDivider(shift))) && markShiftVisible(shift)) || markShiftNotVisible(shift)\">\n" +
+    "        <div ng-class=\"{'card': !shift.isDivider, 'divider-card': shift.isDivider, 'applied-to-shift': manageable ? (!shift.isDivider && isShiftApproved(shift)) : (acceptedOnly ? isShiftApproved(shift) : shift.applied), 'ignored-shift': manageable ? (!shift.isDivider && !isShiftAppliedFor(shift)):shift.ignoreshifts.length > 0, 'pending-approval': manageable ? (!shift.isDivider && isShiftAppliedFor(shift) && !isShiftApproved(shift)) : (acceptedOnly ? (shift.applied && !isShiftApproved(shift)) : false)}\">\n" +
     "            <ion-item\n" +
     "                class=\"item\"\n" +
     "                item-height=\"shift.isDivider ? 32:(64 + (4 * 2))\"\n" +
@@ -4661,7 +4661,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                        <button class=\"button button-outline button-positive shift-accept shift-left\">Accept</button>\n" +
     "                        <button class=\"button button-outline button-assertive shift-decline shift-right\">Decline</button>\n" +
     "                    </div>\n" +
-    "                    <ion-option-button class=\"button-balanced shift-manage\"\n" +
+    "                    <ion-option-button class=\"shift-button-manage\"\n" +
     "                                       ng-click=\"info(shift)\">\n" +
     "                        Details\n" +
     "                    </ion-option-button>\n" +
@@ -4678,7 +4678,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                        </ion-option-button>\n" +
     "                        <ion-option-button class=\"shift-button-ignore\"\n" +
     "                                           ng-click=\"ignore(shift)\"\n" +
-    "                                           ng-if=\"!shift.applied\">\n" +
+    "                                           ng-if=\"!shift.applied && !ignoredShift(shift)\">\n" +
     "                            Ignore\n" +
     "                        </ion-option-button>\n" +
     "                    </div>\n" +
@@ -4701,10 +4701,12 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "        class=\"item item-icon-right\">\n" +
     "        <p>Please <a ui-sref=\"settings.group.jobs({group_id: groupId})\">CLICK HERE</a> to select your job title and select locations you want to receive notifications from.</p>\n" +
     "    </ion-item>\n" +
+    "    <!--\n" +
     "    <div class=\"item item-divider\"\n" +
     "         ng-show=\"ignorableShiftsExist()\">\n" +
     "        {{declinedshifttitle}}\n" +
     "    </div>\n" +
+    "    -->\n" +
     "</ion-list>\n"
   );
 

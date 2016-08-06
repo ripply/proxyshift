@@ -96,6 +96,7 @@ angular.module('scheduling-app.controllers')
                                 isDivider: true
                             });
                         }
+                        /*
                         if (declined) {
                             console.log('Declined shifts exist!');
                             data.splice(0, 0, {
@@ -104,6 +105,7 @@ angular.module('scheduling-app.controllers')
                                 isDivider: true
                             });
                         }
+                        */
                         data.sort(predicate);
                     }
                     $rootScope.$emit(GENERAL_EVENTS.UPDATES.RESOURCE, $scope.MODELNAME || 'AllShifts', data, data, $scope);

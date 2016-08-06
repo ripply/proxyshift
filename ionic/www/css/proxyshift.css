@@ -1031,26 +1031,32 @@ input[type="password"] :focus {
 .welcome {
   font-size: 150%;
 }
-.shift-item .shift-button-info {
+.shift-button-manage {
   background-color: #ffffff;
   color: #159deb;
 }
-.shift-item .shift-button-apply {
+.shift-button-info {
   background-color: #ffffff;
   color: #159deb;
-  border-color: #159deb !important;
-  border-left-width: 1px !important;
-  border-right-width: 1px !important;
-  border-left-style: solid !important;
-  border-right-style: solid !important;
 }
-.shift-item .shift-button-ignore {
-  background-color: #ffffff;
-  color: #e74c3c;
+.shift-button-apply {
+  background-color: #33cd5f;
+  color: #ffffff;
+  /*
+    border-color: @background-light !important;
+    border-left-width: 1px !important;
+    border-right-width: 1px !important;
+    border-left-style: solid !important;
+    border-right-style: solid !important;
+    */
 }
-.shift-item .shift-button-decline {
-  background-color: #ffffff;
-  color: #e74c3c;
+.shift-button-ignore {
+  background-color: #e74c3c;
+  color: #ffffff;
+}
+.shift-button-decline {
+  background-color: #e74c3c;
+  color: #ffffff;
 }
 .square-box {
   float: left;
@@ -1403,6 +1409,11 @@ input[type="password"] :focus {
 .list .card a {
   background-color: inherit;
 }
+.list .shift-list .item,
+.list .shift-list .card {
+  background-color: #ffffff;
+  color: #000000;
+}
 .list .divider-card {
   background-color: #159deb;
 }
@@ -1485,6 +1496,31 @@ input[type="password"] :focus {
 #shift-description-content .shift-desc {
   padding-left: 0px;
   padding-right: 0px;
+}
+.applied-to-shift {
+  border-left-width: 8px !important;
+  border-left-color: #33cd5f;
+  border-left-style: solid;
+}
+.ignored-shift {
+  border-left-width: 8px !important;
+  border-left-color: #e74c3c;
+  border-left-style: solid;
+}
+.pending-approval {
+  border-left-width: 8px !important;
+  border-left-color: #ffc900;
+  border-left-style: solid;
+}
+.card {
+  border-radius: 0;
+  box-shadow: none;
+}
+.card .item:first-child {
+  border-radius: 0;
+}
+.card .item:first-child .item-content {
+  border-radius: 0;
 }
 .shift-location,
 .shift-star {

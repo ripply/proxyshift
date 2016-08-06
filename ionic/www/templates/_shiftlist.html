@@ -4,11 +4,11 @@
     show-delete="false"
     show-reorder="false"
     can-swipe="swipable">
-    <div collection-repeat="shift in Model" item-height="(shift.canceled || ignoredShift(shift)) || (acceptedOnly && (!acceptedOnly || !acceptedOrApprovedShiftOrDivider(shift))) ? 0:(shift.isDivider ? 40:120)"
+    <div collection-repeat="shift in Model" item-height="shift.canceled || (acceptedOnly && (!acceptedOnly || !acceptedOrApprovedShiftOrDivider(shift))) ? 0:(shift.isDivider ? 40:120)"
          item-width="100%"
-         id="hey"
-         ng-show="((!shift.canceled && !ignoredShift(shift)) && (!acceptedOnly || (acceptedOnly && acceptedOrApprovedShiftOrDivider(shift))) && markShiftVisible(shift)) || markShiftNotVisible(shift)">
-        <div ng-class="{'card': !shift.isDivider, 'divider-card': shift.isDivider}">
+         class="shift-list"
+         ng-show="(!shift.canceled && (!acceptedOnly || (acceptedOnly && acceptedOrApprovedShiftOrDivider(shift))) && markShiftVisible(shift)) || markShiftNotVisible(shift)">
+        <div ng-class="{'card': !shift.isDivider, 'divider-card': shift.isDivider, 'applied-to-shift': manageable ? (!shift.isDivider && isShiftApproved(shift)) : (acceptedOnly ? isShiftApproved(shift) : shift.applied), 'ignored-shift': manageable ? (!shift.isDivider && !isShiftAppliedFor(shift)):shift.ignoreshifts.length > 0, 'pending-approval': manageable ? (!shift.isDivider && isShiftAppliedFor(shift) && !isShiftApproved(shift)) : (acceptedOnly ? (shift.applied && !isShiftApproved(shift)) : false)}">
             <ion-item
                 class="item"
                 item-height="shift.isDivider ? 32:(64 + (4 * 2))"
@@ -51,7 +51,7 @@
                         <button class="button button-outline button-positive shift-accept shift-left">Accept</button>
                         <button class="button button-outline button-assertive shift-decline shift-right">Decline</button>
                     </div>
-                    <ion-option-button class="button-balanced shift-manage"
+                    <ion-option-button class="shift-button-manage"
                                        ng-click="info(shift)">
                         Details
                     </ion-option-button>
@@ -68,7 +68,7 @@
                         </ion-option-button>
                         <ion-option-button class="shift-button-ignore"
                                            ng-click="ignore(shift)"
-                                           ng-if="!shift.applied">
+                                           ng-if="!shift.applied && !ignoredShift(shift)">
                             Ignore
                         </ion-option-button>
                     </div>
@@ -91,8 +91,10 @@
         class="item item-icon-right">
         <p>Please <a ui-sref="settings.group.jobs({group_id: groupId})">CLICK HERE</a> to select your job title and select locations you want to receive notifications from.</p>
     </ion-item>
+    <!--
     <div class="item item-divider"
          ng-show="ignorableShiftsExist()">
         {{declinedshifttitle}}
     </div>
+    -->
 </ion-list>

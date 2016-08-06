@@ -27,6 +27,10 @@ angular.module('scheduling-app.controllers')
                 }
             });
 
+            var PENDING_GRUOP = -1;
+            var NOAPPLICATION_GROUP = 1;
+            var APPROVED_GROUP = 2;
+
             $scope.fetch = function() {
                 var deferred = $q.defer();
 
@@ -35,9 +39,12 @@ angular.module('scheduling-app.controllers')
                     deferred.resolve(data);
                     var pendingApprovals = false;
                     var noApplications = false;
+                    var approvedShifts = false;
                     for (var i = 0; i < data.length; i++) {
                         var shift = data[i];
-                        if (ShiftProcessingService.isShiftAppliedFor(shift)) {
+                        if (ShiftProcessingService.isShiftApproved(shift)) {
+                            approvedShifts = true;
+                        } else if (ShiftProcessingService.isShiftAppliedFor(shift)) {
                             pendingApprovals = true;
                         } else {
                             noApplications = true;
@@ -49,14 +56,21 @@ angular.module('scheduling-app.controllers')
                     if (pendingApprovals) {
                         data.splice(0, 0, {
                             type: 'pendingApproval',
-                            sort: -1,
+                            sort: PENDING_GRUOP,
                             isDivider: true
                         });
                     }
                     if (noApplications) {
                         data.splice(0, 0, {
                             type: 'noApplications',
-                            sort: 1,
+                            sort: NOAPPLICATION_GROUP,
+                            isDivider: true
+                        });
+                    }
+                    if (approvedShifts) {
+                        data.splice(0, 0, {
+                            type: 'approved',
+                            sort: APPROVED_GROUP,
                             isDivider: true
                         });
                     }
@@ -70,42 +84,35 @@ angular.module('scheduling-app.controllers')
                 return deferred.promise;
             };
 
-            function predicate(left, right) {
-                if (left.isDivider && right.isDivider) {
-                    if (left.sort == right.sort) {
-                        return 0;
-                    } else if (left.sort < right.sort) {
-                        return -1;
-                    } else {
-                        return 0;
-                    }
-                }
-                var leftAppliedFor = ShiftProcessingService.isShiftAppliedFor(left);
-                var rightAppliedFor = ShiftProcessingService.isShiftAppliedFor(right);
-                if (leftAppliedFor && rightAppliedFor) {
-                    return ShiftProcessingService.compareShiftByDate(left, right);
-                } else if (leftAppliedFor) {
-                    if (right.isDivider) {
-                        if (right.sort <= 0) {
-                            return 1;
-                        } else {
-                            return -1;
-                        }
-                    } else {
-                        return -1;
-                    }
-                } else if (rightAppliedFor) {
-                    if (left.isDivider) {
-                        if (left.sort > 0) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
-                    } else {
-                        return 1;
-                    }
+            function getShiftGroup(shift) {
+                if (shift.isDivider) {
+                    return shift.sort;
+                } else if (ShiftProcessingService.isShiftApproved(shift)) {
+                    return APPROVED_GROUP;
+                } else if (ShiftProcessingService.isShiftAppliedFor(shift)) {
+                    return PENDING_GRUOP;
                 } else {
-                    return ShiftProcessingService.compareShiftByDate(left, right);
+                    return NOAPPLICATION_GROUP;
+                }
+            }
+
+            function predicate(left, right) {
+                // determine which group the shifts are a part of
+                var leftGroup = getShiftGroup(left);
+                var rightGroup = getShiftGroup(right);
+
+                if (leftGroup == rightGroup) {
+                    if (left.isDivider) {
+                        return -1;
+                    } else if (right.isDivider) {
+                        return 1;
+                    } else {
+                        return ShiftProcessingService.compareShiftByDate(left, right);
+                    }
+                } else if (leftGroup < rightGroup) {
+                    return -1;
+                } else {
+                    return 1;
                 }
             }
         }]);

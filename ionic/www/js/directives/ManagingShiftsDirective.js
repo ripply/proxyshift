@@ -7,12 +7,12 @@ angular.module('scheduling-app.directives')
             templateUrl: 'templates/_shiftlist.html',
             scope: {
                 dismissable: '=dismissable',
-                cancelable: '=cancelable',
-                manageable: '=manageable'
+                cancelable: '=cancelable'
             }
         });
 
         function link(scope, element, attributes) {
+            scope.manageable = attributes.manageable == 'true' || attributes.manageable == true;
             scope.swipable = true;
             scope.name = attributes.name;
             scope.$on('$ionicView.afterEnter', function() {

@@ -443,42 +443,56 @@ module.exports = {
                                 })
                                     .save(null, sqlOptions)
                                     .tap(function createShiftApplicationSuccess(model) {
-                                        if (autoaccept) {
-                                            return models.ShiftApplicationAcceptDeclineReason.forge({
-                                                accept: true,
-                                                autoaccepted: true,
-                                                shiftapplication_id: model.get('id'),
-                                                user_id: null, // system
-                                                date: shiftApplicationTime,
-                                                reason: null
-                                            })
-                                                .save(null, sqlOptions)
-                                                .tap(function createShiftApplicationAutoAcceptSuccess(shiftapplicationacceptdeclinereason) {
-                                                    // send success notification to user and managers
-                                                    // there will be no declined users because this was an auto accepted shift
-                                                    console.log("SHIFTINFO:::");
-                                                    console.log(shiftInfo);
-                                                    clientCreate(req, res, 201, model.get('id'));
-                                                    appLogic.sendNotificationAboutAutoApprovedShift(
-                                                        req.user.id,
-                                                        req.params.shift_id,
-                                                        shiftInfo.location_title,
-                                                        shiftInfo.sublocation_title,
-                                                        shiftInfo.shift_start,
-                                                        shiftInfo.shift_end,
-                                                        shiftInfo.shift_timezone,
-                                                        function createShiftApplicationAutoAcceptSendNotificationSuccess() {
+                                        console.log('2');
+                                        return models.IgnoreShift.query(function(q) {
+                                            q.select()
+                                                .from('ignoreshifts')
+                                                .where('shift_id', '=', req.params.shift_id)
+                                                .where('user_id', '=', req.user.id)
+                                                .delete();
+                                        })
+                                            .fetchAll(sqlOptions)
+                                            .tap(function(ignoreShifts) {
+                                                console.log('2');
+                                                if (autoaccept) {
+                                                    return models.ShiftApplicationAcceptDeclineReason.forge({
+                                                        accept: true,
+                                                        autoaccepted: true,
+                                                        shiftapplication_id: model.get('id'),
+                                                        user_id: null, // system
+                                                        date: shiftApplicationTime,
+                                                        reason: null
+                                                    })
+                                                        .save(null, sqlOptions)
+                                                        .tap(function createShiftApplicationAutoAcceptSuccess(shiftapplicationacceptdeclinereason) {
+                                                            console.log('3');
+                                                            // send success notification to user and managers
+                                                            // there will be no declined users because this was an auto accepted shift
+                                                            clientCreate(req, res, 201, model.get('id'));
+                                                            console.log('4');
+                                                            appLogic.sendNotificationAboutAutoApprovedShift(
+                                                                req.user.id,
+                                                                req.params.shift_id,
+                                                                shiftInfo.location_title,
+                                                                shiftInfo.sublocation_title,
+                                                                shiftInfo.shift_start,
+                                                                shiftInfo.shift_end,
+                                                                shiftInfo.shift_timezone,
+                                                                function createShiftApplicationAutoAcceptSendNotificationSuccess() {
 
-                                                        },
-                                                        function createShiftApplicationAutoAcceptSendNotificationError(err) {
-                                                            // TODO: HOW TO NOTIFY USER THAT NOTIFICATIONS FAILED?
-                                                        }
-                                                    );
-                                                });
-                                        } else {
-                                            triggerShiftApplicationNotification(req.params.shift_id, model.get('id'));
-                                            clientCreate(req, res, 201, model.get('id'));
-                                        }
+                                                                },
+                                                                function createShiftApplicationAutoAcceptSendNotificationError(err) {
+                                                                    // TODO: HOW TO NOTIFY USER THAT NOTIFICATIONS FAILED?
+                                                                }
+                                                            );
+                                                        });
+                                                } else {
+                                                    console.log('4');
+                                                    triggerShiftApplicationNotification(req.params.shift_id, model.get('id'));
+                                                    console.log('5');
+                                                    clientCreate(req, res, 201, model.get('id'));
+                                                }
+                                            });
                                     });
                             }
                         }, function getApprovedDeniedUsersForShiftError(err) {
@@ -543,7 +557,6 @@ module.exports = {
                                     .catch(function(err) {
                                         error(req, res, err);
                                     });
-
                             }
                         })
                         .catch(function(err) {

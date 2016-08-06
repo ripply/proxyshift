@@ -741,9 +741,9 @@ App.prototype.handleNewShiftApplication = function handleNewShiftApplication(job
     var shift_id = body.shift_id;
     var shiftapplication_id = body.shfit_application_id;
 
-    return Bookshelf.transaction(function(t) {
+    //return Bookshelf.transaction(function(t) { // issue with sqlite local dev env where this would hold a transaction, doesn't really need a transaction?
         var sqlOptions = {
-            transacting: t
+            //transacting: t
         };
         return models.ShiftApplication.query(function(q) {
             q.select(
@@ -910,7 +910,7 @@ App.prototype.handleNewShiftApplication = function handleNewShiftApplication(job
                 slack.error(null, 'Error sending new shift application notifications', err);
                 job.nack();
             });
-    });
+    //});
 };
 
 App.prototype.handleNewDelayedShiftApplication = function handleNewDelayedShiftApplication(job) {

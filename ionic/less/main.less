@@ -20,6 +20,8 @@
 @color-positive: #ffd560;
 @color-assertive: #e74c3c;
 @color-emphasize: @proxyshift-emphasize;
+@color-balanced: #33cd5f;
+@color-energized: #ffc900;
 @text-color: #000;
 @text-bright: #fff;
 @progress-bar-review: #090;
@@ -312,31 +314,36 @@ input[type="text"], input[type="password"] {
     font-size: 150%;
 }
 
-.shift-item {
-    .shift-button-info {
-        background-color: @text-bright;
-        color: @background-light;
-    }
+.shift-button-manage {
+    background-color: @text-bright;
+    color: @background-light;
+}
 
-    .shift-button-apply {
-        background-color: @text-bright;
-        color: @background-light;
-        border-color: @background-light !important;
-        border-left-width: 1px !important;
-        border-right-width: 1px !important;
-        border-left-style: solid !important;
-        border-right-style: solid !important;
-    }
+.shift-button-info {
+    background-color: @text-bright;
+    color: @background-light;
+}
 
-    .shift-button-ignore {
-        background-color: @text-bright;
-        color: @color-assertive;
-    }
+.shift-button-apply {
+    background-color: @color-balanced;
+    color: @text-bright;
+    /*
+    border-color: @background-light !important;
+    border-left-width: 1px !important;
+    border-right-width: 1px !important;
+    border-left-style: solid !important;
+    border-right-style: solid !important;
+    */
+}
 
-    .shift-button-decline {
-        background-color: @text-bright;
-        color: @color-assertive;
-    }
+.shift-button-ignore {
+    background-color: @color-assertive;
+    color: @text-bright;
+}
+
+.shift-button-decline {
+    background-color: @color-assertive;
+    color: @text-bright;
 }
 
 .square-box{
@@ -825,6 +832,13 @@ input[type="text"], input[type="password"] {
         }
     }
 
+    .shift-list {
+        .item, .card {
+            background-color: @background-foreground;
+            color: @text-color;
+        }
+    }
+
     .divider-card {
         background-color: @background-softer;
         .item, .card {
@@ -941,6 +955,39 @@ input[type="text"], input[type="password"] {
     .shift-desc {
         padding-left: (@shift-padding / 2) + @list-padding;
         padding-right: (@shift-padding / 2) + @list-padding;
+    }
+}
+
+@shift-list-left-width: 8px;
+
+.applied-to-shift {
+    border-left-width: @shift-list-left-width !important;
+    border-left-color: @color-balanced;
+    border-left-style: solid;
+}
+
+.ignored-shift {
+    border-left-width: @shift-list-left-width !important;
+    border-left-color: @color-assertive;
+    border-left-style: solid;
+}
+
+.pending-approval {
+    border-left-width: @shift-list-left-width !important;
+    border-left-color: @color-energized;
+    border-left-style: solid;
+}
+
+.card {
+    border-radius: 0;
+    box-shadow: none;
+
+    .item:first-child {
+        border-radius: 0;
+
+        .item-content {
+            border-radius: 0;
+        }
     }
 }
 

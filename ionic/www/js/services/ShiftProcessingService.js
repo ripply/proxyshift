@@ -243,6 +243,21 @@ angular.module('scheduling-app.services')
                 }
             };
 
+            this.isShiftApproved = function isShiftApproved(shift) {
+                if (shift.approved) {
+                    return true;
+                } else if (shift.shiftapplications && shift.shiftapplications.length > 0) {
+                    var i = 0;
+                    var shiftapplications = shift.shiftapplications;
+                    for (i = 0; i < shiftapplications.length; i++) {
+                        if (shiftapplications[i].accept) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            };
+
             this.isShiftAppliedFor = function isShiftAppliedFor(shift) {
                 return shift.applied || (shift.shiftapplications && shift.shiftapplications.length > 0);
             };

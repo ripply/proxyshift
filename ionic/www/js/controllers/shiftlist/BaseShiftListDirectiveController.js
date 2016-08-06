@@ -334,6 +334,7 @@ angular.module('scheduling-app.controllers')
 
             $scope.applyForShift = function(id) {
                 var shift = getShift(id);
+                console.log("!?!?!??!??!?!?!?!?");
                 if (shift) {
                     if (shift.applied) {
                         // already applied for shift
@@ -358,6 +359,7 @@ angular.module('scheduling-app.controllers')
                             // server sent unexpected content
                         }
                         shift.applied = registrationId;
+                        removeShiftFromIgnoredShifts(shift.id);
                         $ionicScrollDelegate.resize();
                         $rootScope.$emit(GENERAL_EVENTS.TOAST, 'info', 'Applied', 'Applied for shift ' + id);
                     }, function(response) {
@@ -547,6 +549,9 @@ angular.module('scheduling-app.controllers')
                 $rootScope.$broadcast('events:shift:info', shift, $scope.name);
             };
 
+            $scope.isShiftAppliedFor = ShiftProcessingService.isShiftAppliedFor;
+            $scope.isShiftApproved = ShiftProcessingService.isShiftApproved;
+
             $scope.getReadableLocalShiftStartEndTime = ShiftProcessingService.getReadableLocalShiftStartEndTime;
             $scope.getReadableLocalShiftStartTime = ShiftProcessingService.getReadableLocalShiftStartTime;
             $scope.getReadableLocalShiftEndTime = ShiftProcessingService.getReadableLocalShiftEndTime;
@@ -561,5 +566,5 @@ angular.module('scheduling-app.controllers')
             $scope.getShiftsSublocation = ShiftProcessingService.getShiftsSublocation;
             $scope.shiftHasNonRecindedApplications = ShiftProcessingService.shiftHasNonRecindedApplications;
             $scope.getReadableClassType = ShiftProcessingService.getReadableClassType;
-            $scope.ignoreShift = ResourceService.ignoreShift;
+            //$scope.ignoreShift = ResourceService.ignoreShift;
         }]);
