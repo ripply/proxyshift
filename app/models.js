@@ -462,6 +462,10 @@ function initDb(dropAllTables) {
                             tableNameToModelName[normalizedTableName] = modelName;
                             current = current.createTable(normalizedTableName, function (table) {
                                 _.each(tableSchema, function (columnSchema, columnName) {
+                                    if (columnName == 'comment') {
+                                        table.comment(columnSchema);
+                                        return;
+                                    }
                                     var column;
                                     // check each type of method that requires special behavior
                                     // then do that special behavior
@@ -498,6 +502,17 @@ function initDb(dropAllTables) {
                                     }
                                     if (columnSchema.hasOwnProperty('comment')) {
                                         column = column.comment(columnSchema['comment']);
+                                    }
+                                    if (columnSchema.hasOwnProperty('index')) {
+                                        var indexProperties = columnSchema['index'];
+                                        var indexName, indexType;
+                                        if (indexProperties.hasOwnProperty('indexName')) {
+                                            indexName = indexProperties.indexName;
+                                        }
+                                        if (indexProperties.hasOwnProperty('indexType')) {
+                                            indexType = indexProperties.indexType;
+                                        }
+                                        table.index(columnName, indexName, indexType);
                                     }
                                     if (columnSchema.hasOwnProperty('check')) {
                                         _.each(columnSchema['check'], function(functionDefinition, functionName) {

@@ -34,22 +34,27 @@ var Schema = {
     // and pluralizing
     // Holds settings for users
     UserSetting: {
+        comment: 'Holds user settings',
         id: {
             type: increments,
+            index: {},
             comment: 'A Users settings'
         },
         pushnotifications: {
             type: boolean,
+            index: {},
             comments: 'If true, user will receive push notifications',
             defaultTo: true
         },
         textnotifications: {
             type: boolean,
+            index: {},
             comment: 'If true, user will receive text notifications',
             defaultTo: false
         },
         emailnotifications: {
             type: boolean,
+            index: {},
             comment: 'If true, user will receive email notifications',
             defaultTo: false
         }
@@ -57,10 +62,12 @@ var Schema = {
     User: {
         id: {
             type: increments,
+            index: {},
             nullable: false
         },
         usersetting_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'usersettings',
             onDelete: cascade,
@@ -71,6 +78,7 @@ var Schema = {
         },
         username: {
             type: string,
+            index: {},
             unique: true,
             nullable: false,
             // FIXME: Enabling this overwrites our password encryption on save event
@@ -87,17 +95,20 @@ var Schema = {
         },
         email: {
             type: string,
+            index: {},
             unique: true,
             // lowercase: true,
             nullable: false
         },
         verified_email: {
             type: boolean,
+            index: {},
             comment: 'True when the user verifies their email',
             default: false
         },
         password: {
             type: string,
+            index: {},
             unique: false,
             maxlen: 100,
             nullable: false,
@@ -126,6 +137,7 @@ var Schema = {
     // refresh_token can only be obtained once upon OAuth
     // access_token will be updated occasionally and must be stored
     EmailAccessToken: {
+        comment: 'GMail OAuth tokens refresh_token can only be obtained once upon OAuth access_token will be updated occasionally and must be stored',
         id: {
             type: increments,
             comment: 'GMail OAuth tokens'
@@ -148,12 +160,15 @@ var Schema = {
     },
     // Tokens for users to verify their emails
     EmailVerifyToken: {
+        comment: 'Tokens for users to verify their emails',
         id: {
             type: increments,
+            index: {},
             comment: 'Tokens for users to verify their emails'
         },
         user_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'users',
             onDelete: cascade,
@@ -164,29 +179,35 @@ var Schema = {
         },
         token: {
             type: string,
+            index: {},
             comment: 'One time use email verification token',
             nullable: false
         },
         expires: {
             type: date,
+            index: {},
             comment: 'When this token expires',
             nullable: false
         }
     },
     // Holds settings for groups
     GroupSetting: {
+        comment: 'Holds settings for groups',
         id: {
             type: increments,
+            index: {},
             comment: 'Holds settings for groups (A Company)'
         },
         allowalltocreateshifts: {
             type: boolean,
+            index: {},
             comment: 'Any user can create a shift',
             defaultTo: false,
             nullable: false
         },
         requireshiftconfirmation: {
             type: boolean,
+            index: {},
             comment: 'If true, will require manager approval',
             defaultTo: true,
             nullable: false
@@ -195,10 +216,12 @@ var Schema = {
     Group: {
         id: {
             type: increments,
+            index: {},
             comment: 'A Company with an account'
         },
         user_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'users',
             onDelete: restrict,
@@ -207,22 +230,28 @@ var Schema = {
         },
         name: {
             type: string,
+            index: {},
             nullable: false
         },
         state: {
-            type: string
+            type: string,
+            index: {}
         },
         city: {
-            type: string
+            type: string,
+            index: {}
         },
         address: {
-            type: string
+            type: string,
+            index: {}
         },
         zipcode: {
-            type: integer // TODO: this should be a string? zipcodes can have - in them
+            type: integer, // TODO: this should be a string? zipcodes can have - in them
+            index: {}
         },
         weburl: {
-            type: string
+            type: string,
+            index: {}
         },
         contactemail: {
             type: string,
@@ -233,6 +262,7 @@ var Schema = {
         },
         groupsetting_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'groupsettings',
             onDelete: cascade,
@@ -246,12 +276,15 @@ var Schema = {
     // eg: unprivileged, privileged etc
     // here they can customize the name of their permission levels
     GroupPermission: {
+        comment: 'groups can have different permissions eg: unprivileged, privileged etc here they can customize the name of their permission levels',
         id: {
             type: increments,
+            index: {},
             comment: 'Companies can have variying levels of permissions, unprivileged, privileged etc'
         },
         groupsetting_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'groupsettings',
             onDelete: cascade,
@@ -266,10 +299,12 @@ var Schema = {
         permissionlevel: {
             // TODO: What is this table for? it doesnt link to a user or location
             type: integer,
+            index: {},
             nullable: false
         },
         group_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'groups',
             onDelete: cascade,
@@ -279,21 +314,27 @@ var Schema = {
     },
     // timezones for linking
     Timezone: {
+        comment: 'timezones for linking',
         id: {
-            type: increments
+            type: increments,
+            index: {}
         },
         name: {
             type: string,
+            index: {},
             unique: true
         }
     },
     // physical store where things happen
     Location: {
+        comment: 'physical store where things happen',
         id: {
-            type: increments
+            type: increments,
+            index: {}
         },
         group_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'groups',
             onDelete: restrict, // prevent accidental deletion of a location
@@ -302,6 +343,7 @@ var Schema = {
         },
         timezone_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'timezones',
             onDelete: restrict,
@@ -335,21 +377,26 @@ var Schema = {
     },
     // area of a store, eg: floor
     SubLocation: {
+        comment: 'area of a store, eg: floor',
         id: {
-            type: increments
+            type: increments,
+            index: {}
         },
         title: {
             type: string,
+            index: {},
             nullable: false,
             unique: false
         },
         description: {
             type: string,
+            index: {},
             nullable: false,
             unique: false
         },
         location_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'locations',
             onDelete: cascade,
@@ -360,17 +407,21 @@ var Schema = {
     // collection of locations
     // eg: District, state
     Area: {
+        comment: 'collection of locations, not currently used much',
         id: {
-            type: increments
+            type: increments,
+            index: {}
         },
         title: {
             type: string,
+            index: {},
             nullable: false,
             // TODO: If we have one database for the entire site it doesn't make sense to have this be unique, each company can have identically named places
             unique: false
         },
         group_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'groups',
             onUpdate: cascade,
@@ -379,11 +430,14 @@ var Schema = {
     },
     // connects locations to an area
     AreaLocation: {
+        comment: 'connections locations to an area',
         id: {
-            type: increments
+            type: increments,
+            index: {}
         },
         location_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'locations',
             onUpdate: cascade,
@@ -391,6 +445,7 @@ var Schema = {
         },
         area_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'areas',
             onUpdate: cascade,
@@ -399,11 +454,14 @@ var Schema = {
     },
     // job type that a user can be
     GroupUserClass: {
+        comment: 'job type that a user can be',
         id: {
-            type: increments
+            type: increments,
+            index: {}
         },
         group_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'groups',
             onDelete: cascade,
@@ -422,17 +480,20 @@ var Schema = {
         },
         cansendnotification: {
             type: boolean,
+            index: {},
             defaultTo: true,
             nullable: false
         },
         requiremanagerapproval: {
             type: boolean,
+            index: {},
             defaultTo: true,
             nullable: false,
             comment: 'Indicates whether this job type requires manager approval'
         },
         grouppermission_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'grouppermissions',
             onDelete: cascade,
@@ -442,33 +503,41 @@ var Schema = {
         }
     },
     GroupCreationInvitation: {
+        comment: 'Invite to create a group, holds tokens',
         id: {
-            type: increments
+            type: increments,
+            index: {}
         },
         message: {
             type: string
         },
         email: {
             type: string,
+            index: {},
             unique: false,
             nullable: false
         },
         expires: {
             type: date,
+            index: {},
             nullable: false
         },
         token: {
             type: string,
+            index: {},
             unique: true,
             nullable: false
         }
     },
     GroupInvitation: {
+        comment: 'Invitation to a group from a user',
         id: {
-            type: increments
+            type: increments,
+            index: {}
         },
         inviter_user_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'users',
             onDelete: cascade,
@@ -479,6 +548,7 @@ var Schema = {
         // if invited person is already in the system
         user_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'users',
             onDelete: cascade,
@@ -494,6 +564,7 @@ var Schema = {
         },
         grouppermission_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'grouppermissions',
             onDelete: cascade,
@@ -507,20 +578,25 @@ var Schema = {
         },
         expires: {
             type: date,
+            index: {},
             nullable: false
         },
         token: {
             type: string,
+            index: {},
             unique: true,
             nullable: false
         }
     },
     GroupInvitationUserClass: {
+        comment: 'Userclass type that a user is invited as',
         id: {
-            type: increments
+            type: increments,
+            index: {}
         },
         groupinvitation_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'groupinvitations',
             onDelete: cascade,
@@ -530,6 +606,7 @@ var Schema = {
         },
         groupuserclass_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'groupuserclasses',
             onDelete: cascade,
@@ -540,14 +617,16 @@ var Schema = {
     },
     Shift: {
         id: {
-            type: increments
+            type: increments,
+            index: {}
         },
         user_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'users',
             onUpdate: cascade,
-            onDelete: cascade
+            onDelete: cascade,
         },
         /*
         title: {
@@ -562,10 +641,12 @@ var Schema = {
         },
         start: {
             type: date,
+            index: {},
             nullable: false
         },
         end: {
             type: date,
+            index: {},
             nullable: false,
             check: {
                 'check(start < "end")': RAW
@@ -573,6 +654,7 @@ var Schema = {
         },
         timezone_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'timezones',
             onDelete: restrict,
@@ -581,6 +663,7 @@ var Schema = {
         },
         groupuserclass_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'groupuserclasses',
             onUpdate: cascade,
@@ -588,6 +671,7 @@ var Schema = {
         },
         location_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'locations',
             unique: false,
@@ -597,6 +681,7 @@ var Schema = {
         },
         sublocation_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'sublocations',
             unique: false,
@@ -606,6 +691,7 @@ var Schema = {
         },
         notify: {
             type: date,
+            index: {},
             nullable: true
         },
         // shift is canceled
@@ -613,6 +699,7 @@ var Schema = {
         // this provides no indication to any applicants or people interested that a shift has disappeared
         canceled: {
             type: boolean,
+            index: {},
             default: false,
             nullable: false
         }
@@ -622,8 +709,10 @@ var Schema = {
     // this prevents an employee of initially putting a valid reason
     // then changing it after the fact
     ShiftCancelationReason: {
+        comment: 'Keeps a record of reasons that a shift has been canceled, each shift can have multiple reasons this prevents an employee of initially putting a valid reason then changing it after the fact',
         id: {
-            type: increments
+            type: increments,
+            index: {}
         },
         // reason for canceling a shift
         reason: {
@@ -633,6 +722,7 @@ var Schema = {
         // user who canceled a shift
         user_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'users',
             unique: false,
@@ -643,6 +733,7 @@ var Schema = {
         // shift that was canceled
         shift_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'shifts',
             unique: false,
@@ -653,22 +744,27 @@ var Schema = {
         // UTC second that shift was canceled
         date: {
             type: date,
+            index: {},
             nullable: false
         }
     },
     // Application for a shift
     ShiftApplication: {
+        comment: 'Application for a shift',
         id: {
-            type: increments
+            type: increments,
+            index: {}
         },
         shift_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'shifts',
             onDelete: cascade
         },
         user_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'users',
             onUpdate: cascade,
@@ -677,11 +773,13 @@ var Schema = {
         },
         date: {
             type: date,
+            index: {},
             nullable: false
         },
         // application for shift has been recinded
         recinded: {
             type: boolean,
+            index: {},
             default: false,
             nullable: false,
             comment: 'Shift application has been recinded',
@@ -693,57 +791,70 @@ var Schema = {
         },
         recindeddate: {
             type: date,
+            index: {},
             nullable: true
         }
     },
     // Reason for recission of a shift application
     ShiftRescissionReason: {
+        comment: 'Reason for recission of a shift application',
         id: {
-            type: increments
+            type: increments,
+            index: {}
         },
         shiftapplication_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'shiftapplications',
             onDelete: cascade
         },
         user_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'users',
             onDelete: cascade
         },
         date: {
             type: date,
+            index: {},
             nullable: false
         },
         reason: {
             type: string,
+            index: {},
             nullable: false
         }
     },
     ShiftApplicationAcceptDeclineReason: {
+        comment: 'Links to a shift application and is what determins if the application is approved or denied',
         id: {
-            type: increments
+            type: increments,
+            index: {}
         },
         accept: {
             type: boolean,
+            index: {},
             nullable: false,
             comment: 'Is the shift application approved'
         },
         autoaccepted: {
             type: boolean,
+            index: {},
             nullable: false,
             comment: 'System auto approved the shift because at time of creation, it did not require manager approval'
         },
         shiftapplication_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'shiftapplications',
             onDelete: cascade
         },
         user_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'users',
             onDelete: cascade,
@@ -752,6 +863,7 @@ var Schema = {
         },
         date: {
             type: date,
+            index: {},
             nullable: false,
             comment: 'Date the approval/denial was made'
         },
@@ -762,17 +874,21 @@ var Schema = {
         }
     },
     IgnoreShift: {
+        comment: 'Marks a shift as ignored for a user',
         id: {
-            type: increments
+            type: increments,
+            index: {}
         },
         shift_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'shifts',
             onDelete: cascade
         },
         user_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'users',
             onDelete: cascade
@@ -780,11 +896,14 @@ var Schema = {
     },
     // connects a user to a group
     UserGroup: {
+        comment: 'Connects a user to a group',
         id: {
-            type: increments
+            type: increments,
+            index: {}
         },
         user_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'users',
             onUpdate: cascade,
@@ -792,6 +911,7 @@ var Schema = {
         },
         group_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'groups',
             onUpdate: cascade,
@@ -799,6 +919,7 @@ var Schema = {
         },
         grouppermission_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'grouppermissions',
             onUpdate: cascade,
@@ -807,11 +928,14 @@ var Schema = {
     },
     // remember me tokens
     Token: {
+        comment: 'Remember me tokens',
         id: {
-            type: increments
+            type: increments,
+            index: {}
         },
         user_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'users',
             onDelete: cascade,
@@ -820,20 +944,25 @@ var Schema = {
         },
         token: {
             type: string,
+            index: {},
             nullable: false,
             unique: true
         },
         date: {
             type: date,
+            index: {},
             nullable: false
         }
     },
     PushToken: {
+        comment: 'Pushtokens for devices',
         id: {
-            type: increments
+            type: increments,
+            index: {}
         },
         token_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'tokens',
             onDelete: cascade,
@@ -842,29 +971,36 @@ var Schema = {
         },
         token: {
             type: string,
+            index: {},
             nullable: false,
             unique: true
         },
         platform: {
             type: integer,
+            index: {},
             nullable: false
         },
         date: {
             type: date,
+            index: {},
             nullable: false
         },
         expires: {
             type: date,
+            index: {},
             nullable: false
         }
     },
     // relates a user to a job type
     GroupUserClassToUser: {
+        comment: 'Relates a user to a job type',
         id: {
-            type: increments
+            type: increments,
+            index: {}
         },
         user_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'users',
             onDelete: cascade,
@@ -873,6 +1009,7 @@ var Schema = {
         },
         groupuserclass_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'groupuserclasses',
             onDelete: cascade,
@@ -882,11 +1019,13 @@ var Schema = {
     },
     // Links a user to a location (permissions are linked via group job type instead of via this)
     UserPermission: {
+        comment: 'Links a user to a location (permissions are linked via group job type instead of via this)',
         id: {
             type: increments
         },
         location_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'locations',
             onDelete: cascade,
@@ -895,6 +1034,7 @@ var Schema = {
         },
         user_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'users',
             onDelete: cascade,
@@ -902,6 +1042,7 @@ var Schema = {
         },
         subscribed: {
             type: boolean,
+            index: {},
             defaultTo: true,
             nullable: false
         }
@@ -909,10 +1050,12 @@ var Schema = {
     // TODO: DESCRIBE THIS
     GroupAdditionalInformation: {
         id: {
-            type: increments
+            type: increments,
+            index: {}
         },
         group_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'groups',
             onDelete: cascade,
@@ -927,10 +1070,12 @@ var Schema = {
     // TODO: DESCRIBE THIS
     GroupUserInformation: {
         id: {
-            type: increments
+            type: increments,
+            index: {}
         },
         user_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'users',
             onDelete: cascade,
@@ -939,6 +1084,7 @@ var Schema = {
         },
         groupadditionalinformation_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'groupadditionalinformations',
             onDelete: cascade,
@@ -953,11 +1099,13 @@ var Schema = {
     // TODO: This table needs to be culled when a users' permission is lowered
     ManagingClassesAtLocation: {
         id: {
-            type: increments
+            type: increments,
+            index: {}
         },
         // userid of a privileged member
         usergroup_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'usergroups',
             onDelete: cascade,
@@ -967,6 +1115,7 @@ var Schema = {
         // location that manager is managing at
         location_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'locations',
             onDelete: cascade,
@@ -976,6 +1125,7 @@ var Schema = {
         // class that manager manages
         groupuserclass_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'groupuserclasses',
             onDelete: cascade,
@@ -986,16 +1136,19 @@ var Schema = {
         // if they want to manage that type of user
         managing: {
             type: boolean,
+            index: {},
             defaultsTo: false,
             nullable: false
         }
     },
     ResetPasswordToken: {
         id: {
-            type: increments
+            type: increments,
+            index: {}
         },
         user_id: {
             type: integer,
+            index: {},
             references: 'id',
             inTable: 'users',
             onDelete: cascade,
@@ -1005,15 +1158,18 @@ var Schema = {
         },
         token: {
             type: string,
+            index: {},
             nullable: false,
             unique: true
         },
         expires: {
             type: date,
+            index: {},
             nullable: false
         },
         lastEmailSent: {
             type: date,
+            index: {},
             nullable: false
         }
     }
