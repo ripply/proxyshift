@@ -5450,7 +5450,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                               placeholder=\"Search by address, city, state, zipcode or phone\">\n" +
     "                    </label>\n" +
     "                    <ion-toggle ng-repeat=\"location in locations | filter:query\"\n" +
-    "                                ng-model=\"location.subscribed\"\n" +
+    "                                ng-model=\"location.subscribedModified\"\n" +
     "                                ng-click=\"saveLocations()\"\n" +
     "                                ng-checked=\"location.subscribed\">\n" +
     "                        {{ location.title }} - {{ location.address }}\n" +

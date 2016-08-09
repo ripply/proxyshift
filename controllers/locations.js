@@ -58,13 +58,13 @@ module.exports = {
     },
     '/:location_id/subscribe': {
         'post': {
-            auth: ['mark if user is member of location'],
+            auth: ['group member'],
             route: function locationsSubscribePost(req, res) {
                 return locationSubscribeUpdate(req, res, true);
             }
         },
         'delete': {
-            auth: ['location member'],
+            auth: ['group member'],
             route: function locationsSubscribeDelete(req, res) {
                 return locationSubscribeUpdate(req, res, false);
             }
@@ -592,15 +592,16 @@ function getShiftsAtLocation(req, res, before, after) {
 
 function locationSubscribeUpdate(req, res, subscribed) {
     return Bookshelf.transaction(function(t) {
+        const sqlOptions = {
+            transacting: t
+        };
         return models.UserPermission.query(function(q) {
             q.select()
                 .from('userpermissions')
                 .where('userpermissions.user_id', '=', req.user.id)
                 .andWhere('userpermissions.location_id', '=', req.params.location_id);
         })
-            .fetch({
-                transacting: t
-            })
+            .fetch(sqlOptions)
             .tap(function locationSubscribeUpdateCheck(userpermission) {
                 if (userpermission) {
                     return models.UserPermission.query(function (q) {
@@ -612,9 +613,7 @@ function locationSubscribeUpdate(req, res, subscribed) {
                                 subscribed: subscribed
                             })
                     })
-                        .fetch({
-                            transacting: t
-                        })
+                        .fetch(sqlOptions)
                         .then(function locationsSubscribeSuccess(userpermission) {
                             res.sendStatus(200);
                         })
@@ -622,11 +621,18 @@ function locationSubscribeUpdate(req, res, subscribed) {
                             error(req, res, err);
                         });
                 } else {
-                    return models.UserPermission.forge({
-                        user_id: req.params.user_id,
-                        location_id: req.params.location_id,
-
-                    })
+                    return models.UserPermission.forge()
+                        .save({
+                            user_id: req.user.id,
+                            location_id: req.params.location_id,
+                            subscribed: subscribed
+                        }, sqlOptions)
+                        .tap(function locationsSubscribeUserPermissionForged() {
+                            res.sendStatus(200);
+                        })
+                        .catch(function locationsSubscribeUserPermissionError(err) {
+                            error(req, res, err);
+                        });
                 }
             });
     });

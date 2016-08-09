@@ -12,7 +12,7 @@
                                placeholder="Search by address, city, state, zipcode or phone">
                     </label>
                     <ion-toggle ng-repeat="location in locations | filter:query"
-                                ng-model="location.subscribed"
+                                ng-model="location.subscribedModified"
                                 ng-click="saveLocations()"
                                 ng-checked="location.subscribed">
                         {{ location.title }} - {{ location.address }}

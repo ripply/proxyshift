@@ -50,13 +50,12 @@ angular.module('scheduling-app.controllers')
                 }, function fetchGroupLocations(result) {
                     angular.forEach(result, function(location) {
                         location.subscribed = getSubscribed(location);
+                        location.subscribedModified = location.subscribed;
                     });
                     latestLocations = angular.copy(result);
                     $scope.locations = result;
-                    console.log(result);
                 }, function fetchGroupLocationsError(err) {
                     $scope.locations = angular.copy(latestLocations);
-                    console.log(err);
                 });
             };
 
@@ -71,14 +70,14 @@ angular.module('scheduling-app.controllers')
                                 latestLocations = null;
                                 return saveLocations();
                             } else {
-                                if (location.subscribed != latestLocations.subscribed) {
-                                    diff[location.id] = location.subscribed;
+                                if (location.subscribed != location.subscribedModified) {
+                                    diff[location.id] = location.subscribedModified;
                                 }
                             }
                         }
                     } else {
                         angular.forEach($scope.locations, function(location) {
-                            diff[location.id] = location.subscribed;
+                            diff[location.id] = location.subscribedModified;
                         });
                     }
 
@@ -90,9 +89,10 @@ angular.module('scheduling-app.controllers')
                         promises.push(promise);
                         promise.then(function saveLocationsPostSuccess(result) {
                             for (var i = 0; i < latestLocations.length; i++) {
-                                var unmodifiedLocation = latestLocations[i];
+                                var unmodifiedLocation = $scope.locations[i];
                                 if (unmodifiedLocation.id == location_id) {
                                     unmodifiedLocation.subscribed = subscribed;
+                                    unmodifiedLocation.subscribedModified = subscribed;
                                     break;
                                 }
                             }
@@ -102,6 +102,7 @@ angular.module('scheduling-app.controllers')
                                 var location = $scope.locations[i];
                                 if (location.id == location_id) {
                                     location.subscribed = !subscribed;
+                                    location.subscribedModified = !subscribed;
                                     break;
                                 }
                             }
@@ -111,7 +112,7 @@ angular.module('scheduling-app.controllers')
                 }
             };
 
-            $scope.fetchLocations();
+            $scope.beforeEnter = $scope.fetchLocations();
 
         }]
 );
