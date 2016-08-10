@@ -1145,10 +1145,7 @@ module.exports = {
                 models.GroupPermission.query(function(q) {
                     q.select()
                         .from('grouppermissions')
-                        .innerJoin('groups', function() {
-                            this.on('groups.groupsetting_id', '=', 'grouppermissions.groupsetting_id');
-                        })
-                        .where('groups.id', '=', req.params.group_id);
+                        .where('grouppermissions.group_id', '=', req.params.group_id);
                 })
                     .fetchAll({withRelated: ['groupsetting']})
                     .then(function (grouppermissions) {

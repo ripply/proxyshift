@@ -1,34 +1,30 @@
 <ion-view view-title="Manage member">
     <ion-content class="has-header" hide-back-button="false">
-        <div class="item item-divider">
-            Member management
-        </div>
-        <form name="typeEditForm" ng-submit="editType(group_id, type_id, type.title, type.description, type.cansendnotification, type.requiremanagerapproval, type.grouppermissionid)">
-            <div class="list">
-                <input type="hidden" name="group_id" value="{{group_id}}">
-                <input type="hidden" name="user_id" value="{{user_id}}">
-                <label class="item item-input">
-                    <span class="input-label">First name</span>
-                    <input type="text" name="firstname" title="user" ng-model="user.firstname">
-                </label>
-                <label class="item item-input">
-                    <span class="input-label">Last name</span>
-                    <input type="text" name="lastname" title="user" ng-model="user.lastname">
-                </label>
-                <fancy-select
-                    header-text="Select an option"
-                    items="permissions"
-                    value-property="id"
-                    value="user.grouppermission_id"
-                    text-property="description"
-                    allow-empty='false'
-                    modal-template-url="templates/types/typemodal.html"
-                    template-url="templates/types/typeitem.html"
-                    note-text="A Note text"
-                    >
-                </fancy-select>
+        <h4 class="new-shift-title">{{user.firstname}} {{user.lastname}}</h4>
+        <div class="list list-inset">
+            <form name="typeEditForm" ng-submit="editType(group_id, type_id, type.title, type.description, type.cansendnotification, type.requiremanagerapproval, type.grouppermissionid)">
+                <div class="item item-input row">
+                    <div class="col col-50 list-item-padding">
+                        <h4 class="sub-subheader">Permission level</h4>
+                    </div>
+                    <div class="col">
+                        <input type="hidden" name="group_id" value="{{group_id}}">
+                        <input type="hidden" name="user_id" value="{{user_id}}">
+                        <fancy-select
+                            header-text="Select an option"
+                            items="permissions"
+                            value-property="id"
+                            value="grouppermission_id"
+                            text-property="description"
+                            allow-empty='false'
+                            modal-template-url="templates/types/typemodal.html"
+                            template-url="templates/types/typeitem.html"
+                            >
+                        </fancy-select>
+                    </div>
+                </div>
                 <button class="button button-block button-steelblue" type="submit">Save changes</button>
-            </div>
-        </form>
+            </form>
+        </div>
     </ion-content>
 </ion-view>

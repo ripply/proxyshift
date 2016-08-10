@@ -7047,36 +7047,32 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
   $templateCache.put('templates/settingsgroupmembersmanage.html',
     "<ion-view view-title=\"Manage member\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
-    "        <div class=\"item item-divider\">\n" +
-    "            Member management\n" +
-    "        </div>\n" +
-    "        <form name=\"typeEditForm\" ng-submit=\"editType(group_id, type_id, type.title, type.description, type.cansendnotification, type.requiremanagerapproval, type.grouppermissionid)\">\n" +
-    "            <div class=\"list\">\n" +
-    "                <input type=\"hidden\" name=\"group_id\" value=\"{{group_id}}\">\n" +
-    "                <input type=\"hidden\" name=\"user_id\" value=\"{{user_id}}\">\n" +
-    "                <label class=\"item item-input\">\n" +
-    "                    <span class=\"input-label\">First name</span>\n" +
-    "                    <input type=\"text\" name=\"firstname\" title=\"user\" ng-model=\"user.firstname\">\n" +
-    "                </label>\n" +
-    "                <label class=\"item item-input\">\n" +
-    "                    <span class=\"input-label\">Last name</span>\n" +
-    "                    <input type=\"text\" name=\"lastname\" title=\"user\" ng-model=\"user.lastname\">\n" +
-    "                </label>\n" +
-    "                <fancy-select\n" +
-    "                    header-text=\"Select an option\"\n" +
-    "                    items=\"permissions\"\n" +
-    "                    value-property=\"id\"\n" +
-    "                    value=\"user.grouppermission_id\"\n" +
-    "                    text-property=\"description\"\n" +
-    "                    allow-empty='false'\n" +
-    "                    modal-template-url=\"templates/types/typemodal.html\"\n" +
-    "                    template-url=\"templates/types/typeitem.html\"\n" +
-    "                    note-text=\"A Note text\"\n" +
-    "                    >\n" +
-    "                </fancy-select>\n" +
+    "        <h4 class=\"new-shift-title\">{{user.firstname}} {{user.lastname}}</h4>\n" +
+    "        <div class=\"list list-inset\">\n" +
+    "            <form name=\"typeEditForm\" ng-submit=\"editType(group_id, type_id, type.title, type.description, type.cansendnotification, type.requiremanagerapproval, type.grouppermissionid)\">\n" +
+    "                <div class=\"item item-input row\">\n" +
+    "                    <div class=\"col col-50 list-item-padding\">\n" +
+    "                        <h4 class=\"sub-subheader\">Permission level</h4>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col\">\n" +
+    "                        <input type=\"hidden\" name=\"group_id\" value=\"{{group_id}}\">\n" +
+    "                        <input type=\"hidden\" name=\"user_id\" value=\"{{user_id}}\">\n" +
+    "                        <fancy-select\n" +
+    "                            header-text=\"Select an option\"\n" +
+    "                            items=\"permissions\"\n" +
+    "                            value-property=\"id\"\n" +
+    "                            value=\"grouppermission_id\"\n" +
+    "                            text-property=\"description\"\n" +
+    "                            allow-empty='false'\n" +
+    "                            modal-template-url=\"templates/types/typemodal.html\"\n" +
+    "                            template-url=\"templates/types/typeitem.html\"\n" +
+    "                            >\n" +
+    "                        </fancy-select>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
     "                <button class=\"button button-block button-steelblue\" type=\"submit\">Save changes</button>\n" +
-    "            </div>\n" +
-    "        </form>\n" +
+    "            </form>\n" +
+    "        </div>\n" +
     "    </ion-content>\n" +
     "</ion-view>\n"
   );

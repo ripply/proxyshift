@@ -36,6 +36,7 @@ angular.module('scheduling-app.controllers')
             $scope.permissionsDirty = true;
 
             function init() {
+                console.log("INIT");
                 $scope.users = [loading];
                 $scope.group_id = getGroupId();
                 $scope.location_id = getLocationId();
@@ -47,7 +48,13 @@ angular.module('scheduling-app.controllers')
                     $scope.user_id !== null &&
                     $scope.user_id !== undefined) {
                     $scope.permissionsDirty = true;
-                    $scope.currentSearchState = 'groupUserWithPermission'
+                    $scope.currentSearchState = 'groupUserWithPermission';
+                    function failureToFetchGroupUserAndPermissions() {
+                        setTimeout(function() {
+                            getGroupUserAndPermissions(undefined, failureToFetchGroupUserAndPermissions);
+                        }, 5000);
+                    }
+                    getGroupUserAndPermissions(undefined, failureToFetchGroupUserAndPermissions);
                 } else {
                     //getAllGroupUsers()
                     $scope.currentSearchState = 'someGroupUsers';
