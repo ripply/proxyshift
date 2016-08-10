@@ -13,9 +13,14 @@
                 </label>
                 {{item.description}}
             </ion-item>
-            <label class="item" ng-click="validate(item)" ng-if="!multiSelect" ng-repeat="item in items">
+            <ion-radio
+                class="item clear-padding item-divider-bright-text"
+                ng-click="validate(item)" ng-if="!multiSelect" ng-repeat="item in items"
+                ng-model="item.checked"
+                ng-value="true"
+                ng-repeat="location in users | filter:query">
                 {{item.description}}
-            </label>
+            </ion-radio>
         </ion-list>
     </ion-content>
 </ion-modal-view>

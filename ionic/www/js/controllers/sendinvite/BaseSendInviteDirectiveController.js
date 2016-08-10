@@ -85,23 +85,35 @@ angular.module('scheduling-app.controllers')
                             }
                         }
                     }
+                    if ($scope.userclass_id === undefined &&
+                        $scope.filteredUserclasses.length > 0) {
+                        $scope.userclass_id = $scope.filteredUserclasses[0].id;
+                        selectOnlyOne($scope.filteredUserclasses, $scope.userclass_id);
+                    }
+                    selectOnlyOne($scope.filteredGrouppermissions, $scope.grouppermission_id);
                     console.log($scope.filteredUserclasses);
                 }
             }
 
+            function selectOnlyOne(list, id) {
+                if (list) {
+                    angular.forEach(list, function(item) {
+                        item.checked = item.id == id;
+                    });
+                }
+            }
+
+            $scope.userClassSelected = function(value) {
+                selectOnlyOne($scope.filteredUserclasses, value);
+            };
+
+            $scope.permissionLevelSelected = function(value) {
+                selectOnlyOne($scope.filteredGrouppermissions, value);
+            };
+
             function getGroupId() {
                 return $scope.stateParams.group_id;
             }
-
-            $scope.userclassList = [
-                { description: "Nurse"},
-                { description: "Doctor"}
-            ];
-
-            $scope.permissionsList = [
-                { description: "Regular User"},
-                { description: "Manager"}
-            ];
 
             function sendInvite(email) {
                 //Send email invitation
@@ -120,5 +132,31 @@ angular.module('scheduling-app.controllers')
                 }
             }
 
-            $scope.inviteUsersToGroup = ResourceService.inviteUsersToGroup;
+            var invitePending = false;
+
+            function clearError() {
+                $scope.error = undefined;
+            }
+
+            $scope.inviteUsersToGroup = function inviteUsersToGroup(group_id, grouppermission_id, userclass_id, email, message) {
+                if (invitePending) {
+                    return;
+                }
+
+                clearError();
+                invitePending = true;
+                ResourceService.inviteUsersToGroup(group_id, grouppermission_id, userclass_id, email, message,
+                    function successfullyInvitedUser() {
+                        clearError();
+                        invitePending = false;
+                    },
+                    function failedToInviteUser(response) {
+                        $scope.error = response.status;
+                        if (response.data.error && response.data.data && response.data.data.message) {
+                            $scope.error = response.data.data.message;
+                        }
+                        invitePending = false;
+                    }
+                );
+            };
         }]);

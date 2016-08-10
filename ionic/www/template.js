@@ -5214,57 +5214,79 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
   $templateCache.put('templates/invitemember.html',
     "<ion-view view-title=\"Invite\">\n" +
-    "    <ion-content>\n" +
-    "        <ion-item href=\"#/settings/group/{{group_id}}/members\" class=\"item-remove-animate\">\n" +
-    "            Members page\n" +
-    "        </ion-item>\n" +
-    "        <div class=\"item item-divider\">\n" +
-    "            User Details\n" +
-    "        </div>\n" +
-    "        <div>\n" +
-    "            <form name=\"inviteForm\" ng-submit=\"inviteUsersToGroup(group_id, grouppermission_id, userclass_id, email, message)\">\n" +
-    "                <div class=\"list\">\n" +
-    "                    <label class=\"item item-input\">\n" +
-    "                        <span class=\"input-label\">Email</span>\n" +
+    "    <ion-content class=\"has-header has-footer\">\n" +
+    "        <form name=\"inviteForm\" ng-submit=\"inviteUsersToGroup(group_id, grouppermission_id, userclass_id, email, message)\">\n" +
+    "            <div class=\"list compacted-list list-inset full-width-inputs\">\n" +
+    "                <div class=\"item item-input row\">\n" +
+    "                    <div class=\"col col-50 list-item-padding\">\n" +
+    "                        <h4 class=\"sub-subheader\">Email(s)</h4>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col\">\n" +
     "                        <input type=\"text\"\n" +
     "                               placeholder=\"Ex: john@gmail.com, bob@gmail.com, etc\"\n" +
     "                               ng-model=\"email\"\n" +
     "                               name=\"email\">\n" +
-    "                    </label>\n" +
-    "                    <fancy-select\n" +
-    "                        header-text=\"Select a job type\"\n" +
-    "                        items=\"filteredUserclasses\"\n" +
-    "                        value-property=\"id\"\n" +
-    "                        value=\"userclass_id\"\n" +
-    "                        text-property=\"description\"\n" +
-    "                        allow-empty='false'\n" +
-    "                        modal-template-url=\"templates/types/typemodal.html\"\n" +
-    "                        template-url=\"templates/types/typeitem.html\"\n" +
-    "                        value-changed=\"wat(value)\"\n" +
-    "                        note-text=\"A Note text\"\n" +
-    "                        >\n" +
-    "                    </fancy-select>\n" +
-    "                    <fancy-select\n" +
-    "                        header-text=\"Select a job type\"\n" +
-    "                        items=\"filteredGrouppermissions\"\n" +
-    "                        value-property=\"id\"\n" +
-    "                        value=\"grouppermission_id\"\n" +
-    "                        text-property=\"description\"\n" +
-    "                        allow-empty='false'\n" +
-    "                        modal-template-url=\"templates/types/typemodal.html\"\n" +
-    "                        template-url=\"templates/types/typeitem.html\"\n" +
-    "                        value-changed=\"wat(value)\"\n" +
-    "                        note-text=\"A Note text\"\n" +
-    "                        >\n" +
-    "                    </fancy-select>\n" +
-    "                    <label class=\"item item-input\">\n" +
-    "                        <span class=\"input-label\">Invitation Message</span>\n" +
-    "                        <input type=\"text\" name=\"message\" ng-model=\"message\">\n" +
-    "                    </label>\n" +
-    "                    <button class=\"button button-block button-steelblue\" type=\"submit\">Invite User</button>\n" +
+    "                    </div>\n" +
     "                </div>\n" +
-    "            </form>\n" +
-    "        </div>\n" +
+    "                <div class=\"item item-input row\">\n" +
+    "                    <div class=\"col col-50 list-item-padding\">\n" +
+    "                        <h4 class=\"sub-subheader\">Job type</h4>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col\">\n" +
+    "                        <fancy-select\n" +
+    "                            header-text=\"Select a job type\"\n" +
+    "                            items=\"filteredUserclasses\"\n" +
+    "                            value-property=\"id\"\n" +
+    "                            value=\"userclass_id\"\n" +
+    "                            text-property=\"description\"\n" +
+    "                            allow-empty='false'\n" +
+    "                            modal-template-url=\"templates/types/typemodal.html\"\n" +
+    "                            template-url=\"templates/types/typeitem.html\"\n" +
+    "                            value-changed=\"userClassSelected(value)\"\n" +
+    "                            >\n" +
+    "                        </fancy-select>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <div class=\"item item-input row\">\n" +
+    "                    <div class=\"col col-50 list-item-padding\">\n" +
+    "                        <h4 class=\"sub-subheader\">Permission level</h4>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col\">\n" +
+    "                        <fancy-select\n" +
+    "                            header-text=\"Select a permission level\"\n" +
+    "                            items=\"filteredGrouppermissions\"\n" +
+    "                            value-property=\"id\"\n" +
+    "                            value=\"grouppermission_id\"\n" +
+    "                            text-property=\"description\"\n" +
+    "                            allow-empty='false'\n" +
+    "                            modal-template-url=\"templates/types/typemodal.html\"\n" +
+    "                            template-url=\"templates/types/typeitem.html\"\n" +
+    "                            value-changed=\"permissionLevelSelected(value)\"\n" +
+    "                            >\n" +
+    "                        </fancy-select>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <h4 class=\"new-shift-title\" ng-if=\"error !== undefined\">\n" +
+    "                    <div ng-if=\"error === 400 || Math.floor(error / 100) === 5\">An error occurred</div>\n" +
+    "                    <div ng-if=\"error !== 400 && Math.floor(error / 100) !== 5\">{{error}}</div>\n" +
+    "                </h4>\n" +
+    "                <div class=\"item row\">\n" +
+    "                    <div class=\"col\">\n" +
+    "                        <button ng-disabled=\"invitePending || email === undefined || email.length == 0 || grouppermission_id === undefined || userclass_id == undefined\" class=\"button button-block button-steelblue\" type=\"submit\">\n" +
+    "                            <div ng-if=\"invitePending\">\n" +
+    "                                Inviting...\n" +
+    "                            </div>\n" +
+    "                            <div ng-if=\"email === undefined || email.length == 0 || grouppermission_id === undefined || userclass_id == undefined\">\n" +
+    "                                Please complete the form\n" +
+    "                            </div>\n" +
+    "                            <div ng-if=\"!invitePending && email !== undefined && email.length != 0 && grouppermission_id !== undefined && userclass_id !== undefined\">\n" +
+    "                                Send invite\n" +
+    "                            </div>\n" +
+    "                        </button>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "        </form>\n" +
     "    </ion-content>\n" +
     "</ion-view>\n"
   );
@@ -7504,9 +7526,14 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                </label>\n" +
     "                {{item.description}}\n" +
     "            </ion-item>\n" +
-    "            <label class=\"item\" ng-click=\"validate(item)\" ng-if=\"!multiSelect\" ng-repeat=\"item in items\">\n" +
+    "            <ion-radio\n" +
+    "                class=\"item clear-padding item-divider-bright-text\"\n" +
+    "                ng-click=\"validate(item)\" ng-if=\"!multiSelect\" ng-repeat=\"item in items\"\n" +
+    "                ng-model=\"item.checked\"\n" +
+    "                ng-value=\"true\"\n" +
+    "                ng-repeat=\"location in users | filter:query\">\n" +
     "                {{item.description}}\n" +
-    "            </label>\n" +
+    "            </ion-radio>\n" +
     "        </ion-list>\n" +
     "    </ion-content>\n" +
     "</ion-modal-view>\n"

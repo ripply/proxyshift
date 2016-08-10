@@ -1,54 +1,76 @@
 <ion-view view-title="Invite">
-    <ion-content>
-        <ion-item href="#/settings/group/{{group_id}}/members" class="item-remove-animate">
-            Members page
-        </ion-item>
-        <div class="item item-divider">
-            User Details
-        </div>
-        <div>
-            <form name="inviteForm" ng-submit="inviteUsersToGroup(group_id, grouppermission_id, userclass_id, email, message)">
-                <div class="list">
-                    <label class="item item-input">
-                        <span class="input-label">Email</span>
+    <ion-content class="has-header has-footer">
+        <form name="inviteForm" ng-submit="inviteUsersToGroup(group_id, grouppermission_id, userclass_id, email, message)">
+            <div class="list compacted-list list-inset full-width-inputs">
+                <div class="item item-input row">
+                    <div class="col col-50 list-item-padding">
+                        <h4 class="sub-subheader">Email(s)</h4>
+                    </div>
+                    <div class="col">
                         <input type="text"
                                placeholder="Ex: john@gmail.com, bob@gmail.com, etc"
                                ng-model="email"
                                name="email">
-                    </label>
-                    <fancy-select
-                        header-text="Select a job type"
-                        items="filteredUserclasses"
-                        value-property="id"
-                        value="userclass_id"
-                        text-property="description"
-                        allow-empty='false'
-                        modal-template-url="templates/types/typemodal.html"
-                        template-url="templates/types/typeitem.html"
-                        value-changed="wat(value)"
-                        note-text="A Note text"
-                        >
-                    </fancy-select>
-                    <fancy-select
-                        header-text="Select a job type"
-                        items="filteredGrouppermissions"
-                        value-property="id"
-                        value="grouppermission_id"
-                        text-property="description"
-                        allow-empty='false'
-                        modal-template-url="templates/types/typemodal.html"
-                        template-url="templates/types/typeitem.html"
-                        value-changed="wat(value)"
-                        note-text="A Note text"
-                        >
-                    </fancy-select>
-                    <label class="item item-input">
-                        <span class="input-label">Invitation Message</span>
-                        <input type="text" name="message" ng-model="message">
-                    </label>
-                    <button class="button button-block button-steelblue" type="submit">Invite User</button>
+                    </div>
                 </div>
-            </form>
-        </div>
+                <div class="item item-input row">
+                    <div class="col col-50 list-item-padding">
+                        <h4 class="sub-subheader">Job type</h4>
+                    </div>
+                    <div class="col">
+                        <fancy-select
+                            header-text="Select a job type"
+                            items="filteredUserclasses"
+                            value-property="id"
+                            value="userclass_id"
+                            text-property="description"
+                            allow-empty='false'
+                            modal-template-url="templates/types/typemodal.html"
+                            template-url="templates/types/typeitem.html"
+                            value-changed="userClassSelected(value)"
+                            >
+                        </fancy-select>
+                    </div>
+                </div>
+                <div class="item item-input row">
+                    <div class="col col-50 list-item-padding">
+                        <h4 class="sub-subheader">Permission level</h4>
+                    </div>
+                    <div class="col">
+                        <fancy-select
+                            header-text="Select a permission level"
+                            items="filteredGrouppermissions"
+                            value-property="id"
+                            value="grouppermission_id"
+                            text-property="description"
+                            allow-empty='false'
+                            modal-template-url="templates/types/typemodal.html"
+                            template-url="templates/types/typeitem.html"
+                            value-changed="permissionLevelSelected(value)"
+                            >
+                        </fancy-select>
+                    </div>
+                </div>
+                <h4 class="new-shift-title" ng-if="error !== undefined">
+                    <div ng-if="error === 400 || Math.floor(error / 100) === 5">An error occurred</div>
+                    <div ng-if="error !== 400 && Math.floor(error / 100) !== 5">{{error}}</div>
+                </h4>
+                <div class="item row">
+                    <div class="col">
+                        <button ng-disabled="invitePending || email === undefined || email.length == 0 || grouppermission_id === undefined || userclass_id == undefined" class="button button-block button-steelblue" type="submit">
+                            <div ng-if="invitePending">
+                                Inviting...
+                            </div>
+                            <div ng-if="email === undefined || email.length == 0 || grouppermission_id === undefined || userclass_id == undefined">
+                                Please complete the form
+                            </div>
+                            <div ng-if="!invitePending && email !== undefined && email.length != 0 && grouppermission_id !== undefined && userclass_id !== undefined">
+                                Send invite
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
     </ion-content>
 </ion-view>

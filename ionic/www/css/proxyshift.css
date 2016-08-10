@@ -1346,13 +1346,13 @@ input[type="password"] :focus {
 .full-width-inputs textarea {
   width: 100%;
 }
-#settings-page .bar-header {
+.bar-header {
   background-color: #159deb;
-  background-image: none;
+  background-image: none !important;
   color: #ffffff;
   border: 0;
 }
-#settings-page .bar-header .button {
+.bar-header .button {
   color: #ffffff;
 }
 .tabs {

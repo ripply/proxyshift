@@ -15,7 +15,9 @@ var models = require('../app/models'),
     controllerCommon = require('./controllerCommon'),
     _ = require('underscore'),
     error = require('./controllerCommon').error,
+    clientError = require('./controllerCommon').clientError,
     users = require('./users'),
+    validator = require('validator'),
     Bookshelf = models.Bookshelf;
 
 module.exports = {
@@ -372,7 +374,7 @@ module.exports = {
                     if (emails) {
                         emails = [emails];
                     } else {
-                        return res.sendStatus(400);
+                        return clientError(req, res, 400, 'No emails provided');
                     }
                 }
                 var inviter_user_id = req.user.id;
@@ -388,10 +390,16 @@ module.exports = {
 
                 userclasses = _.filter(userclasses, rejectNullOrUndefinedOrEmpty);
                 emails = _.filter(emails, rejectNullOrUndefinedOrEmpty);
+                for (var i = 0; i < emails.length; i++) {
+                    if (!validator.isEmail(emails[i])) {
+                        console.log('Invalid email provided to send group invitation to');
+                        return clientError(req, res, 400, 'Invalid email');
+                    }
+                }
 
                 if (userclasses.length === 0 || emails.length === 0) {
                     console.log("Empty userclasses or emails sent");
-                    return res.sendStatus(400);
+                    return clientError(req, res, 400, 'Empty job type or no emails provided');
                 }
 
                 Bookshelf.transaction(function inviteUserToGroupTransaction(t) {
@@ -473,7 +481,7 @@ module.exports = {
                                         // cannot invite without permission level
                                         console.log("Invalid grouppermission_id sent: " + grouppermission_id);
                                         //t.rollback();
-                                        return res.sendStatus(400);
+                                        return clientError(req, res, 400, 'Invalid permission level');
                                     } else {
                                         // grouppermission_id is valid
                                     }
@@ -496,7 +504,7 @@ module.exports = {
                                                 // cannot invite without user class types
                                                 console.log("Invalid groupuserclasses sent: " + userclasses);
                                                 //t.rollback();
-                                                return res.sendStatus(400);
+                                                return clientError(req, res, 400, 'Invalid job type');
                                             }
 
                                             var usersToIgnore = {};
@@ -601,7 +609,7 @@ module.exports = {
                                                             if (!ignoredUsers && groupInvitationUserClasses.length === 0) {
                                                                 console.log("Couldn't find any valid userclases\n" + createdGroupInvitations);
                                                                 //t.rollback();
-                                                                return res.sendStatus(400);
+                                                                return clientError(req, res, 400, "Couldn't find any valid userclases");
                                                             }
 
                                                             return createMultipleGroupInvitationUserClasses(sqlOptions, groupInvitationUserClasses, function inviteUserToGroupUserClassesCreated() {
