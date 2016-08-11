@@ -295,6 +295,10 @@ angular.module('scheduling-app.services')
                 }
             };
 
+            this.getUserId = function getUserId() {
+                return $rootScope.userinfo.id;
+            };
+
             var groups = {};
             var locations = {};
             var areas = {};

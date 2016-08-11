@@ -30,7 +30,7 @@ module.exports = {
         return (new moment()).unix();
     },
     updateModel: updateModel,
-    patchModel: function(modelName, queryArgs, req, res, updateMessage, defaultExcludes, sqlOptions, successCallback) {
+    patchModel: function(modelName, queryArgs, req, res, updateMessage, defaultExcludes, sqlOptions, successCallback, updateSource) {
         if (defaultExcludes === undefined) {
             defaultExcludes = defaultBannedKeys;
         } else if (!defaultExcludes instanceof Array) {
@@ -40,9 +40,11 @@ module.exports = {
         // TODO: Consolidate return messages into a function so everything is consistent
         // TODO: WARNING: UNSAFE: Submit pull request to bookshelf-validator to support {patch: true}
         var tableName = models.getTableNameFromModel(modelName);
-        var updateSource = req;
-        if (req.hasOwnProperty('body')) {
-            updateSource = req.body;
+        if (updateSource === undefined) {
+            updateSource = req;
+            if (req.hasOwnProperty('body')) {
+                updateSource = req.body;
+            }
         }
         models[modelName].query(function(q) {
             var query = q.select()
@@ -72,7 +74,7 @@ module.exports = {
                             error(req, res, err);
                         })
                 } else {
-                    res.status(403);
+                    res.sendStatus(403);
                 }
             })
             .catch(function(err) {

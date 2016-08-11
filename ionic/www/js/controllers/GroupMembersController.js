@@ -4,11 +4,13 @@ angular.module('scheduling-app.controllers')
         '$controller',
         '$stateParams',
         '$q',
+        'UserInfoService',
         'ResourceService',
         function($scope,
                  $controller,
                  $stateParams,
                  $q,
+                 UserInfoService,
                  ResourceService
         ) {
             $controller('FilterableIncrementalSearchController', {$scope: $scope});
@@ -29,6 +31,75 @@ angular.module('scheduling-app.controllers')
                 getSomeGroupUsers(query, start, end, success, error);
             };
 
+            $scope.$watch('user', function(newValue, oldValue) {
+                // setting $scope.grouppermission_id here before there are permissions will cause the directive to not show the users permission level
+                if (newValue.grouppermission_id !== -1 && $scope.permissions) {
+                    $scope.grouppermission_id = newValue.grouppermission_id;
+                }
+            });
+
+            $scope.$watch('grouppermission_id', function(newValue, oldValue) {
+                console.log(oldValue + ' -> ' + newValue);
+                if ($scope.permissions) {
+                    setOnlyOneSelected($scope.permissions, newValue);
+                }
+            });
+
+            $scope.$watch('permissions', function(newValue, oldValue) {
+                if (newValue && ($scope.grouppermission_id !== undefined || $scope.user !== undefined)) {
+                    if ($scope.user) {
+                        // setting this here when permissions changes, instead of when a user is fetched lets the directive show the users privilege level
+                        $scope.grouppermission_id = $scope.user.grouppermission_id;
+                    }
+                    setOnlyOneSelected(newValue, $scope.grouppermission_id);
+                }
+            });
+
+            $scope.permissionLevelSelected = function(value) {
+                $scope.grouppermission_id = value;
+            };
+
+            function setOnlyOneSelected(list, id) {
+                if (list) {
+                    angular.forEach(list, function(item) {
+                        item.checked = item.id == id;
+                    });
+                }
+            }
+
+            $scope.modifyPrivilegeLevel = function modifyPrivilegeLevel() {
+                if ($scope.saving || $scope.grouppermission_id === undefined) {
+                    return;
+                }
+                $scope.saving = true;
+                ResourceService.updateUsersPermission($scope.group_id, $scope.user_id, $scope.grouppermission_id, function(result) {
+                    $scope.user.grouppermission_id = $scope.grouppermission_id;
+                    $scope.saving = false;
+                }, function(err) {
+                    $scope.saving = false;
+                })
+            };
+
+            // it doesn't make sense to allow a user to alter their own privilege level
+            // they wouldn't be able to increase their privilege level
+            // and they shouldn't be allowed to decrease their privilege level
+            $scope.isDisallowed = function isDisallowed() {
+                return $scope.user_id == UserInfoService.getUserId();
+            };
+
+            $scope.getPermissionText = function getPermissionText() {
+                if ($scope.grouppermission_id && $scope.permissions) {
+                    for (var i = 0; i < $scope.permissions.length; i++) {
+                        if ($scope.permissions[i].id == $scope.grouppermission_id) {
+                            return $scope.permissions[i].description;
+                        }
+                    }
+
+                } else {
+                    return 'UNKNOWN';
+                }
+            };
+
             var loading = {firstname: 'Loading...'};
             var error = {firstname: 'Error'};
             $scope.loading = loading;
@@ -36,7 +107,6 @@ angular.module('scheduling-app.controllers')
             $scope.permissionsDirty = true;
 
             function init() {
-                console.log("INIT");
                 $scope.users = [loading];
                 $scope.group_id = getGroupId();
                 $scope.location_id = getLocationId();
@@ -148,7 +218,6 @@ angular.module('scheduling-app.controllers')
                 }
 
                 function getAllGroupUsersError(response) {
-                    console.log(response);
                     $scope.users = [error];
                     deferred.reject();
                     delete $scope.fetching;

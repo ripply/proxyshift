@@ -7049,15 +7049,14 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
     "        <h4 class=\"new-shift-title\">{{user.firstname}} {{user.lastname}}</h4>\n" +
     "        <div class=\"list list-inset\">\n" +
-    "            <form name=\"typeEditForm\" ng-submit=\"editType(group_id, type_id, type.title, type.description, type.cansendnotification, type.requiremanagerapproval, type.grouppermissionid)\">\n" +
+    "            <form name=\"typeEditForm\" ng-submit=\"modifyPrivilegeLevel()\">\n" +
     "                <div class=\"item item-input row\">\n" +
     "                    <div class=\"col col-50 list-item-padding\">\n" +
     "                        <h4 class=\"sub-subheader\">Permission level</h4>\n" +
     "                    </div>\n" +
     "                    <div class=\"col\">\n" +
-    "                        <input type=\"hidden\" name=\"group_id\" value=\"{{group_id}}\">\n" +
-    "                        <input type=\"hidden\" name=\"user_id\" value=\"{{user_id}}\">\n" +
     "                        <fancy-select\n" +
+    "                            ng-if=\"grouppermission_id != -1 && !isDisallowed()\"\n" +
     "                            header-text=\"Select an option\"\n" +
     "                            items=\"permissions\"\n" +
     "                            value-property=\"id\"\n" +
@@ -7066,11 +7065,25 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                            allow-empty='false'\n" +
     "                            modal-template-url=\"templates/types/typemodal.html\"\n" +
     "                            template-url=\"templates/types/typeitem.html\"\n" +
+    "                            value-changed=\"permissionLevelSelected(value)\"\n" +
     "                            >\n" +
     "                        </fancy-select>\n" +
+    "                        <div ng-if=\"isDisallowed()\">\n" +
+    "                            {{getPermissionText()}}\n" +
+    "                        </div>\n" +
+    "                        <div ng-if=\"grouppermission_id == -1\">\n" +
+    "                            Owner\n" +
+    "                        </div>\n" +
     "                    </div>\n" +
     "                </div>\n" +
-    "                <button class=\"button button-block button-steelblue\" type=\"submit\">Save changes</button>\n" +
+    "                <button ng-if=\"grouppermission_id != -1\"\n" +
+    "                        ng-disabled=\"user.grouppermission_id == grouppermission_id || saving || isDisallowed()\"\n" +
+    "                        class=\"button button-block button-steelblue\"\n" +
+    "                        type=\"submit\">\n" +
+    "                    <span ng-if=\"saving\">Saving...</span>\n" +
+    "                    <span ng-if=\"!saving && !isDisallowed()\">Save changes</span>\n" +
+    "                    <span ng-if=\"isDisallowed()\">Cannot edit your own privilege level</span>\n" +
+    "                </button>\n" +
     "            </form>\n" +
     "        </div>\n" +
     "    </ion-content>\n" +

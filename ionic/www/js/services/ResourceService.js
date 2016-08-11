@@ -450,6 +450,18 @@ angular.module('scheduling-app.services')
                 );
             };
 
+            this.updateUsersPermission = function updateUsersPermission(group_id, user_id, permission_id, success, error) {
+                andThen(
+                    GroupsModel.updateUsersPermissions({
+                        group_id: group_id,
+                        user_id: user_id,
+                        permission_id: permission_id
+                    }),
+                    success,
+                    error
+                );
+            };
+
             function andThen(promise, success, error) {
                 if (promise.hasOwnProperty("$promise")) {
                     promise = promise.$promise;

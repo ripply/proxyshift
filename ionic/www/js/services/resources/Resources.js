@@ -158,7 +158,13 @@ angular.forEach({
             route: base,
             params: {
                 group_id: '@group_id',
-                class_id: '@class_id'
+                class_id: '@class_id',
+                user_id: '@user_id',
+                permission_id: '@permission_id',
+                start: '@start',
+                end: '@end',
+                location_id: '@location_id',
+                area_id: '@area_id'
             },
             actions: {
                 list: {

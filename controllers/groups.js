@@ -20,6 +20,8 @@ var models = require('../app/models'),
     validator = require('validator'),
     Bookshelf = models.Bookshelf;
 
+const BANNED_USERGROUP_KEYS = ['user_id', 'group_id', 'id'];
+
 module.exports = {
     route: '/api/v1/groups',
     '/': {
@@ -854,28 +856,29 @@ module.exports = {
             auth: ['group owner', 'or', 'privileged group member'], // owner/privileged group member
             route: function(req, res) {
                 // TODO: Make this an inner join with an update
-                Bookshelf.transaction(function (t) {
+                //Bookshelf.transaction(function (t) {
+                    var sqlOptions = {};
                     // make sure permission_id is part of group
-                    return model.GroupPermission.query(function (q) {
+                    return models.GroupPermission.query(function (q) {
                         q.select([
                             'grouppermissions.permissionlevel',
                             'groups.name as name'
                         ])
                             .from('grouppermissions')
                             .innerJoin('groups', function () {
-                                this.on('groups.groupsetting_id', '=', 'grouppermissions.groupsettings_id');
+                                this.on('groups.groupsetting_id', '=', 'grouppermissions.groupsetting_id');
                             })
                             .where('grouppermissions.id', '=', req.params.permission_id);
                     })
-                        .fetch({transacting: t})
+                        .fetch(sqlOptions)
                         .then(function (grouppermission) {
                             if (grouppermission) {
                                 // grouppermission is tied to group
                                 // ok to update the user with that permission
                                 // after we verify that they are not already a member
-                                return model.GroupPermission.query(function(q) {
+                                return models.GroupPermission.query(function(q) {
                                     q.select([
-                                        'id',
+                                        'grouppermissions.id',
                                         'permissionlevel'
                                     ])
                                         .from('grouppermissions')
@@ -885,7 +888,7 @@ module.exports = {
                                         .where('usergroups.user_id', '=', req.params.user_id)
                                         .andWhere('usergroups.group_id', '=', req.params.group_id);
                                 })
-                                    .fetch({transacting: t})
+                                    .fetch(sqlOptions)
                                     .then(function (user_grouppermission) {
                                         if (!user_grouppermission) {
                                             // does not exist, error
@@ -897,22 +900,28 @@ module.exports = {
                                                 res.sendStatus(200);
                                             } else {
                                                 // doesn't match
+                                                if (req.params.user_id == req.user.id) {
+                                                    // a user cannot lower their permission level
+                                                    if (user_grouppermission.get('permissionlevel') > grouppermission.get('permissionlevel')) {
+                                                        return res.sendStatus(401);
+                                                    }
+                                                }
                                                 // update it
                                                 return patchModel(
                                                     'UserGroup',
                                                     {
-                                                        grouppermission_id: req.params.permission_id
+                                                        user_id: req.params.user_id,
+                                                        group_id: req.params.group_id
                                                     },
                                                     req,
                                                     res,
                                                     undefined,
-                                                    {
-                                                        transacting: t
-                                                    },
+                                                    BANNED_USERGROUP_KEYS,
+                                                    sqlOptions,
                                                     function patchModelSuccess() {
                                                         // send notification to user
                                                         var newPermissionLevel = grouppermission.get('permissionlevel');
-                                                        if (newPermissionLevel > existingPermissionLevel) {
+                                                        if (newPermissionLevel > user_grouppermission.get('permissionlevel')) {
                                                             // upgrade
                                                             appLogic.notifyGroupPromoted(req.params.user_id, {
                                                                 group: grouppermission.name
@@ -923,6 +932,9 @@ module.exports = {
                                                                 group: grouppermission.name
                                                             });
                                                         }
+                                                    },
+                                                    {
+                                                        grouppermission_id: req.params.permission_id
                                                     }
                                                 );
                                             }
@@ -938,7 +950,7 @@ module.exports = {
                         .catch(function (err) {
                             error(req, res, err);
                         });
-                });
+                //});
             }
         }
     },

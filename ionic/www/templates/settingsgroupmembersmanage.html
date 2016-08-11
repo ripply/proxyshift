@@ -2,15 +2,14 @@
     <ion-content class="has-header" hide-back-button="false">
         <h4 class="new-shift-title">{{user.firstname}} {{user.lastname}}</h4>
         <div class="list list-inset">
-            <form name="typeEditForm" ng-submit="editType(group_id, type_id, type.title, type.description, type.cansendnotification, type.requiremanagerapproval, type.grouppermissionid)">
+            <form name="typeEditForm" ng-submit="modifyPrivilegeLevel()">
                 <div class="item item-input row">
                     <div class="col col-50 list-item-padding">
                         <h4 class="sub-subheader">Permission level</h4>
                     </div>
                     <div class="col">
-                        <input type="hidden" name="group_id" value="{{group_id}}">
-                        <input type="hidden" name="user_id" value="{{user_id}}">
                         <fancy-select
+                            ng-if="grouppermission_id != -1 && !isDisallowed()"
                             header-text="Select an option"
                             items="permissions"
                             value-property="id"
@@ -19,11 +18,25 @@
                             allow-empty='false'
                             modal-template-url="templates/types/typemodal.html"
                             template-url="templates/types/typeitem.html"
+                            value-changed="permissionLevelSelected(value)"
                             >
                         </fancy-select>
+                        <div ng-if="isDisallowed()">
+                            {{getPermissionText()}}
+                        </div>
+                        <div ng-if="grouppermission_id == -1">
+                            Owner
+                        </div>
                     </div>
                 </div>
-                <button class="button button-block button-steelblue" type="submit">Save changes</button>
+                <button ng-if="grouppermission_id != -1"
+                        ng-disabled="user.grouppermission_id == grouppermission_id || saving || isDisallowed()"
+                        class="button button-block button-steelblue"
+                        type="submit">
+                    <span ng-if="saving">Saving...</span>
+                    <span ng-if="!saving && !isDisallowed()">Save changes</span>
+                    <span ng-if="isDisallowed()">Cannot edit your own privilege level</span>
+                </button>
             </form>
         </div>
     </ion-content>
