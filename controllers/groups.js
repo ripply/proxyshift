@@ -17,8 +17,20 @@ var models = require('../app/models'),
     error = require('./controllerCommon').error,
     clientError = require('./controllerCommon').clientError,
     users = require('./users'),
-    validator = require('validator'),
     Bookshelf = models.Bookshelf;
+
+var validator;
+
+try {
+    validator = require('validator');
+} catch (e) {
+    console.log("FAILED TO LOAD VALIDATOR");
+    validator = {
+        isEmail: function(email) {
+            return false;
+        }
+    }
+}
 
 const BANNED_USERGROUP_KEYS = ['user_id', 'group_id', 'id'];
 
