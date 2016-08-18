@@ -83,7 +83,7 @@ passport.use(new RememberMeStrategy(
         if (!token || token == '') {
             return done(null, false);
         }
-        models.checkRememberMeToken(token, true, function(err, uid) {
+        models.checkRememberMeToken(token, false, function(err, uid) {
             if (err) { return done(err); }
             if (!uid) { return done(null, false); }
 
