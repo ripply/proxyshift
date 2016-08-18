@@ -1255,6 +1255,7 @@ function checkRememberMeToken(token, consume, next) {
         .fetch()
         .then(function(foundToken) {
             if (!foundToken) {
+                console.log("Failed to find token: " + token);
                 return next(null, null);
             }
             var user_id = foundToken.get('user_id');
@@ -1263,6 +1264,7 @@ function checkRememberMeToken(token, consume, next) {
             if (consume) {
                 return foundToken.destroy()
                     .then(function () {
+                        console.log('Destroyed remember me token: ' + token);
                         return next(null, user_id);
                     })
                     .catch(function (err) {
@@ -1282,9 +1284,11 @@ function checkRememberMeToken(token, consume, next) {
                     })
                         .fetch()
                         .tap(function() {
+                            console.log('Refreshed token: '+ token);
                             return next(null, user_id);
                         });
                 } else {
+                    console.log('Found token: ' + token);
                     return next(null, user_id);
                 }
             }
