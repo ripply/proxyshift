@@ -1,37 +1,154 @@
 <ion-view view-title="Edit Location">
     <ion-content class="has-header" hide-back-button="false">
-        <div class="list">
-            <div class="item item-divider">
-                Edit
-            </div>
-            <form name="locationEditForm" ng-submit="editLocation(group_id, location_id, location.timezone_id, location.title, location.state, location.city, location.address, location.zipcode, location.phonenumber)">
-                <input type="hidden" name="group_id" value="{{group_id}}">
-                <input type="hidden" name="location_id" value="{{location_id}}">
-                <label class="item item-input">
-                    <span class="input-label">Title</span>
-                    <input type="text" name="title" title="title" ng-model="location.title">
-                </label>
-                <label class="item item-input">
-                    <span class="input-label">Address</span>
-                    <input type="text" name="address" title="address" ng-model="location.address">
-                </label>
-                <label class="item item-input">
-                    <span class="input-label">State</span>
-                    <input type="text" name="state" title="state" ng-model="location.state">
-                </label>
-                <label class="item item-input">
-                    <span class="input-label">City</span>
-                    <input type="text" name="city" title="city" ng-model="location.city">
-                </label>
-                <label class="item item-input">
-                    <span class="input-label">Zip</span>
-                    <input type="text" name="zip" title="zip" ng-model="location.zipcode">
-                </label>
-                <label class="item item-input">
-                    <span class="input-label">phonenumber</span>
-                    <input type="text" name="phonenumber" title="phonenumber" ng-model="location.phonenumber">
-                </label>
-                <button class="button button-block button-steelblue" type="submit">Save changes</button>
+        <div class="list list-inset">
+            <form name="locationUpdateForm" ng-submit="editLocation()" novalidate>
+                <div class="item item-input row">
+                    <div class="col col-25 list-item-padding">
+                        <h4 class="sub-subheader">Location name</h4>
+                    </div>
+                    <div class="col">
+                        <input type="text"
+                               placeholder="Building name or Store number"
+                               ng-model="location.title"
+                               name="title"
+                               validate-location-title>
+                    </div>
+                </div>
+                <!--
+                <div class="item item-icon-left validation-message"
+                     ng-if="locationUpdateForm.$dirty">
+                    <i class="icon ion-alert"></i>
+                    <div ng-if="locationUpdateForm.$dirty"
+                         validate-location-title-messages="locationUpdateForm.title.$error"></div>
+                </div>
+                -->
+                <div class="item item-input row">
+                    <div class="col col-25 list-item-padding">
+                        <h4 class="sub-subheader">Address</h4>
+                    </div>
+                    <div class="col">
+                        <input type="text"
+                               placeholder="Ex: 123 Archon Road"
+                               ng-model="location.address"
+                               name="address"
+                               validate-location-address>
+                    </div>
+                </div>
+                <!--
+                <div class="item item-icon-left validation-message"
+                     ng-if="locationUpdateForm.$dirty">
+                    <i class="icon ion-alert"></i>
+                    <div ng-if="locationUpdateForm.$dirty"
+                         validate-location-address-messages="locationUpdateForm.address.$error"></div>
+                </div>
+                -->
+                <div class="item item-input row">
+                    <div class="col col-25 list-item-padding">
+                        <h4 class="sub-subheader">State</h4>
+                    </div>
+                    <div class="col">
+                        <input type="text"
+                               placeholder="Ex: CA or California"
+                               ng-model="location.state"
+                               name="State"
+                               validate-location-state>
+                    </div>
+                </div>
+                <!--
+                <div class="item item-icon-left validation-message"
+                     ng-if="locationUpdateForm.$dirty">
+                    <i class="icon ion-alert"></i>
+                    <div ng-if="locationUpdateForm.$dirty"
+                         validate-location-state-messages="locationUpdateForm.state.$error"></div>
+                </div>
+                -->
+                <div class="item item-input row">
+                    <div class="col col-25 list-item-padding">
+                        <h4 class="sub-subheader">City</h4>
+                    </div>
+                    <div class="col">
+                        <input type="text"
+                               placeholder="Ex: San Francisco"
+                               ng-model="location.city"
+                               name="city"
+                               validate-location-city>
+                    </div>
+                </div>
+                <!--
+                <div class="item item-icon-left validation-message"
+                     ng-if="locationUpdateForm.$dirty">
+                    <i class="icon ion-alert"></i>
+                    <div ng-if="locationUpdateForm.$dirty"
+                         validate-location-city-messages="locationUpdateForm.city.$error"></div>
+                </div>
+                -->
+                <div class="item item-input row">
+                    <div class="col col-25 list-item-padding">
+                        <h4 class="sub-subheader">Zipcode</h4>
+                    </div>
+                    <div class="col">
+                        <input type="text"
+                               placeholder="Ex: 13337"
+                               ng-model="location.zipcode"
+                               name="Zip"
+                               validate-location-zipcode>
+                    </div>
+                </div>
+                <div class="item item-input row">
+                    <div class="col col-25 list-item-padding">
+                        <h4 class="sub-subheader">Timezone</h4>
+                    </div>
+                    <div class="col">
+                        <fancy-select
+                            header-text="Select a timezone"
+                            items="timezones"
+                            value-property="name"
+                            value="location.timezone.name"
+                            text-property="description"
+                            allow-empty='false'
+                            text="Tap here to select a Time Zone"
+                            modal-template-url="templates/types/typemodal.html"
+                            template-url="templates/types/typeitem.html"
+                            value-changed="timezoneSelected(value)"
+                            >
+                        </fancy-select>
+                    </div>
+                </div>
+                <!--
+                <div class="item item-icon-left validation-message"
+                     ng-if="locationUpdateForm.$dirty">
+                    <i class="icon ion-alert"></i>
+                    <div ng-if="locationUpdateForm.$dirty"
+                         validate-location-zipcode-messages="locationUpdateForm.zipcode.$error"></div>
+                </div>
+                -->
+                <div class="item item-input row">
+                    <div class="col col-25 list-item-padding">
+                        <h4 class="sub-subheader">Phone number</h4>
+                    </div>
+                    <div class="col">
+                        <input type="text"
+                               placeholder="Ex: 1113337777"
+                               ng-model="location.phonenumber"
+                               name="phonenumber"
+                               validate-location-phonenumber>
+                    </div>
+                </div>
+                <div class="item item-icon-left validation-message"
+                     ng-if="locationUpdateForm.$dirty">
+                    <div validate-location-phonenumber-messages="locationUpdateForm.phonenumber.$error"></div>
+                </div>
+                <div class="item item-input row" ng-show="message.length > 0">
+                    <div class="col col list-item-padding">
+                        <h4>{{message}}</h4>
+                    </div>
+                </div>
+                <button ng-disabled="saving || !locationUpdateForm.$valid"
+                        class="button button-block button-steelblue"
+                        type="submit">
+                    <span ng-if="saving">Updating...</span>
+                    <span ng-if="!saving">Update</span>
+                </button>
             </form>
         </div>
     </ion-content>

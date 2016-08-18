@@ -30,7 +30,7 @@ module.exports = {
         return (new moment()).unix();
     },
     updateModel: updateModel,
-    patchModel: function(modelName, queryArgs, req, res, updateMessage, defaultExcludes, sqlOptions, successCallback, updateSource) {
+    patchModel: function patchModel(modelName, queryArgs, req, res, updateMessage, defaultExcludes, sqlOptions, successCallback, updateSource) {
         if (defaultExcludes === undefined) {
             defaultExcludes = defaultBannedKeys;
         } else if (!defaultExcludes instanceof Array) {
@@ -81,7 +81,21 @@ module.exports = {
                 error(req, res, err);
             });
     },
-    simpleGetSingleModel: function(modelName, queryArgs, req, res) {
+    getSingleModel: function getSingleModel(modelName, queryArgs, sqlOptions, req, res) {
+        models[modelName].forge(queryArgs)
+            .fetch(sqlOptions)
+            .then(function (fetchedResult) {
+                if (fetchedResult) {
+                    res.json(fetchedResult);
+                } else {
+                    res.sendStatus(403);
+                }
+            })
+            .catch(function (err) {
+                error(req, res, err);
+            });
+    },
+    simpleGetSingleModel: function simpleGetSingleModel(modelName, queryArgs, req, res) {
         models[modelName].forge(queryArgs)
             .fetch()
             .then(function (fetchedResult) {
@@ -95,7 +109,7 @@ module.exports = {
                 error(req, res, err);
             });
     },
-    simpleGetListModel: function(modelName, queryArgs, req, res, options) {
+    simpleGetListModel: function simpleGetListModel(modelName, queryArgs, req, res, options) {
         var query = models[modelName].forge();
         if (queryArgs) {
             query = query.query({where: queryArgs});
@@ -108,7 +122,7 @@ module.exports = {
                 error(req, res, err);
             });
     },
-    postModel: function(modelName, otherArgs, req, res, bannedKeys, sqlOptions) {
+    postModel: function postModel(modelName, otherArgs, req, res, bannedKeys, sqlOptions) {
         var modelKeys = getModelKeys(modelName, bannedKeys);
         var keysToSave = _.pick(req.body, _.keys(modelKeys));
 
@@ -127,7 +141,7 @@ module.exports = {
                 }
             });
     },
-    deleteModel: function(modelName, queryArgs, req, res, successMessage, sqlOptions, successCallback) {
+    deleteModel: function deleteModel(modelName, queryArgs, req, res, successMessage, sqlOptions, successCallback) {
         models[modelName].forge()
             .where(queryArgs)
             .destroy(sqlOptions)

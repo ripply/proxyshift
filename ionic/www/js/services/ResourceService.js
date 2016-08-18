@@ -131,6 +131,7 @@ angular.module('scheduling-app.services')
                         city: city,
                         address: address,
                         zipcode: zipcode,
+                        timezone: timezone,
                         phonenumber: phonenumber
                     }),
                     function editLocationSuccess(result) {

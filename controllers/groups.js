@@ -6,6 +6,7 @@ var models = require('../app/models'),
     updateModel = require('./controllerCommon').updateModel,
     simpleGetSingleModel = require('./controllerCommon').simpleGetSingleModel,
     simpleGetListModel = require('./controllerCommon').simpleGetListModel,
+    getSingleModel = require('./controllerCommon').getSingleModel,
     postModel = require('./controllerCommon').postModel,
     patchModel = require('./controllerCommon').patchModel,
     deleteModel = require('./controllerCommon').deleteModel,
@@ -1055,11 +1056,16 @@ module.exports = {
         'get': {
             auth: ['group member'],
             route: function(req, res) {
-                simpleGetSingleModel(
+                getSingleModel(
                     'Location',
                     {
                         id: req.params.location_id,
                         group_id: req.params.group_id
+                    },
+                    {
+                        withRelated: [
+                            'timezone'
+                        ]
                     },
                     req,
                     res
@@ -1069,20 +1075,33 @@ module.exports = {
         'patch': { // modify location
             auth: ['group owner', 'or', 'privileged group member'], // group owner/privileged member
             route: function(req, res) {
-                patchModel(
-                    'Location',
-                    {
-                        id: req.params.location_id,
-                        group_id: req.params.group_id
-                    },
-                    req,
-                    res,
-                    'Location updated',
-                    [
-                        'id',
-                        'group_id'
-                    ]
-                );
+                if (req.body.timezone && !req.body.timezone_id) {
+                    getTimezone(req.body.timezone, undefined, function(timezone) {
+                        req.body.timezone_id = timezone.id;
+                        updateLocation();
+                    }, function getTimezoneError(err) {
+                        clientError(req, res, 400, 'Invalid timezone');
+                    });
+                } else {
+                    updateLocation();
+                }
+
+                function updateLocation() {
+                    patchModel(
+                        'Location',
+                        {
+                            id: req.params.location_id,
+                            group_id: req.params.group_id
+                        },
+                        req,
+                        res,
+                        'Location updated',
+                        [
+                            'id',
+                            'group_id'
+                        ]
+                    );
+                }
             }
         },
         'delete': { // remove location from group

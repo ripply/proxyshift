@@ -26,6 +26,7 @@ angular.module('scheduling-app.controllers')
                 'state',
                 'city',
                 'zipcode',
+                'timezone',
                 'phonenumber'
             ];
 
@@ -48,22 +49,32 @@ angular.module('scheduling-app.controllers')
                 {
                     name: 'US/Eastern',
                     description: 'Eastern'
-                },
+                }
             ];
-            /*
-            angular.forEach(moment.tz.names(), function(timezone) {
-                $scope.timezones.push({description: timezone});
-            });
-            */
+
+            function setupAllTimezones() {
+                $scope.timezones = [];
+                var names = moment.tz.names();
+                for (var i = 0; i < names.length; i++) {
+                    $scope.timezones.push({
+                        name: names[i],
+                        description: names[i]
+                    });
+                }
+            }
 
             $scope.timezoneSelected = function(value) {
-                $scope.location.timezone = value;
+                $scope.location.timezone.name = value;
             };
 
             function resetLocation() {
                 angular.forEach(locationProperties, function(property) {
                     $scope.location[property] = null;
-                })
+                });
+                $scope.location.timezone = {
+                    id: null,
+                    name: null
+                };
             }
 
             function init() {
@@ -97,6 +108,17 @@ angular.module('scheduling-app.controllers')
             function getLocation(success, error) {
                 ResourceService.getLocation($scope.group_id, $scope.location_id, function getLocationSuccess(result) {
                     $scope.location = angular.copy (result);
+                    var timezone = $scope.location.timezone.name;
+                    var timezoneExists = false;
+                    for (var i = 0; i < $scope.timezones.length; i++) {
+                        if ($scope.timezones[i].name == timezone) {
+                            timezoneExists = true;
+                            break;
+                        }
+                    }
+                    if (!timezoneExists) {
+                        setupAllTimezones();
+                    }
                     if (success) {
                         success(result);
                     }
@@ -115,7 +137,38 @@ angular.module('scheduling-app.controllers')
                 $scope.message = '';
                 ResourceService.createLocation(
                     getGroupId(),
-                    $scope.location.timezone,
+                    $scope.location.timezone.name,
+                    $scope.location.title,
+                    $scope.location.state,
+                    $scope.location.city,
+                    $scope.location.address,
+                    $scope.location.zipcode,
+                    $scope.location.phonenumber,
+                    function createLocationSuccess(response) {
+                        console.log(response);
+                        $scope.message = 'Success';
+                        $scope.saving = false;
+                    },
+                    function createLocationError(response) {
+                        console.log(response);
+                        if (response.data.data && response.data.error && response.data.data.message) {
+                            $scope.message = response.data.data.message;
+                        }
+                        $scope.saving = false;
+                    }
+                );
+            };
+
+            $scope.editLocation = function editLocation() {
+                if ($scope.saving) {
+                    return;
+                }
+                $scope.saving = true;
+                $scope.message = '';
+                ResourceService.editLocation(
+                    getGroupId(),
+                    getLocationId(),
+                    $scope.location.timezone.name,
                     $scope.location.title,
                     $scope.location.state,
                     $scope.location.city,
@@ -138,7 +191,7 @@ angular.module('scheduling-app.controllers')
             };
 
             //$scope.createLocation = ResourceService.createLocation;
-            $scope.editLocation = ResourceService.editLocation;
+            //$scope.editLocation = ResourceService.editLocation;
             $scope.deleteLocation = ResourceService.deleteLocation;
 
             $scope.createSublocation = ResourceService.createSublocation;
