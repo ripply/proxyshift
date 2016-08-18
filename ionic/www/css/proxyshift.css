@@ -1355,6 +1355,9 @@ input[type="password"] :focus {
 .bar-header .button {
   color: #ffffff;
 }
+.validation-message .icon {
+  color: #e74c3c;
+}
 .tabs {
   border-color: #159deb !important;
 }

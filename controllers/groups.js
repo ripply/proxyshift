@@ -34,6 +34,26 @@ try {
 
 const BANNED_USERGROUP_KEYS = ['user_id', 'group_id', 'id'];
 
+function getTimezone(timezone, sqlOptions, success, error) {
+    console.log(timezone);
+    return models.Timezone.query(function (q) {
+        q.select()
+            .from('timezones')
+            .where('name', '=', timezone);
+    })
+        .fetch(sqlOptions)
+        .tap(function getTimezoneSuccess(foundTimezone) {
+            if (foundTimezone) {
+                return success(foundTimezone.toJSON());
+            } else {
+                return success();
+            }
+        })
+        .catch(function getTimezoneError(err) {
+            return error(err);
+        });
+};
+
 module.exports = {
     route: '/api/v1/groups',
     '/': {
@@ -1015,14 +1035,19 @@ module.exports = {
         'post': { // create new location in group
             auth: ['group owner', 'or', 'privileged group member'], // group owner/privileged member
             route: function(req, res) {
-                postModel(
-                    'Location',
-                    {
-                        group_id: req.params.group_id
-                    },
-                    req,
-                    res
-                )
+                getTimezone(req.body.timezone, undefined, function(timezone) {
+                    req.body.timezone_id = timezone.id;
+                    postModel(
+                        'Location',
+                        {
+                            group_id: req.params.group_id
+                        },
+                        req,
+                        res
+                    )
+                }, function getTimezoneError(err) {
+                    clientError(req, res, 400, 'Invalid timezone');
+                });
             }
         }
     },

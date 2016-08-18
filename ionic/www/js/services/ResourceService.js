@@ -101,7 +101,7 @@ angular.module('scheduling-app.services')
 
             this.createLocation = function createLocation(group_id, timezone, title, state, city, address, zipcode, phonenumber, success, error) {
                 andThen(
-                    GroupModel.createLocation({
+                    GroupsModel.createLocation({
                         group_id: group_id
                     }, {
                         title: title,
@@ -109,6 +109,7 @@ angular.module('scheduling-app.services')
                         city: city,
                         address: address,
                         zipcode: zipcode,
+                        timezone: timezone,
                         phonenumber: phonenumber
                     }),
                     function createLocationSuccess(result) {

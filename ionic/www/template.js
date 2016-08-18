@@ -4544,11 +4544,11 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "            <a ng-click=\"forgot()\" href=\"#\">Forgot your password?</a>\n" +
     "        </p>\n" +
     "    </div>\n" +
-    "    <!--\n" +
+    "\n" +
     "    <div class=\"new-account\">\n" +
     "        <p>Don't have an account? <a ng-click=\"signup()\" href=\"#\">Create one</a></p>\n" +
     "    </div>\n" +
-    "    -->\n" +
+    "\n" +
     "</div>\n"
   );
 
@@ -5348,36 +5348,155 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
   $templateCache.put('templates/locations/locationcreate.html',
     "<ion-view view-title=\"Create Location\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
-    "        <div>\n" +
-    "            <form name=\"locationCreateForm\" ng-submit=\"createLocation(group_id, location.title, location.state, location.city, location.address, location.zipcode, location.phonenumber)\">\n" +
-    "                <div class=\"list\">\n" +
-    "                    <input type=\"hidden\" name=\"group_id\" value=\"{{group_id}}\">\n" +
-    "                    <label class=\"item item-input\">\n" +
-    "                        <span class=\"input-label\">Title</span>\n" +
-    "                        <input type=\"text\" name=\"title\" title=\"title\" ng-model=\"location.title\">\n" +
-    "                    </label>\n" +
-    "                    <label class=\"item item-input\">\n" +
-    "                        <span class=\"input-label\">Address</span>\n" +
-    "                        <input type=\"text\" name=\"address\" title=\"address\" ng-model=\"location.address\">\n" +
-    "                    </label>\n" +
-    "                    <label class=\"item item-input\">\n" +
-    "                        <span class=\"input-label\">State</span>\n" +
-    "                        <input type=\"text\" name=\"state\" title=\"state\" ng-model=\"location.state\">\n" +
-    "                    </label>\n" +
-    "                    <label class=\"item item-input\">\n" +
-    "                        <span class=\"input-label\">City</span>\n" +
-    "                        <input type=\"text\" name=\"city\" title=\"city\" ng-model=\"location.city\">\n" +
-    "                    </label>\n" +
-    "                    <label class=\"item item-input\">\n" +
-    "                        <span class=\"input-label\">Zip</span>\n" +
-    "                        <input type=\"text\" name=\"zip\" title=\"zip\" ng-model=\"location.zipcode\">\n" +
-    "                    </label>\n" +
-    "                    <label class=\"item item-input\">\n" +
-    "                        <span class=\"input-label\">phonenumber</span>\n" +
-    "                        <input type=\"text\" name=\"phonenumber\" title=\"phonenumber\" ng-model=\"location.phonenumber\">\n" +
-    "                    </label>\n" +
-    "                    <button class=\"button button-block button-steelblue\" type=\"submit\">Create new location</button>\n" +
+    "        <div class=\"list list-inset\">\n" +
+    "            <form name=\"locationCreateForm\" ng-submit=\"createLocation()\" novalidate>\n" +
+    "                <div class=\"item item-input row\">\n" +
+    "                    <div class=\"col col-25 list-item-padding\">\n" +
+    "                        <h4 class=\"sub-subheader\">Location name</h4>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col\">\n" +
+    "                        <input type=\"text\"\n" +
+    "                               placeholder=\"Building name or Store number\"\n" +
+    "                               ng-model=\"location.title\"\n" +
+    "                               name=\"title\"\n" +
+    "                               validate-location-title>\n" +
+    "                    </div>\n" +
     "                </div>\n" +
+    "                <!--\n" +
+    "                <div class=\"item item-icon-left validation-message\"\n" +
+    "                     ng-if=\"locationCreateForm.$dirty\">\n" +
+    "                    <i class=\"icon ion-alert\"></i>\n" +
+    "                    <div ng-if=\"locationCreateForm.$dirty\"\n" +
+    "                         validate-location-title-messages=\"locationCreateForm.title.$error\"></div>\n" +
+    "                </div>\n" +
+    "                -->\n" +
+    "                <div class=\"item item-input row\">\n" +
+    "                    <div class=\"col col-25 list-item-padding\">\n" +
+    "                        <h4 class=\"sub-subheader\">Address</h4>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col\">\n" +
+    "                        <input type=\"text\"\n" +
+    "                               placeholder=\"Ex: 123 Archon Road\"\n" +
+    "                               ng-model=\"location.address\"\n" +
+    "                               name=\"address\"\n" +
+    "                               validate-location-address>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <!--\n" +
+    "                <div class=\"item item-icon-left validation-message\"\n" +
+    "                     ng-if=\"locationCreateForm.$dirty\">\n" +
+    "                    <i class=\"icon ion-alert\"></i>\n" +
+    "                    <div ng-if=\"locationCreateForm.$dirty\"\n" +
+    "                         validate-location-address-messages=\"locationCreateForm.address.$error\"></div>\n" +
+    "                </div>\n" +
+    "                -->\n" +
+    "                <div class=\"item item-input row\">\n" +
+    "                    <div class=\"col col-25 list-item-padding\">\n" +
+    "                        <h4 class=\"sub-subheader\">State</h4>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col\">\n" +
+    "                        <input type=\"text\"\n" +
+    "                               placeholder=\"Ex: CA or California\"\n" +
+    "                               ng-model=\"location.state\"\n" +
+    "                               name=\"State\"\n" +
+    "                               validate-location-state>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <!--\n" +
+    "                <div class=\"item item-icon-left validation-message\"\n" +
+    "                     ng-if=\"locationCreateForm.$dirty\">\n" +
+    "                    <i class=\"icon ion-alert\"></i>\n" +
+    "                    <div ng-if=\"locationCreateForm.$dirty\"\n" +
+    "                         validate-location-state-messages=\"locationCreateForm.state.$error\"></div>\n" +
+    "                </div>\n" +
+    "                -->\n" +
+    "                <div class=\"item item-input row\">\n" +
+    "                    <div class=\"col col-25 list-item-padding\">\n" +
+    "                        <h4 class=\"sub-subheader\">City</h4>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col\">\n" +
+    "                        <input type=\"text\"\n" +
+    "                               placeholder=\"Ex: San Francisco\"\n" +
+    "                               ng-model=\"location.city\"\n" +
+    "                               name=\"city\"\n" +
+    "                               validate-location-city>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <!--\n" +
+    "                <div class=\"item item-icon-left validation-message\"\n" +
+    "                     ng-if=\"locationCreateForm.$dirty\">\n" +
+    "                    <i class=\"icon ion-alert\"></i>\n" +
+    "                    <div ng-if=\"locationCreateForm.$dirty\"\n" +
+    "                         validate-location-city-messages=\"locationCreateForm.city.$error\"></div>\n" +
+    "                </div>\n" +
+    "                -->\n" +
+    "                <div class=\"item item-input row\">\n" +
+    "                    <div class=\"col col-25 list-item-padding\">\n" +
+    "                        <h4 class=\"sub-subheader\">Zipcode</h4>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col\">\n" +
+    "                        <input type=\"text\"\n" +
+    "                               placeholder=\"Ex: 13337\"\n" +
+    "                               ng-model=\"location.zipcode\"\n" +
+    "                               name=\"Zip\"\n" +
+    "                               validate-location-zipcode>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <div class=\"item item-input row\">\n" +
+    "                    <div class=\"col col-25 list-item-padding\">\n" +
+    "                        <h4 class=\"sub-subheader\">Timezone</h4>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col\">\n" +
+    "                        <fancy-select\n" +
+    "                            header-text=\"Select a timezone\"\n" +
+    "                            items=\"timezones\"\n" +
+    "                            value-property=\"name\"\n" +
+    "                            value=\"location.timezone\"\n" +
+    "                            text-property=\"description\"\n" +
+    "                            allow-empty='false'\n" +
+    "                            text=\"Tap here to select a Time Zone\"\n" +
+    "                            modal-template-url=\"templates/types/typemodal.html\"\n" +
+    "                            template-url=\"templates/types/typeitem.html\"\n" +
+    "                            value-changed=\"timezoneSelected(value)\"\n" +
+    "                            >\n" +
+    "                        </fancy-select>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <!--\n" +
+    "                <div class=\"item item-icon-left validation-message\"\n" +
+    "                     ng-if=\"locationCreateForm.$dirty\">\n" +
+    "                    <i class=\"icon ion-alert\"></i>\n" +
+    "                    <div ng-if=\"locationCreateForm.$dirty\"\n" +
+    "                         validate-location-zipcode-messages=\"locationCreateForm.zipcode.$error\"></div>\n" +
+    "                </div>\n" +
+    "                -->\n" +
+    "                <div class=\"item item-input row\">\n" +
+    "                    <div class=\"col col-25 list-item-padding\">\n" +
+    "                        <h4 class=\"sub-subheader\">Phone number</h4>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col\">\n" +
+    "                        <input type=\"text\"\n" +
+    "                               placeholder=\"Ex: 1113337777\"\n" +
+    "                               ng-model=\"location.phonenumber\"\n" +
+    "                               name=\"phonenumber\"\n" +
+    "                               validate-location-phonenumber>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <div class=\"item item-icon-left validation-message\"\n" +
+    "                     ng-if=\"locationCreateForm.$dirty\">\n" +
+    "                    <div validate-location-phonenumber-messages=\"locationCreateForm.phonenumber.$error\"></div>\n" +
+    "                </div>\n" +
+    "                <div class=\"item item-input row\" ng-show=\"message.length > 0\">\n" +
+    "                    <div class=\"col col list-item-padding\">\n" +
+    "                        <h4>{{message}}</h4>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <button ng-disabled=\"saving || !locationCreateForm.$valid\"\n" +
+    "                        class=\"button button-block button-steelblue\"\n" +
+    "                        type=\"submit\">\n" +
+    "                    <span ng-if=\"saving\">Creating...</span>\n" +
+    "                    <span ng-if=\"!saving\">Create</span>\n" +
+    "                </button>\n" +
     "            </form>\n" +
     "        </div>\n" +
     "    </ion-content>\n" +

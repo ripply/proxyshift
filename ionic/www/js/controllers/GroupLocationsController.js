@@ -7,11 +7,13 @@ angular.module('scheduling-app.controllers')
         '$rootScope',
         '$stateParams',
         '$controller',
+        'GroupsModel',
         'UserInfoService',
         function($scope,
                  $rootScope,
                  $stateParams,
                  $controller,
+                 GroupsModel,
                  UserInfoService
         ) {
             $controller('BaseModelController', {$scope: $scope});
@@ -37,9 +39,22 @@ angular.module('scheduling-app.controllers')
                 } else if ($scope.location_id) {
                     $scope.location = UserInfoService.getLocation($scope.location_id);
                 } else {
-                    $scope.locations = UserInfoService.getLocationsMemberOfForGroup($scope.group_id);
+                    $scope.fetchLocations();
                 }
             }
+
+            var latestLocations;
+
+            $scope.fetchLocations = function fetchLocations() {
+                GroupsModel.locations({
+                    group_id: getGroupId()
+                }, function fetchGroupLocations(result) {
+                    latestLocations = angular.copy(result);
+                    $scope.locations = result;
+                }, function fetchGroupLocationsError(err) {
+                    $scope.locations = angular.copy(latestLocations);
+                });
+            };
 
             $scope.beforeEnter = init;
 

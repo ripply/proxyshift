@@ -103,6 +103,11 @@ var Validations = {
             { validator: 'isInt', message: 'Invalid phone number' }
         ]
     },
+    Location: {
+        phonenumber: [
+            { validator: 'isInt', message: '* Invalid Number'},
+        ]
+    },
     Shift: {
         description: [
             { validator: 'isLength', args: [0, 256], message: 'Cannot be larger than 30 characters'},
