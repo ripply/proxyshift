@@ -122,7 +122,64 @@ angular.module('scheduling-app.controllers')
                 });
             }
 
-            $scope.createType = ResourceService.createType;
-            $scope.editType = ResourceService.editType;
+            $scope.createType = function createType() {
+                if ($scope.saving) {
+                    return;
+                }
+                $scope.saving = true;
+                $scope.message = '';
+                ResourceService.createType(
+                    getGroupId(),
+                    $scope.type.title,
+                    $scope.type.description,
+                    $scope.type.cansendnotification,
+                    $scope.type.requiremanagerapproval,
+                    $scope.type.grouppermissionid,
+                    function editTypeSuccess(response) {
+                        console.log(response);
+                        $scope.message = 'Success';
+                        $scope.saving = false;
+                    },
+                    function editTypeError(response) {
+                        console.log(response);
+                        if (response.data.data && response.data.error && response.data.data.message) {
+                            $scope.message = response.data.data.message;
+                        }
+                        $scope.saving = false;
+                    }
+                );
+            };
+
+            $scope.editType = function editType() {
+                if ($scope.saving) {
+                    return;
+                }
+                $scope.saving = true;
+                $scope.message = '';
+                ResourceService.editType(
+                    getGroupId(),
+                    getTypeId(),
+                    $scope.type.title,
+                    $scope.type.description,
+                    $scope.type.cansendnotification,
+                    $scope.type.requiremanagerapproval,
+                    $scope.type.grouppermissionid,
+                    function editTypeSuccess(response) {
+                        console.log(response);
+                        $scope.message = 'Success';
+                        $scope.saving = false;
+                    },
+                    function editTypeError(response) {
+                        console.log(response);
+                        if (response.data.data && response.data.error && response.data.data.message) {
+                            $scope.message = response.data.data.message;
+                        }
+                        $scope.saving = false;
+                    }
+                );
+            };
+
+            //$scope.createType = ResourceService.createType;
+            //$scope.editType = ResourceService.editType;
             $scope.deleteType = ResourceService.deleteType;
         }]);

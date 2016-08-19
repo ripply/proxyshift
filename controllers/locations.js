@@ -288,10 +288,7 @@ module.exports = {
                     q.select()
                         .from('sublocations')
                         .where('sublocations.id', '=', req.params.sublocation_id)
-                        .innerJoin('locations', function() {
-                            this.on('locations.id', '=', 'sublocations.location_id')
-                        })
-                        .where('locations.id', '=', req.params.location_id);
+                        .andWhere('sublocations.location_id', '=', req.params.location_id);
                 })
                     .save(
                     _.extend({

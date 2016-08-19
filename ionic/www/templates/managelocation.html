@@ -1,27 +1,44 @@
 <ion-view view-title="Manage">
     <ion-content class="has-header" hide-back-button="false">
-        <ion-item href="#/settings/group/{{group_id}}/locations/{{location_id}}/users" class="item-remove-animate" ng-if="isPrivilegedMemberOfLocation()">
-            Members page
-        </ion-item>
-        <div class="item item-divider">
-            Edit Sublocation
-        </div>
-        <div>
-            <form name="editSublocationForm" ng-submit="editSublocation(location_id, sublocation_id, sublocation.title, sublocation.description)">
-                <div class="list">
-                    <input type="hidden" name="sublocation_id" value="{{sublocation_id}}">
-                    <input type="hidden" name="location_id" value="{{location_id}}">
-                    <label class="item item-input">
-                        <span class="input-label">Sub Location Title</span>
-                        <input type="text" name="title" title="user" ng-model="sublocation.title">
-                    </label>
-                    <label class="item item-input">
-                        <span class="input-label">Sub Location Description</span>
-                        <input type="text" name="description" ng-model="sublocation.description">
-                    </label>
-                    <button class="button button-block button-steelblue" type="submit">Update sublocation</button>
+        <form name="sublocationUpdateForm" ng-submit="editSublocation()" novalidate>
+            <div class="list list-inset centered-input">
+                <div class="item item-input row">
+                    <div class="col col-25 list-item-padding">
+                        <h4 class="sub-subheader">
+                            <i class="icon ion-edit"></i>
+                            Title
+                        </h4>
+                    </div>
+                    <div class="col">
+                        <input type="text"
+                               placeholder="Floor/Unit/Department name"
+                               ng-model="sublocation.title"
+                               name="title"
+                               validate-sublocation-title>
+                    </div>
                 </div>
-            </form>
-        </div>
+                <div class="item item-input row">
+                    <div class="col col-25 list-item-padding">
+                        <h4 class="sub-subheader">
+                            <i class="icon ion-edit"></i>
+                            Description
+                        </h4>
+                    </div>
+                    <div class="col">
+                        <input type="text"
+                               placeholder="Optional"
+                               ng-model="sublocation.description"
+                               name="title"
+                               validate-sublocation-description>
+                    </div>
+                </div>
+                <button ng-disabled="saving || !sublocationUpdateForm.$valid"
+                        class="button button-block button-steelblue"
+                        type="submit">
+                    <span ng-if="saving">Updating...</span>
+                    <span ng-if="!saving">Update</span>
+                </button>
+            </div>
+        </form>
     </ion-content>
 </ion-view>

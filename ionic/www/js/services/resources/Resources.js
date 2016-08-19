@@ -332,6 +332,7 @@ angular.forEach({
             route: base,
             params: {
                 location_id: '@location_id',
+                sublocation_id: '@sublocation_id',
                 groupuserclass_id: '@groupuserclass_id'
             },
             actions: {
@@ -389,15 +390,15 @@ angular.forEach({
                 },
                 sublocation: {
                     method: GET,
-                    url: base + '/sublocations'
+                    url: base + '/sublocations/:sublocation_id'
                 },
                 updateSublocation: {
                     method: PATCH,
-                    url: base + '/sublocations'
+                    url: base + '/sublocations/:sublocation_id'
                 },
                 removeSublocation: {
                     method: DELETE,
-                    url: base + '/sublocations'
+                    url: base + '/sublocations/:sublocation_id'
                 },
                 manageJob: {
                     method: POST,

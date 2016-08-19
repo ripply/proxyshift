@@ -1,26 +1,39 @@
-<ion-view view-title="Sublocations">
+<ion-view view-title="Location Overview">
     <ion-content class="has-header" hide-back-button="false">
-        <div class="item item-divider">
-            Manage
-        </div>
-        <ion-item href="#/settings/group/{{group_id}}/locations/{{location_id}}/manage">
-            Edit Location
-        </ion-item>
-        <ion-item href="#/settings/group/{{group_id}}/locations/{{location_id}}/new">
-            New Sublocation
-        </ion-item>
-        <div class="item item-divider">
-            Sublocations for {{ location.address }}
-        </div>
-        <i class="icon ion-search placeholder-icon"></i>
-        <input type="text" ng-model="query" ng-style="{'width' : '100%'}"
-               placeholder="Search by name, email or phone">
-        <div class="list">
-            <ion-item ng-repeat="sublocation in location.sublocations | filter:query"
-                      item="sublocation"
-                      href="#/settings/group/{{ group_id }}/locations/{{ location_id }}/sublocations/{{ sublocation.id }}/manage">
-                {{ sublocation.title }}
-            </ion-item>
+        <div class="list list-inset">
+            <div class="item item-input row">
+                <ion-item href="#/settings/group/{{group_id}}/locations/{{location_id}}/manage">
+                    <i class="icon ion-edit"></i>
+                    Edit Location Details
+                </ion-item>
+            </div>
+            <div class="item item-input row">
+                <ion-item href="#/settings/group/{{group_id}}/locations/{{location_id}}/new">
+                    <i class="icon ion-plus"></i>
+                    Add a Sublocation (Unit/Floor/Department)
+                </ion-item>
+            </div>
+            <div class="item item-divider" ng-if="location">
+                Sublocations for {{ location.title }} (Unit/Floor/Department)
+            </div>
+            <div class="item item-divider" ng-if="!location">
+                Sublocations (Unit/Floor/Department)
+            </div>
+            <div class="item-indent" ng-if="location.sublocations.length > 0">
+                <label class="item item-input">
+                    <i class="icon ion-search placeholder-icon"></i>
+                    <input type="text" ng-model="query" ng-style="{'width' : '100%'}"
+                           placeholder="Search by name, email or phone">
+                </label>
+                <ion-item ng-repeat="sublocation in location.sublocations | filter:query"
+                          item="sublocation"
+                          href="#/settings/group/{{ group_id }}/locations/{{ location_id }}/sublocations/{{ sublocation.id }}/manage">
+                    {{ sublocation.title }}
+                </ion-item>
+            </div>
+            <div class="item-indent greyed-text" ng-if="location.sublocations.length == 0 || !location.sublocations">
+                There are no associated sublocations.
+            </div>
         </div>
     </ion-content>
 </ion-view>

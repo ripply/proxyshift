@@ -168,6 +168,7 @@ angular.module('scheduling-app.services')
                         // userinfo has location information
                         // TODO: UPDATE USERINFO
                         //updateUserInfo(success, result);
+                        success(result);
                     },
                     error
                 );
@@ -176,7 +177,8 @@ angular.module('scheduling-app.services')
             this.editSublocation = function editSublocation(location_id, sublocation_id, title, description, success, error) {
                 andThen(
                     LocationsModel.updateSublocation({
-                        location_id: location_id
+                        location_id: location_id,
+                        sublocation_id: sublocation_id
                     }, {
                         title: title,
                         description: description
@@ -185,6 +187,7 @@ angular.module('scheduling-app.services')
                         // userinfo has location information
                         // TODO: UPDATE USERINFO
                         //updateUserInfo(success, result);
+                        success(result);
                     },
                     error
                 );
@@ -193,12 +196,14 @@ angular.module('scheduling-app.services')
             this.deleteSublocation = function deleteSublocation(location_id, sublocation_id, success, error) {
                 andThen(
                     LocationsModel.removeSublocation({
-                        location_id: location_id
+                        location_id: location_id,
+                        sublocation_id: sublocation_id
                     }),
                     function deleteSublocationSuccess(result) {
                         // userinfo has location information
                         // TODO: UPDATE USERINFO
                         //updateUserInfo(success, result);
+                        success(result);
                     },
                     error
                 );

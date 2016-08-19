@@ -31,6 +31,7 @@ angular.module('scheduling-app.controllers')
             ];
 
             $scope.location = {};
+            $scope.sublocation = {};
             resetLocation();
 
             $scope.timezones = [
@@ -75,6 +76,8 @@ angular.module('scheduling-app.controllers')
                     id: null,
                     name: null
                 };
+                $scope.sublocation.title = null;
+                $scope.sublocation.description = null;
             }
 
             function init() {
@@ -175,12 +178,64 @@ angular.module('scheduling-app.controllers')
                     $scope.location.address,
                     $scope.location.zipcode,
                     $scope.location.phonenumber,
-                    function createLocationSuccess(response) {
+                    function editLocationSuccess(response) {
                         console.log(response);
                         $scope.message = 'Success';
                         $scope.saving = false;
                     },
-                    function createLocationError(response) {
+                    function editLocationError(response) {
+                        console.log(response);
+                        if (response.data.data && response.data.error && response.data.data.message) {
+                            $scope.message = response.data.data.message;
+                        }
+                        $scope.saving = false;
+                    }
+                );
+            };
+
+            $scope.createSublocation = function createSublocation() {
+                if ($scope.saving) {
+                    return;
+                }
+                $scope.saving = true;
+                $scope.message = '';
+                console.log("Creating sublocation under '" + getLocationId() + "'");
+                ResourceService.createSublocation(
+                    getLocationId(),
+                    $scope.sublocation.title,
+                    $scope.sublocation.description,
+                    function createSublocationSuccess(response) {
+                        console.log(response);
+                        $scope.message = 'Success';
+                        $scope.saving = false;
+                    },
+                    function createSublocationError(response) {
+                        console.log(response);
+                        if (response.data.data && response.data.error && response.data.data.message) {
+                            $scope.message = response.data.data.message;
+                        }
+                        $scope.saving = false;
+                    }
+                );
+            };
+
+            $scope.editSublocation = function editSublocation() {
+                if ($scope.saving) {
+                    return;
+                }
+                $scope.saving = true;
+                $scope.message = '';
+                ResourceService.editSublocation(
+                    getLocationId(),
+                    getSublocationId(),
+                    $scope.sublocation.title,
+                    $scope.sublocation.description,
+                    function editSublocationSuccess(response) {
+                        console.log(response);
+                        $scope.message = 'Success';
+                        $scope.saving = false;
+                    },
+                    function editSublocationError(response) {
                         console.log(response);
                         if (response.data.data && response.data.error && response.data.data.message) {
                             $scope.message = response.data.data.message;
@@ -194,7 +249,7 @@ angular.module('scheduling-app.controllers')
             //$scope.editLocation = ResourceService.editLocation;
             $scope.deleteLocation = ResourceService.deleteLocation;
 
-            $scope.createSublocation = ResourceService.createSublocation;
-            $scope.editSublocation = ResourceService.editSublocation;
+            //$scope.createSublocation = ResourceService.createSublocation;
+            //$scope.editSublocation = ResourceService.editSublocation;
             $scope.deleteSublocation = ResourceService.deleteSublocation;
         }]);

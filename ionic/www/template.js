@@ -4799,19 +4799,17 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/currentgroupmembers.html',
-    "<ion-view view-title=\"Members\">\n" +
+    "<ion-view view-title=\"Member Management\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
     "        <div class=\"list list-inset centered-input\">\n" +
-    "            <div class=\"item item-divider\">\n" +
-    "                Navigation\n" +
-    "            </div>\n" +
     "            <div class=\"item-indent\">\n" +
     "                <ion-item href=\"#/settings/group/{{group_id}}/invite\" class=\"item-remove-animate\">\n" +
-    "                    Invitation page\n" +
+    "                    <i class=\"icon ion-plus\"></i>\n" +
+    "                    Member Invite\n" +
     "                </ion-item>\n" +
     "            </div>\n" +
     "            <div class=\"item item-divider\">\n" +
-    "                Current Members\n" +
+    "                Member Management\n" +
     "            </div>\n" +
     "            <div class=\"item-indent\">\n" +
     "                <label class=\"item item-input\">\n" +
@@ -4842,11 +4840,9 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "<ion-view view-title=\"Location\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
     "        <div class=\"list list-inset centered-input\">\n" +
-    "            <div class=\"item item-divider\">\n" +
-    "                Manage\n" +
-    "            </div>\n" +
     "            <div class=\"item-indent\">\n" +
     "                <ion-item href=\"#/settings/group/{{group_id}}/newlocation\">\n" +
+    "                    <i class=\"icon ion-plus\"></i>\n" +
     "                    New Location\n" +
     "                </ion-item>\n" +
     "            </div>\n" +
@@ -4991,10 +4987,10 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                </div>\n" +
     "                <div class=\"item-indent\">\n" +
     "                    <ion-item href=\"#/settings/group/{{group_id}}/members\" class=\"item-remove-animate\">\n" +
-    "                        Members Page\n" +
+    "                        Member Management\n" +
     "                    </ion-item>\n" +
     "                    <ion-item href=\"#/settings/group/{{group_id}}/locations/current\" class=\"item-remove-animate\">\n" +
-    "                        Locations Page\n" +
+    "                        Location Management\n" +
     "                    </ion-item>\n" +
     "                    <ion-item href=\"#/settings/group/{{group_id}}/types\" class=\"item-remove-animate\">\n" +
     "                        Job types\n" +
@@ -5219,7 +5215,10 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "            <div class=\"list compacted-list list-inset full-width-inputs\">\n" +
     "                <div class=\"item item-input row\">\n" +
     "                    <div class=\"col col-50 list-item-padding\">\n" +
-    "                        <h4 class=\"sub-subheader\">Email(s)</h4>\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            Email(s)\n" +
+    "                        </h4>\n" +
     "                    </div>\n" +
     "                    <div class=\"col\">\n" +
     "                        <input type=\"text\"\n" +
@@ -5230,7 +5229,10 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                </div>\n" +
     "                <div class=\"item item-input row\">\n" +
     "                    <div class=\"col col-50 list-item-padding\">\n" +
-    "                        <h4 class=\"sub-subheader\">Job type</h4>\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            Job type\n" +
+    "                        </h4>\n" +
     "                    </div>\n" +
     "                    <div class=\"col\">\n" +
     "                        <fancy-select\n" +
@@ -5249,7 +5251,10 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                </div>\n" +
     "                <div class=\"item item-input row\">\n" +
     "                    <div class=\"col col-50 list-item-padding\">\n" +
-    "                        <h4 class=\"sub-subheader\">Permission level</h4>\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            Permission level\n" +
+    "                        </h4>\n" +
     "                    </div>\n" +
     "                    <div class=\"col\">\n" +
     "                        <fancy-select\n" +
@@ -5352,7 +5357,10 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "            <form name=\"locationCreateForm\" ng-submit=\"createLocation()\" novalidate>\n" +
     "                <div class=\"item item-input row\">\n" +
     "                    <div class=\"col col-25 list-item-padding\">\n" +
-    "                        <h4 class=\"sub-subheader\">Location name</h4>\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            Location name\n" +
+    "                        </h4>\n" +
     "                    </div>\n" +
     "                    <div class=\"col\">\n" +
     "                        <input type=\"text\"\n" +
@@ -5372,7 +5380,10 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                -->\n" +
     "                <div class=\"item item-input row\">\n" +
     "                    <div class=\"col col-25 list-item-padding\">\n" +
-    "                        <h4 class=\"sub-subheader\">Address</h4>\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            Address\n" +
+    "                        </h4>\n" +
     "                    </div>\n" +
     "                    <div class=\"col\">\n" +
     "                        <input type=\"text\"\n" +
@@ -5392,7 +5403,10 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                -->\n" +
     "                <div class=\"item item-input row\">\n" +
     "                    <div class=\"col col-25 list-item-padding\">\n" +
-    "                        <h4 class=\"sub-subheader\">State</h4>\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            State\n" +
+    "                        </h4>\n" +
     "                    </div>\n" +
     "                    <div class=\"col\">\n" +
     "                        <input type=\"text\"\n" +
@@ -5412,7 +5426,10 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                -->\n" +
     "                <div class=\"item item-input row\">\n" +
     "                    <div class=\"col col-25 list-item-padding\">\n" +
-    "                        <h4 class=\"sub-subheader\">City</h4>\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            City\n" +
+    "                        </h4>\n" +
     "                    </div>\n" +
     "                    <div class=\"col\">\n" +
     "                        <input type=\"text\"\n" +
@@ -5432,7 +5449,10 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                -->\n" +
     "                <div class=\"item item-input row\">\n" +
     "                    <div class=\"col col-25 list-item-padding\">\n" +
-    "                        <h4 class=\"sub-subheader\">Zipcode</h4>\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            Zipcode\n" +
+    "                        </h4>\n" +
     "                    </div>\n" +
     "                    <div class=\"col\">\n" +
     "                        <input type=\"text\"\n" +
@@ -5444,7 +5464,10 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                </div>\n" +
     "                <div class=\"item item-input row\">\n" +
     "                    <div class=\"col col-25 list-item-padding\">\n" +
-    "                        <h4 class=\"sub-subheader\">Timezone</h4>\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            Timezone\n" +
+    "                        </h4>\n" +
     "                    </div>\n" +
     "                    <div class=\"col\">\n" +
     "                        <fancy-select\n" +
@@ -5472,7 +5495,10 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                -->\n" +
     "                <div class=\"item item-input row\">\n" +
     "                    <div class=\"col col-25 list-item-padding\">\n" +
-    "                        <h4 class=\"sub-subheader\">Phone number</h4>\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            Phone number\n" +
+    "                        </h4>\n" +
     "                    </div>\n" +
     "                    <div class=\"col\">\n" +
     "                        <input type=\"text\"\n" +
@@ -5511,7 +5537,10 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "            <form name=\"locationUpdateForm\" ng-submit=\"editLocation()\" novalidate>\n" +
     "                <div class=\"item item-input row\">\n" +
     "                    <div class=\"col col-25 list-item-padding\">\n" +
-    "                        <h4 class=\"sub-subheader\">Location name</h4>\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            Location name\n" +
+    "                        </h4>\n" +
     "                    </div>\n" +
     "                    <div class=\"col\">\n" +
     "                        <input type=\"text\"\n" +
@@ -5531,7 +5560,10 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                -->\n" +
     "                <div class=\"item item-input row\">\n" +
     "                    <div class=\"col col-25 list-item-padding\">\n" +
-    "                        <h4 class=\"sub-subheader\">Address</h4>\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            Address\n" +
+    "                        </h4>\n" +
     "                    </div>\n" +
     "                    <div class=\"col\">\n" +
     "                        <input type=\"text\"\n" +
@@ -5551,7 +5583,10 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                -->\n" +
     "                <div class=\"item item-input row\">\n" +
     "                    <div class=\"col col-25 list-item-padding\">\n" +
-    "                        <h4 class=\"sub-subheader\">State</h4>\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            State\n" +
+    "                        </h4>\n" +
     "                    </div>\n" +
     "                    <div class=\"col\">\n" +
     "                        <input type=\"text\"\n" +
@@ -5571,7 +5606,10 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                -->\n" +
     "                <div class=\"item item-input row\">\n" +
     "                    <div class=\"col col-25 list-item-padding\">\n" +
-    "                        <h4 class=\"sub-subheader\">City</h4>\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            City\n" +
+    "                        </h4>\n" +
     "                    </div>\n" +
     "                    <div class=\"col\">\n" +
     "                        <input type=\"text\"\n" +
@@ -5591,7 +5629,10 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                -->\n" +
     "                <div class=\"item item-input row\">\n" +
     "                    <div class=\"col col-25 list-item-padding\">\n" +
-    "                        <h4 class=\"sub-subheader\">Zipcode</h4>\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            Zipcode\n" +
+    "                        </h4>\n" +
     "                    </div>\n" +
     "                    <div class=\"col\">\n" +
     "                        <input type=\"text\"\n" +
@@ -5603,7 +5644,10 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                </div>\n" +
     "                <div class=\"item item-input row\">\n" +
     "                    <div class=\"col col-25 list-item-padding\">\n" +
-    "                        <h4 class=\"sub-subheader\">Timezone</h4>\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            Timezone\n" +
+    "                        </h4>\n" +
     "                    </div>\n" +
     "                    <div class=\"col\">\n" +
     "                        <fancy-select\n" +
@@ -5631,7 +5675,10 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                -->\n" +
     "                <div class=\"item item-input row\">\n" +
     "                    <div class=\"col col-25 list-item-padding\">\n" +
-    "                        <h4 class=\"sub-subheader\">Phone number</h4>\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            Phone number\n" +
+    "\n" +
     "                    </div>\n" +
     "                    <div class=\"col\">\n" +
     "                        <input type=\"text\"\n" +
@@ -5664,29 +5711,42 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/locations/locationlist.html',
-    "<ion-view view-title=\"Sublocations\">\n" +
+    "<ion-view view-title=\"Location Overview\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
-    "        <div class=\"item item-divider\">\n" +
-    "            Manage\n" +
-    "        </div>\n" +
-    "        <ion-item href=\"#/settings/group/{{group_id}}/locations/{{location_id}}/manage\">\n" +
-    "            Edit Location\n" +
-    "        </ion-item>\n" +
-    "        <ion-item href=\"#/settings/group/{{group_id}}/locations/{{location_id}}/new\">\n" +
-    "            New Sublocation\n" +
-    "        </ion-item>\n" +
-    "        <div class=\"item item-divider\">\n" +
-    "            Sublocations for {{ location.address }}\n" +
-    "        </div>\n" +
-    "        <i class=\"icon ion-search placeholder-icon\"></i>\n" +
-    "        <input type=\"text\" ng-model=\"query\" ng-style=\"{'width' : '100%'}\"\n" +
-    "               placeholder=\"Search by name, email or phone\">\n" +
-    "        <div class=\"list\">\n" +
-    "            <ion-item ng-repeat=\"sublocation in location.sublocations | filter:query\"\n" +
-    "                      item=\"sublocation\"\n" +
-    "                      href=\"#/settings/group/{{ group_id }}/locations/{{ location_id }}/sublocations/{{ sublocation.id }}/manage\">\n" +
-    "                {{ sublocation.title }}\n" +
-    "            </ion-item>\n" +
+    "        <div class=\"list list-inset\">\n" +
+    "            <div class=\"item item-input row\">\n" +
+    "                <ion-item href=\"#/settings/group/{{group_id}}/locations/{{location_id}}/manage\">\n" +
+    "                    <i class=\"icon ion-edit\"></i>\n" +
+    "                    Edit Location Details\n" +
+    "                </ion-item>\n" +
+    "            </div>\n" +
+    "            <div class=\"item item-input row\">\n" +
+    "                <ion-item href=\"#/settings/group/{{group_id}}/locations/{{location_id}}/new\">\n" +
+    "                    <i class=\"icon ion-plus\"></i>\n" +
+    "                    Add a Sublocation (Unit/Floor/Department)\n" +
+    "                </ion-item>\n" +
+    "            </div>\n" +
+    "            <div class=\"item item-divider\" ng-if=\"location\">\n" +
+    "                Sublocations for {{ location.title }} (Unit/Floor/Department)\n" +
+    "            </div>\n" +
+    "            <div class=\"item item-divider\" ng-if=\"!location\">\n" +
+    "                Sublocations (Unit/Floor/Department)\n" +
+    "            </div>\n" +
+    "            <div class=\"item-indent\" ng-if=\"location.sublocations.length > 0\">\n" +
+    "                <label class=\"item item-input\">\n" +
+    "                    <i class=\"icon ion-search placeholder-icon\"></i>\n" +
+    "                    <input type=\"text\" ng-model=\"query\" ng-style=\"{'width' : '100%'}\"\n" +
+    "                           placeholder=\"Search by name, email or phone\">\n" +
+    "                </label>\n" +
+    "                <ion-item ng-repeat=\"sublocation in location.sublocations | filter:query\"\n" +
+    "                          item=\"sublocation\"\n" +
+    "                          href=\"#/settings/group/{{ group_id }}/locations/{{ location_id }}/sublocations/{{ sublocation.id }}/manage\">\n" +
+    "                    {{ sublocation.title }}\n" +
+    "                </ion-item>\n" +
+    "            </div>\n" +
+    "            <div class=\"item-indent greyed-text\" ng-if=\"location.sublocations.length == 0 || !location.sublocations\">\n" +
+    "                There are no associated sublocations.\n" +
+    "            </div>\n" +
     "        </div>\n" +
     "    </ion-content>\n" +
     "</ion-view>\n"
@@ -5745,12 +5805,13 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                    <label class=\"item item-input\">\n" +
     "                        <i class=\"icon ion-search placeholder-icon\"></i>\n" +
     "                        <input type=\"text\" ng-model=\"query\" ng-style=\"{'width' : '100%'}\"\n" +
-    "                               placeholder=\"Search by address, city, state, zipcode or phone\">\n" +
+    "                               placeholder=\"Search by name, email or phone\">\n" +
     "                    </label>\n" +
-    "                    <div class=\"item item-input\"\n" +
-    "                         ng-repeat=\"location in locations | filter:query\"\n" +
-    "                         ui-sref=\"settings.group.locations.managingsubscriptions({group_id: getGroupId(), location_id: location.id})\">\n" +
-    "                        {{ location.title }} - {{ location.address }}\n" +
+    "                    <div class=\"list\">\n" +
+    "                        <ion-item ng-repeat=\"location in locations | filter:query\"\n" +
+    "                                  ui-sref=\"settings.group.locations.managingsubscriptions({group_id: getGroupId(), location_id: location.id})\">\n" +
+    "                            {{ location.title }} - {{ location.address }}\n" +
+    "                        </ion-item>\n" +
     "                    </div>\n" +
     "                </div>\n" +
     "            </div>\n" +
@@ -5776,29 +5837,46 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
   $templateCache.put('templates/managelocation.html',
     "<ion-view view-title=\"Manage\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
-    "        <ion-item href=\"#/settings/group/{{group_id}}/locations/{{location_id}}/users\" class=\"item-remove-animate\" ng-if=\"isPrivilegedMemberOfLocation()\">\n" +
-    "            Members page\n" +
-    "        </ion-item>\n" +
-    "        <div class=\"item item-divider\">\n" +
-    "            Edit Sublocation\n" +
-    "        </div>\n" +
-    "        <div>\n" +
-    "            <form name=\"editSublocationForm\" ng-submit=\"editSublocation(location_id, sublocation_id, sublocation.title, sublocation.description)\">\n" +
-    "                <div class=\"list\">\n" +
-    "                    <input type=\"hidden\" name=\"sublocation_id\" value=\"{{sublocation_id}}\">\n" +
-    "                    <input type=\"hidden\" name=\"location_id\" value=\"{{location_id}}\">\n" +
-    "                    <label class=\"item item-input\">\n" +
-    "                        <span class=\"input-label\">Sub Location Title</span>\n" +
-    "                        <input type=\"text\" name=\"title\" title=\"user\" ng-model=\"sublocation.title\">\n" +
-    "                    </label>\n" +
-    "                    <label class=\"item item-input\">\n" +
-    "                        <span class=\"input-label\">Sub Location Description</span>\n" +
-    "                        <input type=\"text\" name=\"description\" ng-model=\"sublocation.description\">\n" +
-    "                    </label>\n" +
-    "                    <button class=\"button button-block button-steelblue\" type=\"submit\">Update sublocation</button>\n" +
+    "        <form name=\"sublocationUpdateForm\" ng-submit=\"editSublocation()\" novalidate>\n" +
+    "            <div class=\"list list-inset centered-input\">\n" +
+    "                <div class=\"item item-input row\">\n" +
+    "                    <div class=\"col col-25 list-item-padding\">\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            Title\n" +
+    "                        </h4>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col\">\n" +
+    "                        <input type=\"text\"\n" +
+    "                               placeholder=\"Floor/Unit/Department name\"\n" +
+    "                               ng-model=\"sublocation.title\"\n" +
+    "                               name=\"title\"\n" +
+    "                               validate-sublocation-title>\n" +
+    "                    </div>\n" +
     "                </div>\n" +
-    "            </form>\n" +
-    "        </div>\n" +
+    "                <div class=\"item item-input row\">\n" +
+    "                    <div class=\"col col-25 list-item-padding\">\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            Description\n" +
+    "                        </h4>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col\">\n" +
+    "                        <input type=\"text\"\n" +
+    "                               placeholder=\"Optional\"\n" +
+    "                               ng-model=\"sublocation.description\"\n" +
+    "                               name=\"title\"\n" +
+    "                               validate-sublocation-description>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <button ng-disabled=\"saving || !sublocationUpdateForm.$valid\"\n" +
+    "                        class=\"button button-block button-steelblue\"\n" +
+    "                        type=\"submit\">\n" +
+    "                    <span ng-if=\"saving\">Updating...</span>\n" +
+    "                    <span ng-if=\"!saving\">Update</span>\n" +
+    "                </button>\n" +
+    "            </div>\n" +
+    "        </form>\n" +
     "    </ion-content>\n" +
     "</ion-view>\n"
   );
@@ -7288,7 +7366,10 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "            <form name=\"typeEditForm\" ng-submit=\"modifyPrivilegeLevel()\">\n" +
     "                <div class=\"item item-input row\">\n" +
     "                    <div class=\"col col-50 list-item-padding\">\n" +
-    "                        <h4 class=\"sub-subheader\">Permission level</h4>\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            Edit Permission level\n" +
+    "                        </h4>\n" +
     "                    </div>\n" +
     "                    <div class=\"col\">\n" +
     "                        <fancy-select\n" +
@@ -7544,25 +7625,46 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
   $templateCache.put('templates/sublocations/sublocationcreate.html',
     "<ion-view view-title=\"Manage\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
-    "        <div class=\"item item-divider\">\n" +
-    "            Create Sublocation\n" +
-    "        </div>\n" +
-    "        <div>\n" +
-    "            <form name=\"sublocationForm\" ng-submit=\"createSublocation(location_id, title, description)\">\n" +
-    "                <div class=\"list\">\n" +
-    "                    <input type=\"hidden\" name=\"location_id\" value=\"{{location_id}}\">\n" +
-    "                    <label class=\"item item-input\">\n" +
-    "                        <span class=\"input-label\">Sub Location Title</span>\n" +
-    "                        <input type=\"text\" name=\"title\" title=\"user\" ng-model=\"title\">\n" +
-    "                    </label>\n" +
-    "                    <label class=\"item item-input\">\n" +
-    "                        <span class=\"input-label\">Sub Location Description</span>\n" +
-    "                        <input type=\"text\" name=\"description\" ng-model=\"description\">\n" +
-    "                    </label>\n" +
-    "                    <button class=\"button button-block button-steelblue\" type=\"submit\">Create sublocation</button>\n" +
+    "        <form name=\"sublocationUpdateForm\" ng-submit=\"createSublocation()\" novalidate>\n" +
+    "            <div class=\"list list-inset centered-input\">\n" +
+    "                <div class=\"item item-input row\">\n" +
+    "                    <div class=\"col col-25 list-item-padding\">\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            Title\n" +
+    "                        </h4>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col\">\n" +
+    "                        <input type=\"text\"\n" +
+    "                               placeholder=\"Floor/Unit/Department name\"\n" +
+    "                               ng-model=\"sublocation.title\"\n" +
+    "                               name=\"title\"\n" +
+    "                               validate-sublocation-title>\n" +
+    "                    </div>\n" +
     "                </div>\n" +
-    "            </form>\n" +
-    "        </div>\n" +
+    "                <div class=\"item item-input row\">\n" +
+    "                    <div class=\"col col-25 list-item-padding\">\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            Description\n" +
+    "                        </h4>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col\">\n" +
+    "                        <input type=\"text\"\n" +
+    "                               placeholder=\"Optional\"\n" +
+    "                               ng-model=\"sublocation.description\"\n" +
+    "                               name=\"title\"\n" +
+    "                               validate-sublocation-description>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <button ng-disabled=\"saving || !sublocationUpdateForm.$valid\"\n" +
+    "                        class=\"button button-block button-steelblue\"\n" +
+    "                        type=\"submit\">\n" +
+    "                    <span ng-if=\"saving\">Creating...</span>\n" +
+    "                    <span ng-if=\"!saving\">Create</span>\n" +
+    "                </button>\n" +
+    "            </div>\n" +
+    "        </form>\n" +
     "    </ion-content>\n" +
     "</ion-view>\n"
   );
@@ -7622,44 +7724,80 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/types/typecreate.html',
-    "<ion-view view-title=\"Create Job type\">\n" +
+    "<ion-view view-title=\"Create Job Type\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
-    "        <div>\n" +
-    "            <form name=\"typeCreateForm\" ng-submit=\"createType(group_id, type.title, type.description, type.cansendnotification, type.requiremanagerapproval, type.grouppermissionid)\">\n" +
-    "                <div class=\"list\">\n" +
-    "                    <input type=\"hidden\" name=\"location_id\" value=\"{{location_id}}\">\n" +
-    "                    <label class=\"item item-input\">\n" +
-    "                        <span class=\"input-label\">Job Title</span>\n" +
-    "                        <input type=\"text\" name=\"title\" title=\"user\" ng-model=\"type.title\">\n" +
-    "                    </label>\n" +
-    "                    <label class=\"item item-input\">\n" +
-    "                        <span class=\"input-label\">Job Description</span>\n" +
-    "                        <input type=\"text\" name=\"description\" ng-model=\"type.description\">\n" +
-    "                    </label>\n" +
+    "        <form name=\"typeCreateForm\" ng-submit=\"createType()\" novalidate>\n" +
+    "            <div class=\"list list-inset centered-input\">\n" +
+    "                <div class=\"item item-input row\">\n" +
+    "                    <div class=\"col col-25 list-item-padding\">\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            Job Title\n" +
+    "                        </h4>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col\">\n" +
+    "                        <input type=\"text\"\n" +
+    "                               placeholder=\"Ex: Nurse, Cashier, etc\"\n" +
+    "                               ng-model=\"type.title\"\n" +
+    "                               name=\"title\"\n" +
+    "                               validate-groupuserclass-title>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <div class=\"item item-input row\">\n" +
+    "                    <div class=\"col col-25 list-item-padding\">\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            Description\n" +
+    "                        </h4>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col\">\n" +
+    "                        <input type=\"text\"\n" +
+    "                               placeholder=\"Optional\"\n" +
+    "                               ng-model=\"sublocation.description\"\n" +
+    "                               name=\"title\"\n" +
+    "                               validate-groupuserclass-description>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <div class=\"item item-input row\">\n" +
     "                    <ion-checkbox type=\"checkbox\" name=\"cansendnotification\" ng-model=\"type.cansendnotification\" ng-checked=\"type.cansendnotification\">\n" +
     "                        Can send notifications\n" +
     "                    </ion-checkbox>\n" +
-    "\n" +
+    "                </div>\n" +
+    "                <div class=\"item item-input row\">\n" +
     "                    <ion-checkbox type=\"checkbox\" name=\"requiremanagerapproval\" ng-model=\"type.requiremanagerapproval\" ng-checked=\"type.requiremanagerapproval\">\n" +
     "                        Requires manager approval\n" +
     "                    </ion-checkbox>\n" +
-    "                    <fancy-select\n" +
-    "                        header-text=\"Select an option\"\n" +
-    "                        items=\"permissions\"\n" +
-    "                        value-property=\"id\"\n" +
-    "                        value=\"type.grouppermissionid\"\n" +
-    "                        text-property=\"description\"\n" +
-    "                        allow-empty='false'\n" +
-    "                        modal-template-url=\"templates/types/typemodal.html\"\n" +
-    "                        template-url=\"templates/types/typeitem.html\"\n" +
-    "                        value-changed=\"wat(value)\"\n" +
-    "                        note-text=\"A Note text\"\n" +
-    "                        >\n" +
-    "                    </fancy-select>\n" +
-    "                    <button class=\"button button-block button-steelblue\" type=\"submit\">Create new job type</button>\n" +
     "                </div>\n" +
-    "            </form>\n" +
-    "        </div>\n" +
+    "                <div class=\"item item-input row\">\n" +
+    "                    <div class=\"col col-50 list-item-padding\">\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            Permission Level\n" +
+    "                        </h4>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col\">\n" +
+    "                        <fancy-select\n" +
+    "                            header-text=\"Select an option\"\n" +
+    "                            items=\"permissions\"\n" +
+    "                            value-property=\"id\"\n" +
+    "                            value=\"type.grouppermissionid\"\n" +
+    "                            text-property=\"description\"\n" +
+    "                            allow-empty='false'\n" +
+    "                            modal-template-url=\"templates/types/typemodal.html\"\n" +
+    "                            template-url=\"templates/types/typeitem.html\"\n" +
+    "                            value-changed=\"wat(value)\"\n" +
+    "                            >\n" +
+    "                        </fancy-select>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <button ng-disabled=\"saving || !typeCreateForm.$valid\"\n" +
+    "                        class=\"button button-block button-steelblue\"\n" +
+    "                        type=\"submit\">\n" +
+    "                    <span ng-if=\"saving\">Creating...</span>\n" +
+    "                    <span ng-if=\"!saving\">Create</span>\n" +
+    "                </button>\n" +
+    "            </div>\n" +
+    "        </form>\n" +
     "    </ion-content>\n" +
     "</ion-view>\n"
   );
@@ -7668,42 +7806,78 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
   $templateCache.put('templates/types/typeedit.html',
     "<ion-view view-title=\"Modify Job type\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
-    "        <div>\n" +
-    "            <form name=\"typeEditForm\" ng-submit=\"editType(group_id, type_id, type.title, type.description, type.cansendnotification, type.requiremanagerapproval, type.grouppermissionid)\">\n" +
-    "                <div class=\"list\">\n" +
-    "                    <input type=\"hidden\" name=\"location_id\" value=\"{{location_id}}\">\n" +
-    "                    <label class=\"item item-input\">\n" +
-    "                        <span class=\"input-label\">Job Title</span>\n" +
-    "                        <input type=\"text\" name=\"title\" title=\"user\" ng-model=\"type.title\">\n" +
-    "                    </label>\n" +
-    "                    <label class=\"item item-input\">\n" +
-    "                        <span class=\"input-label\">Job Description</span>\n" +
-    "                        <input type=\"text\" name=\"description\" ng-model=\"type.description\">\n" +
-    "                    </label>\n" +
+    "        <form name=\"typeUpdateForm\" ng-submit=\"editType()\" novalidate>\n" +
+    "            <div class=\"list list-inset centered-input\">\n" +
+    "                <div class=\"item item-input row\">\n" +
+    "                    <div class=\"col col-25 list-item-padding\">\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            Job Title\n" +
+    "                        </h4>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col\">\n" +
+    "                        <input type=\"text\"\n" +
+    "                               placeholder=\"Ex: Nurse, Cashier, etc\"\n" +
+    "                               ng-model=\"type.title\"\n" +
+    "                               name=\"title\"\n" +
+    "                               validate-groupuserclass-title>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <div class=\"item item-input row\">\n" +
+    "                    <div class=\"col col-25 list-item-padding\">\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            Description\n" +
+    "                        </h4>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col\">\n" +
+    "                        <input type=\"text\"\n" +
+    "                               placeholder=\"Optional\"\n" +
+    "                               ng-model=\"sublocation.description\"\n" +
+    "                               name=\"title\"\n" +
+    "                               validate-groupuserclass-description>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <div class=\"item item-input row\">\n" +
     "                    <ion-checkbox type=\"checkbox\" name=\"cansendnotification\" ng-model=\"type.cansendnotification\" ng-checked=\"type.cansendnotification\">\n" +
     "                        Can send notifications\n" +
     "                    </ion-checkbox>\n" +
-    "\n" +
+    "                </div>\n" +
+    "                <div class=\"item item-input row\">\n" +
     "                    <ion-checkbox type=\"checkbox\" name=\"requiremanagerapproval\" ng-model=\"type.requiremanagerapproval\" ng-checked=\"type.requiremanagerapproval\">\n" +
     "                        Requires manager approval\n" +
     "                    </ion-checkbox>\n" +
-    "                    <fancy-select\n" +
-    "                        header-text=\"Select an option\"\n" +
-    "                        items=\"permissions\"\n" +
-    "                        value-property=\"id\"\n" +
-    "                        value=\"type.grouppermissionid\"\n" +
-    "                        text-property=\"description\"\n" +
-    "                        allow-empty='false'\n" +
-    "                        modal-template-url=\"templates/types/typemodal.html\"\n" +
-    "                        template-url=\"templates/types/typeitem.html\"\n" +
-    "                        value-changed=\"wat(value)\"\n" +
-    "                        note-text=\"A Note text\"\n" +
-    "                        >\n" +
-    "                    </fancy-select>\n" +
-    "                    <button class=\"button button-block button-steelblue\" type=\"submit\">Save changes</button>\n" +
     "                </div>\n" +
-    "            </form>\n" +
-    "        </div>\n" +
+    "                <div class=\"item item-input row\">\n" +
+    "                    <div class=\"col col-50 list-item-padding\">\n" +
+    "                        <h4 class=\"sub-subheader\">\n" +
+    "                            <i class=\"icon ion-edit\"></i>\n" +
+    "                            Permission Level\n" +
+    "                        </h4>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col\">\n" +
+    "                        <fancy-select\n" +
+    "                            header-text=\"Select an option\"\n" +
+    "                            items=\"permissions\"\n" +
+    "                            value-property=\"id\"\n" +
+    "                            value=\"type.grouppermissionid\"\n" +
+    "                            text-property=\"description\"\n" +
+    "                            allow-empty='false'\n" +
+    "                            modal-template-url=\"templates/types/typemodal.html\"\n" +
+    "                            template-url=\"templates/types/typeitem.html\"\n" +
+    "                            value-changed=\"wat(value)\"\n" +
+    "                            >\n" +
+    "                        </fancy-select>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <button ng-disabled=\"saving || !typeUpdateForm.$valid\"\n" +
+    "                        class=\"button button-block button-steelblue\"\n" +
+    "                        type=\"submit\">\n" +
+    "                    <span ng-if=\"saving\">Updating...</span>\n" +
+    "                    <span ng-if=\"!saving\">Update</span>\n" +
+    "                </button>\n" +
+    "            </div>\n" +
+    "        </form>\n" +
     "    </ion-content>\n" +
     "</ion-view>\n"
   );
@@ -7725,16 +7899,14 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "<ion-view view-title=\"Job Types\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
     "        <div class=\"list list-inset centered-input\">\n" +
-    "            <div class=\"item item-divider\">\n" +
-    "                Manage\n" +
-    "            </div>\n" +
     "            <div class=\"item-indent\">\n" +
     "                <ion-item href=\"#/settings/group/{{group_id}}/createtype\">\n" +
-    "                    Create new job type\n" +
+    "                    <i class=\"icon ion-plus\"></i>\n" +
+    "                    Add new Job Type\n" +
     "                </ion-item>\n" +
     "            </div>\n" +
     "            <div class=\"item item-divider\">\n" +
-    "                Existing Job types\n" +
+    "                Current Job Types\n" +
     "            </div>\n" +
     "            <div class=\"item-indent\">\n" +
     "                <label class=\"item item-input\">\n" +
