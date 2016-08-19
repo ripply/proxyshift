@@ -54,6 +54,11 @@
                 Account Actions
             </div>
             <div class="item-indent">
+                <ion-item ng-if="checkForUpdate != undefined"
+                          ng-click="checkForUpdate()">
+                    <i class="icon ion-loop"></i>
+                    Check for Updates
+                </ion-item>
                 <ion-item href="#{{states.LOGOUT_URL}}">
                     <i class="icon ion-log-out"></i>
                     Logout

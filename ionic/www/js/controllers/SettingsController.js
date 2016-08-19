@@ -33,6 +33,8 @@ angular.module('scheduling-app.controllers')
                 StateHistoryService.returnTo(STATES.SHIFTS);
             };
 
+            $scope.checkForUpdate = window.checkForUpdate;
+
             $scope.commitSettings = function commitSettings() {
                 RemoteUserSettingsService.saveSettings($scope.UserSettings,
                     function saveSettingsSuccess(result) {

@@ -72,10 +72,33 @@
 
     var nextUpdate;
 
+    window.checkForUpdate = function checkForUpdate() {
+        check(true);
+    };
+
+    window.checkForUpdatesSetting = function checkForUpdatesSetting(newSetting) {
+        if (typeof(Storage) !== "undefined") {
+            if (newSetting !== undefined) {
+                localStorage.setItem('check_for_updates', newSetting == true);
+            } else {
+                var checkForUpdates = localStorage.getItem('check_for_updates');
+                if (checkForUpdates == true || checkForUpdates == undefined || checkForUpdates == null) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    };
+
+    var checking = false;
+
     // Check > Download > Update
-    function check(){
+    function check(force){
+        if (checking) {
+            return;
+        }
         var nextUpdateTime = nextUpdate;
-        if (nextUpdate) {
+        if (!force && nextUpdate) {
             if (okToUpdate(nextUpdate)) {
                 // ok, try updating
             } else {
@@ -88,6 +111,10 @@
             // Code for localStorage/sessionStorage.
             hasStorage = true;
             nextUpdateTime = localStorage.getItem('next_update_time');
+            var checkForUpdates = localStorage.getItem('check_for_updates');
+            if (!force && checkForUpdates == false) {
+                return;
+            }
             if (nextUpdateTime !== undefined &&
                 nextUpdateTime !== null) {
                 try {
@@ -100,11 +127,11 @@
             // Sorry! No Web Storage support..
         }
 
-        if (!okToUpdate(nextUpdateTime)) {
+        if (!force && !okToUpdate(nextUpdateTime)) {
             return;
         }
 
-        if (!isWifi()) {
+        if (!force && !isWifi()) {
             console.log("Not on wifi, not checking for update.");
             return;
         } else {
@@ -152,8 +179,11 @@
             localStorage.setItem('next_update_time', nextUpdate);
         }
 
+        checking = true;
+
         loader.check()
             .then(function(newManifest){
+                checking = false;
                 try {
                     var manifestHash = stringHashcode(JSON.stringify(newManifest));
                     if (isCordova) {
@@ -165,7 +195,7 @@
                             }
                         }
 
-                        if (hasStorage) {
+                        if (!force && hasStorage) {
                             var ignoredManifestHash = localStorage.getItem('ignore_update');
                             if (ignoredManifestHash == manifestHash) {
                                 if (hasStorage) {
@@ -213,7 +243,10 @@
                         alert(error);
                     }
                 }
-            });
+            })
+            .catch(function(err) {
+                checking = false;
+            })
     }
 
     // Couple events:

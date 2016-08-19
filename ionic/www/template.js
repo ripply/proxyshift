@@ -8014,6 +8014,11 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                Account Actions\n" +
     "            </div>\n" +
     "            <div class=\"item-indent\">\n" +
+    "                <ion-item ng-if=\"checkForUpdate != undefined\"\n" +
+    "                          ng-click=\"checkForUpdate()\">\n" +
+    "                    <i class=\"icon ion-loop\"></i>\n" +
+    "                    Check for Updates\n" +
+    "                </ion-item>\n" +
     "                <ion-item href=\"#{{states.LOGOUT_URL}}\">\n" +
     "                    <i class=\"icon ion-log-out\"></i>\n" +
     "                    Logout\n" +
