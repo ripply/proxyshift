@@ -53,9 +53,25 @@ angular.module('scheduling-app.controllers')
                 $ionicScrollDelegate.scrollTo(0, y, true);
             });
 
+            function getShiftApiRoute() {
+                var route;
+                if ($scope.acceptedOnly === true) {
+                    if ($scope.showDividers === true) {
+                        route = 'allAppliedOnlyWithDividers';
+                    } else {
+                        route = 'allAppliedOnly';
+                    }
+                } else if ($scope.showDividers === true) {
+                    route = 'allWithDividers';
+                } else {
+                    route = 'all';
+                }
+                return route;
+            }
+
             $scope.fetch = function() {
                 var deferred = $q.defer();
-                ShiftsModel.all(function(data) {
+                ShiftsModel[getShiftApiRoute()](function(data) {
                     $scope.Model = data;
                     deferred.resolve(data);
                     if ($scope.showDividers) {

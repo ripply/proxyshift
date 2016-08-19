@@ -50,93 +50,31 @@ module.exports = {
         'get': { // get all shifts you can register for
             // auth: // logged in
             route: function(req, res) {
-                var now = new Date();
-                var range = grabNormalShiftRange(now, after, before);
-                var before = range[0];
-                var after = range[1];
-                models.Shift.query(function(q) {
-                    // grab groups the user is a part of
-                    var relatedGroupsSubQuery =
-                        knex.select('usergroups.group_id as wat')
-                            .from('usergroups')
-                            .where('usergroups.user_id', '=', req.user.id)
-                            .union(function() {
-                                this.select('groups.id as wat')
-                                    .from('groups')
-                                    .where('groups.user_id', '=', req.user.id);
-                            });
-
-                    // grab locations related to all of those groups
-                    var relatedLocationsSubQuery =
-                        knex.select('locations.id as locationid')
-                            .from('locations')
-                            .whereIn('locations.group_id', relatedGroupsSubQuery);
-
-                    // grab all your user classes
-                    var relatedUserClassesSubQuery =
-                        knex.select('groupuserclasses.id as groupuserclassid')
-                            .from('groupuserclasses')
-                            .innerJoin('groupuserclasstousers', function() {
-                                this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id');
-                            })
-                            .where('groupuserclasstousers.user_id', '=', req.user.id)
-                            .whereIn('groupuserclasses.group_id', relatedGroupsSubQuery);
-
-                    // grab all shifts at locations/sublocations that are one of your job types
-
-                    var query = q.select(shiftAndAppliedSelectKeys)
-                        .from('shifts')
-                        .innerJoin('locations', function() {
-                            this.on('shifts.location_id', '=', 'locations.id');
-                        })
-                        .where(function() {
-                            this.where('shifts.start', '>=', before)
-                                .orWhere(function() {
-                                    this.where('shifts.end', '>=', before)
-                                        .andWhere('shifts.end', '<=', after);
-                                });
-                        })
-                        .whereIn('locations.id', relatedLocationsSubQuery)
-                        .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery);
-                    joinShiftApplications(query, req.user.id)
-                        .union(function() {
-                            var query = this.select(shiftAndAppliedSelectKeys)
-                                .from('shifts')
-                                .innerJoin('sublocations', function() {
-                                    this.on('shifts.sublocation_id', '=', 'sublocations.id');
-                                })
-                                .where(function() {
-                                    this.where('shifts.start', '>=', before)
-                                        .orWhere(function() {
-                                            this.where('shifts.end', '>=', before)
-                                                .andWhere('shifts.end', '<=', after);
-                                        });
-                                })
-                                .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery)
-                                .whereIn('sublocations.location_id', relatedLocationsSubQuery);
-                            query = joinShiftApplications(query, req.user.id);
-                        });
-                })
-                    .fetchAll({
-                        withRelated: [
-                            // in sqlite, if there are a lot of shifts, this will fail with a sqlite error
-                            // TODO: Check that this is not an issue with postgres
-                            // https://github.com/tgriesser/bookshelf/issues/707
-                            'ignoreshifts',
-                            'timezone'
-                        ],
-                    })
-                    .then(function(shifts) {
-                        if (shifts) {
-                            // TODO: Fetch related group user class information
-                            res.json(shifts.toJSON());
-                        } else {
-                            res.json([]);
-                        }
-                    })
-                    .catch(function(err) {
-                        error(req, res, err);
-                    })
+                getAllShifts(req, res, true, false, false);
+            }
+        }
+    },
+    '/all/dividers': {
+        'get': { // get all shifts you can register for
+            // auth: // logged in
+            route: function(req, res) {
+                getAllShifts(req, res, true, false, true);
+            }
+        }
+    },
+    '/all/appliedonly': {
+        'get': {
+            //auth: [],
+            route: function allShiftsAcceptedOnly(req, res) {
+                getAllShifts(req, res, true, true, false);
+            }
+        }
+    },
+    '/all/appliedonly/dividers': {
+        'get': {
+            //auth: [],
+            route: function allShiftsAcceptedOnly(req, res) {
+                getAllShifts(req, res, true, true, true);
             }
         }
     },
@@ -1449,15 +1387,112 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
 
 }
 
+function getAllShifts(req, res, hideCanceled, appliedOnly, showDividers) {
+    var now = new Date();
+    var range = grabNormalShiftRange(now, after, before);
+    var before = range[0];
+    var after = range[1];
+    models.Shift.query(function(q) {
+        // grab groups the user is a part of
+        var relatedGroupsSubQuery =
+            knex.select('usergroups.group_id as wat')
+                .from('usergroups')
+                .where('usergroups.user_id', '=', req.user.id)
+                .union(function() {
+                    this.select('groups.id as wat')
+                        .from('groups')
+                        .where('groups.user_id', '=', req.user.id);
+                });
+
+        // grab locations related to all of those groups
+        var relatedLocationsSubQuery =
+            knex.select('locations.id as locationid')
+                .from('locations')
+                .whereIn('locations.group_id', relatedGroupsSubQuery);
+
+        // grab all your user classes
+        var relatedUserClassesSubQuery =
+            knex.select('groupuserclasses.id as groupuserclassid')
+                .from('groupuserclasses')
+                .innerJoin('groupuserclasstousers', function() {
+                    this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id');
+                })
+                .where('groupuserclasstousers.user_id', '=', req.user.id)
+                .whereIn('groupuserclasses.group_id', relatedGroupsSubQuery);
+
+        // grab all shifts at locations/sublocations that are one of your job types
+
+        var query = q.select(shiftAndAppliedSelectKeys)
+            .from('shifts')
+            .innerJoin('locations', function() {
+                this.on('shifts.location_id', '=', 'locations.id');
+            })
+            .where(function() {
+                this.where('shifts.start', '>=', before)
+                    .orWhere(function() {
+                        this.where('shifts.end', '>=', before)
+                            .andWhere('shifts.end', '<=', after);
+                    });
+            })
+            .whereIn('locations.id', relatedLocationsSubQuery)
+            .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery);
+        joinShiftApplications(query, req.user.id, appliedOnly)
+            .union(function() {
+                var query = this.select(shiftAndAppliedSelectKeys)
+                    .from('shifts')
+                    .innerJoin('sublocations', function() {
+                        this.on('shifts.sublocation_id', '=', 'sublocations.id');
+                    })
+                    .where(function() {
+                        this.where('shifts.start', '>=', before)
+                            .orWhere(function() {
+                                this.where('shifts.end', '>=', before)
+                                    .andWhere('shifts.end', '<=', after);
+                            });
+                    })
+                    .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery)
+                    .whereIn('sublocations.location_id', relatedLocationsSubQuery);
+                query = joinShiftApplications(query, req.user.id, appliedOnly);
+                if (hideCanceled) {
+                    query = query.where('shifts.canceled', '=', models.sqlFalse);
+                }
+            })
+            .orderBy('shifts.start');
+        if (hideCanceled) {
+            query = query.where('shifts.canceled', '=', models.sqlFalse);
+        }
+    })
+        .fetchAll({
+            withRelated: [
+                // in sqlite, if there are a lot of shifts, this will fail with a sqlite error
+                // TODO: Check that this is not an issue with postgres
+                // https://github.com/tgriesser/bookshelf/issues/707
+                'ignoreshifts',
+                'timezone'
+            ]
+        })
+        .then(function(shifts) {
+            if (shifts) {
+                // TODO: Fetch related group user class information
+                res.json(shifts.toJSON());
+            } else {
+                res.json([]);
+            }
+        })
+        .catch(function(err) {
+            error(req, res, err);
+        });
+}
+
 /**
  * Helper that does an outer join on the shiftapplications table
  * @param query
  * @returns {*}
  */
-function joinShiftApplications(query, user_id) {
+function joinShiftApplications(query, user_id, appliedOnly) {
     // TODO: Figure out how to use this query without recinded != true see:
     // https://stackoverflow.com/questions/9592875/sql-server-left-outer-join-with-top-1-to-select-at-most-one-row
-    return query.joinRaw('left join shiftapplications on shiftapplications.id = (' +
+    query = query.joinRaw('left join shiftapplications on shiftapplications.id = (' +
     'select id from shiftapplications ' +
     'where shiftapplications.recinded <> ' + models.sqlTrue + ' ' +
     'and shiftapplications.shift_id = shifts.id ' +
@@ -1472,6 +1507,11 @@ function joinShiftApplications(query, user_id) {
             'limit 1 ' +
             ')'
     );
+    if (appliedOnly) {
+        query = query.whereNotNull('shiftapplications.id');
+    }
+    return query;
+
 }
 
 /**
@@ -1480,7 +1520,7 @@ function joinShiftApplications(query, user_id) {
  * @param req
  * @param res
  */
-function getShifts(req, res) {
+function getShifts(req, res, appliedOnly, showDividers) {
     // determine if the user is allowed to access this
     var privilegedshift = getMark(req, 'privilegedshift', req.params.shift_id);
     clearMarks(req);
@@ -1500,7 +1540,7 @@ function getShifts(req, res) {
         }
     }
 
-    return Bookshelf.transaction(function(t) {
+    //return Bookshelf.transaction(function(t) {
         var query = null;
         if (privilegedshift) {
             // privileged user
@@ -1572,7 +1612,7 @@ function getShifts(req, res) {
                      })*/
                     .whereIn('locations.id', relatedLocationsSubQuery)
                     .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery);
-                joinShiftApplications(query, req.user.id)
+                joinShiftApplications(query, req.user.id, appliedOnly)
                     .union(function () {
                         var query = this.select(shiftAndAppliedSelectKeys)
                             .from('shifts');
@@ -1587,13 +1627,13 @@ function getShifts(req, res) {
                              })*/
                             .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery)
                             .whereIn('sublocations.location_id', relatedLocationsSubQuery);
-                        joinShiftApplications(query, req.user.id);
+                        joinShiftApplications(query, req.user.id, appliedOnly);
                     });
-            })
+            });
         }
 
         var withRelatedOptions = {
-            transacting: t
+            //transacting: t
         };
 
         if (privilegedshift) {
@@ -1625,7 +1665,7 @@ function getShifts(req, res) {
                         id: req.params.shift_id
                     })
                         .fetch({
-                            transacting: t
+                            //transacting: t
                         })
                         .tap(function (model) {
                             if (model) {
@@ -1647,6 +1687,7 @@ function getShifts(req, res) {
                     res.json(shift.toJSON());
                 }
             });
+    /*
     })
         .then(function(model) {
             // do nothing, tap should take care of it
@@ -1654,6 +1695,7 @@ function getShifts(req, res) {
         .catch(function (err) {
             error(req, res, err);
         });
+    */
 }
 
 function cancelShift(req, res, cancel) {

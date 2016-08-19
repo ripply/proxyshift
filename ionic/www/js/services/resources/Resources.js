@@ -83,6 +83,21 @@ angular.forEach({
                     url: url + '/shifts/all',
                     isArray: true
                 },
+                allWithDividers: { // DUMMY
+                    method: GET,
+                    url: url + '/shifts/all',
+                    isArray: true
+                },
+                allAppliedOnly: {
+                    method: GET,
+                    url: url + '/shifts/all/appliedonly',
+                    isArray: true
+                },
+                allAppliedOnlyWithDividers: { // DUMMY
+                    method: GET,
+                    url: url + '/shifts/all/appliedonly',
+                    isArray: true
+                },
                 new: {
                     method: GET,
                     url: url + '/shifts/new',
