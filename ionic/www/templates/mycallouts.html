@@ -1,0 +1,9 @@
+<ion-view view-title="My Callouts" hide-back-button="true">
+    <ion-content class="has-header has-footer">
+        <ion-refresher
+            pulling-text="Pull to refresh..."
+            on-refresh="fetch()">
+        </ion-refresher>
+        <shift-list dismissable="true" name="shifts" showDividers="true"></shift-list>
+    </ion-content>
+</ion-view>

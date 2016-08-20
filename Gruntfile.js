@@ -309,6 +309,7 @@ module.exports = function(grunt) {
                         'ionic/www/js/controllers/LogoutController.js',
                         'ionic/www/js/controllers/OpenShiftsController.js',
                         'ionic/www/js/controllers/ShiftsListController.js',
+                        'ionic/www/js/controllers/MyCalloutShiftsController.js',
                         'ionic/www/js/controllers/OpenShiftsDirectiveController.js',
                         'ionic/www/js/controllers/MyShiftsController.js',
                         'ionic/www/js/controllers/MyShiftsDirectiveController.js',

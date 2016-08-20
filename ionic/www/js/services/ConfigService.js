@@ -3,7 +3,8 @@ var config_data = {
         'APP_NAME': 'Scheduling App',
         'APP_VERSION': '0.1',
         'APP_URL': '', // modified during setup to point to correct url
-        'APP_URL_PROD': 'https://www.proxyshift.com',
+        //'APP_URL_PROD': 'https://www.proxyshift.com',
+        'APP_URL_PROD': 'https://guarded-waters-4321.herokuapp.com',
         'APP_URL_DEV': '',
         'APP_URL_API': '/api/v1',
         'APP_URL_LOGIN': '/session/login',
@@ -124,6 +125,7 @@ var config_data = {
         'HOME': 'app.home',
         'SHIFTS': 'app.shifts.open',
         'MYSHIFTS': 'app.shifts.mine',
+        'MYCALLOUTS': 'app.shifts.callouts',
         'SHIFT_INFO': 'app.shift',
         'SHIFT_REQUEST': 'app.newshift.dates',
         'SHIFT_REQUEST_WHEN': 'app.newshift.when',

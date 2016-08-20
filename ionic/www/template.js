@@ -6153,6 +6153,19 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
   );
 
 
+  $templateCache.put('templates/mycallouts.html',
+    "<ion-view view-title=\"My Callouts\" hide-back-button=\"true\">\n" +
+    "    <ion-content class=\"has-header has-footer\">\n" +
+    "        <ion-refresher\n" +
+    "            pulling-text=\"Pull to refresh...\"\n" +
+    "            on-refresh=\"fetch()\">\n" +
+    "        </ion-refresher>\n" +
+    "        <shift-list dismissable=\"true\" name=\"shifts\" showDividers=\"true\"></shift-list>\n" +
+    "    </ion-content>\n" +
+    "</ion-view>\n"
+  );
+
+
   $templateCache.put('templates/myshifts.html',
     "<ion-view view-title=\"My shifts\" hide-back-button=\"true\">\n" +
     "    <ion-content class=\"has-header has-footer\">\n" +
@@ -7526,6 +7539,9 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "        </a>\n" +
     "        <a class=\"tab-item\" href=\"#{{states.MYSHIFTS_URL}}\" ng-class=\"{'active': currentState == states.MYSHIFTS}\">\n" +
     "            My Shifts\n" +
+    "        </a>\n" +
+    "        <a class=\"tab-item\" href=\"#{{states.MYCALLOUTS_URL}}\" ng-class=\"{'active': currentState == states.MYCALLOUTS}\">\n" +
+    "            My Callouts\n" +
     "        </a>\n" +
     "        <a class=\"tab-item\" href=\"#{{states.MANAGE_URL}}\"\n" +
     "           ng-class=\"{'active': currentState == states.MANAGE}\"\n" +

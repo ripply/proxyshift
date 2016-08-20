@@ -64,6 +64,7 @@
     <script src="js/controllers/ShiftsListController.js"></script>
     <script src="js/controllers/OpenShiftsDirectiveController.js"></script>
     <script src="js/controllers/MyShiftsController.js"></script>
+    <script src="js/controllers/MyCalloutShiftsController.js"></script>
     <script src="js/controllers/MyShiftsDirectiveController.js"></script>
     <script src="js/controllers/BaseModelController.js"></script>
     <script src="js/controllers/shiftlist/BaseShiftListDirectiveController.js"></script>

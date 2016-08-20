@@ -37,7 +37,6 @@ angular.module('scheduling-app.controllers')
             $scope.$watch('name', function(newValue, oldValue) {
                 $scope.Model = $rootScope[newValue];
                 $rootScope.$watch(newValue, function(rootNewValue, rootOldValue) {
-                    console.log(rootNewValue);
                     $scope.Model = rootNewValue;
                     $scope.visible = {};
                     $rootScope[newValue + 'Status'] = $scope.visible;

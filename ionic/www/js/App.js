@@ -369,6 +369,17 @@ angular.module('scheduling-app', [
                     }
                 })
 
+                .state('app.shifts.callouts', {
+                    url: "/callouts",
+                    pageTrack: '/app/shifts/callouts',
+                    views: {
+                        'shiftTabContent': {
+                            templateUrl: "templates/mycallouts.html",
+                            controller: 'MyCalloutShiftsController',
+                        }
+                    }
+                })
+
                 .state('app.shifts.mine.scroll', {
                     url: "/scroll/:scroll_date",
                     pageTrack: '/app/shifts/mine/scroll'

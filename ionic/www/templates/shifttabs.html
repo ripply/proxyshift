@@ -6,6 +6,9 @@
         <a class="tab-item" href="#{{states.MYSHIFTS_URL}}" ng-class="{'active': currentState == states.MYSHIFTS}">
             My Shifts
         </a>
+        <a class="tab-item" href="#{{states.MYCALLOUTS_URL}}" ng-class="{'active': currentState == states.MYCALLOUTS}">
+            My Callouts
+        </a>
         <a class="tab-item" href="#{{states.MANAGE_URL}}"
            ng-class="{'active': currentState == states.MANAGE}"
            ng-if="userinfo.ownedGroups.length > 0 || userinfo.privilegedMemberOfGroups.length > 0 || userinfo.privilegedMemberOfLocations.length > 0">
