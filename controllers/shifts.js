@@ -1495,7 +1495,7 @@ function joinShiftApplications(query, user_id, appliedOnly) {
             ')'
     );
     if (appliedOnly) {
-        //query = query.whereNotNull('shiftapplications.id');
+        query = query.whereNotNull('shiftapplications.id');
     }
     return query;
 
