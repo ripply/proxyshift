@@ -1424,8 +1424,11 @@ function getAllShifts(req, res, hideCanceled, appliedOnly, showDividers) {
 
         var query = q.select(shiftAndAppliedSelectKeys)
             .from('shifts')
-            .innerJoin('locations', function() {
+            .leftJoin('locations', function() {
                 this.on('shifts.location_id', '=', 'locations.id');
+            })
+            .leftJoin('sublocations', function() {
+                this.on('shifts.sublocation_id', '=', 'sublocations.id');
             })
             .where(function() {
                 this.where('shifts.start', '>=', before)
@@ -1434,33 +1437,17 @@ function getAllShifts(req, res, hideCanceled, appliedOnly, showDividers) {
                             .andWhere('shifts.end', '<=', after);
                     });
             })
-            .whereIn('locations.id', relatedLocationsSubQuery)
+            .where(function() {
+                this.whereIn('locations.id', relatedLocationsSubQuery)
+                    .orWhereIn('sublocations.location_id', relatedLocationsSubQuery);
+            })
             .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery);
         joinShiftApplications(query, req.user.id, appliedOnly)
-            .union(function() {
-                var query = this.select(shiftAndAppliedSelectKeys)
-                    .from('shifts')
-                    .innerJoin('sublocations', function() {
-                        this.on('shifts.sublocation_id', '=', 'sublocations.id');
-                    })
-                    .where(function() {
-                        this.where('shifts.start', '>=', before)
-                            .orWhere(function() {
-                                this.where('shifts.end', '>=', before)
-                                    .andWhere('shifts.end', '<=', after);
-                            });
-                    })
-                    .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery)
-                    .whereIn('sublocations.location_id', relatedLocationsSubQuery);
-                query = joinShiftApplications(query, req.user.id, appliedOnly);
-                if (hideCanceled) {
-                    query = query.where('shifts.canceled', '=', models.sqlFalse);
-                }
-            })
             .orderBy('shifts.start');
         if (hideCanceled) {
             query = query.where('shifts.canceled', '=', models.sqlFalse);
         }
+        query.orderBy('shifts.start');
     })
         .fetchAll({
             withRelated: [
@@ -1508,7 +1495,7 @@ function joinShiftApplications(query, user_id, appliedOnly) {
             ')'
     );
     if (appliedOnly) {
-        query = query.whereNotNull('shiftapplications.id');
+        //query = query.whereNotNull('shiftapplications.id');
     }
     return query;
 
