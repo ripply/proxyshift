@@ -2,8 +2,10 @@
 angular.module('scheduling-app.services')
     .service('UserInfoService', [
         '$rootScope',
+        'localStorageService',
         'GENERAL_EVENTS',
         function($rootScope,
+                 localStorageService,
                  GENERAL_EVENTS
         ) {
             var MEMBER = 0;
@@ -29,6 +31,29 @@ angular.module('scheduling-app.services')
 
             var userClassTypes = {
                 userClasses: MEMBER
+            };
+
+            var showIgnoredShifts = getShowIgnoredShifts();
+
+            this.getShowIgnoredShifts = getShowIgnoredShifts;
+
+            function getShowIgnoredShifts() {
+                if (showIgnoredShifts === undefined) {
+                    showIgnoredShifts = localStorageService.get('showIgnoredShifts');
+                    if (showIgnoredShifts === undefined || showIgnoredShifts === null) {
+                        showIgnoredShifts = false;
+                    }
+                }
+                return showIgnoredShifts;
+            };
+
+            this.setShowIgnoredShifts = setShowIgnoredShifts;
+
+            function setShowIgnoredShifts(show) {
+                showIgnoredShifts = show;
+                if (localStorageService.isSupported) {
+                    localStorageService.set('showIgnoredShifts', show);
+                }
             };
 
             this.onUserInfoUpdate = function(scope, fn) {

@@ -33,6 +33,14 @@ angular.module('scheduling-app.controllers')
                 StateHistoryService.returnTo(STATES.SHIFTS);
             };
 
+            $scope.localSettings = {
+                showIgnoredShifts: UserInfoService.getShowIgnoredShifts()
+            };
+
+            $scope.$watch('localSettings.showIgnoredShifts', function(newValue, oldValue) {
+                UserInfoService.setShowIgnoredShifts(newValue);
+            });
+
             $scope.checkForUpdate = window.checkForUpdate;
 
             $scope.commitSettings = function commitSettings() {

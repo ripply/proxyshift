@@ -50,7 +50,15 @@ module.exports = {
         'get': { // get all shifts you can register for
             // auth: // logged in
             route: function(req, res) {
-                getAllShifts(req, res, true, false, false);
+                getAllShifts(req, res, true, false, false, false);
+            }
+        }
+    },
+    '/all/noignored': {
+        'get': { // get all shifts you can register for
+            // auth: // logged in
+            route: function(req, res) {
+                getAllShifts(req, res, true, false, false, true);
             }
         }
     },
@@ -58,7 +66,15 @@ module.exports = {
         'get': { // get all shifts you can register for
             // auth: // logged in
             route: function(req, res) {
-                getAllShifts(req, res, true, false, true);
+                getAllShifts(req, res, true, false, true, false);
+            }
+        }
+    },
+    '/all/noignored/dividers': {
+        'get': { // get all shifts you can register for
+            // auth: // logged in
+            route: function(req, res) {
+                getAllShifts(req, res, true, false, true, true);
             }
         }
     },
@@ -66,7 +82,15 @@ module.exports = {
         'get': {
             //auth: [],
             route: function allShiftsAcceptedOnly(req, res) {
-                getAllShifts(req, res, true, true, false);
+                getAllShifts(req, res, true, true, false, false);
+            }
+        }
+    },
+    '/all/noignored/appliedonly': {
+        'get': {
+            //auth: [],
+            route: function allShiftsAcceptedOnly(req, res) {
+                getAllShifts(req, res, true, true, false, true);
             }
         }
     },
@@ -74,7 +98,15 @@ module.exports = {
         'get': {
             //auth: [],
             route: function allShiftsAcceptedOnly(req, res) {
-                getAllShifts(req, res, true, true, true);
+                getAllShifts(req, res, true, true, true, false);
+            }
+        }
+    },
+    '/all/noignored/appliedonly/dividers': {
+        'get': {
+            //auth: [],
+            route: function allShiftsAcceptedOnly(req, res) {
+                getAllShifts(req, res, true, true, true, true);
             }
         }
     },
@@ -1387,7 +1419,7 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
 
 }
 
-function getAllShifts(req, res, hideCanceled, appliedOnly, showDividers) {
+function getAllShifts(req, res, hideCanceled, appliedOnly, showDividers, hideIgnored) {
     var now = new Date();
     var range = grabNormalShiftRange(now, after, before);
     var before = range[0];
@@ -1443,9 +1475,15 @@ function getAllShifts(req, res, hideCanceled, appliedOnly, showDividers) {
             })
             .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery);
         joinShiftApplications(query, req.user.id, appliedOnly)
-            .orderBy('shifts.start');
         if (hideCanceled) {
             query = query.where('shifts.canceled', '=', models.sqlFalse);
+        }
+        if (hideIgnored) {
+            query = query.leftJoin('ignoreshifts', function() {
+                this.on('ignoreshifts.shift_id', '=', 'shifts.id')
+                    .andOn('ignoreshifts.user_id', '=', req.user.id)
+            })
+                .whereNull('ignoreshifts.id');
         }
         query.orderBy('shifts.start');
     })

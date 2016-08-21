@@ -7978,27 +7978,37 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
     "        <div class=\"list\">\n" +
     "            <div class=\"item item-divider\">\n" +
-    "                Notifications\n" +
+    "                Application Settings\n" +
     "            </div>\n" +
     "            <div class=\"item-indent\">\n" +
     "                <ion-toggle ng-model=\"UserSettings.pushnotifications\"\n" +
     "                            ng-checked=\"UserSettings.pushnotifications\"\n" +
     "                            ng-click=\"commitSettings()\">\n" +
-    "                    <i class=\"icon ion-ios-bell\"></i>\n" +
+    "                    <i class=\"icon ion-ios-bell\" ng-if=\"UserSettings.pushnotifications\"></i>\n" +
+    "                    <i class=\"icon ion-ios-bell-outline\" ng-if=\"!UserSettings.pushnotifications\"></i>\n" +
     "                    Push Notifications\n" +
     "                </ion-toggle>\n" +
     "                <ion-toggle ng-model=\"UserSettings.emailnotifications\"\n" +
     "                            ng-checked=\"UserSettings.emailnotifications\"\n" +
     "                            ng-click=\"commitSettings()\">\n" +
-    "                    <i class=\"icon ion-email\"></i>\n" +
+    "                    <i class=\"icon ion-ios-email\" ng-if=\"UserSettings.emailnotifications\"></i>\n" +
+    "                    <i class=\"icon ion-ios-email-outline\" ng-if=\"!UserSettings.emailnotifications\"></i>\n" +
     "                    Email Notifications\n" +
     "                </ion-toggle>\n" +
+    "                <!--\n" +
     "                <ion-toggle ng-model=\"UserSettings.textnotifications\"\n" +
     "                            ng-checked=\"UserSettings.textnotifications\"\n" +
     "                            ng-show=\"false\"\n" +
     "                            ng-click=\"commitSettings()\">\n" +
     "                    <i class=\"icon ion-ios-telephone\"></i>\n" +
     "                    Text Notifications\n" +
+    "                </ion-toggle>\n" +
+    "                -->\n" +
+    "                <ion-toggle ng-model=\"localSettings.showIgnoredShifts\"\n" +
+    "                            ng-checked=\"localSettings.showIgnoredShifts\">\n" +
+    "                    <i class=\"icon ion-ios-clock\" ng-if=\"localSettings.showIgnoredShifts\"></i>\n" +
+    "                    <i class=\"icon ion-ios-clock-outline\" ng-if=\"!localSettings.showIgnoredShifts\"></i>\n" +
+    "                    Show Ignored Shifts\n" +
     "                </ion-toggle>\n" +
     "            </div>\n" +
     "            <div class=\"item item-divider\">\n" +

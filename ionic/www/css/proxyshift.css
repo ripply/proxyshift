@@ -889,6 +889,9 @@ ion-header-bar.bar.bar-positive {
 .tabs-striped.tabs-background-positive .tabs {
   background-color: #159deb;
 }
+.icon {
+  font-size: 150%;
+}
 .item {
   background: #000000;
 }

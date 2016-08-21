@@ -2,27 +2,37 @@
     <ion-content class="has-header" hide-back-button="false">
         <div class="list">
             <div class="item item-divider">
-                Notifications
+                Application Settings
             </div>
             <div class="item-indent">
                 <ion-toggle ng-model="UserSettings.pushnotifications"
                             ng-checked="UserSettings.pushnotifications"
                             ng-click="commitSettings()">
-                    <i class="icon ion-ios-bell"></i>
+                    <i class="icon ion-ios-bell" ng-if="UserSettings.pushnotifications"></i>
+                    <i class="icon ion-ios-bell-outline" ng-if="!UserSettings.pushnotifications"></i>
                     Push Notifications
                 </ion-toggle>
                 <ion-toggle ng-model="UserSettings.emailnotifications"
                             ng-checked="UserSettings.emailnotifications"
                             ng-click="commitSettings()">
-                    <i class="icon ion-email"></i>
+                    <i class="icon ion-ios-email" ng-if="UserSettings.emailnotifications"></i>
+                    <i class="icon ion-ios-email-outline" ng-if="!UserSettings.emailnotifications"></i>
                     Email Notifications
                 </ion-toggle>
+                <!--
                 <ion-toggle ng-model="UserSettings.textnotifications"
                             ng-checked="UserSettings.textnotifications"
                             ng-show="false"
                             ng-click="commitSettings()">
                     <i class="icon ion-ios-telephone"></i>
                     Text Notifications
+                </ion-toggle>
+                -->
+                <ion-toggle ng-model="localSettings.showIgnoredShifts"
+                            ng-checked="localSettings.showIgnoredShifts">
+                    <i class="icon ion-ios-clock" ng-if="localSettings.showIgnoredShifts"></i>
+                    <i class="icon ion-ios-clock-outline" ng-if="!localSettings.showIgnoredShifts"></i>
+                    Show Ignored Shifts
                 </ion-toggle>
             </div>
             <div class="item item-divider">

@@ -9,6 +9,7 @@ angular.module('scheduling-app.controllers')
         '$ionicScrollDelegate',
         'GENERAL_EVENTS',
         'GENERAL_CONFIG',
+        'UserInfoService',
         'ShiftProcessingService',
         'ShiftIntervalTreeCacheService',
         'ShiftsModel',
@@ -21,6 +22,7 @@ angular.module('scheduling-app.controllers')
                  $ionicScrollDelegate,
                  GENERAL_EVENTS,
                  GENERAL_CONFIG,
+                 UserInfoService,
                  ShiftProcessingService,
                  ShiftIntervalTreeCacheService,
                  ShiftsModel
@@ -55,16 +57,18 @@ angular.module('scheduling-app.controllers')
 
             function getShiftApiRoute() {
                 var route;
+                var noIgnored = UserInfoService.getShowIgnoredShifts() ? '':'NoIgnored';
+                console.log('NOIGNORE$D::::::' + noIgnored + ';;;;;;');
                 if ($scope.acceptedOnly === true) {
                     if ($scope.showDividers === true) {
-                        route = 'allAppliedOnlyWithDividers';
+                        route = 'all' + noIgnored + 'AppliedOnlyWithDividers';
                     } else {
-                        route = 'allAppliedOnly';
+                        route = 'all' + noIgnored + 'AppliedOnly';
                     }
                 } else if ($scope.showDividers === true) {
-                    route = 'allWithDividers';
+                    route = 'all' + noIgnored + 'WithDividers';
                 } else {
-                    route = 'all';
+                    route = 'all' + noIgnored;
                 }
                 return route;
             }
