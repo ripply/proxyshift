@@ -438,10 +438,7 @@ angular.module('scheduling-app.controllers')
             function addShiftToIgnoredShifts(id) {
                 var shift = getShift(id);
                 if (shift) {
-                    if (!shift.ignoreshifts) {
-                        shift.ignoreshifts = [];
-                    }
-                    shift.ignoreshifts.push({});
+                    shift.ignored = true;
                 }
                 return shift;
             }
@@ -449,7 +446,7 @@ angular.module('scheduling-app.controllers')
             function removeShiftFromIgnoredShifts(id) {
                 var shift = getShift(id);
                 if (shift) {
-                    shift.ignoreshifts = [];
+                    shift.ignored = false;
                 }
                 return shift;
             }
