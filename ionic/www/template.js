@@ -4799,7 +4799,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/currentgroupmembers.html',
-    "<ion-view view-title=\"Member Management\">\n" +
+    "<ion-view view-title=\"Member Management\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
     "        <div class=\"list list-inset centered-input\">\n" +
     "            <div class=\"item-indent\">\n" +
@@ -4837,7 +4837,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/currentlocations.html',
-    "<ion-view view-title=\"Location\">\n" +
+    "<ion-view view-title=\"Location\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
     "        <div class=\"list list-inset centered-input\">\n" +
     "            <div class=\"item-indent\">\n" +
@@ -4898,7 +4898,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/groupinvitation.html',
-    "<ion-view>\n" +
+    "<ion-view can-swipe-back=\"false\">\n" +
     "    <ion-header-bar>\n" +
     "        <h1 class=\"title\">Group Invitation</h1>\n" +
     "    </ion-header-bar>\n" +
@@ -4926,7 +4926,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/grouplocationsmanageusers.html',
-    "<ion-view view-title=\"Members\">\n" +
+    "<ion-view view-title=\"Members\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
     "        <div class=\"item item-divider\">\n" +
     "            Navigation\n" +
@@ -4964,7 +4964,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/groups.html',
-    "<ion-view view-title=\"Companies\">\n" +
+    "<ion-view view-title=\"Companies\" can-swipe-back=\"false\">\n" +
     "    <ion-content>\n" +
     "        <ion-list>\n" +
     "            <ion-item ng-repeat=\"group in GroupsModel\" href=\"#/app/groups/{{group.id}}/settings\">\n" +
@@ -4978,8 +4978,8 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/groupsettings.html',
-    "<ion-view view-title=\"Group\">\n" +
-    "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
+    "<ion-view view-title=\"Group\" hide-back-button=\"false\" can-swipe-back=\"false\">\n" +
+    "    <ion-content class=\"has-header\">\n" +
     "        <div class=\"list\">\n" +
     "            <div ng-if=\"isPrivilegedGroupMember()\">\n" +
     "                <div class=\"item item-divider\">\n" +
@@ -5038,7 +5038,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/home.html',
-    "<ion-view view-title=\"Open shifts\" hide-back-button=\"true\">\n" +
+    "<ion-view view-title=\"Open shifts\" hide-back-button=\"true\" can-swipe-back=\"false\">\n" +
     "    <div class=\"row\">\n" +
     "        <div class=\"col welcome\">\n" +
     "            <div>WELCOME</div>\n" +
@@ -5118,7 +5118,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/invitation.html',
-    "<ion-view>\n" +
+    "<ion-view can-swipe-back=\"false\">\n" +
     "    <ion-header-bar>\n" +
     "        <h1 class=\"title\">Group Invitation</h1>\n" +
     "    </ion-header-bar>\n" +
@@ -5209,7 +5209,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/invitemember.html',
-    "<ion-view view-title=\"Invite\">\n" +
+    "<ion-view view-title=\"Invite\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header has-footer\">\n" +
     "        <form name=\"inviteForm\" ng-submit=\"inviteUsersToGroup(group_id, grouppermission_id, userclass_id, email, message)\">\n" +
     "            <div class=\"list compacted-list list-inset full-width-inputs\">\n" +
@@ -5298,7 +5298,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/jobsubscriptions.html',
-    "<ion-view view-title=\"Subscriptions\">\n" +
+    "<ion-view view-title=\"Subscriptions\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
     "        <div class=\"list\">\n" +
     "            <div class=\"item item-divider\">\n" +
@@ -5330,7 +5330,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/legal.html',
-    "<ion-view view-title=\"Legal\">\n" +
+    "<ion-view view-title=\"Legal\" can-swipe-back=\"false\">\n" +
     "    <ion-content>\n" +
     "        Legal...\n" +
     "    </ion-content>\n" +
@@ -5351,7 +5351,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/locations/locationcreate.html',
-    "<ion-view view-title=\"Create Location\">\n" +
+    "<ion-view view-title=\"Create Location\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
     "        <div class=\"list list-inset\">\n" +
     "            <form name=\"locationCreateForm\" ng-submit=\"createLocation()\" novalidate>\n" +
@@ -5531,7 +5531,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/locations/locationedit.html',
-    "<ion-view view-title=\"Edit Location\">\n" +
+    "<ion-view view-title=\"Edit Location\" can-swipe-back=\"false\"a>\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
     "        <div class=\"list list-inset\">\n" +
     "            <form name=\"locationUpdateForm\" ng-submit=\"editLocation()\" novalidate>\n" +
@@ -5711,7 +5711,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/locations/locationlist.html',
-    "<ion-view view-title=\"Location Overview\">\n" +
+    "<ion-view view-title=\"Location Overview\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
     "        <div class=\"list list-inset\">\n" +
     "            <div class=\"item item-input row\">\n" +
@@ -5754,7 +5754,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/locationsubscriptions.html',
-    "<ion-view view-title=\"Subscriptions\">\n" +
+    "<ion-view view-title=\"Subscriptions\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
     "        <div class=\"list\">\n" +
     "            <div class=\"item item-divider\">\n" +
@@ -5782,8 +5782,10 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/login.html',
-    "<div login-partial class=\"gradient-color\">\n" +
-    "</div>\n"
+    "<ion-view can-swipe-back=\"false\">\n" +
+    "    <div login-partial class=\"gradient-color\">\n" +
+    "    </div>\n" +
+    "</ion-view>\n"
   );
 
 
@@ -5794,7 +5796,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/managablelocations.html',
-    "<ion-view view-title=\"Subscriptions\">\n" +
+    "<ion-view view-title=\"Subscriptions\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
     "        <div class=\"list\">\n" +
     "            <div class=\"item item-divider\">\n" +
@@ -5822,7 +5824,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/manage.html',
-    "<ion-view view-title=\"Manage\" hide-back-button=\"true\">\n" +
+    "<ion-view view-title=\"Manage\" hide-back-button=\"true\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header has-footer\">\n" +
     "        <ion-refresher\n" +
     "            pulling-text=\"Pull to refresh...\"\n" +
@@ -5835,7 +5837,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/managelocation.html',
-    "<ion-view view-title=\"Manage\">\n" +
+    "<ion-view view-title=\"Manage\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
     "        <form name=\"sublocationUpdateForm\" ng-submit=\"editSublocation()\" novalidate>\n" +
     "            <div class=\"list list-inset centered-input\">\n" +
@@ -5883,7 +5885,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/manageshift.html',
-    "<ion-view view-title=\"Manage\">\n" +
+    "<ion-view view-title=\"Manage\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-tabs-top\">\n" +
     "        <ion-list\n" +
     "            class=\"has-header\"\n" +
@@ -5908,7 +5910,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/managingjobsubscriptions.html',
-    "<ion-view view-title=\"Subscriptions\">\n" +
+    "<ion-view view-title=\"Subscriptions\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
     "        <div class=\"list\">\n" +
     "            <div class=\"item item-divider\">\n" +
@@ -6154,7 +6156,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/mycallouts.html',
-    "<ion-view view-title=\"My Callouts\" hide-back-button=\"true\">\n" +
+    "<ion-view view-title=\"My Callouts\" hide-back-button=\"true\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header has-footer\">\n" +
     "        <ion-refresher\n" +
     "            pulling-text=\"Pull to refresh...\"\n" +
@@ -6167,7 +6169,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/myshifts.html',
-    "<ion-view view-title=\"My shifts\" hide-back-button=\"true\">\n" +
+    "<ion-view view-title=\"My shifts\" hide-back-button=\"true\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header has-footer\">\n" +
     "        <ion-refresher\n" +
     "            pulling-text=\"Pull to refresh...\"\n" +
@@ -6180,7 +6182,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/newshift/dates.html',
-    "<ion-view view-title=\"Date(s)\" hide-back-button=\"true\">\n" +
+    "<ion-view view-title=\"Date(s)\" hide-back-button=\"true\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header has-footer\">\n" +
     "        <h4 class=\"new-shift-title\">Select one or more dates that need shift coverage</h4>\n" +
     "        <shift-calendar toggle=\"false\" show=\"true\" name=\"create-shift-calendar\" multiple=\"true\" clickable=\"true\" cant-click-yesterday=\"true\"></shift-calendar>\n" +
@@ -6249,7 +6251,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/newshift/review.html',
-    "<ion-view view-title=\"When\" hide-back-button=\"true\">\n" +
+    "<ion-view view-title=\"When\" hide-back-button=\"true\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header has-footer\">\n" +
     "        <h4 class=\"new-shift-title\">Please review the shift request before submitting</h4>\n" +
     "        <div class=\"list compacted-list list-inset full-width-inputs\">\n" +
@@ -6284,7 +6286,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/newshift/when.html',
-    "<ion-view view-title=\"When\" hide-back-button=\"true\">\n" +
+    "<ion-view view-title=\"When\" hide-back-button=\"true\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header has-footer\">\n" +
     "        <!--\n" +
     "        <h4 class=\"new-shift-title\">Select shift duration and number of employees needed</h4>\n" +
@@ -6353,7 +6355,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/newshift/where.html',
-    "<ion-view view-title=\"When\" hide-back-button=\"true\">\n" +
+    "<ion-view view-title=\"When\" hide-back-button=\"true\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header has-footer\">\n" +
     "        <h4 class=\"new-shift-title\">Where is the shift located</h4>\n" +
     "        <div class=\"list list-inset\">\n" +
@@ -6412,7 +6414,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/newshift/who.html',
-    "<ion-view view-title=\"When\" hide-back-button=\"true\">\n" +
+    "<ion-view view-title=\"When\" hide-back-button=\"true\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header has-footer\">\n" +
     "        <h4 class=\"new-shift-title\">Please select the job type and add any additional information</h4>\n" +
     "        <div class=\"list compacted-list list-inset full-width-inputs\">\n" +
@@ -6497,7 +6499,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/openshifts.html',
-    "<ion-view view-title=\"Open shifts\" hide-back-button=\"true\">\n" +
+    "<ion-view view-title=\"Open shifts\" hide-back-button=\"true\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-tabs-top\">\n" +
     "        <ion-refresher\n" +
     "            pulling-text=\"Pull to refresh...\"\n" +
@@ -6568,7 +6570,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/requestshift/createshift.html',
-    "<ion-view view-title=\"When\">\n" +
+    "<ion-view view-title=\"When\" can-swipe-back=\"false\">\n" +
     "    <ion-content id=\"request-shift-create-shift\" class=\"has-header\" hide-back-button=\"false\">\n" +
     "        <div class=\"list\">\n" +
     "            <div class=\"item\">\n" +
@@ -6622,7 +6624,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/requestshift/selectjob.html',
-    "<ion-view view-title=\"What position\">\n" +
+    "<ion-view view-title=\"What position\" can-swipe-back=\"false\">\n" +
     "    <ion-content id=\"request-shift-create-shift\" class=\"has-header\" hide-back-button=\"false\">\n" +
     "        <div class=\"list\">\n" +
     "            <div class=\"item\">\n" +
@@ -6639,7 +6641,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/requestshift/selectlocation.html',
-    "<ion-view view-title=\"Where is your shift at?\" hide-back-button=\"true\">\n" +
+    "<ion-view view-title=\"Where is your shift at?\" hide-back-button=\"true\" can-swipe-back=\"false\">\n" +
     "    <ion-content id=\"request-shift-select-location\" class=\"has-header\">\n" +
     "        <div class=\"list\">\n" +
     "            <div class=\"\">\n" +
@@ -6677,7 +6679,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/settings/privacy-policy.html',
-    "<ion-view view-title=\"Privacy Policy\">\n" +
+    "<ion-view view-title=\"Privacy Policy\" can-swipe-back=\"false\">\n" +
     "\n" +
     "<ion-content>\n" +
     "\n" +
@@ -7112,7 +7114,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/settings/settings.html',
-    "<ion-pane id=\"settings-page\">\n" +
+    "<ion-pane id=\"settings-page\" can-swipe-back=\"false\">\n" +
     "    <ion-nav-bar>\n" +
     "        <ion-nav-back-button></ion-nav-back-button>\n" +
     "        <ion-nav-buttons side=\"right\">\n" +
@@ -7134,7 +7136,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/settings/terms-of-service.html',
-    "<ion-view view-title=\"TOS\">\n" +
+    "<ion-view view-title=\"TOS\" can-swipe-back=\"false\">\n" +
     "\n" +
     "<ion-content>\n" +
     "\n" +
@@ -7372,7 +7374,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/settingsgroupmembersmanage.html',
-    "<ion-view view-title=\"Manage member\">\n" +
+    "<ion-view view-title=\"Manage member\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
     "        <h4 class=\"new-shift-title\">{{user.firstname}} {{user.lastname}}</h4>\n" +
     "        <div class=\"list list-inset\">\n" +
@@ -7422,7 +7424,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/shiftinfo.html',
-    "<ion-view>\n" +
+    "<ion-view can-swipe-back=\"false\">\n" +
     "    <ion-header-bar align-title=\"left\" class=\"bar-positive\">\n" +
     "        <h1 class=\"title\">Shift Details</h1>\n" +
     "        <div class=\"buttons\" side=\"right\">\n" +
@@ -7519,7 +7521,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/shifts.html',
-    "<ion-view view-title=\"Shifts\" hide-back-button=\"true\">\n" +
+    "<ion-view view-title=\"Shifts\" hide-back-button=\"true\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header has-footer\">\n" +
     "        <ion-refresher\n" +
     "            pulling-text=\"Pull to refresh...\"\n" +
@@ -7639,7 +7641,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/sublocations/sublocationcreate.html',
-    "<ion-view view-title=\"Manage\">\n" +
+    "<ion-view view-title=\"Manage\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
     "        <form name=\"sublocationUpdateForm\" ng-submit=\"createSublocation()\" novalidate>\n" +
     "            <div class=\"list list-inset centered-input\">\n" +
@@ -7687,7 +7689,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/sublocationslist.html',
-    "<ion-view view-title=\"Sublocations\">\n" +
+    "<ion-view view-title=\"Sublocations\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
     "        <div class=\"item item-divider\">\n" +
     "            Manage\n" +
@@ -7740,7 +7742,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/types/typecreate.html',
-    "<ion-view view-title=\"Create Job Type\">\n" +
+    "<ion-view view-title=\"Create Job Type\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
     "        <form name=\"typeCreateForm\" ng-submit=\"createType()\" novalidate>\n" +
     "            <div class=\"list list-inset centered-input\">\n" +
@@ -7820,7 +7822,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/types/typeedit.html',
-    "<ion-view view-title=\"Modify Job type\">\n" +
+    "<ion-view view-title=\"Modify Job type\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
     "        <form name=\"typeUpdateForm\" ng-submit=\"editType()\" novalidate>\n" +
     "            <div class=\"list list-inset centered-input\">\n" +
@@ -7912,7 +7914,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/types/typelist.html',
-    "<ion-view view-title=\"Job Types\">\n" +
+    "<ion-view view-title=\"Job Types\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
     "        <div class=\"list list-inset centered-input\">\n" +
     "            <div class=\"item-indent\">\n" +
@@ -7974,7 +7976,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/usersettings.html',
-    "<ion-view view-title=\"Settings\">\n" +
+    "<ion-view view-title=\"Settings\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header\" hide-back-button=\"false\">\n" +
     "        <div class=\"list\">\n" +
     "            <div class=\"item item-divider\">\n" +
