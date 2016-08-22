@@ -35,6 +35,7 @@ var shiftAndAppliedSelectKeys = _.clone(models.Shifts.selectkeys);
 shiftAndAppliedSelectKeys.push('shifts.id as id');
 shiftAndAppliedSelectKeys.push('shiftapplications.id as applied');
 shiftAndAppliedSelectKeys.push('shiftapplicationacceptdeclinereasons.accept as approved');
+shiftAndAppliedSelectKeys.push('ignoreshifts.id as ignored');
 
 module.exports = {
     route: '/api/v1/shifts',
@@ -1475,15 +1476,15 @@ function getAllShifts(req, res, hideCanceled, appliedOnly, showDividers, hideIgn
             })
             .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery);
         joinShiftApplications(query, req.user.id, appliedOnly)
+            .leftJoin('ignoreshifts', function() {
+            this.on('ignoreshifts.shift_id', '=', 'shifts.id')
+                .andOn('ignoreshifts.user_id', '=', req.user.id)
+        });
         if (hideCanceled) {
             query = query.where('shifts.canceled', '=', models.sqlFalse);
         }
         if (hideIgnored) {
-            query = query.leftJoin('ignoreshifts', function() {
-                this.on('ignoreshifts.shift_id', '=', 'shifts.id')
-                    .andOn('ignoreshifts.user_id', '=', req.user.id)
-            })
-                .whereNull('ignoreshifts.id');
+            query.whereNull('ignoreshifts.id');
         }
         query.orderBy('shifts.start');
     })
@@ -1492,7 +1493,6 @@ function getAllShifts(req, res, hideCanceled, appliedOnly, showDividers, hideIgn
                 // in sqlite, if there are a lot of shifts, this will fail with a sqlite error
                 // TODO: Check that this is not an issue with postgres
                 // https://github.com/tgriesser/bookshelf/issues/707
-                'ignoreshifts',
                 'timezone'
             ]
         })
@@ -1589,7 +1589,11 @@ function getShifts(req, res, appliedOnly, showDividers) {
                         this.on('shifts.location_id', '=', 'locations.id')
                             .orOn('sublocations.location_id', '=', 'sublocations.location_id');
                     });
-                query = joinShiftApplications(query, req.user.id);
+                query = joinShiftApplications(query, req.user.id)
+                    .leftJoin('ignoreshifts', function() {
+                        this.on('ignoreshifts.shift_id', '=', 'shifts.id')
+                            .andOn('ignoreshifts.user_id', '=', req.user.id)
+                    });
             })
         } else {
             // unprivileged user
@@ -1636,7 +1640,11 @@ function getShifts(req, res, appliedOnly, showDividers) {
                      .orWhere('shifts.end', '>=', after);
                      })*/
                     .whereIn('locations.id', relatedLocationsSubQuery)
-                    .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery);
+                    .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery)
+                    .leftJoin('ignoreshifts', function() {
+                        this.on('ignoreshifts.shift_id', '=', 'shifts.id')
+                            .andOn('ignoreshifts.user_id', '=', req.user.id)
+                    });
                 joinShiftApplications(query, req.user.id, appliedOnly)
                     .union(function () {
                         var query = this.select(shiftAndAppliedSelectKeys)
@@ -1652,7 +1660,11 @@ function getShifts(req, res, appliedOnly, showDividers) {
                              })*/
                             .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery)
                             .whereIn('sublocations.location_id', relatedLocationsSubQuery);
-                        joinShiftApplications(query, req.user.id, appliedOnly);
+                        joinShiftApplications(query, req.user.id, appliedOnly)
+                            .leftJoin('ignoreshifts', function() {
+                                this.on('ignoreshifts.shift_id', '=', 'shifts.id')
+                                    .andOn('ignoreshifts.user_id', '=', req.user.id)
+                            });
                     });
             });
         }
@@ -1669,7 +1681,6 @@ function getShifts(req, res, appliedOnly, showDividers) {
             withRelatedOptions.withRelated.push('timezone');
         } else {
             withRelatedOptions.withRelated = [
-                'ignoreshifts',
                 'timezone'
             ];
         }

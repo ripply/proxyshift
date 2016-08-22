@@ -4618,7 +4618,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "         item-width=\"100%\"\n" +
     "         class=\"shift-list\"\n" +
     "         ng-show=\"(!shift.canceled && (!acceptedOnly || (acceptedOnly && acceptedOrApprovedShiftOrDivider(shift))) && markShiftVisible(shift)) || markShiftNotVisible(shift)\">\n" +
-    "        <div ng-class=\"{'card': !shift.isDivider, 'divider-card': shift.isDivider, 'applied-to-shift': manageable ? (!shift.isDivider && isShiftApproved(shift)) : (acceptedOnly ? isShiftApproved(shift) : shift.applied), 'ignored-shift': manageable ? (!shift.isDivider && !isShiftAppliedFor(shift)):shift.ignoreshifts.length > 0, 'pending-approval': manageable ? (!shift.isDivider && isShiftAppliedFor(shift) && !isShiftApproved(shift)) : (acceptedOnly ? (shift.applied && !isShiftApproved(shift)) : false)}\">\n" +
+    "        <div ng-class=\"{'card': !shift.isDivider, 'divider-card': shift.isDivider, 'applied-to-shift': manageable ? (!shift.isDivider && isShiftApproved(shift)) : (acceptedOnly ? isShiftApproved(shift) : shift.applied), 'ignored-shift': manageable ? (!shift.isDivider && !isShiftAppliedFor(shift)):ignoredShift(shift), 'pending-approval': manageable ? (!shift.isDivider && isShiftAppliedFor(shift) && !isShiftApproved(shift)) : (acceptedOnly ? (shift.applied && !isShiftApproved(shift)) : false)}\">\n" +
     "            <ion-item\n" +
     "                class=\"item\"\n" +
     "                item-height=\"shift.isDivider ? 32:(64 + (4 * 2))\"\n" +

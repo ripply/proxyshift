@@ -8,7 +8,7 @@
          item-width="100%"
          class="shift-list"
          ng-show="(!shift.canceled && (!acceptedOnly || (acceptedOnly && acceptedOrApprovedShiftOrDivider(shift))) && markShiftVisible(shift)) || markShiftNotVisible(shift)">
-        <div ng-class="{'card': !shift.isDivider, 'divider-card': shift.isDivider, 'applied-to-shift': manageable ? (!shift.isDivider && isShiftApproved(shift)) : (acceptedOnly ? isShiftApproved(shift) : shift.applied), 'ignored-shift': manageable ? (!shift.isDivider && !isShiftAppliedFor(shift)):shift.ignoreshifts.length > 0, 'pending-approval': manageable ? (!shift.isDivider && isShiftAppliedFor(shift) && !isShiftApproved(shift)) : (acceptedOnly ? (shift.applied && !isShiftApproved(shift)) : false)}">
+        <div ng-class="{'card': !shift.isDivider, 'divider-card': shift.isDivider, 'applied-to-shift': manageable ? (!shift.isDivider && isShiftApproved(shift)) : (acceptedOnly ? isShiftApproved(shift) : shift.applied), 'ignored-shift': manageable ? (!shift.isDivider && !isShiftAppliedFor(shift)):ignoredShift(shift), 'pending-approval': manageable ? (!shift.isDivider && isShiftAppliedFor(shift) && !isShiftApproved(shift)) : (acceptedOnly ? (shift.applied && !isShiftApproved(shift)) : false)}">
             <ion-item
                 class="item"
                 item-height="shift.isDivider ? 32:(64 + (4 * 2))"

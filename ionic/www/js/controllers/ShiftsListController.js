@@ -58,7 +58,6 @@ angular.module('scheduling-app.controllers')
             function getShiftApiRoute() {
                 var route;
                 var noIgnored = UserInfoService.getShowIgnoredShifts() ? '':'NoIgnored';
-                console.log('NOIGNORE$D::::::' + noIgnored + ';;;;;;');
                 if ($scope.acceptedOnly === true) {
                     if ($scope.showDividers === true) {
                         route = 'all' + noIgnored + 'AppliedOnlyWithDividers';

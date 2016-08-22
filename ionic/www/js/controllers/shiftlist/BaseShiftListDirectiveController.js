@@ -489,14 +489,10 @@ angular.module('scheduling-app.controllers')
             };
 
             $scope.ignoredShift = function(shift) {
-                //console.log(shift);
                 if (shift === undefined) {
                     return true;
                 }
-                if (shift.ignoreshifts === undefined) {
-                    return false;
-                }
-                return shift.ignoreshifts.length > 0;
+                return (shift.ignored !== undefined && shift.ignored !== null);
             };
 
             $scope.acceptedOrApprovedShiftOrDivider = function(shift) {
