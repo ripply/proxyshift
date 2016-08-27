@@ -85,7 +85,7 @@ angular.forEach({
                 },
                 allNoIgnored: {
                     method: GET,
-                    url: url + '/shifts/all/noignored',
+                    url: url + '/shifts/noignored/all',
                     isArray: true
                 },
                 allWithDividers: { // DUMMY
@@ -95,7 +95,7 @@ angular.forEach({
                 },
                 allNoIgnoredWithDividers: { // DUMMY
                     method: GET,
-                    url: url + '/shifts/all/noignored/dividers',
+                    url: url + '/shifts/noignored/all/dividers',
                     isArray: true
                 },
                 allAppliedOnly: {
@@ -105,7 +105,7 @@ angular.forEach({
                 },
                 allNoIgnoredAppliedOnly: {
                     method: GET,
-                    url: url + '/shifts/all/noignored/appliedonly',
+                    url: url + '/shifts/noignored/all/appliedonly',
                     isArray: true
                 },
                 allAppliedOnlyWithDividers: { // DUMMY
@@ -115,7 +115,7 @@ angular.forEach({
                 },
                 allNoIgnoredAppliedOnlyWithDividers: { // DUMMY
                     method: GET,
-                    url: url + '/shifts/all/noignored/appliedonly',
+                    url: url + '/shifts/noignored/all/appliedonly',
                     isArray: true
                 },
                 new: {
@@ -136,6 +136,11 @@ angular.forEach({
                 mine: {
                     method: GET,
                     url: url + '/shifts/mine',
+                    isArray: true
+                },
+                mineNoIgnored: {
+                    method: GET,
+                    url: url + '/shifts/noignored/mine',
                     isArray: true
                 },
                 applications: {

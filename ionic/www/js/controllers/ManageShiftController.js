@@ -53,7 +53,8 @@ angular.module('scheduling-app.controllers')
                 // TODO: Go back, invalid shift
             }
 
-            $scope.spacing = 1;
+            /*
+            $scope.spacing = 0;
             $scope.dividerOuterHeight = 40;
             $scope.dividerInnerHeight = 32;
             $scope.shiftOuterHeight = 120;
@@ -64,6 +65,7 @@ angular.module('scheduling-app.controllers')
                 var y = ShiftProcessingService.getScrollToPosition(value, model, $scope.spacing, $scope.dividerOuterHeight, $scope.dividerInnerHeight, $scope.shiftOuterHeight, $scope.shiftInnerHeight);
                 $ionicScrollDelegate.scrollTo(0, y, true);
             });
+            */
 
             $scope.promptAcceptShiftApplication = promptAcceptShiftApplication;
 

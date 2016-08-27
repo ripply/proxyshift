@@ -10,6 +10,7 @@ angular.module('scheduling-app.controllers')
             $injector,
             GENERAL_EVENTS
         ) {
+            $scope.active = false;
             if ($scope._models === undefined) {
                 $scope._models = {};
             }
@@ -131,6 +132,7 @@ angular.module('scheduling-app.controllers')
             }
 
             function enterEvent() {
+                $scope.active = true;
                 if ($scope.enter !== undefined) {
                     $scope.enter();
                 }
@@ -150,6 +152,7 @@ angular.module('scheduling-app.controllers')
             }
 
             function leaveEvent() {
+                $scope.active = false;
                 if ($scope.leave !== undefined) {
                     $scope.leave();
                 }

@@ -4544,10 +4544,12 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "            <a ng-click=\"forgot()\" href=\"#\">Forgot your password?</a>\n" +
     "        </p>\n" +
     "    </div>\n" +
-    "\n" +
+    "    \n" +
+    "    <!--\n" +
     "    <div class=\"new-account\">\n" +
     "        <p>Don't have an account? <a ng-click=\"signup()\" href=\"#\">Create one</a></p>\n" +
     "    </div>\n" +
+    "    -->\n" +
     "\n" +
     "</div>\n"
   );

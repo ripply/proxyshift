@@ -7,7 +7,7 @@ angular.module('scheduling-app.controllers')
         ) {
             $scope.acceptedOnly = true;
             $scope.showDividers = true;
-            $controller('ShiftsListController', {$scope: $scope});
+            $controller('ShiftsListController', {$scope: $scope, enableScroll: false});
             $scope.MODELNAME = 'shifts';
         }
     ]

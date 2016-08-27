@@ -55,7 +55,7 @@ module.exports = {
             }
         }
     },
-    '/all/noignored': {
+    '/noignored/all': {
         'get': { // get all shifts you can register for
             // auth: // logged in
             route: function(req, res) {
@@ -71,7 +71,7 @@ module.exports = {
             }
         }
     },
-    '/all/noignored/dividers': {
+    '/noignored/all/dividers': {
         'get': { // get all shifts you can register for
             // auth: // logged in
             route: function(req, res) {
@@ -87,7 +87,7 @@ module.exports = {
             }
         }
     },
-    '/all/noignored/appliedonly': {
+    '/noignored/all/appliedonly': {
         'get': {
             //auth: [],
             route: function allShiftsAcceptedOnly(req, res) {
@@ -103,7 +103,7 @@ module.exports = {
             }
         }
     },
-    '/all/noignored/appliedonly/dividers': {
+    '/noignored/all/appliedonly/dividers': {
         'get': {
             //auth: [],
             route: function allShiftsAcceptedOnly(req, res) {
@@ -239,27 +239,14 @@ module.exports = {
     '/mine': {
         'get': {
             route: function(req, res) {
-                var columns = createSelectQueryForAllColumns('Shift', 'shifts');
-                models.Shift.query(function(q) {
-                    q.select()
-                        .from('shifts')
-                        .where('shifts.user_id', '=', req.user.id);
-                })
-                    .fetchAll({
-                        withRelated: [
-                            'timezone'
-                        ]
-                    })
-                    .then(function(shifts) {
-                        if (shifts) {
-                            res.send(shifts.toJSON());
-                        } else {
-                            res.sendStatus(204); // no content
-                        }
-                    })
-                    .catch(function(err) {
-                        error(req, res, err);
-                    });
+                getMyCallouts(req, res, undefined, undefined, false);
+            }
+        }
+    },
+    '/noignored/mine': {
+        'get': {
+            route: function(req, res) {
+                getMyCallouts(req, res, undefined, undefined, true);
             }
         }
     },
@@ -1475,16 +1462,10 @@ function getAllShifts(req, res, hideCanceled, appliedOnly, showDividers, hideIgn
                     .orWhereIn('sublocations.location_id', relatedLocationsSubQuery);
             })
             .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery);
-        joinShiftApplications(query, req.user.id, appliedOnly)
-            .leftJoin('ignoreshifts', function() {
-            this.on('ignoreshifts.shift_id', '=', 'shifts.id')
-                .andOn('ignoreshifts.user_id', '=', req.user.id)
-        });
+        joinShiftApplications(query, req.user.id, appliedOnly);
+        joinIgnoreShifts(query, req.user.id, hideIgnored);
         if (hideCanceled) {
             query = query.where('shifts.canceled', '=', models.sqlFalse);
-        }
-        if (hideIgnored) {
-            query.whereNull('ignoreshifts.id');
         }
         query.orderBy('shifts.start');
     })
@@ -1962,3 +1943,53 @@ function unregisterForShift(req, res) {
     //});
 }
 
+function joinIgnoreShifts(q, user_id, hideIgnored) {
+    q.leftJoin('ignoreshifts', function() {
+        this.on('ignoreshifts.shift_id', '=', 'shifts.id')
+            .andOn('ignoreshifts.user_id', '=', user_id);
+    });
+    if (hideIgnored) {
+        q.whereNull('ignoreshifts.id');
+    }
+    return q;
+}
+
+const DAYS_IN_A_YEAR = 365;
+const HOURS_IN_A_DAY = 24;
+const MINUTES_IN_HOUR = 60;
+const SECONDS_IN_MINUTE = 60;
+
+const MYCALLOUTS_START = DAYS_IN_A_YEAR * HOURS_IN_A_DAY * MINUTES_IN_HOUR * SECONDS_IN_MINUTE / 2;
+
+function getStartOfMyCallouts() {
+    return time.nowInUtc() - MYCALLOUTS_START;
+}
+
+function getMyCallouts(req, res, start, end, hideIgnored) {
+    models.Shift.query(function(q) {
+        q = q.select(shiftAndAppliedSelectKeys)
+            .from('shifts')
+            .where('shifts.user_id', '=', req.user.id)
+            .andWhere('shifts.start', '>', start || getStartOfMyCallouts());
+        joinShiftApplications(q, req.user.id, false);
+        if (end) {
+            q.andWhere('shifts.end', '<', end);
+        }
+        q = joinIgnoreShifts(q, req.user.id, hideIgnored);
+    })
+        .fetchAll({
+            withRelated: [
+                'timezone'
+            ]
+        })
+        .then(function(shifts) {
+            if (shifts) {
+                res.send(shifts.toJSON());
+            } else {
+                res.sendStatus(204); // no content
+            }
+        })
+        .catch(function(err) {
+            error(req, res, err);
+        });
+}

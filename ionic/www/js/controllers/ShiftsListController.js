@@ -13,6 +13,7 @@ angular.module('scheduling-app.controllers')
         'ShiftProcessingService',
         'ShiftIntervalTreeCacheService',
         'ShiftsModel',
+        'enableScroll',
         function($rootScope,
                  $scope,
                  $controller,
@@ -25,7 +26,8 @@ angular.module('scheduling-app.controllers')
                  UserInfoService,
                  ShiftProcessingService,
                  ShiftIntervalTreeCacheService,
-                 ShiftsModel
+                 ShiftsModel,
+                 enableScroll
         ) {
             $controller('BaseModelController', {$scope: $scope});
 
@@ -37,7 +39,7 @@ angular.module('scheduling-app.controllers')
                 $scope.MODELNAME = 'AllShifts';
             }
 
-            $scope.spacing = 1;
+            $scope.spacing = 0;
             $scope.dividerOuterHeight = 40;
             $scope.dividerInnerHeight = 32;
             $scope.shiftOuterHeight = 120;
@@ -49,13 +51,22 @@ angular.module('scheduling-app.controllers')
                 }
             });
 
-            $rootScope.$on(GENERAL_EVENTS.SHIFTS.SCROLL, function(state, value) {
-                var model = $rootScope[$scope.MODELNAME];
-                var y = ShiftProcessingService.getScrollToPosition(value, model, $scope.spacing, $scope.dividerOuterHeight, $scope.dividerInnerHeight, $scope.shiftOuterHeight, $scope.shiftInnerHeight);
-                $ionicScrollDelegate.scrollTo(0, y, true);
-            });
+            if (enableScroll) {
+                $rootScope.$on(GENERAL_EVENTS.SHIFTS.SCROLL, function(state, value) {
+                    if (!$scope.active) {
+                        return;
+                    }
+                    var model = $rootScope[$scope.MODELNAME];
+                    var y = ShiftProcessingService.getScrollToPosition(value, model, $scope.spacing, $scope.dividerOuterHeight, $scope.dividerInnerHeight, $scope.shiftOuterHeight, $scope.shiftInnerHeight);
+                    $ionicScrollDelegate.scrollTo(0, y, true);
+                });
+            }
 
-            function getShiftApiRoute() {
+            if ($scope.getRouteName === undefined) {
+                $scope.getRouteName = getRouteName;
+            }
+
+            function getRouteName() {
                 var route;
                 var noIgnored = UserInfoService.getShowIgnoredShifts() ? '':'NoIgnored';
                 if ($scope.acceptedOnly === true) {
@@ -74,7 +85,7 @@ angular.module('scheduling-app.controllers')
 
             $scope.fetch = function() {
                 var deferred = $q.defer();
-                ShiftsModel[getShiftApiRoute()](function(data) {
+                ShiftsModel[$scope.getRouteName()](function(data) {
                     $scope.Model = data;
                     deferred.resolve(data);
                     if ($scope.showDividers) {
@@ -102,16 +113,16 @@ angular.module('scheduling-app.controllers')
                         if (approved) {
                             console.log('Approved shifts exist!');
                             data.splice(0, 0, {
-                                type: 'approved',
-                                sort: APPROVED_GROUP,
+                                type: $scope._approved || 'approved',
+                                sort: $scope._approvedGroup || APPROVED_GROUP,
                                 isDivider: true
                             });
                         }
                         if (pendingApprovals) {
                             console.log('Pending approvals exist!');
                             data.splice(0, 0, {
-                                type: 'pendingApproval',
-                                sort: PENDING_GROUP,
+                                type: $scope._pendingApproval || 'pendingApproval',
+                                sort: $scope._pendingGroup || PENDING_GROUP,
                                 isDivider: true
                             });
                         }
