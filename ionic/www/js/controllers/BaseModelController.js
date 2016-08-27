@@ -10,7 +10,7 @@ angular.module('scheduling-app.controllers')
             $injector,
             GENERAL_EVENTS
         ) {
-            $scope.active = false;
+            $scope.active = true;
             if ($scope._models === undefined) {
                 $scope._models = {};
             }

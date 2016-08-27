@@ -40,8 +40,8 @@
                                 <p class="shift-duration">{{getReadableShiftDuration(shift)}}</p>
                             </div>
                             <div class="shift-info">
-                                <p class="shift-location">{{getShiftsLocation(shift).address}}</p>
-                                <p class="shift-title shift-location-floor" ng-show="{{shift.sublocation_id}}">{{getShiftsSublocation(shift).title}} - {{getReadableClassType(shift)}}</p>
+                                <p class="shift-location">{{getShiftsLocation(shift).address || "UNKNOWN LOCATION"}}</p>
+                                <p class="shift-title shift-location-floor" ng-show="{{shift.sublocation_id}}">{{getShiftsSublocation(shift).title || "UNKNOWN"}} - {{getReadableClassType(shift)}}</p>
                                 <p class="shift-title" ng-hide="{{shift.sublocation_id}}">{{getReadableClassType(shift)}}</p>
                                 <p class="shift-desc">{{shift.description}}</p>
                             </div>

@@ -247,6 +247,9 @@ angular.module('scheduling-app.services')
                 }
                 if (locations.hasOwnProperty(location_id)) {
                     return locations[location_id];
+                } else {
+                    console.log("LOCATION " + location_id + ' UNKNOWN');
+                    console.log(locations);
                 }
             };
 
@@ -390,6 +393,18 @@ angular.module('scheduling-app.services')
                             }
                         });
                     });
+                    angular.forEach(groups, function(group, group_id) {
+                        if (group.hasOwnProperty('locations')) {
+                            angular.forEach(group.locations, function(location) {
+                                var id = location.id;
+                                if (!locations.hasOwnProperty(id)) {
+                                    locations[id] = location;
+                                }
+                            });
+                        }
+                    });
+                    console.log('!!!');
+                    console.log(groups);
                     // now we have locations and groups in their own maps
                     // add all locations to their respective groups
                     angular.forEach([

@@ -19,6 +19,7 @@ angular.module('scheduling-app.controllers')
                 STATES.SHIFTS,
                 STATES.MYSHIFTS,
                 STATES.MANAGE,
+                STATES.MYCALLOUTS,
                 STATES.SHIFT_INFO
             ];
             $controller('BaseModelController', {$scope: $scope});

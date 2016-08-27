@@ -567,6 +567,8 @@ function getUserInfo(user_id, next) {
             })
                 .fetchAll({
                     withRelated: [
+                        'locations',
+                        'locations.sublocations',
                         'grouppermissions',
                         'userClasses'
                     ]
@@ -616,6 +618,8 @@ function getUserInfo(user_id, next) {
                                         'memberOfGroups.grouppermissions',
                                         'memberOfGroups.groupsetting',
                                         'memberOfGroups.userClasses',
+                                        'memberOfGroups.locations',
+                                        'memberOfGroups.locations.sublocations',
                                         'userClasses',
                                         'usergroups'
                                         //'allGroupPermissions'

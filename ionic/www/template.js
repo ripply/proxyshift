@@ -4544,7 +4544,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "            <a ng-click=\"forgot()\" href=\"#\">Forgot your password?</a>\n" +
     "        </p>\n" +
     "    </div>\n" +
-    "    \n" +
+    "\n" +
     "    <!--\n" +
     "    <div class=\"new-account\">\n" +
     "        <p>Don't have an account? <a ng-click=\"signup()\" href=\"#\">Create one</a></p>\n" +
@@ -4652,8 +4652,8 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                                <p class=\"shift-duration\">{{getReadableShiftDuration(shift)}}</p>\n" +
     "                            </div>\n" +
     "                            <div class=\"shift-info\">\n" +
-    "                                <p class=\"shift-location\">{{getShiftsLocation(shift).address}}</p>\n" +
-    "                                <p class=\"shift-title shift-location-floor\" ng-show=\"{{shift.sublocation_id}}\">{{getShiftsSublocation(shift).title}} - {{getReadableClassType(shift)}}</p>\n" +
+    "                                <p class=\"shift-location\">{{getShiftsLocation(shift).address || \"UNKNOWN LOCATION\"}}</p>\n" +
+    "                                <p class=\"shift-title shift-location-floor\" ng-show=\"{{shift.sublocation_id}}\">{{getShiftsSublocation(shift).title || \"UNKNOWN\"}} - {{getReadableClassType(shift)}}</p>\n" +
     "                                <p class=\"shift-title\" ng-hide=\"{{shift.sublocation_id}}\">{{getReadableClassType(shift)}}</p>\n" +
     "                                <p class=\"shift-desc\">{{shift.description}}</p>\n" +
     "                            </div>\n" +
