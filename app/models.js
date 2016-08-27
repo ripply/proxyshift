@@ -1272,19 +1272,20 @@ function checkRememberMeToken(token, consume, next) {
                     });
             } else {
                 var tokenIssuedAt = foundToken.get('date') - tokens.expires;
-                if ((foundToken.get('date') - tokenIssuedAt) > tokens.refresh) {
+                if ((foundToken.get('date') - tokenIssuedAt) < tokens.refresh) {
                     // refresh token
+                    var nowExpiresAt = now + tokens.expires;
                     return models.Token.query(function(q) {
                         q.select()
                             .from('tokens')
                             .where('tokens.id', '=', foundToken.get('id'))
                             .update({
-                                date: now + tokens.expires
+                                date: nowExpiresAt
                             });
                     })
                         .fetch()
                         .tap(function() {
-                            console.log('Refreshed token: '+ token);
+                            console.log('Refreshed token: '+ token + ' to ' + nowExpiresAt);
                             return next(null, user_id);
                         });
                 } else {
