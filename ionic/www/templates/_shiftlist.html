@@ -41,8 +41,8 @@
                             </div>
                             <div class="shift-info">
                                 <p class="shift-location">{{getShiftsLocation(shift).address || "UNKNOWN LOCATION"}}</p>
-                                <p class="shift-title shift-location-floor" ng-show="{{shift.sublocation_id}}">{{getShiftsSublocation(shift).title || "UNKNOWN"}} - {{getReadableClassType(shift)}}</p>
-                                <p class="shift-title" ng-hide="{{shift.sublocation_id}}">{{getReadableClassType(shift)}}</p>
+                                <p class="shift-title shift-location-floor" ng-show="{{shift.sublocation_id != undefined && shift.sublocation_id != null}}">{{getShiftsSublocation(shift).title || "UNKNOWN"}} - {{getReadableClassType(shift)}}</p>
+                                <p class="shift-title" ng-show="{{shift.sublocation_id == undefined || shift.sublocation_id == null}}">{{getReadableClassType(shift)}}</p>
                                 <p class="shift-desc">{{shift.description}}</p>
                             </div>
                         </div>

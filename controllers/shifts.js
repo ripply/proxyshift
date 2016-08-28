@@ -1409,7 +1409,8 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
 
 function getAllShifts(req, res, hideCanceled, appliedOnly, showDividers, hideIgnored) {
     var now = new Date();
-    var range = grabNormalShiftRange(now, after, before);
+    // only show shifts that have not ended yet
+    var range = grabNormalShiftRange(now, moment(now).unix());
     var before = range[0];
     var after = range[1];
     models.Shift.query(function(q) {

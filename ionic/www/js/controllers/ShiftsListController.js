@@ -53,9 +53,6 @@ angular.module('scheduling-app.controllers')
 
             if (enableScroll) {
                 $rootScope.$on(GENERAL_EVENTS.SHIFTS.SCROLL, function(state, value) {
-                    if (!$scope.active) {
-                        return;
-                    }
                     var model = $rootScope[$scope.MODELNAME];
                     var y = ShiftProcessingService.getScrollToPosition(value, model, $scope.spacing, $scope.dividerOuterHeight, $scope.dividerInnerHeight, $scope.shiftOuterHeight, $scope.shiftInnerHeight);
                     $ionicScrollDelegate.scrollTo(0, y, true);
