@@ -4642,6 +4642,14 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                     class=\"shift-item list-padding\">\n" +
     "                    Declined shifts\n" +
     "                </div>\n" +
+    "                <div ng-if=\"shift.isDivider && shift.type == 'expired'\"\n" +
+    "                     class=\"shift-item list-padding\">\n" +
+    "                    Expired shifts\n" +
+    "                </div>\n" +
+    "                <div ng-if=\"shift.isDivider && shift.type == 'expiredSeeMore'\"\n" +
+    "                     class=\"shift-item list-padding\">\n" +
+    "                    See more expired shifts....\n" +
+    "                </div>\n" +
     "                <div ng-if=\"!shift.isDivider\">\n" +
     "                    <div class=\"shift-item list-padding\">\n" +
     "                        <div class=\"shift-left-icon\"><i class=\"icon ion-ios-checkmark-outline\"></i></div>\n" +

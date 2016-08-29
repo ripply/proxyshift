@@ -34,6 +34,8 @@ angular.module('scheduling-app.controllers')
             var APPROVED_GROUP = -1;
             var PENDING_GROUP = 1;
             var DECLINED_GROUP = 2;
+            var EXPIRED_GROUP = 3;
+            var EXPIRED_SEE_MORE_GROUP = 4;
 
             if (!$scope.MODELNAME) {
                 $scope.MODELNAME = 'AllShifts';
@@ -80,6 +82,8 @@ angular.module('scheduling-app.controllers')
                 return route;
             }
 
+            var now;
+
             $scope.fetch = function() {
                 var deferred = $q.defer();
                 ShiftsModel[$scope.getRouteName()](function(data) {
@@ -90,9 +94,20 @@ angular.module('scheduling-app.controllers')
                         var approved = false;
                         var pendingApprovals = false;
                         var declined = false;
+                        var expired = false;
+                        var lastExpired = false;
+                        now = undefined;
                         for (var i = 0; i < data.length; i++) {
                             var shift = data[i];
-                            if (ShiftProcessingService.isShiftAppliedFor(shift)) {
+                            if (now === undefined) {
+                                now = ShiftProcessingService.now(shift);
+                            }
+                            if (ShiftProcessingService.isShiftExpired(shift, now)) {
+                                if (expired === false) {
+                                    expired = i;
+                                }
+                                lastExpired = i;
+                            } else if (ShiftProcessingService.isShiftAppliedFor(shift)) {
                                 if (ShiftProcessingService.isShiftApproved(shift)) {
                                     approved = true;
                                 } else if (ShiftProcessingService.isShiftDeclined(shift)) {
@@ -123,6 +138,19 @@ angular.module('scheduling-app.controllers')
                                 isDivider: true
                             });
                         }
+                        if (expired !== false) {
+                            console.log('Expired shifts exist!');
+                            data.splice(expired, 0, {
+                                type: $scope._expired || 'expired',
+                                sort: $scope._expiredGroup || EXPIRED_GROUP,
+                                isDivider: true
+                            });
+                            data.splice(lastExpired, 0, {
+                                type: $scope._expiredSeeMore || 'expiredSeeMore',
+                                sort: $scope._expiredSeeMoreGroup || EXPIRED_SEE_MORE_GROUP,
+                                isDivider: true
+                            })
+                        }
                         /*
                         if (declined) {
                             console.log('Declined shifts exist!');
@@ -133,7 +161,11 @@ angular.module('scheduling-app.controllers')
                             });
                         }
                         */
+                        console.log("B4");
+                        console.log(data);
                         data.sort(predicate);
+                        console.log("AFTER");
+                        console.log(data);
                     }
                     $rootScope.$emit(GENERAL_EVENTS.UPDATES.RESOURCE, $scope.MODELNAME || 'AllShifts', data, data, $scope);
                     if ($scope.fetchComplete !== undefined) {
@@ -147,6 +179,10 @@ angular.module('scheduling-app.controllers')
             function getShiftGroup(shift) {
                 if (shift.isDivider) {
                     return shift.sort;
+                } else if (ShiftProcessingService.isShiftExpired(shift, now)) {
+                    console.log("!!!!!!!!!!!!!!!!!!");
+                    console.log(shift.description);
+                    return EXPIRED_GROUP;
                 } else if (ShiftProcessingService.isShiftAppliedFor(shift)) {
                     if (ShiftProcessingService.isShiftApproved(shift)) {
                         return APPROVED_GROUP;
@@ -172,8 +208,14 @@ angular.module('scheduling-app.controllers')
                         return ShiftProcessingService.compareShiftByDate(left, right);
                     }
                 } else if (leftGroup < rightGroup) {
+                    if (leftGroup == EXPIRED_GROUP || rightGroup == EXPIRED_GROUP) {
+                        console.log('lr: ' + (leftGroup == EXPIRED_GROUP ? 'l':'r'));
+                    }
                     return -1;
                 } else {
+                    if (leftGroup == EXPIRED_GROUP || rightGroup == EXPIRED_GROUP) {
+                        console.log('rl: ' + (leftGroup == EXPIRED_GROUP ? 'l':'r'));
+                    }
                     return 1;
                 }
             }

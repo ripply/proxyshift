@@ -51,7 +51,7 @@ module.exports = {
         'get': { // get all shifts you can register for
             // auth: // logged in
             route: function(req, res) {
-                getAllShifts(req, res, true, false, false, false);
+                getAllShifts(req, res, true, false, false, false, true, false);
             }
         }
     },
@@ -59,7 +59,7 @@ module.exports = {
         'get': { // get all shifts you can register for
             // auth: // logged in
             route: function(req, res) {
-                getAllShifts(req, res, true, false, false, true);
+                getAllShifts(req, res, true, false, false, true, true, false);
             }
         }
     },
@@ -67,7 +67,7 @@ module.exports = {
         'get': { // get all shifts you can register for
             // auth: // logged in
             route: function(req, res) {
-                getAllShifts(req, res, true, false, true, false);
+                getAllShifts(req, res, true, false, true, false, true, false);
             }
         }
     },
@@ -75,7 +75,7 @@ module.exports = {
         'get': { // get all shifts you can register for
             // auth: // logged in
             route: function(req, res) {
-                getAllShifts(req, res, true, false, true, true);
+                getAllShifts(req, res, true, false, true, true, true, false);
             }
         }
     },
@@ -83,7 +83,7 @@ module.exports = {
         'get': {
             //auth: [],
             route: function allShiftsAcceptedOnly(req, res) {
-                getAllShifts(req, res, true, true, false, false);
+                getAllShifts(req, res, true, true, false, false, true, true);
             }
         }
     },
@@ -91,7 +91,7 @@ module.exports = {
         'get': {
             //auth: [],
             route: function allShiftsAcceptedOnly(req, res) {
-                getAllShifts(req, res, true, true, false, true);
+                getAllShifts(req, res, true, true, false, true, true, true);
             }
         }
     },
@@ -99,7 +99,7 @@ module.exports = {
         'get': {
             //auth: [],
             route: function allShiftsAcceptedOnly(req, res) {
-                getAllShifts(req, res, true, true, true, false);
+                getAllShifts(req, res, true, true, true, false, true, false);
             }
         }
     },
@@ -107,7 +107,7 @@ module.exports = {
         'get': {
             //auth: [],
             route: function allShiftsAcceptedOnly(req, res) {
-                getAllShifts(req, res, true, true, true, true);
+                getAllShifts(req, res, true, true, true, true, true, false);
             }
         }
     },
@@ -1407,10 +1407,19 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
 
 }
 
-function getAllShifts(req, res, hideCanceled, appliedOnly, showDividers, hideIgnored) {
+function getAllShifts(req, res, hideCanceled, appliedOnly, showDividers, hideIgnored, hideDisconnectedShifts, showPrevious) {
     var now = new Date();
-    // only show shifts that have not ended yet
-    var range = grabNormalShiftRange(now, moment(now).unix());
+    var start = moment(now);
+    var finishedShifts = start.unix();
+    if (showPrevious) {
+        // show this last weeks shifts
+        start.subtract('1', 'week');
+    } else {
+        // only show shifts that have not ended yet
+    }
+    start = start.unix();
+
+    var range = grabNormalShiftRange(now, start);
     var before = range[0];
     var after = range[1];
     models.Shift.query(function(q) {
@@ -1445,11 +1454,12 @@ function getAllShifts(req, res, hideCanceled, appliedOnly, showDividers, hideIgn
 
         var query = q.select(shiftAndAppliedSelectKeys)
             .from('shifts')
-            .leftJoin('locations', function() {
-                this.on('shifts.location_id', '=', 'locations.id');
-            })
             .leftJoin('sublocations', function() {
                 this.on('shifts.sublocation_id', '=', 'sublocations.id');
+            })
+            .leftJoin('locations', function() {
+                this.on('shifts.location_id', '=', 'locations.id')
+                    .orOn('sublocations.location_id', '=', 'locations.id');
             })
             .where(function() {
                 this.where('shifts.start', '>=', before)
@@ -1465,6 +1475,14 @@ function getAllShifts(req, res, hideCanceled, appliedOnly, showDividers, hideIgn
             .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery);
         joinShiftApplications(query, req.user.id, appliedOnly);
         joinIgnoreShifts(query, req.user.id, hideIgnored);
+        if (hideDisconnectedShifts) {
+            // if a user is kicked from a group, they won't be able to know the location/sublocation name of a shift they called out on
+            // so, don't send it to them
+            query.innerJoin('usergroups', function() {
+                this.on('usergroups.user_id', '=', req.user.id)
+                    .andOn('usergroups.group_id', '=', 'locations.group_id');
+            });
+        }
         if (hideCanceled) {
             query = query.where('shifts.canceled', '=', models.sqlFalse);
         }
@@ -1481,7 +1499,36 @@ function getAllShifts(req, res, hideCanceled, appliedOnly, showDividers, hideIgn
         .then(function(shifts) {
             if (shifts) {
                 // TODO: Fetch related group user class information
-                res.json(shifts.toJSON());
+                if (showPrevious) {
+                    // move expired shifts to the end of the array
+                    var shiftLength = shifts.models.length;
+                    // preallocate shift array
+                    var oldShifts = new Array(shiftLength);
+                    var newShifts = new Array(shiftLength);
+
+                    var oldShiftsIndex = 0;
+                    var newShiftsIndex = 0;
+                    for (var i = 0; i < shiftLength; i++) {
+                        var modelShift = shifts.models[i];
+                        var modelShiftJson = modelShift.toJSON();
+                        if (modelShiftJson.end < finishedShifts) {
+                            oldShifts[oldShiftsIndex++] = modelShiftJson;
+                        } else {
+                            newShifts[newShiftsIndex++] = modelShiftJson;
+                        }
+                    }
+                    if (newShiftsIndex !== 0) {
+                        for (var i = 0; i < oldShiftsIndex; i++) {
+                            newShifts[newShiftsIndex++] = oldShifts[i];
+                        }
+                        shifts = newShifts;
+                    } else {
+                        shifts = oldShifts;
+                    }
+                } else {
+                    shifts = shifts.toJSON();
+                }
+                res.json(shifts);
             } else {
                 res.json([]);
             }
@@ -1970,9 +2017,24 @@ function getMyCallouts(req, res, start, end, hideIgnored) {
     models.Shift.query(function(q) {
         q = q.select(shiftAndAppliedSelectKeys)
             .from('shifts')
+            .leftJoin('sublocations', function() {
+                this.on('shifts.sublocation_id', '=', 'sublocations.id');
+            })
+            .leftJoin('locations', function() {
+                this.on('shifts.location_id', '=', 'locations.id')
+                    .orOn('sublocations.location_id', '=', 'locations.id');
+            })
             .where('shifts.user_id', '=', req.user.id)
             .andWhere('shifts.start', '>', start || getStartOfMyCallouts());
         joinShiftApplications(q, req.user.id, false);
+        //if (hideDisconnectedShifts) {
+            // if a user is kicked from a group, they won't be able to know the location/sublocation name of a shift they called out on
+            // so, don't send it to them
+            q.innerJoin('usergroups', function() {
+                this.on('usergroups.user_id', '=', req.user.id)
+                    .andOn('usergroups.group_id', '=', 'locations.group_id');
+            });
+        //}
         if (end) {
             q.andWhere('shifts.end', '<', end);
         }

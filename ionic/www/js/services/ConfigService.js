@@ -1,10 +1,14 @@
+var URL = 'https://www.proxyshift.com';
+if (window.location.href.indexOf('com.ionic.viewapp') >= 0) {
+    URL = 'https://guarded-waters-4321.herokuapp.com';
+}
+
 var config_data = {
     'GENERAL_CONFIG': {
         'APP_NAME': 'Scheduling App',
         'APP_VERSION': '0.1',
         'APP_URL': '', // modified during setup to point to correct url
-        //'APP_URL_PROD': 'https://guarded-waters-4321.herokuapp.com',
-        'APP_URL_PROD': 'https://www.proxyshift.com',
+        'APP_URL_PROD': URL,
         'APP_URL_DEV': '',
         'APP_URL_API': '/api/v1',
         'APP_URL_LOGIN': '/session/login',

@@ -243,6 +243,23 @@ angular.module('scheduling-app.services')
                 }
             };
 
+            this.now = now;
+
+            function now(shift) {
+                return moment().unix();
+            };
+
+            this.isShiftExpired = function isShiftExpired(shift, now) {
+                if (now === undefined) {
+                    now = now(shift);
+                }
+                if (shift) {
+                    return shift.end < now;
+                } else {
+                    return true;
+                }
+            };
+
             this.isShiftApproved = function isShiftApproved(shift) {
                 if (shift.approved) {
                     return true;
@@ -349,7 +366,16 @@ angular.module('scheduling-app.services')
             this.getStartOfShift = getStartOfShift;
 
             function getStartOfShift(shift) {
-                return moment.tz(shift.start * 1000, shift.timezone.name);
+                if (shift) {
+                    if (shift.timezone) {
+                        return moment.tz(shift.start * 1000, shift.timezone.name);
+                    } else {
+                        console.log("UNKNOWN TIMEZONE: " + JSON.stringify(shift));
+                        return moment(shift.start * 1000);
+                    }
+                } else {
+                    return "UNKNOWN";
+                }
             }
 
             function getShiftApplicationTime(shift, shiftapplication) {
@@ -359,7 +385,16 @@ angular.module('scheduling-app.services')
             this.getEndOfShift = getEndOfShift;
 
             function getEndOfShift(shift) {
-                return moment.tz(shift.end * 1000, shift.timezone.name);
+                if (shift) {
+                    if (shift.timezone) {
+                        return moment.tz(shift.end * 1000, shift.timezone.name);
+                    } else {
+                        console.log("UNKNOWN TIMEZONE: " + JSON.stringify(shift));
+                        return moment(shift.end * 1000);
+                    }
+                } else {
+                    return "UNKNOWN";
+                }
             }
 
             this.markDayBreaksForShifts = markDayBreaksForShifts;

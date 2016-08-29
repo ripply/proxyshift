@@ -30,6 +30,14 @@
                      class="shift-item list-padding">
                     Declined shifts
                 </div>
+                <div ng-if="shift.isDivider && shift.type == 'expired'"
+                     class="shift-item list-padding">
+                    Expired shifts
+                </div>
+                <div ng-if="shift.isDivider && shift.type == 'expiredSeeMore'"
+                     class="shift-item list-padding">
+                    See more expired shifts....
+                </div>
                 <div ng-if="!shift.isDivider">
                     <div class="shift-item list-padding">
                         <div class="shift-left-icon"><i class="icon ion-ios-checkmark-outline"></i></div>
