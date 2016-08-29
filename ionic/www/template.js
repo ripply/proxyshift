@@ -4615,6 +4615,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "    class=\"has-header\"\n" +
     "    show-delete=\"false\"\n" +
     "    show-reorder=\"false\"\n" +
+    "    ng-if=\"Model\"\n" +
     "    can-swipe=\"swipable\">\n" +
     "    <div collection-repeat=\"shift in Model\" item-height=\"shift.canceled || (acceptedOnly && (!acceptedOnly || !acceptedOrApprovedShiftOrDivider(shift))) ? 0:(shift.isDivider ? 40:120)\"\n" +
     "         item-width=\"100%\"\n" +
