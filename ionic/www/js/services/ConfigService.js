@@ -3,7 +3,7 @@ if (
     window.location.href.indexOf('com.ionic.viewapp') >= 0 || // android
     window.location.href.indexOf('Library/NoCloud/files//') >= 0 // ios
 ) {
-    URL = 'https://guarded-waters-4321.herokuapp.com';guar
+    URL = 'https://guarded-waters-4321.herokuapp.com';
 }
 
 var config_data = {
