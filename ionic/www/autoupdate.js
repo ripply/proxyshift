@@ -97,6 +97,13 @@
         if (checking) {
             return;
         }
+        if (
+            window.location.href.indexOf('com.ionic.viewapp') >= 0 || // android
+            window.location.href.indexOf('Library/NoCloud/files//') >= 0 // ios
+        ) {
+            // ionic view does not support auto updating
+            return;
+        }
         var nextUpdateTime = nextUpdate;
         if (!force && nextUpdate) {
             if (okToUpdate(nextUpdate)) {

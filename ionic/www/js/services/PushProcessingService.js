@@ -121,7 +121,9 @@ angular.module('scheduling-app.push', [
                 return window.cordova &&
                     (CORDOVA_SETTINGS.isIOS ||
                      CORDOVA_SETTINGS.isAndroid ||
-                     CORDOVA_SETTINGS.isWindowsPhone);
+                     CORDOVA_SETTINGS.isWindowsPhone) &&
+                    window.location.href.indexOf('Library/NoCloud/files//') == -1 && // ios ionic view
+                    window.location.href.indexOf('com.ionic.viweapp') == -1; // android ionic view
             }
 
             this.supported = supported;
