@@ -327,6 +327,20 @@ angular.module('scheduling-app', [
                     }
                 })
 
+                .state('app.expired', {
+                    url: "/expired",
+                    views: {
+                        'tabContent': {
+                            templateUrl: "templates/expired/expired.html",
+                            //controller: ''
+                        }
+                    },
+                    //pageTrack: '/app/expired'
+                    resolve: {
+                        authenticated: requireSessionOrGoLogin
+                    }
+                })
+
                 .state('app.shifts', {
                     url: "/shifts",
                     abstract: true,

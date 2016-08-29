@@ -239,14 +239,28 @@ module.exports = {
     '/mine': {
         'get': {
             route: function(req, res) {
-                getMyCallouts(req, res, undefined, undefined, false);
+                getMyUnexpiredCallouts(req, res, false);
             }
         }
     },
     '/noignored/mine': {
         'get': {
             route: function(req, res) {
-                getMyCallouts(req, res, undefined, undefined, true);
+                getMyUnexpiredCallouts(req, res, true);
+            }
+        }
+    },
+    '/expired/mine': {
+        'get': {
+            route: function(req, res) {
+                getMyExpiredCallouts(req, res, false);
+            }
+        }
+    },
+    '/noignored/expired/mine/': {
+        'get': {
+            route: function(req, res) {
+                getMyExpiredCallouts(req, res, true);
             }
         }
     },
@@ -2009,11 +2023,23 @@ const SECONDS_IN_MINUTE = 60;
 
 const MYCALLOUTS_START = DAYS_IN_A_YEAR * HOURS_IN_A_DAY * MINUTES_IN_HOUR * SECONDS_IN_MINUTE / 2;
 
+function getStartOfFiscalYear(req) {
+    return moment().startOf('year').unix();
+}
+
 function getStartOfMyCallouts() {
     return time.nowInUtc() - MYCALLOUTS_START;
 }
 
-function getMyCallouts(req, res, start, end, hideIgnored) {
+function getMyExpiredCallouts(req, res, hideIgnored) {
+    getMyCallouts(req, res, hideIgnored, true);
+}
+
+function getMyUnexpiredCallouts(req, res, hideIgnored) {
+    getMyCallouts(req, res, hideIgnored, false);
+}
+
+function getMyCallouts(req, res, hideIgnored, expiredOnly, start, end) {
     models.Shift.query(function(q) {
         q = q.select(shiftAndAppliedSelectKeys)
             .from('shifts')
@@ -2024,8 +2050,16 @@ function getMyCallouts(req, res, start, end, hideIgnored) {
                 this.on('shifts.location_id', '=', 'locations.id')
                     .orOn('sublocations.location_id', '=', 'locations.id');
             })
-            .where('shifts.user_id', '=', req.user.id)
-            .andWhere('shifts.start', '>', start || getStartOfMyCallouts());
+            .where('shifts.user_id', '=', req.user.id);
+        if (expiredOnly) {
+            q.andWhere('shifts.end', '>=', start || getStartOfFiscalYear(req))
+                .andWhere('shifts.end', '<=', end || time.nowInUtc());
+        } else {
+            q.andWhere('shifts.end', '>=', start || time.nowInUtc());
+            if (end) {
+                q.andWhere('shifts.end', '<=', end);
+            }
+        }
         joinShiftApplications(q, req.user.id, false);
         //if (hideDisconnectedShifts) {
             // if a user is kicked from a group, they won't be able to know the location/sublocation name of a shift they called out on
@@ -2035,9 +2069,6 @@ function getMyCallouts(req, res, start, end, hideIgnored) {
                     .andOn('usergroups.group_id', '=', 'locations.group_id');
             });
         //}
-        if (end) {
-            q.andWhere('shifts.end', '<', end);
-        }
         q = joinIgnoreShifts(q, req.user.id, hideIgnored);
     })
         .fetchAll({

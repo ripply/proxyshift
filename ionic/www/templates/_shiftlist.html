@@ -36,7 +36,7 @@
                 </div>
                 <div ng-if="shift.isDivider && shift.type == 'expiredSeeMore'"
                      class="shift-item list-padding">
-                    See more expired shifts....
+                    <a ui-sref="app.expired">See more expired shifts....</a>
                 </div>
                 <div ng-if="!shift.isDivider">
                     <div class="shift-item list-padding">

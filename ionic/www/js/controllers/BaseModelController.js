@@ -176,18 +176,20 @@ angular.module('scheduling-app.controllers')
                 $rootScope.$emit(GENERAL_EVENTS.TOAST, type, title, body, other);
             }
 
-            $scope.$on('$ionicView.beforeEnter', beforeEnterEvent);
-            $scope.$on('$ionicNavView.beforeEnter', beforeEnterEvent);
-            $scope.$on('$ionicView.afterEnter', afterEnterEvent);
-            $scope.$on('$ionicNavView.afterEnter', afterEnterEvent);
-            $scope.$on('$ionicView.enter', enterEvent);
-            $scope.$on('$ionicNavView.enter', enterEvent);
-            $scope.$on('$ionicView.beforeLeave', beforeLeaveEvent);
-            $scope.$on('$ionicNavView.beforeLeave', beforeLeaveEvent);
-            $scope.$on('$ionicView.afterLeave', afterLeaveEvent);
-            $scope.$on('$ionicNavView.afterLeave', afterLeaveEvent);
-            $scope.$on('$ionicView.leave', leaveEvent);
-            $scope.$on('$ionicNavView.leave', leaveEvent);
+            angular.forEach({
+                'beforeEnter': beforeEnterEvent,
+                'afterEnter': afterEnterEvent,
+                'enter': enterEvent,
+                'beforeLeave': beforeLeaveEvent,
+                'afterLeave': afterLeaveEvent,
+                'leave': leaveEvent
+            }, function(event, eventName) {
+                $scope.$on('$ionicView.' + eventName, event);
+                $scope.$on('$ionicNavView.' + eventName, event);
+                if ($scope.parentView) {
+                    $scope.$on('$ionicParentView.' + eventName, event);
+                }
+            });
 
             function register(modelName, modelObject, method, subRouteFetchFunction) {
                 if (arguments.length <= 2) {

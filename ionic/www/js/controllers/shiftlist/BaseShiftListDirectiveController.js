@@ -333,7 +333,6 @@ angular.module('scheduling-app.controllers')
 
             $scope.applyForShift = function(id) {
                 var shift = getShift(id);
-                console.log("!?!?!??!??!?!?!?!?");
                 if (shift) {
                     if (shift.applied) {
                         // already applied for shift

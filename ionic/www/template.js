@@ -4648,7 +4648,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                </div>\n" +
     "                <div ng-if=\"shift.isDivider && shift.type == 'expiredSeeMore'\"\n" +
     "                     class=\"shift-item list-padding\">\n" +
-    "                    See more expired shifts....\n" +
+    "                    <a ui-sref=\"app.expired\">See more expired shifts....</a>\n" +
     "                </div>\n" +
     "                <div ng-if=\"!shift.isDivider\">\n" +
     "                    <div class=\"shift-item list-padding\">\n" +
@@ -4874,6 +4874,26 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                </div>\n" +
     "            </div>\n" +
     "        </div>\n" +
+    "    </ion-content>\n" +
+    "</ion-view>\n"
+  );
+
+
+  $templateCache.put('templates/expired/_expired.html',
+    "<shift-list dismissable=\"false\" name=\"{{getName()}}\"></shift-list>\n"
+  );
+
+
+  $templateCache.put('templates/expired/expired.html',
+    "<ion-view can-swipe-back=\"false\">\n" +
+    "    <ion-header-bar align-title=\"left\" class=\"bar-positive\">\n" +
+    "        <h1 class=\"title\">Expired</h1>\n" +
+    "        <div class=\"buttons\" side=\"right\">\n" +
+    "            <button class=\"button button-icon ion-close\" ng-click=\"close()\"></button>\n" +
+    "        </div>\n" +
+    "    </ion-header-bar>\n" +
+    "    <ion-content class=\"has-header\">\n" +
+    "        <expired-list model=\"shift\" method=\"expiredMine\"></expired-list>\n" +
     "    </ion-content>\n" +
     "</ion-view>\n"
   );

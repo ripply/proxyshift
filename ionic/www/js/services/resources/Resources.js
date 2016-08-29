@@ -143,6 +143,11 @@ angular.forEach({
                     url: url + '/shifts/noignored/mine',
                     isArray: true
                 },
+                expiredMine: {
+                    method: GET,
+                    url: url + '/shifts/expired/mine',
+                    isArray: true
+                },
                 applications: {
                     method: GET,
                     url: url + '/shifts/application/:shiftapplication_id',

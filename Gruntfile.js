@@ -342,6 +342,7 @@ module.exports = function(grunt) {
                         'ionic/www/js/controllers/newshift/ReviewNewShiftController.js',
                         'ionic/www/js/controllers/UserJobsController.js',
                         'ionic/www/js/controllers/ManagingJobsController.js',
+                        'ionic/www/js/controllers/ExpiredListDirectiveController.js',
                     <!-- **** DIRECTIVES **** -->
                         'ionic/www/js/shared/Validation.js',
                         'ionic/www/js/shared/ShiftShared.js',
@@ -359,6 +360,7 @@ module.exports = function(grunt) {
                         'ionic/www/js/directives/ManagingShiftsDirective.js',
                         'ionic/www/js/controllers/GroupByDayFilter.js',
                         'ionic/www/js/directives/DividerCollectionRepeat.js',
+                        'ionic/www/js/directives/ExpiredListDirective.js',
                     <!-- **** SERVICES **** -->
                         'ionic/www/js/services/ConfigService.js',
                         'ionic/www/js/services/authentication/CsrfInterceptorService.js',
@@ -510,7 +512,6 @@ module.exports = function(grunt) {
                     'watch:uglify',
                     'watch:ngtemplates',
                     'watch:concat',
-                    'watch:ngtemplates',
                     'watch:jsonmanifest'
                 ],
                 options: {

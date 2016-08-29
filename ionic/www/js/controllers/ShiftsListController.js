@@ -150,7 +150,7 @@ angular.module('scheduling-app.controllers')
                             type: $scope._expiredSeeMore || 'expiredSeeMore',
                             sort: $scope._expiredSeeMoreGroup || EXPIRED_SEE_MORE_GROUP,
                             isDivider: true
-                        })
+                        });
                         /*
                         if (declined) {
                             console.log('Declined shifts exist!');
@@ -161,11 +161,7 @@ angular.module('scheduling-app.controllers')
                             });
                         }
                         */
-                        console.log("B4");
-                        console.log(data);
                         data.sort(predicate);
-                        console.log("AFTER");
-                        console.log(data);
                     }
                     $rootScope.$emit(GENERAL_EVENTS.UPDATES.RESOURCE, $scope.MODELNAME || 'AllShifts', data, data, $scope);
                     if ($scope.fetchComplete !== undefined) {
@@ -180,8 +176,6 @@ angular.module('scheduling-app.controllers')
                 if (shift.isDivider) {
                     return shift.sort;
                 } else if (ShiftProcessingService.isShiftExpired(shift, now)) {
-                    console.log("!!!!!!!!!!!!!!!!!!");
-                    console.log(shift.description);
                     return EXPIRED_GROUP;
                 } else if (ShiftProcessingService.isShiftAppliedFor(shift)) {
                     if (ShiftProcessingService.isShiftApproved(shift)) {
