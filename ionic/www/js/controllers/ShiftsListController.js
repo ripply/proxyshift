@@ -145,12 +145,12 @@ angular.module('scheduling-app.controllers')
                                 sort: $scope._expiredGroup || EXPIRED_GROUP,
                                 isDivider: true
                             });
-                            data.splice(lastExpired, 0, {
-                                type: $scope._expiredSeeMore || 'expiredSeeMore',
-                                sort: $scope._expiredSeeMoreGroup || EXPIRED_SEE_MORE_GROUP,
-                                isDivider: true
-                            })
                         }
+                        data.splice(data.length - 1, 0, {
+                            type: $scope._expiredSeeMore || 'expiredSeeMore',
+                            sort: $scope._expiredSeeMoreGroup || EXPIRED_SEE_MORE_GROUP,
+                            isDivider: true
+                        })
                         /*
                         if (declined) {
                             console.log('Declined shifts exist!');

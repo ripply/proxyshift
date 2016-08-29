@@ -83,7 +83,7 @@ module.exports = {
         'get': {
             //auth: [],
             route: function allShiftsAcceptedOnly(req, res) {
-                getAllShifts(req, res, true, true, false, false, true, true);
+                getAllShifts(req, res, true, true, false, false, true, false);
             }
         }
     },
@@ -91,7 +91,7 @@ module.exports = {
         'get': {
             //auth: [],
             route: function allShiftsAcceptedOnly(req, res) {
-                getAllShifts(req, res, true, true, false, true, true, true);
+                getAllShifts(req, res, true, true, false, true, true, false);
             }
         }
     },
