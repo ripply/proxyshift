@@ -87,6 +87,14 @@ module.exports = {
             }
         }
     },
+    '/expired/all/appliedonly': {
+        'get': {
+            //auth: [],
+            route: function allShiftsAcceptedOnly(req, res) {
+                getAllShifts(req, res, true, true, false, true, true, false, getStartOfFiscalYear(req), time.nowInUtc());
+            }
+        }
+    },
     '/noignored/all/appliedonly': {
         'get': {
             //auth: [],
@@ -1421,11 +1429,11 @@ function createShiftsInTransactionRecurse(req, res, shifts, transaction, index, 
 
 }
 
-function getAllShifts(req, res, hideCanceled, appliedOnly, showDividers, hideIgnored, hideDisconnectedShifts, showPrevious) {
+function getAllShifts(req, res, hideCanceled, appliedOnly, showDividers, hideIgnored, hideDisconnectedShifts, showPrevious, shiftStart, shiftEnd) {
     var now = new Date();
-    var start = moment(now);
+    var start = moment(shiftStart || now);
     var finishedShifts = start.unix();
-    if (showPrevious) {
+    if (showPrevious && !shiftStart) {
         // show this last weeks shifts
         start.subtract('1', 'week');
     } else {
@@ -1433,7 +1441,7 @@ function getAllShifts(req, res, hideCanceled, appliedOnly, showDividers, hideIgn
     }
     start = start.unix();
 
-    var range = grabNormalShiftRange(now, start);
+    var range = grabNormalShiftRange(now, start, shiftEnd);
     var before = range[0];
     var after = range[1];
     models.Shift.query(function(q) {

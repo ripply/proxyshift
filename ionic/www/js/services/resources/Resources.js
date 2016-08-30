@@ -108,6 +108,11 @@ angular.forEach({
                     url: url + '/shifts/noignored/all/appliedonly',
                     isArray: true
                 },
+                expiredMyShifts: {
+                    method: GET,
+                    url: url + '/shifts/expired/all/appliedonly',
+                    isArray: true
+                },
                 allAppliedOnlyWithDividers: { // DUMMY
                     method: GET,
                     url: url + '/shifts/all/appliedonly',

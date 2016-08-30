@@ -4515,7 +4515,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                <img src=\"img/logo.png\" class=\"logo\">\n" +
     "                <label class=\"item item-input\">\n" +
     "                    <i class=\"icon ion-email placeholder-icon\"></i>\n" +
-    "                    <input type=\"text\" ng-model=\"user.username\" placeholder=\"Username or email\">\n" +
+    "                    <input type=\"text\" ng-model=\"user.username\" placeholder=\"Username or email\" autofocus>\n" +
     "                </label>\n" +
     "                <label class=\"item item-input\">\n" +
     "                    <i class=\"icon ion-locked placeholder-icon\"></i>\n" +
@@ -4631,13 +4631,25 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                     class=\"shift-item list-padding\">\n" +
     "                    Shifts pending manager approval\n" +
     "                </div>\n" +
+    "                <div ng-if=\"shift.isDivider && shift.type == 'pendingApprovalExpired'\"\n" +
+    "                     class=\"shift-item list-padding\">\n" +
+    "                    <a ui-sref=\"{{expiredPendingApproval}}\">See more expired shifts pending approval....</a>\n" +
+    "                </div>\n" +
     "                <div ng-if=\"shift.isDivider && shift.type == 'noApplications'\"\n" +
     "                     class=\"shift-item list-padding\">\n" +
     "                    Shifts without applications\n" +
     "                </div>\n" +
+    "                <div ng-if=\"shift.isDivider && shift.type == 'noApplicationsExpired'\"\n" +
+    "                     class=\"shift-item list-padding\">\n" +
+    "                    <a ui-sref=\"{{expiredNoApplications}}\">See more expired shifts without applications....</a>\n" +
+    "                </div>\n" +
     "                <div ng-if=\"shift.isDivider && shift.type == 'approved'\"\n" +
     "                     class=\"shift-item list-padding\">\n" +
     "                    Approved shifts\n" +
+    "                </div>\n" +
+    "                <div ng-if=\"shift.isDivider && shift.type == 'approvedExpired'\"\n" +
+    "                     class=\"shift-item list-padding\">\n" +
+    "                    <a ui-sref=\"{{expiredApproved}}\">See more expired approved shifts....</a>\n" +
     "                </div>\n" +
     "                <div ng-if=\"shift.isDivider && shift.type == 'declined'\"\n" +
     "                     class=\"shift-item list-padding\">\n" +
@@ -4955,7 +4967,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "            pulling-text=\"Pull to refresh...\"\n" +
     "            on-refresh=\"fetch()\">\n" +
     "        </ion-refresher>\n" +
-    "        <expired-list model=\"shift\" method=\"expiredMine\"></expired-list>\n" +
+    "        <expired-list model=\"shift\" method=\"expiredMyShifts\"></expired-list>\n" +
     "    </ion-content>\n" +
     "</ion-view>\n"
   );
@@ -5922,7 +5934,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "            pulling-text=\"Pull to refresh...\"\n" +
     "            on-refresh=\"fetch()\">\n" +
     "        </ion-refresher>\n" +
-    "        <managing-shifts manageable=\"true\" name=\"ManageShifts\"></managing-shifts>\n" +
+    "        <managing-shifts manageable=\"true\" name=\"ManageShifts\" expired-pending-approval=\"{{EXPIRED_PENDING_APPROVAL}}\" expired-no-applications=\"{{EXPIRED_NO_APPLICATIONS}}\" expired-approved=\"{{EXPIRED_APPROVED}}\"></managing-shifts>\n" +
     "    </ion-content>\n" +
     "</ion-view>\n"
   );
@@ -6267,7 +6279,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "            pulling-text=\"Pull to refresh...\"\n" +
     "            on-refresh=\"fetch()\">\n" +
     "        </ion-refresher>\n" +
-    "        <shift-list dismissable=\"true\" name=\"shifts\" acceptedOnly=\"true\" showDividers=\"true\" expired=\"app.expiredmine\"></shift-list>\n" +
+    "        <shift-list dismissable=\"true\" name=\"shifts\" acceptedOnly=\"true\" showDividers=\"true\" expired=\"app.expiredmyshifts\"></shift-list>\n" +
     "    </ion-content>\n" +
     "</ion-view>\n"
   );

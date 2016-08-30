@@ -6,6 +6,7 @@ angular.module('scheduling-app.controllers')
         '$q',
         'GENERAL_EVENTS',
         'GENERAL_CONFIG',
+        'STATES',
         'ShiftsModel',
         'ShiftProcessingService',
         'ShiftIntervalTreeCacheService',
@@ -15,6 +16,7 @@ angular.module('scheduling-app.controllers')
                  $q,
                  GENERAL_EVENTS,
                  GENERAL_CONFIG,
+                 STATES,
                  ShiftsModel,
                  ShiftProcessingService,
                  ShiftIntervalTreeCacheService
@@ -27,9 +29,16 @@ angular.module('scheduling-app.controllers')
                 }
             });
 
-            var PENDING_GRUOP = -1;
+            $scope.EXPIRED_PENDING_APPROVAL = STATES.EXPIRED_PENDING_APPROVAL;
+            $scope.EXPIRED_NO_APPLICATIONS = STATES.EXPIRED_NO_APPLICATIONS;
+            $scope.EXPIRED_APPROVED = STATES.EXPIRED_APPROVED;
+
+            var PENDING_GROUP = -2;
+            var PENDING_EXPIRED_GROUP = -1;
             var NOAPPLICATION_GROUP = 1;
-            var APPROVED_GROUP = 2;
+            var NOAPPLICATION_EXPIRED_GROUP = 2;
+            var APPROVED_GROUP = 3;
+            var APPROVED_EXPIRED_GROUP = 4;
 
             $scope.fetch = function() {
                 var deferred = $q.defer();
@@ -56,7 +65,12 @@ angular.module('scheduling-app.controllers')
                     if (pendingApprovals) {
                         data.splice(0, 0, {
                             type: 'pendingApproval',
-                            sort: PENDING_GRUOP,
+                            sort: PENDING_GROUP,
+                            isDivider: true
+                        });
+                        data.splice(1, 0, {
+                            type: 'pendingApprovalExpired',
+                            sort: PENDING_EXPIRED_GROUP,
                             isDivider: true
                         });
                     }
@@ -66,11 +80,21 @@ angular.module('scheduling-app.controllers')
                             sort: NOAPPLICATION_GROUP,
                             isDivider: true
                         });
+                        data.splice(1, 0, {
+                            type: 'noApplicationsExpired',
+                            sort: NOAPPLICATION_EXPIRED_GROUP,
+                            isDivider: true
+                        });
                     }
                     if (approvedShifts) {
                         data.splice(0, 0, {
                             type: 'approved',
                             sort: APPROVED_GROUP,
+                            isDivider: true
+                        });
+                        data.splice(1, 0, {
+                            type: 'approvedExpired',
+                            sort: APPROVED_EXPIRED_GROUP,
                             isDivider: true
                         });
                     }
@@ -90,7 +114,7 @@ angular.module('scheduling-app.controllers')
                 } else if (ShiftProcessingService.isShiftApproved(shift)) {
                     return APPROVED_GROUP;
                 } else if (ShiftProcessingService.isShiftAppliedFor(shift)) {
-                    return PENDING_GRUOP;
+                    return PENDING_GROUP;
                 } else {
                     return NOAPPLICATION_GROUP;
                 }

@@ -359,8 +359,8 @@ angular.module('scheduling-app', [
                     }
                 })
 
-                .state('app.expiredmine', {
-                    url: "/expiredmine",
+                .state('app.expiredmyshifts', {
+                    url: "/expiredmyshifts",
                     //pageTrack: '/app/expired'
                     views: {
                         'tabContent': {

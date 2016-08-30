@@ -19,13 +19,25 @@
                      class="shift-item list-padding">
                     Shifts pending manager approval
                 </div>
+                <div ng-if="shift.isDivider && shift.type == 'pendingApprovalExpired'"
+                     class="shift-item list-padding">
+                    <a ui-sref="{{expiredPendingApproval}}">See more expired shifts pending approval....</a>
+                </div>
                 <div ng-if="shift.isDivider && shift.type == 'noApplications'"
                      class="shift-item list-padding">
                     Shifts without applications
                 </div>
+                <div ng-if="shift.isDivider && shift.type == 'noApplicationsExpired'"
+                     class="shift-item list-padding">
+                    <a ui-sref="{{expiredNoApplications}}">See more expired shifts without applications....</a>
+                </div>
                 <div ng-if="shift.isDivider && shift.type == 'approved'"
                      class="shift-item list-padding">
                     Approved shifts
+                </div>
+                <div ng-if="shift.isDivider && shift.type == 'approvedExpired'"
+                     class="shift-item list-padding">
+                    <a ui-sref="{{expiredApproved}}">See more expired approved shifts....</a>
                 </div>
                 <div ng-if="shift.isDivider && shift.type == 'declined'"
                      class="shift-item list-padding">
