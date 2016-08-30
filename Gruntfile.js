@@ -343,6 +343,7 @@ module.exports = function(grunt) {
                         'ionic/www/js/controllers/UserJobsController.js',
                         'ionic/www/js/controllers/ManagingJobsController.js',
                         'ionic/www/js/controllers/ExpiredListDirectiveController.js',
+                        'ionic/www/js/controllers/ExpiredController.js',
                     <!-- **** DIRECTIVES **** -->
                         'ionic/www/js/shared/Validation.js',
                         'ionic/www/js/shared/ShiftShared.js',

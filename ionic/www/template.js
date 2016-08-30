@@ -4617,7 +4617,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "    show-reorder=\"false\"\n" +
     "    ng-if=\"Model\"\n" +
     "    can-swipe=\"swipable\">\n" +
-    "    <div collection-repeat=\"shift in Model\" item-height=\"shift.canceled || (acceptedOnly && (!acceptedOnly || !acceptedOrApprovedShiftOrDivider(shift))) ? 0:(shift.isDivider ? 40:120)\"\n" +
+    "    <div collection-repeat=\"shift in Model\" item-height=\"shift.canceled || (acceptedOnly && (!acceptedOnly || !acceptedOrApprovedShiftOrDivider(shift))) ? 0:(shift.isDivider ? 40:(shift.description.length > 0 ? 120:100))\"\n" +
     "         item-width=\"100%\"\n" +
     "         class=\"shift-list\"\n" +
     "         ng-show=\"(!shift.canceled && (!acceptedOnly || (acceptedOnly && acceptedOrApprovedShiftOrDivider(shift))) && markShiftVisible(shift)) || markShiftNotVisible(shift)\">\n" +
@@ -4649,7 +4649,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                </div>\n" +
     "                <div ng-if=\"shift.isDivider && shift.type == 'expiredSeeMore'\"\n" +
     "                     class=\"shift-item list-padding\">\n" +
-    "                    <a ui-sref=\"app.expired\">See more expired shifts....</a>\n" +
+    "                    <a ui-sref=\"{{expiredUri}}\">See more expired shifts....</a>\n" +
     "                </div>\n" +
     "                <div ng-if=\"!shift.isDivider\">\n" +
     "                    <div class=\"shift-item list-padding\">\n" +
@@ -4888,12 +4888,73 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
   $templateCache.put('templates/expired/expired.html',
     "<ion-view can-swipe-back=\"false\">\n" +
     "    <ion-header-bar align-title=\"left\" class=\"bar-positive\">\n" +
-    "        <h1 class=\"title\">Expired</h1>\n" +
+    "        <h1 class=\"title\">Expired Callouts</h1>\n" +
     "        <div class=\"buttons\" side=\"right\">\n" +
     "            <button class=\"button button-icon ion-close\" ng-click=\"close()\"></button>\n" +
     "        </div>\n" +
     "    </ion-header-bar>\n" +
     "    <ion-content class=\"has-header\">\n" +
+    "        <ion-refresher\n" +
+    "            pulling-text=\"Pull to refresh...\"\n" +
+    "            on-refresh=\"fetch()\">\n" +
+    "        </ion-refresher>\n" +
+    "        <expired-list model=\"shift\" method=\"expiredMine\"></expired-list>\n" +
+    "    </ion-content>\n" +
+    "</ion-view>\n"
+  );
+
+
+  $templateCache.put('templates/expired/expiredCallouts.html',
+    "<ion-view can-swipe-back=\"false\">\n" +
+    "    <ion-header-bar align-title=\"left\" class=\"bar-positive\">\n" +
+    "        <h1 class=\"title\">Expired Callouts</h1>\n" +
+    "        <div class=\"buttons\" side=\"right\">\n" +
+    "            <button class=\"button button-icon ion-close\" ng-click=\"close()\"></button>\n" +
+    "        </div>\n" +
+    "    </ion-header-bar>\n" +
+    "    <ion-content class=\"has-header\">\n" +
+    "        <ion-refresher\n" +
+    "            pulling-text=\"Pull to refresh...\"\n" +
+    "            on-refresh=\"fetch()\">\n" +
+    "        </ion-refresher>\n" +
+    "        <expired-list model=\"shift\" method=\"expiredMine\"></expired-list>\n" +
+    "    </ion-content>\n" +
+    "</ion-view>\n"
+  );
+
+
+  $templateCache.put('templates/expired/expiredManage.html',
+    "<ion-view can-swipe-back=\"false\">\n" +
+    "    <ion-header-bar align-title=\"left\" class=\"bar-positive\">\n" +
+    "        <h1 class=\"title\">Expired Manageable Shifts</h1>\n" +
+    "        <div class=\"buttons\" side=\"right\">\n" +
+    "            <button class=\"button button-icon ion-close\" ng-click=\"close()\"></button>\n" +
+    "        </div>\n" +
+    "    </ion-header-bar>\n" +
+    "    <ion-content class=\"has-header\">\n" +
+    "        <ion-refresher\n" +
+    "            pulling-text=\"Pull to refresh...\"\n" +
+    "            on-refresh=\"fetch()\">\n" +
+    "        </ion-refresher>\n" +
+    "        <expired-list model=\"shift\" method=\"expiredMine\"></expired-list>\n" +
+    "    </ion-content>\n" +
+    "</ion-view>\n"
+  );
+
+
+  $templateCache.put('templates/expired/expiredMyShifts.html',
+    "<ion-view can-swipe-back=\"false\">\n" +
+    "    <ion-header-bar align-title=\"left\" class=\"bar-positive\">\n" +
+    "        <h1 class=\"title\">My Expired Shifts</h1>\n" +
+    "        <div class=\"buttons\" side=\"right\">\n" +
+    "            <button class=\"button button-icon ion-close\" ng-click=\"close()\"></button>\n" +
+    "        </div>\n" +
+    "    </ion-header-bar>\n" +
+    "    <ion-content class=\"has-header\">\n" +
+    "        <ion-refresher\n" +
+    "            pulling-text=\"Pull to refresh...\"\n" +
+    "            on-refresh=\"fetch()\">\n" +
+    "        </ion-refresher>\n" +
     "        <expired-list model=\"shift\" method=\"expiredMine\"></expired-list>\n" +
     "    </ion-content>\n" +
     "</ion-view>\n"
@@ -6193,7 +6254,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "            pulling-text=\"Pull to refresh...\"\n" +
     "            on-refresh=\"fetch()\">\n" +
     "        </ion-refresher>\n" +
-    "        <shift-list dismissable=\"true\" name=\"shifts\" showDividers=\"true\"></shift-list>\n" +
+    "        <shift-list dismissable=\"true\" name=\"shifts\" showDividers=\"true\" expired=\"app.expiredcallouts\"></shift-list>\n" +
     "    </ion-content>\n" +
     "</ion-view>\n"
   );
@@ -6206,7 +6267,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "            pulling-text=\"Pull to refresh...\"\n" +
     "            on-refresh=\"fetch()\">\n" +
     "        </ion-refresher>\n" +
-    "        <shift-list dismissable=\"true\" name=\"shifts\" acceptedOnly=\"true\" showDividers=\"true\"></shift-list>\n" +
+    "        <shift-list dismissable=\"true\" name=\"shifts\" acceptedOnly=\"true\" showDividers=\"true\" expired=\"app.expiredmine\"></shift-list>\n" +
     "    </ion-content>\n" +
     "</ion-view>\n"
   );

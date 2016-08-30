@@ -329,15 +329,44 @@ angular.module('scheduling-app', [
 
                 .state('app.expired', {
                     url: "/expired",
-                    views: {
-                        'tabContent': {
-                            templateUrl: "templates/expired/expired.html",
-                            //controller: ''
-                        }
-                    },
+                    abstract: true,
                     //pageTrack: '/app/expired'
                     resolve: {
                         authenticated: requireSessionOrGoLogin
+                    }
+                })
+
+
+                .state('app.expiredcallouts', {
+                    url: "/expiredcallouts",
+                    //pageTrack: '/app/expired'
+                    views: {
+                        'tabContent': {
+                            templateUrl: "templates/expired/expiredCallouts.html",
+                            controller: "ExpiredController"
+                        }
+                    }
+                })
+
+                .state('app.expiredmanage', {
+                    url: "/expiredmanage",
+                    //pageTrack: '/app/expired'
+                    views: {
+                        'tabContent': {
+                            templateUrl: "templates/expired/expiredManage.html",
+                            controller: "ExpiredController"
+                        }
+                    }
+                })
+
+                .state('app.expiredmine', {
+                    url: "/expiredmine",
+                    //pageTrack: '/app/expired'
+                    views: {
+                        'tabContent': {
+                            templateUrl: "templates/expired/expiredMyShifts.html",
+                            controller: "ExpiredController"
+                        }
                     }
                 })
 

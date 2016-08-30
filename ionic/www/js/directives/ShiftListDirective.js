@@ -13,6 +13,7 @@ angular.module('scheduling-app.directives')
 
         function link(scope, element, attributes) {
             scope.name = attributes.name;
+            scope.expiredUri = attributes.expired;
             if (attributes['acceptedonly']) {
                 scope.acceptedOnly = attributes['acceptedonly'] == 'true';
             } else {

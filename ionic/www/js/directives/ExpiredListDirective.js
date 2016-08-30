@@ -14,7 +14,6 @@ angular.module('scheduling-app.directives')
         function link(scope, element, attributes) {
             scope.model = attributes.model;
             scope.method = attributes.method;
-            scope.enter();
         }
     }
 );

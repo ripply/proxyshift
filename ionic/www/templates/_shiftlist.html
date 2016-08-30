@@ -5,7 +5,7 @@
     show-reorder="false"
     ng-if="Model"
     can-swipe="swipable">
-    <div collection-repeat="shift in Model" item-height="shift.canceled || (acceptedOnly && (!acceptedOnly || !acceptedOrApprovedShiftOrDivider(shift))) ? 0:(shift.isDivider ? 40:120)"
+    <div collection-repeat="shift in Model" item-height="shift.canceled || (acceptedOnly && (!acceptedOnly || !acceptedOrApprovedShiftOrDivider(shift))) ? 0:(shift.isDivider ? 40:(shift.description.length > 0 ? 120:100))"
          item-width="100%"
          class="shift-list"
          ng-show="(!shift.canceled && (!acceptedOnly || (acceptedOnly && acceptedOrApprovedShiftOrDivider(shift))) && markShiftVisible(shift)) || markShiftNotVisible(shift)">
@@ -37,7 +37,7 @@
                 </div>
                 <div ng-if="shift.isDivider && shift.type == 'expiredSeeMore'"
                      class="shift-item list-padding">
-                    <a ui-sref="app.expired">See more expired shifts....</a>
+                    <a ui-sref="{{expiredUri}}">See more expired shifts....</a>
                 </div>
                 <div ng-if="!shift.isDivider">
                     <div class="shift-item list-padding">

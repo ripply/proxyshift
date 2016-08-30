@@ -77,6 +77,7 @@ angular.module('scheduling-app.controllers')
                 return $scope.other.job !== undefined &&
                     $scope.other.job !== null &&
                     ($scope.other.description === null ||
+                    $scope.other.description === undefined ||
                     $scope.other.description == '' ||
                     $scope.other.description.length <= $scope.descriptionMaxLength);
             };

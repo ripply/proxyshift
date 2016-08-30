@@ -37,11 +37,13 @@ angular.module('scheduling-app.controllers')
                 return val;
             }
 
+            $scope.$on('FETCH', fetch);
+
             $scope.getName = getName;
 
             var fetching = false;
 
-            function fetch() {
+            function fetch(event, done) {
                 if (fetching) {
                     return;
                 }
@@ -53,8 +55,14 @@ angular.module('scheduling-app.controllers')
                             $scope.expired = response;
                             $rootScope.$emit(GENERAL_EVENTS.UPDATES.RESOURCE, getName(), response, response, $scope);
                         }
+                        if (done) {
+                            done();
+                        }
                     }, function error(response) {
                         fetching = false;
+                        if (done) {
+                            done();
+                        }
                     });
             }
         }

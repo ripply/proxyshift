@@ -42,21 +42,27 @@ angular.module('scheduling-app.controllers')
             }
 
             $scope.spacing = 0;
+            $scope.descriptionHeight = 20;
             $scope.dividerOuterHeight = 40;
             $scope.dividerInnerHeight = 32;
             $scope.shiftOuterHeight = 120;
             $scope.shiftInnerHeight = 64 + 4 * 2;
 
+            console.log('SHIFTLISTCONTROLLER SETUP');
+
             $rootScope.$on(GENERAL_EVENTS.UPDATES.RESOURCE, function(state, resource, value) {
                 if (resource == $scope.MODELNAME) {
+                    console.log('GOT UPDATE');
                     ShiftIntervalTreeCacheService.updateShifts(value);
+                } else {
+                    console.log('IGNORING UPDATE');
                 }
             });
 
             if (enableScroll) {
                 $rootScope.$on(GENERAL_EVENTS.SHIFTS.SCROLL, function(state, value) {
                     var model = $rootScope[$scope.MODELNAME];
-                    var y = ShiftProcessingService.getScrollToPosition(value, model, $scope.spacing, $scope.dividerOuterHeight, $scope.dividerInnerHeight, $scope.shiftOuterHeight, $scope.shiftInnerHeight);
+                    var y = ShiftProcessingService.getScrollToPosition(value, model, $scope.descriptionHeight, $scope.spacing, $scope.dividerOuterHeight, $scope.dividerInnerHeight, $scope.shiftOuterHeight, $scope.shiftInnerHeight);
                     $ionicScrollDelegate.scrollTo(0, y, true);
                 });
             }

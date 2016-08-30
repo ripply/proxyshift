@@ -55,6 +55,7 @@ angular.module('scheduling-app.controllers')
 
             /*
             $scope.spacing = 0;
+            $scope.descriptionHeight = 20;
             $scope.dividerOuterHeight = 40;
             $scope.dividerInnerHeight = 32;
             $scope.shiftOuterHeight = 120;
@@ -62,7 +63,7 @@ angular.module('scheduling-app.controllers')
 
             $rootScope.$on(GENERAL_EVENTS.SHIFTS.SCROLL, function(state, value) {
                 var model = $rootScope[$scope.MODELNAME];
-                var y = ShiftProcessingService.getScrollToPosition(value, model, $scope.spacing, $scope.dividerOuterHeight, $scope.dividerInnerHeight, $scope.shiftOuterHeight, $scope.shiftInnerHeight);
+                var y = ShiftProcessingService.getScrollToPosition(value, model, $scope.descriptionHeight, $scope.spacing, $scope.dividerOuterHeight, $scope.dividerInnerHeight, $scope.shiftOuterHeight, $scope.shiftInnerHeight);
                 $ionicScrollDelegate.scrollTo(0, y, true);
             });
             */

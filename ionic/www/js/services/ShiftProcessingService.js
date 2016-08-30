@@ -183,7 +183,7 @@ angular.module('scheduling-app.services')
                 });
             }
 
-            this.getScrollToPosition = function(scrollTo, model, spacing, dividerOuterHeight, dividerInnerHeight, shiftOuterHeight, shiftInnerHeight) {
+            this.getScrollToPosition = function(scrollTo, model, descriptionHeight, spacing, dividerOuterHeight, dividerInnerHeight, shiftOuterHeight, shiftInnerHeight) {
                 if (model) {
                     var start = parseInt(scrollTo);
                     if (!start) {
@@ -222,6 +222,11 @@ angular.module('scheduling-app.services')
                                     y = y + spacing;
                                 }
                                 y = y + shiftOuterHeight;
+                                if (shift.description === null ||
+                                    shift.description === undefined ||
+                                    shift.description.length === 0) {
+                                    y = y - descriptionHeight;
+                                }
                             } else {
                                 // this shift is AFTER what we are looking for, and it is the first
                                 if (latestShift) {
