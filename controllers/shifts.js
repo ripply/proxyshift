@@ -1695,10 +1695,10 @@ function joinApprovedOnly(query) {
  */
 function joinNoApplicationsOnly(query) {
     return query.leftJoin('shiftapplications', function() {
-        this.on('shiftapplications.shift_id', '=', 'shifts.id')
-            .andOn('shiftapplications.recinded', '<>', models.sqlTrue);
+        this.on('shiftapplications.shift_id', '=', 'shifts.id');
     })
-        .whereNull('shiftapplications.shift_id');
+        .whereNull('shiftapplications.shift_id')
+        .andWhere('shiftapplications.recinded', '<>', models.sqlTrue);
 }
 
 /**
