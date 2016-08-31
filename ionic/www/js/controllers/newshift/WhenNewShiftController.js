@@ -56,21 +56,29 @@ angular.module('scheduling-app.controllers')
                     }
                     var when = $scope.when[dateString];
                     if (when.starttime === undefined) {
-                        console.log("Setting starttime...");
                         when.starttime = guessStartTime();
                     }
                     if (when.length === undefined) {
-                        console.log('Setting length...');
                         when.length = guessEndTime(when.starttime);
                     }
                     if (when.endtime === undefined) {
-                        console.log('Setting endtime...');
-                        var date = moment(dateString);
+                        var startdate = moment(dateString);
+                        var date = moment(startdate);
                         var starttime = moment(when.starttime);
-                        date.add(starttime.hours(), 'hours');
-                        date.add(starttime.minutes(), 'minutes');
-                        date.add(starttime.seconds(), 'seconds');
                         var length = moment(when.length);
+                        startdate.add(starttime.hours(), 'hours');
+                        startdate.add(starttime.minutes(), 'minutes');
+                        startdate.add(starttime.seconds(), 'seconds');
+                        if (startdate == length) {
+                            date.add(24, 'hours');
+                        } else {
+                            if (startdate > length) {
+                                // crosses midnight
+                                date.add(24, 'hours');
+                            } else {
+                                // doesn't cross
+                            }
+                        }
                         date.add(length.hours(), 'hours');
                         date.add(length.minutes(), 'minutes');
                         date.add(length.seconds(), 'seconds');
@@ -100,12 +108,36 @@ angular.module('scheduling-app.controllers')
                                 progressable = false;
                             }
                         });
+                        if (!$scope.dateOk(date)) {
+                            progressable = false;
+                        }
                     } else {
                         progressable = false;
                     }
                 });
 
                 return progressable;
+            };
+
+            $scope.dateOk = function(date) {
+                var data = $scope.when[date];
+                // check if start date is the same as the end date
+                var start = moment(date);
+                var end = moment(data.endtime);
+                if (start.isSame(end, 'day')) {
+                    // same day requires end time > start time
+                    var startTime = moment(data.starttime);
+                    var endTime = moment(data.length);
+                    if (endTime <= startTime) {
+                        return false;
+                    }
+                } else if (end.isBefore(start)) {
+                    return false;
+                } else {
+                    // this is fine
+                }
+
+                return true;
             };
         }
     ]
