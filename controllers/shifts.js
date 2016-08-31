@@ -239,7 +239,7 @@ module.exports = {
         'get': { // get all shifts you can manage that have not expired
             // auth: ['anyone']
             route: function(req, res) {
-                getShiftsYouAreManaging(req, res);
+                getShiftsYouAreManaging(req, res, false, false, false, time.nowInUtc());
             }
         }
     },
@@ -247,7 +247,7 @@ module.exports = {
         'get': { // get all shifts you can manage that have not expired
             // auth: ['anyone']
             route: function(req, res) {
-                getShiftsYouAreManaging(req, res, true, false, false, getStartOfFiscalYear(req),time.nowInUtc());
+                getShiftsYouAreManaging(req, res, true, false, false, getStartOfFiscalYear(req), time.nowInUtc());
             }
         }
     },
@@ -255,7 +255,7 @@ module.exports = {
         'get': { // get all shifts you can manage that have not expired
             // auth: ['anyone']
             route: function(req, res) {
-                getShiftsYouAreManaging(req, res, false, true, false, getStartOfFiscalYear(req),time.nowInUtc());
+                getShiftsYouAreManaging(req, res, false, true, false, getStartOfFiscalYear(req), time.nowInUtc());
             }
         }
     },
