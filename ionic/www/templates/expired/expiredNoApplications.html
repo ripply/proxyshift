@@ -1,0 +1,15 @@
+<ion-view can-swipe-back="false">
+    <ion-header-bar align-title="left" class="bar-positive">
+        <h1 class="title">Expired shifts without any applications</h1>
+        <div class="buttons" side="right">
+            <button class="button button-icon ion-close" ng-click="close()"></button>
+        </div>
+    </ion-header-bar>
+    <ion-content class="has-header">
+        <ion-refresher
+            pulling-text="Pull to refresh..."
+            on-refresh="fetch()">
+        </ion-refresher>
+        <expired-list model="shift" method="expiredManagingNoApplications"></expired-list>
+    </ion-content>
+</ion-view>

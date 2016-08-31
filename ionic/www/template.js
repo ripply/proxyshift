@@ -4916,6 +4916,25 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
   );
 
 
+  $templateCache.put('templates/expired/expiredApproved.html',
+    "<ion-view can-swipe-back=\"false\">\n" +
+    "    <ion-header-bar align-title=\"left\" class=\"bar-positive\">\n" +
+    "        <h1 class=\"title\">Expired Approved Shifts</h1>\n" +
+    "        <div class=\"buttons\" side=\"right\">\n" +
+    "            <button class=\"button button-icon ion-close\" ng-click=\"close()\"></button>\n" +
+    "        </div>\n" +
+    "    </ion-header-bar>\n" +
+    "    <ion-content class=\"has-header\">\n" +
+    "        <ion-refresher\n" +
+    "            pulling-text=\"Pull to refresh...\"\n" +
+    "            on-refresh=\"fetch()\">\n" +
+    "        </ion-refresher>\n" +
+    "        <expired-list model=\"shift\" method=\"expiredManagingApproved\"></expired-list>\n" +
+    "    </ion-content>\n" +
+    "</ion-view>\n"
+  );
+
+
   $templateCache.put('templates/expired/expiredCallouts.html',
     "<ion-view can-swipe-back=\"false\">\n" +
     "    <ion-header-bar align-title=\"left\" class=\"bar-positive\">\n" +
@@ -4968,6 +4987,44 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "            on-refresh=\"fetch()\">\n" +
     "        </ion-refresher>\n" +
     "        <expired-list model=\"shift\" method=\"expiredMyShifts\"></expired-list>\n" +
+    "    </ion-content>\n" +
+    "</ion-view>\n"
+  );
+
+
+  $templateCache.put('templates/expired/expiredNoApplications.html',
+    "<ion-view can-swipe-back=\"false\">\n" +
+    "    <ion-header-bar align-title=\"left\" class=\"bar-positive\">\n" +
+    "        <h1 class=\"title\">Expired shifts without any applications</h1>\n" +
+    "        <div class=\"buttons\" side=\"right\">\n" +
+    "            <button class=\"button button-icon ion-close\" ng-click=\"close()\"></button>\n" +
+    "        </div>\n" +
+    "    </ion-header-bar>\n" +
+    "    <ion-content class=\"has-header\">\n" +
+    "        <ion-refresher\n" +
+    "            pulling-text=\"Pull to refresh...\"\n" +
+    "            on-refresh=\"fetch()\">\n" +
+    "        </ion-refresher>\n" +
+    "        <expired-list model=\"shift\" method=\"expiredManagingNoApplications\"></expired-list>\n" +
+    "    </ion-content>\n" +
+    "</ion-view>\n"
+  );
+
+
+  $templateCache.put('templates/expired/expiredPendingApproval.html',
+    "<ion-view can-swipe-back=\"false\">\n" +
+    "    <ion-header-bar align-title=\"left\" class=\"bar-positive\">\n" +
+    "        <h1 class=\"title\">Expired shifts pending approval</h1>\n" +
+    "        <div class=\"buttons\" side=\"right\">\n" +
+    "            <button class=\"button button-icon ion-close\" ng-click=\"close()\"></button>\n" +
+    "        </div>\n" +
+    "    </ion-header-bar>\n" +
+    "    <ion-content class=\"has-header\">\n" +
+    "        <ion-refresher\n" +
+    "            pulling-text=\"Pull to refresh...\"\n" +
+    "            on-refresh=\"fetch()\">\n" +
+    "        </ion-refresher>\n" +
+    "        <expired-list model=\"shift\" method=\"expiredManagingPending\"></expired-list>\n" +
     "    </ion-content>\n" +
     "</ion-view>\n"
   );

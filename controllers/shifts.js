@@ -242,7 +242,30 @@ module.exports = {
                 getShiftsYouAreManaging(req, res);
             }
         }
-
+    },
+    '/expired/pending/managing': {
+        'get': { // get all shifts you can manage that have not expired
+            // auth: ['anyone']
+            route: function(req, res) {
+                getShiftsYouAreManaging(req, res, true, false, false, getStartOfFiscalYear(req),time.nowInUtc());
+            }
+        }
+    },
+    '/expired/noapplications/managing': {
+        'get': { // get all shifts you can manage that have not expired
+            // auth: ['anyone']
+            route: function(req, res) {
+                getShiftsYouAreManaging(req, res, false, true, false, getStartOfFiscalYear(req),time.nowInUtc());
+            }
+        }
+    },
+    '/expired/approved/managing': {
+        'get': { // get all shifts you can manage that have not expired
+            // auth: ['anyone']
+            route: function(req, res) {
+                getShiftsYouAreManaging(req, res, false, false, true, getStartOfFiscalYear(req),time.nowInUtc());
+            }
+        }
     },
     '/mine': {
         'get': {
@@ -687,24 +710,36 @@ function notify(data) {
 
 }
 
+function _getShiftsYouAreManagingFilterByDates(query, before, after) {
+    if (before && after) {
+        query.where('shifts.end', '>=', before)
+            .andWhere('shifts.end', '<=', after);
+    } else if (before) {
+        query.where('shifts.end', '>=', before);
+    } else if (after) {
+        query.wehre('shifts.end', '<=', after);
+    }
+    return query;
+}
+
 /**
  * If a location is passed in
  * this method does not check if you are a privileged member of that location
  * @param req
  * @param res
  */
-function getShiftsYouAreManaging(req, res) {
+function getShiftsYouAreManaging(req, res, pendingApprovalsOnly, noApplicationsOnly, approvedOnly, startShift, endShift) {
     // this should grab groups you are a member of
     // join them with the specific location
     // grab user classes you are managing
     // join them with shifts
     var now = new Date();
-    var range = grabNormalShiftRange(now);
+    var range = grabNormalShiftRange(now, startShift, endShift);
     var before = range[0];
-    var after = new moment(now).unix();
+    //var after = new moment(startShift || now).unix();
+    var after = range[1];
     var location_id = req.params.location_id;
     models.Shift.query(function(q) {
-
         var managingClassesAtLocationSubQuery =
             knex.select('managingclassesatlocations.groupuserclass_id')
                 .from('managingclassesatlocations')
@@ -749,7 +784,8 @@ function getShiftsYouAreManaging(req, res) {
                 .from('shifts')
                 .where('shifts.location_id', '=', req.params.location_id)
                 .andWhere(function () {
-                    this.where('shifts.start', '>=', before);
+                    _getShiftsYouAreManagingFilterByDates(this, before, after);
+                    //this.where('shifts.start', '>=', before);
                         /*
                         .orWhere(function() {
                             this.where('shifts.end', '>=', before)
@@ -785,7 +821,8 @@ function getShiftsYouAreManaging(req, res) {
             q.select(columns)
                 .from('shifts')
                 .where(function () {
-                    this.where('shifts.start', '>=', before);
+                    _getShiftsYouAreManagingFilterByDates(this, before, after);
+                    //this.where('shifts.start', '>=', before);
                         /*
                         .andWhere(function() {
                             this.where('shifts.end', '>=', before)
@@ -826,7 +863,8 @@ function getShiftsYouAreManaging(req, res) {
                 .innerJoin('managingclassesatlocations', function() {
                     this.on('managingclassesatlocations.location_id', '=', 'locations.id');
                 })
-                .where('managingclassesatlocations.managing', '=', true)
+                .where('managingclassesatlocations.managing', '=', true);
+            filterShiftsByApplications(q, req.user.id, false, approvedOnly, pendingApprovalsOnly, noApplicationsOnly)
                 //.innerJoin('usergroups', function() {
                     //this.on('usergroups.id', '=', 'managingclassesatlocations.usergroup_id');
                 //})
@@ -836,7 +874,8 @@ function getShiftsYouAreManaging(req, res) {
                     this.select(columns)
                         .from('shifts')
                         .where(function () {
-                            this.where('shifts.start', '>=', before);
+                            _getShiftsYouAreManagingFilterByDates(this, before, after);
+                            //this.where('shifts.start', '>=', before);
                                 //.orWhere('shifts.end', '>=', after);
                         })
                         //.whereIn('shifts.groupuserclass_id', managingClassesAtLocationSubQuery)
@@ -870,13 +909,15 @@ function getShiftsYouAreManaging(req, res) {
                         .innerJoin('managingclassesatlocations', function() {
                             this.on('managingclassesatlocations.location_id', '=', 'locations.id');
                         })
-                        .where('managingclassesatlocations.managing', '=', true)
+                        .where('managingclassesatlocations.managing', '=', true);
+                    filterShiftsByApplications(this, req.user.id, false, approvedOnly, pendingApprovalsOnly, noApplicationsOnly)
                         .union(function() {
                             // get shifts by sublocations you are a manager of via group affiliation
                             this.select(columns)
                                 .from('shifts')
                                 .where(function () {
-                                    this.where('shifts.start', '>=', before);
+                                    _getShiftsYouAreManagingFilterByDates(this, before, after);
+                                    //this.where('shifts.start', '>=', before);
                                         //.orWhere('shifts.end', '>=', after);
                                 })
                                 .innerJoin('sublocations', function() {
@@ -903,13 +944,15 @@ function getShiftsYouAreManaging(req, res) {
                                 .innerJoin('managingclassesatlocations', function() {
                                     this.on('managingclassesatlocations.location_id', '=', 'locations.id');
                                 })
-                                .where('managingclassesatlocations.managing', '=', true)
+                                .where('managingclassesatlocations.managing', '=', true);
+                            filterShiftsByApplications(this, req.user.id, false, approvedOnly, pendingApprovalsOnly, noApplicationsOnly)
                                 .union(function() {
                                     // get shifts by sublocations you are a manager of and managing class types
                                     this.select(columns)
                                         .from('shifts')
                                         .where(function () {
-                                            this.where('shifts.start', '>=', before);
+                                            _getShiftsYouAreManagingFilterByDates(this, before, after);
+                                            //this.where('shifts.start', '>=', before);
                                                 //.orWhere('shifts.end', '>=', after);
                                         })
                                         .innerJoin('sublocations', function() {
@@ -944,14 +987,16 @@ function getShiftsYouAreManaging(req, res) {
                                         .innerJoin('usergroups', function() {
                                             this.on('usergroups.id', '=', 'managingclassesatlocations.usergroup_id')
                                             //.andOn('usergroups.user_id', '=', req.user.id);
-                                        })
+                                        });
+                                    filterShiftsByApplications(this, req.user.id, false, approvedOnly, pendingApprovalsOnly, noApplicationsOnly)
                                         //.where('usergroups.user_id', '=', req.user.id)
                                         .union(function() {
                                             // get shifts by groups => locations you are an owner of and managing class types
                                             this.select(columns)
                                                 .from('shifts')
                                                 .where(function () {
-                                                    this.where('shifts.start', '>=', before);
+                                                    _getShiftsYouAreManagingFilterByDates(this, before, after);
+                                                    //this.where('shifts.start', '>=', before);
                                                         /*
                                                         .orWhere(function() {
                                                             this.where('shifts.end', '>=', before)
@@ -967,13 +1012,15 @@ function getShiftsYouAreManaging(req, res) {
                                                     this.on('groups.id', '=', 'locations.group_id');
                                                 })
                                                 // group owner can see all shifts in their group
-                                                .where('groups.user_id', '=', req.user.id)
+                                                .where('groups.user_id', '=', req.user.id);
+                                            filterShiftsByApplications(this, req.user.id, false, approvedOnly, pendingApprovalsOnly, noApplicationsOnly)
                                                 .union(function() {
                                                     // get shifts by groups => sublocations you are an owner of and managing class types
                                                     this.select(columns)
                                                         .from('shifts')
                                                         .where(function () {
-                                                            this.where('shifts.start', '>=', before);
+                                                            _getShiftsYouAreManagingFilterByDates(this, before, after);
+                                                            //this.where('shifts.start', '>=', before);
                                                             /*
                                                                 .orWhere(function() {
                                                                     this.where('shifts.end', '>=', before)
@@ -991,7 +1038,8 @@ function getShiftsYouAreManaging(req, res) {
                                                         .innerJoin('groups', function() {
                                                             this.on('groups.id', '=', 'locations.group_id');
                                                         })
-                                                        .where('groups.user_id', '=', req.user.id);
+                                                        .where('groups.user_id', '=', req.user.id)
+                                                    filterShiftsByApplications(this, req.user.id, false, approvedOnly, pendingApprovalsOnly, noApplicationsOnly);
                                                 });
                                         });
                                 });
@@ -1560,6 +1608,19 @@ function getAllShifts(req, res, hideCanceled, appliedOnly, showDividers, hideIgn
         });
 }
 
+function filterShiftsByApplications(query, user_id, appliedOnly, approvedOnly, pendingApprovalsOnly, noApplicationsOnly) {
+    if (appliedOnly) {
+        return joinShiftApplications(query, user_id, appliedOnly);
+    } else if (approvedOnly) {
+        return joinApprovedOnly(query);
+    } else if (pendingApprovalsOnly) {
+        return joinPendingApprovalsOnly(query);
+    } else if (noApplicationsOnly) {
+        return joinNoApplicationsOnly(query);
+    }
+    return query;
+}
+
 /**
  * Helper that does an outer join on the shiftapplications table
  * @param query
@@ -1568,26 +1629,76 @@ function getAllShifts(req, res, hideCanceled, appliedOnly, showDividers, hideIgn
 function joinShiftApplications(query, user_id, appliedOnly) {
     // TODO: Figure out how to use this query without recinded != true see:
     // https://stackoverflow.com/questions/9592875/sql-server-left-outer-join-with-top-1-to-select-at-most-one-row
-    query = query.joinRaw('left join shiftapplications on shiftapplications.id = (' +
-    'select id from shiftapplications ' +
-    'where shiftapplications.recinded <> ' + models.sqlTrue + ' ' +
-    'and shiftapplications.shift_id = shifts.id ' +
-    'and shiftapplications.user_id = ? ' +
-    'order by shiftapplications.date desc ' +
-    'limit 1 ' +
-    ')', user_id)
-        .joinRaw('left join shiftapplicationacceptdeclinereasons on shiftapplicationacceptdeclinereasons.id = (' +
-            'select id from shiftapplicationacceptdeclinereasons ' +
-            'where shiftapplicationacceptdeclinereasons.shiftapplication_id = shiftapplications.id ' +
-            'order by shiftapplicationacceptdeclinereasons.date desc ' +
+    query = query.joinRaw(
+        'left join shiftapplications on shiftapplications.id = (' +
+            'select id from shiftapplications ' +
+            'where shiftapplications.recinded <> ' + models.sqlTrue + ' ' +
+            'and shiftapplications.shift_id = shifts.id ' +
+            'and shiftapplications.user_id = ? ' +
+            'order by shiftapplications.date desc ' +
             'limit 1 ' +
+        ')',
+        user_id
+    )
+        .joinRaw(
+            'left join shiftapplicationacceptdeclinereasons on shiftapplicationacceptdeclinereasons.id = (' +
+                'select id from shiftapplicationacceptdeclinereasons ' +
+                'where shiftapplicationacceptdeclinereasons.shiftapplication_id = shiftapplications.id ' +
+                'order by shiftapplicationacceptdeclinereasons.date desc ' +
+                'limit 1 ' +
             ')'
     );
     if (appliedOnly) {
         query = query.whereNotNull('shiftapplications.id');
     }
     return query;
+}
 
+/**
+ * Helper that does an inner join and only returns shifts that are pending approval
+ * @param query
+ * @returns {*}
+ */
+function joinPendingApprovalsOnly(query) {
+    return query.joinRaw(
+        'inner join shiftapplications on shiftapplications.shift_id = shifts.id ' +
+        'inner join shiftapplicationacceptdeclinereasons on shiftapplicationacceptdeclinereasons.id =(' +
+            'select shiftapplicationacceptdeclinereasons.id from shiftapplicationacceptdeclinereasons ' +
+            'order by shiftapplicationacceptdeclinereasons.date desc ' +
+            'limit 1 ' +
+        ')'
+    )
+        .where('shiftapplicationacceptdeclinereasons.accept', '<>', models.sqlTrue);
+}
+
+/**
+ * Helper that does an inner join and only returns shifts that are approved
+ * @param query
+ * @returns {*}
+ */
+function joinApprovedOnly(query) {
+    return query.joinRaw(
+        'inner join shiftapplications on shiftapplications.shift_id = shifts.id ' +
+        'inner join shiftapplicationacceptdeclinereasons on shiftapplicationacceptdeclinereasons.id =(' +
+            'select shiftapplicationacceptdeclinereasons.id from shiftapplicationacceptdeclinereasons ' +
+            'order by shiftapplicationacceptdeclinereasons.date desc ' +
+            'limit 1 ' +
+        ')'
+    )
+        .where('shiftapplicationacceptdeclinereasons.accept', '=', models.sqlTrue);
+}
+
+/**
+ * Helper that does a left join and only returns shifts that do not have any applications
+ * @param query
+ * @returns {*}
+ */
+function joinNoApplicationsOnly(query) {
+    return query.leftJoin('shiftapplications', function() {
+        this.on('shiftapplications.shift_id', '=', 'shifts.id')
+            .andOn('shiftapplications.recinded', '<>', models.sqlTrue);
+    })
+        .whereNull('shiftapplications.shift_id');
 }
 
 /**

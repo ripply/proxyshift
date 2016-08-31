@@ -370,6 +370,39 @@ angular.module('scheduling-app', [
                     }
                 })
 
+                .state('app.expiredpendingapproval', {
+                    url: "/expiredpendingapproval",
+                    //pageTrack: '/app/expired'
+                    views: {
+                        'tabContent': {
+                            templateUrl: "templates/expired/expiredPendingApproval.html",
+                            controller: "ExpiredController"
+                        }
+                    }
+                })
+
+                .state('app.expirednoapplications', {
+                    url: "/expirednoapplications",
+                    //pageTrack: '/app/expired'
+                    views: {
+                        'tabContent': {
+                            templateUrl: "templates/expired/expiredNoApplications.html",
+                            controller: "ExpiredController"
+                        }
+                    }
+                })
+
+                .state('app.expiredapproved', {
+                    url: "/expiredapproved",
+                    //pageTrack: '/app/expired'
+                    views: {
+                        'tabContent': {
+                            templateUrl: "templates/expired/expiredApproved.html",
+                            controller: "ExpiredController"
+                        }
+                    }
+                })
+
                 .state('app.shifts', {
                     url: "/shifts",
                     abstract: true,

@@ -138,6 +138,21 @@ angular.forEach({
                     url: url + '/shifts/managing',
                     isArray: true
                 },
+                expiredManagingPending: {
+                    method: GET,
+                    url: url + '/shifts/expired/pending/managing',
+                    isArray: true
+                },
+                expiredManagingNoApplications: {
+                    method: GET,
+                    url: url + '/shifts/expired/noapplications/managing',
+                    isArray: true
+                },
+                expiredManagingApproved: {
+                    method: GET,
+                    url: url + '/shifts/expired/approved/managing',
+                    isArray: true
+                },
                 mine: {
                     method: GET,
                     url: url + '/shifts/mine',
