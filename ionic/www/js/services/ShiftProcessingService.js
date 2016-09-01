@@ -145,7 +145,9 @@ angular.module('scheduling-app.services')
                 var id = shift.location_id;
                 var method = 'getLocation';
 
-                if (shift.sublocation_id !== undefined && shift.sublocation_id !== null) {
+                if (shift.sublocation_id !== undefined &&
+                    shift.sublocation_id !== null &&
+                    shift.sublocation_id !== '') {
                     method = 'getLocationForSublocation';
                     id = shift.sublocation_id;
                 }

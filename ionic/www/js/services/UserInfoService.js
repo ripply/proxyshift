@@ -252,7 +252,7 @@ angular.module('scheduling-app.services')
 
             this.getTimezoneAtLocation = function getTimezoneAtLocation(location_id) {
                 var location = this.getLocation(location_id);
-                if (location) {
+                if (location && location.timezone) {
                     return location.timezone.name;
                 }
             };

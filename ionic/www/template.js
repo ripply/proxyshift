@@ -4674,8 +4674,8 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                            </div>\n" +
     "                            <div class=\"shift-info\">\n" +
     "                                <p class=\"shift-location\">{{getShiftsLocation(shift).address || \"UNKNOWN LOCATION\"}}</p>\n" +
-    "                                <p class=\"shift-title shift-location-floor\" ng-show=\"{{shift.sublocation_id != undefined && shift.sublocation_id != null}}\">{{getShiftsSublocation(shift).title || \"UNKNOWN\"}} - {{getReadableClassType(shift)}}</p>\n" +
-    "                                <p class=\"shift-title\" ng-show=\"{{shift.sublocation_id == undefined || shift.sublocation_id == null}}\">{{getReadableClassType(shift)}}</p>\n" +
+    "                                <p class=\"shift-title shift-location-floor\" ng-show=\"{{shift.sublocation_id != undefined && shift.sublocation_id != null && shift.sublocation_id != ''}}\">{{getShiftsSublocation(shift).title || \"UNKNOWN\"}} - {{getReadableClassType(shift)}}</p>\n" +
+    "                                <p class=\"shift-title\" ng-show=\"{{shift.sublocation_id == undefined || shift.sublocation_id == null || shift.sublocation_id == ''}}\">{{getReadableClassType(shift)}}</p>\n" +
     "                                <p class=\"shift-desc\">{{shift.description}}</p>\n" +
     "                            </div>\n" +
     "                        </div>\n" +
