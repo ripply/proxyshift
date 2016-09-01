@@ -2,6 +2,7 @@ var models = require('../app/models'),
     updateModel = require('./controllerCommon').updateModel,
     simpleGetSingleModel = require('./controllerCommon').simpleGetSingleModel,
     simpleGetListModel = require('./controllerCommon').simpleGetListModel,
+    clientError = require('./controllerCommon').clientError,
     postModel = require('./controllerCommon').postModel,
     patchModel = require('./controllerCommon').patchModel,
     deleteModel = require('./controllerCommon').deleteModel,
@@ -66,6 +67,20 @@ module.exports = {
         'delete': {
             auth: ['group member'],
             route: function locationsSubscribeDelete(req, res) {
+                return locationSubscribeUpdate(req, res, false);
+            }
+        }
+    },
+    '/location/:location_id/sublocation/:sublocation_id/subscribe': {
+        'post': {
+            auth: ['group member'],
+            route: function sublocationsSubscribePost(req, res) {
+                return locationSubscribeUpdate(req, res, true);
+            }
+        },
+        'delete': {
+            auth: ['group member'],
+            route: function sublocationsSubscribeDelete(req, res) {
                 return locationSubscribeUpdate(req, res, false);
             }
         }
@@ -168,7 +183,13 @@ module.exports = {
                     var managingMemeberOfLocationSubQuery =
                         knex.select('userpermissions.location_id as locationid')
                             .from('userpermissions')
-                            .where('userpermissions.location_id', '=', req.params.location_id)
+                            .leftJoin('sublocations', function() {
+                                this.on('sublocations.id', '=', 'userpermissions.sublocation_id');
+                            })
+                            .where(function() {
+                                this.where('userpermissions.location_id', '=', req.params.location_id)
+                                    .orWhere('sublocations.location_id', '=', req.params.location_id);
+                            })
                             .andWhere('userpermissions.subscribed', '=', controllerCommon.true)
                             .innerJoin('grouppermissions', function() {
                                 this.on('grouppermissions.id', '=', 'userpermissionss.grouppermission_id');
@@ -593,20 +614,28 @@ function locationSubscribeUpdate(req, res, subscribed) {
             transacting: t
         };
         return models.UserPermission.query(function(q) {
-            q.select()
+            q = q.select()
                 .from('userpermissions')
-                .where('userpermissions.user_id', '=', req.user.id)
-                .andWhere('userpermissions.location_id', '=', req.params.location_id);
+                .where('userpermissions.user_id', '=', req.user.id);
+            if (req.params.location_id) {
+                q = q.andWhere('userpermissions.location_id', '=', req.params.location_id);
+            } else if (req.params.sublocation_id) {
+                q = q.andWhere('userpermissions.sublocation_id', '=', req.params.sublocation_id);
+            }
         })
             .fetch(sqlOptions)
             .tap(function locationSubscribeUpdateCheck(userpermission) {
                 if (userpermission) {
                     return models.UserPermission.query(function (q) {
-                        q.select()
+                        q = q.select()
                             .from('userpermissions')
-                            .where('userpermissions.user_id', '=', req.user.id)
-                            .andWhere('userpermissions.location_id', '=', req.params.location_id)
-                            .update({
+                            .where('userpermissions.user_id', '=', req.user.id);
+                        if (req.params.sublocation_id) {
+                            q = q.andWhere('userpermissions.sublocation_id', '=', req.params.sublocation_id);
+                        } else if (req.params.location_id) {
+                            q = q.andWhere('userpermissions.location_id', '=', req.params.location_id);
+                        }
+                            q.update({
                                 subscribed: subscribed
                             })
                     })
@@ -618,12 +647,19 @@ function locationSubscribeUpdate(req, res, subscribed) {
                             error(req, res, err);
                         });
                 } else {
+                    var data = {
+                        user_id: req.user.id,
+                        subscribed: subscribed
+                    };
+                    if (req.params.sublocation_id) {
+                        data.sublocation_id = req.params.sublocation_id;
+                    } else if (req.params.location_id) {
+                        data.location_id = req.params.location_id;
+                    } else {
+                        return clientError(req, res, 400, 'No sub/location specified.');
+                    }
                     return models.UserPermission.forge()
-                        .save({
-                            user_id: req.user.id,
-                            location_id: req.params.location_id,
-                            subscribed: subscribed
-                        }, sqlOptions)
+                        .save(data, sqlOptions)
                         .tap(function locationsSubscribeUserPermissionForged() {
                             res.sendStatus(200);
                         })

@@ -1672,7 +1672,9 @@ function _getUsersManagingAShift(shift_id, includeShiftInformation, sqlOptions) 
             })
             .innerJoin('userpermissions', function() {
                 this.on('userpermissions.location_id', '=', 'shifts.location_id')
-                    .orOn('userpermissions.location_id', '=', 'sublocations.location_id');
+                    .orOn('userpermissions.sublocation_id', '=', 'shifts.sublocation_id')
+                    .orOn('userpermissions.location_id', '=', 'sublocations.location_id')
+                    .orOn('userpermissions.sublocation_id', '=', 'sublocations.id');
             });
         if (includeShiftInformation) {
             q
@@ -1794,7 +1796,9 @@ function getUsersInterestedInAShift(shift_ids, sqlOptions, success, error) {
             .whereIn('shifts.id', shift_ids)
             .andWhere(function() {
                 this.whereRaw('sublocations.location_id = userpermissions.location_id')
-                    .orWhereRaw('shifts.location_id = userpermissions.location_id');
+                    .orWhereRaw('shifts.location_id = userpermissions.location_id')
+                    .orWhereRaw('sublocations.id = userpermissions.sublocation_id')
+                    .orWhereRaw('shifts.sublocation_id = userpermissions.sublocation_id');
             })
             .orderBy('pushtokens.platform');
     })

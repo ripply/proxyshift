@@ -1016,9 +1016,9 @@ var Schema = {
             nullable: false
         }
     },
-    // Links a user to a location (permissions are linked via group job type instead of via this)
+    // Links a user to a location or sublocation (permissions are linked via group job type instead of via this)
     UserPermission: {
-        comment: 'Links a user to a location (permissions are linked via group job type instead of via this)',
+        comment: 'Links a user to a location or sublocation (permissions are linked via group job type instead of via this)',
         id: {
             type: increments
         },
@@ -1029,7 +1029,16 @@ var Schema = {
             inTable: 'locations',
             onDelete: cascade,
             onUpdate: cascade,
-            nullable: false
+            nullable: true
+        },
+        sublocation_id: {
+            type: integer,
+            index: {},
+            references: 'id',
+            inTable: 'sublocations',
+            onDelete: cascade,
+            onUpdate: cascade,
+            nullable: true
         },
         user_id: {
             type: integer,

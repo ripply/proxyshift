@@ -347,8 +347,14 @@ module.exports = {
             return models.UserPermission.query(function(q) {
                 q.select()
                     .from('userpermissions')
+                    .leftJoin('sublocations', function() {
+                        this.on('sublocations.id', '=', 'userpermissions.sublocation_id');
+                    })
                     .where('userpermissions.user_id', '=', req.user.id)
-                    .andWhere('userpermissions.location_id', '=', req.params.location_id);
+                    .andWhere(function() {
+                        this.where('userpermissions.location_id', '=', req.params.location_id)
+                            .orWhere('sublocations.location_id', '=', req.params.location_id);
+                    })
             })
                 .fetch()
                 .then(function markIfUserIsMemberOfLocationSuccess(userpermission) {
@@ -440,10 +446,17 @@ function checkLocationPermissionLevel(permissionLevel, req, act) {
 
     return models.UserPermission.query(function(q) {
         q.select('userpermissions.*')
-            .innerJoin('locations', function() {
-                this.on('locations.id', '=', 'userpermissions.location_id');
+            .leftJoin('sublocations', function() {
+                this.on('sublocations', '=', 'userpermissions.sublocation_id');
             })
-            .where('userpermissions.location_id', '=', location_id)
+            .innerJoin('locations', function() {
+                this.on('locations.id', '=', 'userpermissions.location_id')
+                    .orOn('locations.id', '=', 'sublocations.location_id');
+            })
+            .where(function() {
+                this.where('userpermissions.location_id', '=', location_id)
+                    .orWhere('sublocations.location_id', '=', location_id);
+            })
             .innerJoin('groups', function() {
                 this.on('groups.id', '=', 'locations.group_id');
             })

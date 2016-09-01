@@ -578,8 +578,12 @@ function getUserInfo(user_id, next) {
                     return models.Location.query(function(q) {
                         q.select()
                             .from('locations')
+                            .leftJoin('sublocations', function() {
+                                this.on('sublocations.location_id', '=', 'locations.id');
+                            })
                             .innerJoin('userpermissions', function() {
-                                this.on('userpermissions.location_id', '=', 'locations.id');
+                                this.on('userpermissions.location_id', '=', 'locations.id')
+                                    .orOn('userpermissions.sublocation_id', '=', 'sublocations.id');
                             })
                             .where('userpermissions.user_id', '=', user_id)
                             .innerJoin('groupuserclasses', function() {
@@ -689,8 +693,12 @@ function getUserInfo(user_id, next) {
                                             return models.Location.query(function(q) {
                                                 q.select()
                                                     .from('locations')
+                                                    .leftJoin('sublocations', function() {
+                                                        this.on('sublocations.location_id', '=', 'locations.id');
+                                                    })
                                                     .innerJoin('userpermissions', function() {
-                                                        this.on('userpermissions.location_id', '=', 'locations.id');
+                                                        this.on('userpermissions.location_id', '=', 'locations.id')
+                                                            .orOn('userpermissions.sublocation_id', '=', 'sublocations.id');
                                                     })
                                                     .where('userpermissions.user_id', '=', user_id);
                                             })
