@@ -17,6 +17,9 @@ angular.module('scheduling-app.controllers')
                  GENERAL_EVENTS,
                  ResourceService
         ) {
+            $scope.resetData = function() {
+                $scope.other = {};
+            };
             $controller('BaseNewShiftController', {$scope: $scope, $stateParams: $stateParams});
 
             $scope.beforeEnter = function() {
@@ -33,7 +36,6 @@ angular.module('scheduling-app.controllers')
                 $rootScope.$emit(GENERAL_EVENTS.NEWSHIFTS.WHO);
             };
 
-            $scope.other = {};
             $scope.descriptionMaxLength = 256;
 
             $scope.jobTypeClicked = function(jobType) {
@@ -45,13 +47,12 @@ angular.module('scheduling-app.controllers')
 
             $scope.next = function next() {
                 console.log($scope.description);
-                var d = angular.extend({
+                var params = angular.extend({
                     who: $scope.encodeWho(getSelectedJobType()),
                     description: $scope.other.description,
                     title: $scope.other.title
                 }, $stateParams);
-                console.log(d);
-                $state.go('app.newshift.review', d);
+                $state.go('app.newshift.review', params);
             };
 
             function getSelectedJobType() {

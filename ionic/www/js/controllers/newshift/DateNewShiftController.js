@@ -9,10 +9,11 @@ angular.module('scheduling-app.controllers')
                  $stateParams,
                  $controller
         ) {
+            $scope.resetData = function() {
+                $scope.dateState = {};
+                $scope.date = [];
+            };
             $controller('BaseNewShiftController', {$scope: $scope, $stateParams: $stateParams});
-
-            $scope.dateState = {};
-            $scope.date = [];
 
             $rootScope.$on('events:calendar:clicked', function(state, name, selected) {
                 if (name == 'create-shift-calendar') {

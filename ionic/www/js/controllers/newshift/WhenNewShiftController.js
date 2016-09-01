@@ -11,9 +11,11 @@ angular.module('scheduling-app.controllers')
                  $controller,
                  GENERAL_EVENTS
         ) {
+            $scope.resetData = function() {
+                $scope.when = {};
+            };
             $controller('BaseNewShiftController', {$scope: $scope, $stateParams: $stateParams});
             $scope.state = $stateParams;
-            $scope.when = {};
 
             var requiredWhenData = ['starttime', 'endtime', 'length', 'employees'];
 

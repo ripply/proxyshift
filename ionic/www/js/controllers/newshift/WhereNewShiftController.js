@@ -17,11 +17,13 @@ angular.module('scheduling-app.controllers')
                  GENERAL_EVENTS,
                  ResourceService
         ) {
+            $scope.resetData = function() {
+                $scope.when = {};
+            };
             $controller('BaseNewShiftController', {$scope: $scope, $stateParams: $stateParams});
             $controller('FilterableIncrementalSearchController', {$scope: $scope});
 
             $scope.state = $stateParams;
-            $scope.when = {};
 
             $scope.beforeEnter = function() {
                 $rootScope.$emit(GENERAL_EVENTS.NEWSHIFTS.WHERE);

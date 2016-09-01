@@ -16,6 +16,11 @@ angular.module('scheduling-app.controllers')
             $controller('BaseModelController', {$scope: $scope});
             $scope.$rootScope = $rootScope;
 
+            if ($scope.resetData) {
+                $scope.resetData();
+                $rootScope.$on('SHIFT_REQUEST_RESET', $scope.resetData);
+            }
+
             $scope.tabState = {
                 WHEN: true
             };

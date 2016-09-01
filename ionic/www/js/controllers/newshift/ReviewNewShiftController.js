@@ -19,6 +19,11 @@ angular.module('scheduling-app.controllers')
                  UserInfoService,
                  GENERAL_EVENTS
         ) {
+            $scope.resetData = function() {
+                $scope.shifts = [];
+                $scope.fakeShifts = [];
+                $rootScope.$emit(GENERAL_EVENTS.CALENDAR.RESET, 'create-shift-calendar');
+            };
             $controller('BaseNewShiftController', {$scope: $scope, $stateParams: $stateParams});
 
             $scope.beforeEnter = function() {
@@ -87,6 +92,7 @@ angular.module('scheduling-app.controllers')
                     $rootScope.$emit(GENERAL_EVENTS.TOAST, 'info', "You're all set", 'All eligible employees have been notified of your shift request.');
                     $rootScope.$emit(GENERAL_EVENTS.NEWSHIFTS.RESET);
                     $state.go('app.shifts.open');
+                    $rootScope.$emit('SHIFT_REQUEST_RESET');
                 }, function(err) {
                     console.log("ERR");
                     console.log(err);
