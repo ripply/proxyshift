@@ -414,6 +414,14 @@ angular.forEach({
                     method: DELETE,
                     url: base + '/subscribe'
                 },
+                sublocationSubscribe: {
+                    method: POST,
+                    url: base + '/sublocation/:sublocation_id/subscribe'
+                },
+                sublocationUnsubscribe: {
+                    method: DELETE,
+                    url: base + '/sublocation/:sublocation_id/subscribe'
+                },
                 users: {
                     method: GET,
                     url: base + '/users',

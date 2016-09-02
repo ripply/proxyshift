@@ -5928,12 +5928,21 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                        <input type=\"text\" ng-model=\"query\" ng-style=\"{'width' : '100%'}\"\n" +
     "                               placeholder=\"Search by address, city, state, zipcode or phone\">\n" +
     "                    </label>\n" +
-    "                    <ion-toggle ng-repeat=\"location in locations | filter:query\"\n" +
-    "                                ng-model=\"location.subscribedModified\"\n" +
-    "                                ng-click=\"saveLocations()\"\n" +
-    "                                ng-checked=\"location.subscribed\">\n" +
-    "                        {{ location.title }} - {{ location.address }}\n" +
-    "                    </ion-toggle>\n" +
+    "                    <div ng-repeat=\"location in locations | filter:query\">\n" +
+    "                        <ion-toggle\n" +
+    "                                    ng-model=\"location.subscribedModified\"\n" +
+    "                                    ng-click=\"saveLocations()\"\n" +
+    "                                    ng-checked=\"location.subscribed\">\n" +
+    "                            {{ location.title }} - {{ location.address }}\n" +
+    "                        </ion-toggle>\n" +
+    "                        <ion-toggle ng-repeat=\"sublocation in location.sublocations | filter:query\"\n" +
+    "                                    ng-model=\"sublocation.subscribedModified\"\n" +
+    "                                    ng-click=\"saveLocations()\"\n" +
+    "                                    ng-checked=\"sublocation.subscribed\"\n" +
+    "                                    class=\"item-indent\">\n" +
+    "                            {{ sublocation.title }} - {{ sublocation.description }}\n" +
+    "                        </ion-toggle>\n" +
+    "                    </div>\n" +
     "                </div>\n" +
     "            </div>\n" +
     "        </div>\n" +

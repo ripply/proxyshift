@@ -1542,7 +1542,20 @@ function getAllShifts(req, res, hideCanceled, appliedOnly, showDividers, hideIgn
                 this.whereIn('locations.id', relatedLocationsSubQuery)
                     .orWhereIn('sublocations.location_id', relatedLocationsSubQuery);
             })
-            .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery);
+            .whereIn('shifts.groupuserclass_id', relatedUserClassesSubQuery)
+            .joinRaw(
+                'inner join userpermissions on userpermissions.id = (' +
+                    'select id from userpermissions ' +
+                    'where ( ' +
+                        'userpermissions.location_id = locations.id ' +
+                        'or userpermissions.sublocation_id = sublocations.id ' +
+                        'or userpermissions.location_id = shifts.location_id ' +
+                    ') ' +
+                    'and userpermissions.user_id = ? ' +
+                    'and userpermissions.subscribed = ? ' +
+                    'limit 1 ' +
+                ')'
+            , [req.user.id, models.sqlTrue]);
         joinShiftApplications(query, req.user.id, appliedOnly);
         joinIgnoreShifts(query, req.user.id, hideIgnored);
         if (hideDisconnectedShifts) {

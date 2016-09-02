@@ -11,12 +11,21 @@
                         <input type="text" ng-model="query" ng-style="{'width' : '100%'}"
                                placeholder="Search by address, city, state, zipcode or phone">
                     </label>
-                    <ion-toggle ng-repeat="location in locations | filter:query"
-                                ng-model="location.subscribedModified"
-                                ng-click="saveLocations()"
-                                ng-checked="location.subscribed">
-                        {{ location.title }} - {{ location.address }}
-                    </ion-toggle>
+                    <div ng-repeat="location in locations | filter:query">
+                        <ion-toggle
+                                    ng-model="location.subscribedModified"
+                                    ng-click="saveLocations()"
+                                    ng-checked="location.subscribed">
+                            {{ location.title }} - {{ location.address }}
+                        </ion-toggle>
+                        <ion-toggle ng-repeat="sublocation in location.sublocations | filter:query"
+                                    ng-model="sublocation.subscribedModified"
+                                    ng-click="saveLocations()"
+                                    ng-checked="sublocation.subscribed"
+                                    class="item-indent">
+                            {{ sublocation.title }} - {{ sublocation.description }}
+                        </ion-toggle>
+                    </div>
                 </div>
             </div>
         </div>

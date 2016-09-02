@@ -1392,6 +1392,9 @@ input[type="password"] :focus {
 .list .item-indent .item a {
   padding-left: 0;
 }
+.list .item-indent.item {
+  padding-left: 20px;
+}
 .list .item-complex .item-content {
   background-color: #159deb;
   color: #ffffff;

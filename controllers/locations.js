@@ -71,7 +71,7 @@ module.exports = {
             }
         }
     },
-    '/location/:location_id/sublocation/:sublocation_id/subscribe': {
+    '/:location_id/sublocation/:sublocation_id/subscribe': {
         'post': {
             auth: ['group member'],
             route: function sublocationsSubscribePost(req, res) {
@@ -617,10 +617,10 @@ function locationSubscribeUpdate(req, res, subscribed) {
             q = q.select()
                 .from('userpermissions')
                 .where('userpermissions.user_id', '=', req.user.id);
-            if (req.params.location_id) {
-                q = q.andWhere('userpermissions.location_id', '=', req.params.location_id);
-            } else if (req.params.sublocation_id) {
+            if (req.params.sublocation_id) {
                 q = q.andWhere('userpermissions.sublocation_id', '=', req.params.sublocation_id);
+            } else if (req.params.location_id) {
+                q = q.andWhere('userpermissions.location_id', '=', req.params.location_id);
             }
         })
             .fetch(sqlOptions)

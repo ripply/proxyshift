@@ -1021,6 +1021,11 @@ module.exports = {
                                     qb.columns('userpermissions.location_id', 'userpermissions.subscribed')
                                         .where('userpermissions.user_id', '=', req.user.id);
                                         //.andWhere('userpermissions.location_id', '=', ); // can't get this to work... client will just have to prune the result set
+                                },
+                                'sublocations.userpermissions': function(qb) {
+                                    qb.columns('userpermissions.sublocation_id', 'userpermissions.subscribed')
+                                        .where('userpermissions.user_id', '=', req.user.id);
+                                    //.andWhere('userpermissions.location_id', '=', ); // can't get this to work... client will just have to prune the result set
                                 }
                             }
                         ]
