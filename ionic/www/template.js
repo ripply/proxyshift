@@ -6096,13 +6096,22 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                        <input type=\"text\" ng-model=\"query\" ng-style=\"{'width' : '100%'}\"\n" +
     "                               placeholder=\"Search by address, city, state, zipcode or phone\">\n" +
     "                    </label>\n" +
-    "                    <ion-toggle ng-repeat=\"userClass in userClasses | filter:query\"\n" +
-    "                                ng-model=\"userClass.subscribed\"\n" +
-    "                                ng-disabled=\"userClass.persisting\"\n" +
-    "                                ng-click=\"saveJob()\"\n" +
-    "                                ng-checked=\"isJob(userClass)\">\n" +
-    "                        {{ userClass.title }} - {{ userClass.description }}\n" +
-    "                    </ion-toggle>\n" +
+    "                    <div ng-repeat=\"userClass in userClasses | filter:query\">\n" +
+    "                        <ion-toggle ng-model=\"userClass.subscribed\"\n" +
+    "                                    ng-disabled=\"userClass.persisting\"\n" +
+    "                                    ng-click=\"saveJob()\"\n" +
+    "                                    ng-checked=\"isJob(userClass)\">\n" +
+    "                            {{ userClass.title }} - {{ userClass.description }}\n" +
+    "                        </ion-toggle>\n" +
+    "                        <ion-toggle ng-repeat=\"sublocation in sublocations | filter:query\"\n" +
+    "                                    ng-model=\"userClass.subscribed\"\n" +
+    "                                    ng-disabled=\"userClass.persisting\"\n" +
+    "                                    ng-click=\"saveJob()\"\n" +
+    "                                    ng-checked=\"isJob(userClass)\"\n" +
+    "                                    class=\"item-indent\">\n" +
+    "                            {{ userClass.title }} - {{ userClass.description }}\n" +
+    "                        </ion-toggle>\n" +
+    "                    </div>\n" +
     "                </div>\n" +
     "            </div>\n" +
     "        </div>\n" +

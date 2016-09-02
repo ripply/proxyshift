@@ -1128,7 +1128,16 @@ var Schema = {
             inTable: 'locations',
             onDelete: cascade,
             onUpdate: cascade,
-            nullable: false
+            nullable: true
+        },
+        sublocation_id: {
+            type: integer,
+            index: {},
+            references: 'id',
+            inTable: 'sublocations',
+            onDelete: cascade,
+            onUpdate: cascade,
+            nullable: true
         },
         // class that manager manages
         groupuserclass_id: {
