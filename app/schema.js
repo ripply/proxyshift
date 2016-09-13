@@ -1113,6 +1113,7 @@ var Schema = {
         // userid of a privileged member
         usergroup_id: {
             type: integer,
+            comment: 'userid of a privileged member',
             index: {},
             references: 'id',
             inTable: 'usergroups',
@@ -1123,6 +1124,7 @@ var Schema = {
         // location that manager is managing at
         location_id: {
             type: integer,
+            commment: 'location that manager is managing at',
             index: {},
             references: 'id',
             inTable: 'locations',
@@ -1132,6 +1134,7 @@ var Schema = {
         },
         sublocation_id: {
             type: integer,
+            comment: 'sublocation that manager is managing at',
             index: {},
             references: 'id',
             inTable: 'sublocations',
@@ -1142,6 +1145,7 @@ var Schema = {
         // class that manager manages
         groupuserclass_id: {
             type: integer,
+            comment: 'class that manager manages',
             index: {},
             references: 'id',
             inTable: 'groupuserclasses',

@@ -21,11 +21,11 @@ angular.module('scheduling-app.controllers')
             $controller('BaseModelController', {$scope: $scope});
 
             function getGroupId() {
-                return $stateParams.group_id;
+                return parseInt($stateParams.group_id);
             }
 
             function getLocationId() {
-                return $stateParams.location_id;
+                return parseInt($stateParams.location_id);
             }
 
             var latestLocations;
@@ -50,74 +50,170 @@ angular.module('scheduling-app.controllers')
             };
 
             function init() {
-                $scope.userClasses = angular.copy(UserInfoService.getSubscribableUserclassesFromGroup(getGroupId()));
+                $scope.uiStateUserClasses = {};
+                $scope.persistingUserClasses = {};
+                $scope.sublocations = UserInfoService.getSublocationsForLocation(getLocationId());
+                $scope.sublocationsMap = {};
+                angular.forEach($scope.sublocations, function(sublocation) {
+                    $scope.sublocationsMap[sublocation.id] = sublocation;
+                });
+                window.wat = UserInfoService.getManagingUserclassesForLocation;
                 $scope.myUserClasses = UserInfoService.getManagingUserclassesForLocation(getLocationId());
-                updateJobs();
+                var userClassesMap = angular.copy(UserInfoService.getSubscribableUserclassesFromGroup(getGroupId()));
+                var userClassesArray = [];
+                angular.forEach(userClassesMap, function(userClass) {
+                    userClassesArray.push(userClass);
+                });
+
+                var sublocationsPlusLocation = $scope.sublocations.slice(0);
+                sublocationsPlusLocation.unshift(undefined);
+
+                angular.forEach(userClassesMap, function(userClass) {
+                    angular.forEach(sublocationsPlusLocation, function(sublocation) {
+                        var userClassKey = UserInfoService.getUserclassKeyForIds(
+                            userClass.id,
+                            getLocationId(),
+                            sublocation === undefined ? undefined:sublocation.id
+                        );
+                        $scope.uiStateUserClasses[userClassKey] = isManagingUserClassByKey(userClassKey);
+                        $scope.persistingUserClasses[userClassKey] = false;
+                        if ($scope.myUserClasses.hasOwnProperty(userClass.key)) {
+                            $scope.myUserClasses[userClass.key].key = key;
+                        }
+                    });
+                });
+                $scope.userClasses = userClassesArray;
             }
+
+            $scope.getUserClassKey = function getUserClassKey(userClassOrId, sublocation_id) {
+                if (userClassOrId.hasOwnProperty('id')) {
+                    userClassOrId = userClassOrId.id;
+                }
+                return UserInfoService.getUserclassKeyForIds(userClassOrId, getLocationId(), sublocation_id);
+            };
 
             $scope.isPrivilegedGroupMember = function() {
                 return UserInfoService.isPrivilegedGroupMember(getGroupId())
             };
 
-            $scope.isJob = isJob;
+            $scope.isManagingUserClass = isManagingUserClass;
 
-            function isJob(job_id) {
-                if (job_id.hasOwnProperty('id')) {
-                    job_id = job_id.id;
+            function isManagingUserClass(userClassOrUserClassId, sublocation_id) {
+                if (!sublocation_id && userClassOrUserClassId.hasOwnProperty('sublocation_id')) {
+                    sublocation_id = userClassOrUserClassId.sublocation_id;
                 }
-                return $scope.myUserClasses.hasOwnProperty(job_id);
+                if (userClassOrUserClassId.hasOwnProperty('id')) {
+                    userClassOrUserClassId = userClassOrUserClassId.id;
+                }
+                var userClassKey = UserInfoService.getUserclassKeyForIds(userClassOrUserClassId, getLocationId(), sublocation_id);
+                return isManagingUserClassByKey(userClassKey);
             }
 
-            function updateJobs() {
-                angular.forEach($scope.userClasses, function(userClass) {
-                    userClass.subscribed = isJob(userClass.id);
-                });
+            function isManagingUserClassByKey(userClassKey) {
+                return $scope.myUserClasses.hasOwnProperty(userClassKey);
             }
 
             $scope.saveJob = function() {
-                var toUpdate = [];
-                console.log('SAVE JOB');
                 angular.forEach($scope.userClasses, function(userClass) {
-                    if (!userClass.persisting && userClass.subscribed != isJob(userClass.id)) {
-                        var method;
-                        var clonedUserClass = angular.copy(userClass);
-                        var successCallback;
-                        if (clonedUserClass.subscribed) {
-                            method = 'manageJob';
-                            successCallback = function() {
-                                UserInfoService.addManagingUserclassToGroup(clonedUserClass.id);
-                            };
-                        } else {
-                            method = 'unmanageJob';
-                            successCallback = function() {
-                                UserInfoService.removeManagingUserclassToGroup(clonedUserClass.id);
+                    angular.forEach($scope.sublocations, function(sublocation) {
+                        var userClassKey = UserInfoService.getUserclassKeyForIds(userClass.id, getLocationId(), sublocation.id);
+                        var sublocationPersistingUserClass = $scope.persistingUserClasses[locationUserClassKey];
+
+                        if (!sublocationPersistingUserClass) {
+                            var sublocationUiState = $scope.uiStateUserClasses[userClassKey];
+                            var sublocationServerState = isManagingUserClassByKey(userClassKey);
+                            if (sublocationUiState !== undefined &&
+                                sublocationServerState !== undefined &&
+                                sublocationUiState !== sublocationServerState) {
+                                saveIndividualJob(sublocationUiState, userClass, getLocationId(), sublocation.id);
                             }
                         }
-                        userClass.persisting = true;
-                        LocationsModel[method]({
-                            location_id: getLocationId(),
-                            groupuserclass_id: clonedUserClass.id
-                        }, function persistUserClassSuccess(result) {
-                            if (clonedUserClass.subscribed) {
-                                // create in myUserClasses
-                                $scope.myUserClasses[clonedUserClass.id] = clonedUserClass;
-                            } else {
-                                // remove from myUserClasses
-                                delete $scope.myUserClasses[clonedUserClass.id];
-                            }
-                            successCallback();
-                            userClass.persisting = false;
-                        }, function persistUserClassError(err) {
-                            // undo, failure
-                            $scope.errorToast('Failed to persist job type');
-                            userClass.subscribed = !clonedUserClass.subscribed;
-                            userClass.persisting = false;
-                        });
-                    } else {
-                        console.log("NOPEEE");
+                    });
+                    var locationUserClassKey = UserInfoService.getUserclassKeyForIds(userClass.id, getLocationId());
+                    var locationPersistingUserClass = $scope.persistingUserClasses[locationUserClassKey];
+
+                    if (!locationPersistingUserClass) {
+                        var locationUiState = $scope.uiStateUserClasses[locationUserClassKey];
+                        var locationServerState = isManagingUserClassByKey(locationUserClassKey);
+                        if (locationUiState != locationServerState) {
+                            saveIndividualJob(locationUiState, userClass, getLocationId());
+                        }
                     }
                 });
             };
+
+            function saveIndividualJob(subscribe, userClass, location_id, sublocation_id) {
+                var userClassKey = UserInfoService.getUserclassKeyForIds(userClass.id, location_id, sublocation_id);
+                if (persistingUserClass()) {
+                    return;
+                }
+                var method;
+                var clonedUserClass = angular.copy(userClass);
+                var successCallback;
+                if (subscribe) {
+                    method = 'manageJob' + (sublocation_id === undefined ? '':'AtSublocation');
+                    successCallback = function() {
+                        UserInfoService.addManagingUserclassToGroup(clonedUserClass.id, location_id, sublocation_id);
+                        $scope.myUserClasses = UserInfoService.getManagingUserclassesForLocation(getLocationId());
+                        if (!isManagingUserClass(clonedUserClass, sublocation_id)) {
+                            $scope.errorToast('An error occurred, reloading...');
+                            location.reload();
+                        }
+                    };
+                } else {
+                    method = 'unmanageJob' + (sublocation_id === undefined ? '':'AtSublocation');
+                    successCallback = function() {
+                        UserInfoService.removeManagingUserclassToGroup(clonedUserClass.id, location_id, sublocation_id);
+                        $scope.myUserClasses = UserInfoService.getManagingUserclassesForLocation(getLocationId());
+                        if (isManagingUserClass(clonedUserClass, sublocation_id)) {
+                            $scope.errorToast('An error occurred, reloading...');
+                            location.reload();
+                        }
+                    };
+                }
+                persistingUserClass(true);
+                var post = {
+                    location_id: location_id,
+                    groupuserclass_id: clonedUserClass.id
+                };
+                if (sublocation_id) {
+                    post.sublocation_id = sublocation_id;
+                }
+                LocationsModel[method](post, function persistUserClassSuccess(result) {
+                    clonedUserClass.sublocation_id = sublocation_id;
+                    if (location_id) {
+                        clonedUserClass.location_id = location_id;
+                    } else {
+                        clonedUserClass.location_id = undefined;
+                    }
+                    var key = UserInfoService.getUserclassKey(clonedUserClass);
+
+                    if (subscribe) {
+                        // create in myUserClasses
+                        $scope.myUserClasses[key] = clonedUserClass;
+                    } else {
+                        // remove from myUserClasses
+                        if ($scope.myUserClasses.hasOwnProperty(key)) {
+                            delete $scope.myUserClasses[key];
+                        }
+                    }
+                    successCallback();
+                    persistingUserClass(false);
+                }, function persistUserClassError(err) {
+                    // undo, failure
+                    $scope.errorToast('Failed to persist job type');
+                    userClass.subscribed = !clonedUserClass.subscribed;
+                    persistingUserClass(false);
+                });
+
+                function persistingUserClass(persisting) {
+                    if (persisting === undefined) {
+                        return $scope.persistingUserClasses[userClassKey];
+                    } else {
+                        $scope.persistingUserClasses[userClassKey] = persisting;
+                    }
+                }
+            }
 
         }]
 );

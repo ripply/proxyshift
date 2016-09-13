@@ -1,0 +1,28 @@
+{
+  "name": "array polyfill",
+  "main": "array-polyfill.js",
+  "version": "0.2.1",
+  "homepage": "https://github.com/zhongdeliu/array-polyfill",
+  "authors": [
+    "zhongdeliu <zhongdeliu@googlemail.com>"
+  ],
+  "description": "Array polyfill of common methods (like map, reduce, forEach, ...) for (older) browsers (especially for IE7 and 8)",
+  "keywords": [
+    "array",
+    "polyfill",
+    "ecmascript5",
+    "internetexplorer7",
+    "internetexplorer8"
+  ],
+  "license": "MIT",
+  "_release": "0.2.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.2.1",
+    "commit": "90e13d841d5523998121ae077443f7acea387547"
+  },
+  "_source": "https://github.com/zhongdeliu/array-polyfill.git",
+  "_target": "^0.2.1",
+  "_originalSource": "array-polyfill",
+  "_direct": true
+}

@@ -177,6 +177,22 @@ module.exports = function(grunt) {
 
     var jsonmanifestBasePath = 'ionic/www';
 
+    var ngTemplates = 'ionic/www/**/*.html';
+
+    var concurrentDevTasks = [
+        'nodemon:dev',
+        'watch:less',
+        //'watch:uglify',
+        'watch:uglifyAppLibs',
+        'watch:uglifyNgTemplate',
+        'watch:uglifyIonicLibs',
+        'watch:uglifyLtie',
+        'watch:uglifyBootstrap',
+        'watch:ngtemplates',
+        'watch:concat',
+        'watch:jsonmanifest'
+    ];
+
     var cordovaFonts = [
         'ionic/www/lib/ionic/release/fonts/ionicons.ttf',
         'ionic/www/lib/ionic/release/fonts/ionicons.woff'
@@ -437,7 +453,7 @@ module.exports = function(grunt) {
 
         ngtemplates:  {
             'scheduling-app': {
-                src: 'ionic/www/**/*.html',
+                src: ngTemplates,
                 dest: 'ionic/www/template.js',
                 options: {
                     //usemin: 'dist/vendors.js' // <~~ This came from the <!-- build:js --> block
@@ -481,7 +497,7 @@ module.exports = function(grunt) {
                 tasks: ['uglify']
             },
             ngtemplates: {
-                files: ['ionic/www/**/*.html'],
+                files: ngTemplates,
                 tasks: ['ngtemplates']
             },
             less: {
@@ -565,21 +581,10 @@ module.exports = function(grunt) {
 
         concurrent: {
             dev: {
-                tasks: [
-                    'nodemon:dev',
-                    'watch:less',
-                    //'watch:uglify',
-                    'watch:uglifyAppLibs',
-                    'watch:uglifyNgTemplate',
-                    'watch:uglifyIonicLibs',
-                    'watch:uglifyLtie',
-                    'watch:uglifyBootstrap',
-                    'watch:ngtemplates',
-                    'watch:concat',
-                    'watch:jsonmanifest'
-                ],
+                tasks: concurrentDevTasks,
                 options: {
-                    logConcurrentOutput: true
+                    logConcurrentOutput: true,
+                    limit: concurrentDevTasks.length + 3
                 }
             },
             test: {

@@ -602,6 +602,7 @@ function getUserInfo(user_id, next) {
                             withRelated: [
                                 'sublocations',
                                 'managingclassesatlocations',
+                                'managingclassesatsublocations',
                                 'timezone'
                             ]
                         })
@@ -706,6 +707,7 @@ function getUserInfo(user_id, next) {
                                                     withRelated: [
                                                         'sublocations',
                                                         'managingclassesatlocations',
+                                                        'managingclassesatsublocations',
                                                         'timezone'
                                                     ]
                                                 })

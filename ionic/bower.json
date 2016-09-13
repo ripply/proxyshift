@@ -8,6 +8,7 @@
     "angular-http-auth": "^1.2.3",
     "angular-messages": "1.4.3",
     "angular-cookies": "1.4.3",
+    "array-polyfill": "^0.2.1",
     "ng-material-floating-button": "ng-mfb#^0.6.2",
     "moment": "momentjs#2.11.2",
     "jquery": "^2.2.0",

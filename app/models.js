@@ -1009,6 +1009,11 @@ var customModelRelations = {
             return this.hasMany(models['UserPermission']);
         }
     },
+    Location: {
+        managingclassesatsublocations: function() {
+            return this.hasMany(models['ManagingClassesAtLocation']).through(models['SubLocation']);
+        }
+    },
     Group: {
         groupPermissions: function() {
             return this.belongsToMany(models['GroupPermission']).through(models['GroupSetting']);
