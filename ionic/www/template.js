@@ -4465,7 +4465,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "    <script src=\"lib/angular-toastr/dist/angular-toastr.tpls.js\"></script>\n" +
     "    <script src=\"lib/ng-material-floating-button/src/mfb-directive.js\"></script>\n" +
     "    <script src=\"libs.min.js\"></script>\n" +
-    "    <script src=\"template.js\"></script>\n" +
+    "    <script src=\"template.min.js\"></script>\n" +
     "</head>\n" +
     "<body ng-app=\"scheduling-app\">\n" +
     "<ion-nav-view></ion-nav-view>\n" +
@@ -6096,13 +6096,22 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                        <input type=\"text\" ng-model=\"query\" ng-style=\"{'width' : '100%'}\"\n" +
     "                               placeholder=\"Search by address, city, state, zipcode or phone\">\n" +
     "                    </label>\n" +
-    "                    <ion-toggle ng-repeat=\"userClass in userClasses | filter:query\"\n" +
-    "                                ng-model=\"userClass.subscribed\"\n" +
-    "                                ng-disabled=\"userClass.persisting\"\n" +
-    "                                ng-click=\"saveJob()\"\n" +
-    "                                ng-checked=\"isJob(userClass)\">\n" +
-    "                        {{ userClass.title }} - {{ userClass.description }}\n" +
-    "                    </ion-toggle>\n" +
+    "                    <div ng-repeat=\"userClass in userClasses | filter:query\">\n" +
+    "                        <ion-toggle ng-model=\"uiStateUserClasses[getUserClassKey(userClass)]\"\n" +
+    "                                    ng-disabled=\"persistingUserClasses[getUserClassKey(userClass)]\"\n" +
+    "                                    ng-click=\"saveJob()\"\n" +
+    "                                    ng-checked=\"isManagingUserClass(userClass)\">\n" +
+    "                            {{ userClass.title }} - {{ userClass.description }}\n" +
+    "                        </ion-toggle>\n" +
+    "                        <ion-toggle ng-repeat=\"sublocation in sublocations | filter:query\"\n" +
+    "                                    ng-model=\"uiStateUserClasses[getUserClassKey(userClass, sublocation.id)]\"\n" +
+    "                                    ng-disabled=\"persistingUserClasses[getUserClassKey(userClass, sublocation.id)]\"\n" +
+    "                                    ng-click=\"saveJob()\"\n" +
+    "                                    ng-checked=\"isManagingUserClass(userClass, sublocation.id)\"\n" +
+    "                                    class=\"item-indent\">\n" +
+    "                            {{ sublocation.title }} - {{ sublocation.description }}\n" +
+    "                        </ion-toggle>\n" +
+    "                    </div>\n" +
     "                </div>\n" +
     "            </div>\n" +
     "        </div>\n" +

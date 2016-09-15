@@ -1661,32 +1661,40 @@ function _getUsersManagingAShift(shift_id, includeShiftInformation, sqlOptions) 
             .leftJoin('sublocations', function() {
                 this.on('sublocations.id', '=', 'shifts.sublocation_id');
             })
-            .innerJoin('managingclassesatlocations', function() {
-                this.on('managingclassesatlocations.groupuserclass_id', '=', 'shifts.groupuserclass_id');
+            .innerJoin('locations', function() {
+                this.on('locations.id', '=', 'sublocations.location_id')
+                    .orOn('locations.id', '=', 'shifts.location_id');
             })
-            .innerJoin('usergroups', function() {
-                this.on('usergroups.id', '=', 'managingclassesatlocations.usergroup_id');
+            .innerJoin('groups', function() {
+                this.on('groups.id', '=', 'locations.group_id');
+            })
+            .innerJoin('groupuserclasses', function() {
+                this.on('groupuserclasses.group_id', '=', 'groups.id');
+            })
+            .leftJoin('usergroups', function() {
+                this.on('usergroups.group_id', '=', 'groups.id');
+            })
+            .innerJoin('groupuserclasstousers', function() {
+                this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id');
             })
             .innerJoin('grouppermissions', function() {
                 this.on('grouppermissions.id', '=', 'usergroups.grouppermission_id');
             })
-            .innerJoin('userpermissions', function() {
-                this.on('userpermissions.location_id', '=', 'shifts.location_id')
-                    .orOn('userpermissions.sublocation_id', '=', 'shifts.sublocation_id')
-                    .orOn('userpermissions.location_id', '=', 'sublocations.location_id')
-                    .orOn('userpermissions.sublocation_id', '=', 'sublocations.id');
-            });
+            .leftJoin('managingclassesatlocations', function() {
+                this.on('managingclassesatlocations.sublocation_id', '=', 'sublocations.id')
+                    .orOn('managingclassesatlocations.location_id', '=', 'locations.id');
+            })
+            .whereRaw('(\
+        managingclassesatlocations.managing = ' + models.sqlTrue + ' and\
+        grouppermissions.permissionlevel >= ' + managingPermissionLevel + ' and\
+        (\
+            managingclassesatlocations.sublocation_id = shifts.sublocation_id or\
+        managingclassesatlocations.location_id = shifts.location_id\
+    ) and\
+        managingclassesatlocations.groupuserclass_id = shifts.groupuserclass_id\
+    )');
         if (includeShiftInformation) {
-            q
-                // grab job type for this shift
-                .innerJoin('groupuserclasses', function() {
-                    this.on('groupuserclasses.id', '=', 'shifts.groupuserclass_id');
-                })
-                // where the shift is located at
-                .leftJoin('locations', function() {
-                    this.on('locations.id', '=', 'sublocations.location_id')
-                        .orOn('locations.id', '=', 'shifts.location_id');
-                })
+            q = q
                 // what timezone it is in
                 .leftJoin('timezones', function() {
                     this.on('timezones.id', '=', 'locations.timezone_id');
@@ -1716,8 +1724,6 @@ function _getUsersManagingAShift(shift_id, includeShiftInformation, sqlOptions) 
         } else {
             q = q.where('shifts.id', '=', shift_id)
         }
-            q = q.andWhereRaw('COALESCE(shifts.location_id, sublocations.location_id) = managingclassesatlocations.location_id')
-            .andWhere('grouppermissions.permissionlevel', '>=', managingPermissionLevel);
     })
         .fetchAll(sqlOptions);
 }

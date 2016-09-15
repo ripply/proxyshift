@@ -14,14 +14,184 @@ module.exports = function(grunt) {
         'lib/angular-toastr/dist/angular-toastr.tpls.js',
         'lib/ng-material-floating-button/src/mfb-directive.js',
         'libs.min.js',
-        'template.js',
+        'template.min.js',
         'lib/angular-toastr/dist/angular-toastr.css',
         'fonts/ionicons.ttf',
         'fonts/ionicons.woff',
         'autoupdate.js'
     ];
 
+    var uglifyAppLibs = [
+        <!-- In windows apps this fixes dynamic content errors -->
+        //'ionic/www/lib/ionic/release/js/ionic.bundle.js',
+        'ionic/www/lib/jquery/dist/jquery.js',
+        'ionic/www/lib/array polyfill/array-polyfill.js',
+        'ionic/www/lib/lodash/lodash.js',
+        'ionic/www/lib/angular-cookies/angular-cookies.min.js',
+        'ionic/www/lib/angular-http-auth/src/http-auth-interceptor.js',
+        'ionic/www/lib/angular-messages/angular-messages.js',
+        'ionic/www/lib/moment/min/moment.min.js',
+        'ionic/www/lib/moment-timezone/builds/moment-timezone-with-data.js',
+        'ionic/www/lib/tzdetect/tzdetect.js',
+        'ionic/www/lib/jstz/jstz.js',
+        'ionic/www/lib/angular-ui-grid/ui-grid.js',
+        'ionic/www/lib/angular-gettext/dist/angular-gettext.js',
+        'ionic/www/lib/angular-local-storage/dist/angular-local-storage.js',
+        'ionic/www/lib/ionic-fancy-select/src/ionic-fancy-select.js',
+        'ionic/www/lib/angular-resource/angular-resource.js',
+        'ionic/www/lib/ionic-timepicker/dist/ionic-timepicker.bundle.min.js',
+        'ionic/www/lib/ionic-datepicker/dist/ionic-datepicker.bundle.min.js',
+        'ionic/www/js/thegooglethings.js',
+
+        //'ionic/www/lib/angular-toastr/dist/angular-toastr.tpls.js',
+        'ionic/www/js/directives/ionic-timepicker-nonmodal.directive.js',
+        'ionic/www/js/directives/ionic-timepicker-hours.directive.js',
+        'ionic/www/js/directives/ionic-timepicker-single.js',
+        //'ionic/www/lib/validator-js/validator.js',
+
+        'ionic/www/js/App.js',
+        'ionic/www/js/controllers/Controllers.js',
+        'ionic/www/js/controllers/AppController.js',
+        'ionic/www/js/controllers/LoginController.js',
+        'ionic/www/js/controllers/SignupController.js',
+        'ionic/www/js/controllers/MenuController.js',
+        'ionic/www/js/controllers/SettingsController.js',
+        'ionic/www/js/controllers/GroupsController.js',
+        'ionic/www/js/controllers/CreateGroupController.js',
+        'ionic/www/js/controllers/GroupSettingsController.js',
+        'ionic/www/js/controllers/GroupMembersController.js',
+        'ionic/www/js/controllers/GroupLocationsController.js',
+        'ionic/www/js/controllers/UserLocationsController.js',
+        'ionic/www/js/controllers/sendinvite/BaseSendInviteDirectiveController.js',
+        'ionic/www/js/controllers/SendInviteDirectiveController.js',
+        'ionic/www/js/controllers/createsublocation/BaseManageLocationDirectiveController.js',
+        'ionic/www/js/controllers/ManageLocationDirectiveController.js',
+        'ionic/www/js/controllers/LoginLogoutController.js',
+        'ionic/www/js/controllers/LogoutController.js',
+        'ionic/www/js/controllers/OpenShiftsController.js',
+        'ionic/www/js/controllers/ShiftsListController.js',
+        'ionic/www/js/controllers/MyCalloutShiftsController.js',
+        'ionic/www/js/controllers/OpenShiftsDirectiveController.js',
+        'ionic/www/js/controllers/MyShiftsController.js',
+        'ionic/www/js/controllers/MyShiftsDirectiveController.js',
+        'ionic/www/js/controllers/BaseModelController.js',
+        'ionic/www/js/controllers/shiftlist/BaseShiftListDirectiveController.js',
+        'ionic/www/js/controllers/ShiftCalendarController.js',
+        'ionic/www/js/controllers/LoadingController.js',
+        'ionic/www/js/controllers/RequestShiftController.js',
+        'ionic/www/js/controllers/popover/RequestShiftNoticeController.js',
+        'ionic/www/js/controllers/requestshifts/RequestShiftSelectLocationController.js',
+        'ionic/www/js/controllers/requestshifts/RequestShiftCreateShiftController.js',
+        'ionic/www/js/controllers/requestshifts/RequestShiftSelectUserClassController.js',
+        'ionic/www/js/controllers/GroupInvitationController.js',
+        'ionic/www/js/controllers/InvitationController.js',
+        'ionic/www/js/controllers/ManagingShiftsDirectiveController.js',
+        'ionic/www/js/controllers/ManagerController.js',
+        'ionic/www/js/controllers/ManageShiftController.js',
+        'ionic/www/js/controllers/users/BaseUsersListController.js',
+        'ionic/www/js/controllers/types/JobTypeController.js',
+        'ionic/www/js/controllers/settings/LocationEditorController.js',
+        'ionic/www/js/controllers/CreateShiftModalController.js',
+        'ionic/www/js/controllers/FilterableIncrementalSearchController.js',
+        'ionic/www/js/controllers/ShiftInfoController.js',
+        'ionic/www/js/controllers/OpenShiftsTabController.js',
+        'ionic/www/js/controllers/newshift/BaseNewShiftController.js',
+        'ionic/www/js/controllers/newshift/DateNewShiftController.js',
+        'ionic/www/js/controllers/newshift/WhenNewShiftController.js',
+        'ionic/www/js/controllers/newshift/WhereNewShiftController.js',
+        'ionic/www/js/controllers/newshift/WhoNewShiftController.js',
+        'ionic/www/js/controllers/newshift/ReviewNewShiftController.js',
+        'ionic/www/js/controllers/UserJobsController.js',
+        'ionic/www/js/controllers/ManagingJobsController.js',
+        'ionic/www/js/controllers/ExpiredListDirectiveController.js',
+        'ionic/www/js/controllers/ExpiredController.js',
+        <!-- **** DIRECTIVES **** -->
+        'ionic/www/js/shared/Validation.js',
+        'ionic/www/js/shared/ShiftShared.js',
+        'ionic/www/js/directives/ValidationDirectiveGenerator.js',
+        'ionic/www/js/directives/Directives.js',
+        'ionic/www/js/directives/LoginDirective.js',
+        'ionic/www/js/directives/LoginLogoutDirective.js',
+        'ionic/www/js/directives/UserDirective.js',
+        'ionic/www/js/directives/ShiftCalendarDirective.js',
+        'ionic/www/js/directives/ShiftListDirective.js',
+        'ionic/www/js/directives/SendInviteDirective.js',
+        'ionic/www/js/directives/CreateSubclassDirective.js',
+        'ionic/www/js/directives/ManageLocationDirective.js',
+        'ionic/www/js/directives/MyShiftsDirective.js',
+        'ionic/www/js/directives/ManagingShiftsDirective.js',
+        'ionic/www/js/controllers/GroupByDayFilter.js',
+        'ionic/www/js/directives/DividerCollectionRepeat.js',
+        'ionic/www/js/directives/ExpiredListDirective.js',
+        <!-- **** SERVICES **** -->
+        'ionic/www/js/services/ConfigService.js',
+        'ionic/www/js/services/authentication/CsrfInterceptorService.js',
+        'ionic/www/js/services/authentication/AuthenticationService.js',
+        'ionic/www/js/services/SessionService.js',
+        'ionic/www/js/services/CookiesService.js',
+        'ionic/www/js/services/resources/Resources.js',
+        'ionic/www/js/services/LongRequestEventNotifierService.js',
+        'ionic/www/js/services/routing/StateHistoryService.js',
+        'ionic/www/js/services/InitializeServices.js',
+        'ionic/www/js/services/ResourceUpdateAggregatorService.js',
+        'ionic/www/js/services/ShiftIntervalTreeCacheService.js',
+        'ionic/www/js/services/ErrorMessageService.js',
+        'ionic/www/js/shared/PushAppIds.js',
+        'ionic/www/js/services/PushProcessingService.js',
+        'ionic/www/js/services/ShiftProcessingService.js',
+        'ionic/www/js/services/IonicService.js',
+        'ionic/www/js/services/UserSettingsService.js',
+        'ionic/www/js/services/UserInfoService.js',
+        'ionic/www/js/services/RemoteUserSettingsService.js',
+        'ionic/www/js/services/ResourceService.js',
+        'ionic/www/js/services/CreateShiftService.js'
+    ];
+
+    var uglifyNgTemplate = [
+        'ionic/www/template.js'
+    ];
+
+    var uglifyIonicLibs = [
+        'static/js/modernizr.custom.js',
+        'bower_components/jquery/dist/jquery.js',
+        'static/js/jquery.isotope.js',
+        'bower_components/bootstrap/dist/js/bootstrap.js',
+        'bower_components/smoothscroll/smoothscroll.js',
+        'static/js/owl.carousel.js'
+    ];
+
+    var uglifyLtie = [
+        'bower_components/html5shiv/dist/html5shiv.js',
+        'bower_components/respond/dest/respond.src.js'
+    ];
+
+    var uglifyIonicBundle = [
+        'ionic/www/lib/ionic/release/js/ionic.bundle.js'
+    ];
+
+    var uglifyBootstrap = [
+        //'ionic/www/lib/bluebird/js/browser/bluebird.js',
+        'ionic/www/lib/cordova-app-loader/dist/bootstrap.js',
+        //'ionic/www/lib/cordova-app-loader/dist/autoupdate.js'
+    ];
+
     var jsonmanifestBasePath = 'ionic/www';
+
+    var ngTemplates = 'ionic/www/**/*.html';
+
+    var concurrentDevTasks = [
+        'nodemon:dev',
+        'watch:less',
+        //'watch:uglify',
+        'watch:uglifyAppLibs',
+        'watch:uglifyNgTemplate',
+        'watch:uglifyIonicLibs',
+        'watch:uglifyLtie',
+        'watch:uglifyBootstrap',
+        'watch:ngtemplates',
+        'watch:concat',
+        'watch:jsonmanifest'
+    ];
 
     var cordovaFonts = [
         'ionic/www/lib/ionic/release/fonts/ionicons.ttf',
@@ -228,6 +398,7 @@ module.exports = function(grunt) {
             }
         },
 
+        /*
         uglifyy : {
             options : {
                 //sourceMap : true,
@@ -239,167 +410,50 @@ module.exports = function(grunt) {
                 dest : 'ionic/www/main.min.js'
             }
         },
+        */
 
         // Javascript minification.
         uglify: {
-            compile: {
-                options: {
-                    //compress: true,
-                    verbose: true,
-                    mangle: false
-                },
+            options: {
+                //compress: true,
+                verbose: true,
+                mangle: false
+            },
+            appLibs: {
                 files: [{
-                    'static/js/mainlibs.min.js': [
-                        'static/js/modernizr.custom.js',
-                        'bower_components/jquery/dist/jquery.js',
-                        'static/js/jquery.isotope.js',
-                        'bower_components/bootstrap/dist/js/bootstrap.js',
-                        'bower_components/smoothscroll/smoothscroll.js',
-                        'static/js/owl.carousel.js'
-                    ],
-                    'static/js/ltie9.min.js': [
-                        'bower_components/html5shiv/dist/html5shiv.js',
-                        'bower_components/respond/dest/respond.src.js'
-                    ],
-                    'ionic/www/libs.min.js': [
-                        <!-- In windows apps this fixes dynamic content errors -->
-                        //'ionic/www/lib/ionic/release/js/ionic.bundle.js',
-                        'ionic/www/lib/jquery/dist/jquery.js',
-                        'ionic/www/lib/lodash/lodash.js',
-                        'ionic/www/lib/angular-cookies/angular-cookies.min.js',
-                        'ionic/www/lib/angular-http-auth/src/http-auth-interceptor.js',
-                        'ionic/www/lib/angular-messages/angular-messages.js',
-                        'ionic/www/lib/moment/min/moment.min.js',
-                        'ionic/www/lib/moment-timezone/builds/moment-timezone-with-data.js',
-                        'ionic/www/lib/tzdetect/tzdetect.js',
-                        'ionic/www/lib/jstz/jstz.js',
-                        'ionic/www/lib/angular-ui-grid/ui-grid.js',
-                        'ionic/www/lib/angular-gettext/dist/angular-gettext.js',
-                        'ionic/www/lib/angular-local-storage/dist/angular-local-storage.js',
-                        'ionic/www/lib/ionic-fancy-select/src/ionic-fancy-select.js',
-                        'ionic/www/lib/angular-resource/angular-resource.js',
-                        'ionic/www/lib/ionic-timepicker/dist/ionic-timepicker.bundle.min.js',
-                        'ionic/www/lib/ionic-datepicker/dist/ionic-datepicker.bundle.min.js',
-                        'ionic/www/js/thegooglethings.js',
-
-                        //'ionic/www/lib/angular-toastr/dist/angular-toastr.tpls.js',
-                        'ionic/www/js/directives/ionic-timepicker-nonmodal.directive.js',
-                        'ionic/www/js/directives/ionic-timepicker-hours.directive.js',
-                        'ionic/www/js/directives/ionic-timepicker-single.js',
-                        //'ionic/www/lib/validator-js/validator.js',
-
-                        'ionic/www/js/App.js',
-                        'ionic/www/js/controllers/Controllers.js',
-                        'ionic/www/js/controllers/AppController.js',
-                        'ionic/www/js/controllers/LoginController.js',
-                        'ionic/www/js/controllers/SignupController.js',
-                        'ionic/www/js/controllers/MenuController.js',
-                        'ionic/www/js/controllers/SettingsController.js',
-                        'ionic/www/js/controllers/GroupsController.js',
-                        'ionic/www/js/controllers/CreateGroupController.js',
-                        'ionic/www/js/controllers/GroupSettingsController.js',
-                        'ionic/www/js/controllers/GroupMembersController.js',
-                        'ionic/www/js/controllers/GroupLocationsController.js',
-                        'ionic/www/js/controllers/UserLocationsController.js',
-                        'ionic/www/js/controllers/sendinvite/BaseSendInviteDirectiveController.js',
-                        'ionic/www/js/controllers/SendInviteDirectiveController.js',
-                        'ionic/www/js/controllers/createsublocation/BaseManageLocationDirectiveController.js',
-                        'ionic/www/js/controllers/ManageLocationDirectiveController.js',
-                        'ionic/www/js/controllers/LoginLogoutController.js',
-                        'ionic/www/js/controllers/LogoutController.js',
-                        'ionic/www/js/controllers/OpenShiftsController.js',
-                        'ionic/www/js/controllers/ShiftsListController.js',
-                        'ionic/www/js/controllers/MyCalloutShiftsController.js',
-                        'ionic/www/js/controllers/OpenShiftsDirectiveController.js',
-                        'ionic/www/js/controllers/MyShiftsController.js',
-                        'ionic/www/js/controllers/MyShiftsDirectiveController.js',
-                        'ionic/www/js/controllers/BaseModelController.js',
-                        'ionic/www/js/controllers/shiftlist/BaseShiftListDirectiveController.js',
-                        'ionic/www/js/controllers/ShiftCalendarController.js',
-                        'ionic/www/js/controllers/LoadingController.js',
-                        'ionic/www/js/controllers/RequestShiftController.js',
-                        'ionic/www/js/controllers/popover/RequestShiftNoticeController.js',
-                        'ionic/www/js/controllers/requestshifts/RequestShiftSelectLocationController.js',
-                        'ionic/www/js/controllers/requestshifts/RequestShiftCreateShiftController.js',
-                        'ionic/www/js/controllers/requestshifts/RequestShiftSelectUserClassController.js',
-                        'ionic/www/js/controllers/GroupInvitationController.js',
-                        'ionic/www/js/controllers/InvitationController.js',
-                        'ionic/www/js/controllers/ManagingShiftsDirectiveController.js',
-                        'ionic/www/js/controllers/ManagerController.js',
-                        'ionic/www/js/controllers/ManageShiftController.js',
-                        'ionic/www/js/controllers/users/BaseUsersListController.js',
-                        'ionic/www/js/controllers/types/JobTypeController.js',
-                        'ionic/www/js/controllers/settings/LocationEditorController.js',
-                        'ionic/www/js/controllers/CreateShiftModalController.js',
-                        'ionic/www/js/controllers/FilterableIncrementalSearchController.js',
-                        'ionic/www/js/controllers/ShiftInfoController.js',
-                        'ionic/www/js/controllers/OpenShiftsTabController.js',
-                        'ionic/www/js/controllers/newshift/BaseNewShiftController.js',
-                        'ionic/www/js/controllers/newshift/DateNewShiftController.js',
-                        'ionic/www/js/controllers/newshift/WhenNewShiftController.js',
-                        'ionic/www/js/controllers/newshift/WhereNewShiftController.js',
-                        'ionic/www/js/controllers/newshift/WhoNewShiftController.js',
-                        'ionic/www/js/controllers/newshift/ReviewNewShiftController.js',
-                        'ionic/www/js/controllers/UserJobsController.js',
-                        'ionic/www/js/controllers/ManagingJobsController.js',
-                        'ionic/www/js/controllers/ExpiredListDirectiveController.js',
-                        'ionic/www/js/controllers/ExpiredController.js',
-                    <!-- **** DIRECTIVES **** -->
-                        'ionic/www/js/shared/Validation.js',
-                        'ionic/www/js/shared/ShiftShared.js',
-                        'ionic/www/js/directives/ValidationDirectiveGenerator.js',
-                        'ionic/www/js/directives/Directives.js',
-                        'ionic/www/js/directives/LoginDirective.js',
-                        'ionic/www/js/directives/LoginLogoutDirective.js',
-                        'ionic/www/js/directives/UserDirective.js',
-                        'ionic/www/js/directives/ShiftCalendarDirective.js',
-                        'ionic/www/js/directives/ShiftListDirective.js',
-                        'ionic/www/js/directives/SendInviteDirective.js',
-                        'ionic/www/js/directives/CreateSubclassDirective.js',
-                        'ionic/www/js/directives/ManageLocationDirective.js',
-                        'ionic/www/js/directives/MyShiftsDirective.js',
-                        'ionic/www/js/directives/ManagingShiftsDirective.js',
-                        'ionic/www/js/controllers/GroupByDayFilter.js',
-                        'ionic/www/js/directives/DividerCollectionRepeat.js',
-                        'ionic/www/js/directives/ExpiredListDirective.js',
-                    <!-- **** SERVICES **** -->
-                        'ionic/www/js/services/ConfigService.js',
-                        'ionic/www/js/services/authentication/CsrfInterceptorService.js',
-                        'ionic/www/js/services/authentication/AuthenticationService.js',
-                        'ionic/www/js/services/SessionService.js',
-                        'ionic/www/js/services/CookiesService.js',
-                        'ionic/www/js/services/resources/Resources.js',
-                        'ionic/www/js/services/LongRequestEventNotifierService.js',
-                        'ionic/www/js/services/routing/StateHistoryService.js',
-                        'ionic/www/js/services/InitializeServices.js',
-                        'ionic/www/js/services/ResourceUpdateAggregatorService.js',
-                        'ionic/www/js/services/ShiftIntervalTreeCacheService.js',
-                        'ionic/www/js/services/ErrorMessageService.js',
-                        'ionic/www/js/shared/PushAppIds.js',
-                        'ionic/www/js/services/PushProcessingService.js',
-                        'ionic/www/js/services/ShiftProcessingService.js',
-                        'ionic/www/js/services/IonicService.js',
-                        'ionic/www/js/services/UserSettingsService.js',
-                        'ionic/www/js/services/UserInfoService.js',
-                        'ionic/www/js/services/RemoteUserSettingsService.js',
-                        'ionic/www/js/services/ResourceService.js',
-                        'ionic/www/js/services/CreateShiftService.js'
-                    ],
-                    'ionic/www/ionic.bundle.min.js': [
-                        'ionic/www/lib/ionic/release/js/ionic.bundle.js'
-                    ],
-                    'ionic/www/bootstrap.js': [
-                        //'ionic/www/lib/bluebird/js/browser/bluebird.js',
-                        'ionic/www/lib/cordova-app-loader/dist/bootstrap.js',
-                        //'ionic/www/lib/cordova-app-loader/dist/autoupdate.js'
-                    ]
+                    'ionic/www/libs.min.js': uglifyAppLibs
+                }]
+            },
+            ngTemplate: {
+                files: [{
+                    'ionic/www/template.min.js': uglifyNgTemplate
+                }]
+            },
+            ionicLibs: {
+                files: [{
+                    'static/js/mainlibs.min.js': uglifyIonicLibs
+                }]
+            },
+            ltie: {
+                files: [{
+                    'static/js/ltie9.min.js': uglifyLtie
+                }]
+            },
+            ionicBundle: {
+                files: [{
+                    'ionic/www/ionic.bundle.min.js': uglifyIonicBundle
+                }]
+            },
+            bootstrap: {
+                files: [{
+                    'ionic/www/bootstrap.js': uglifyBootstrap
                 }]
             }
         },
 
         ngtemplates:  {
             'scheduling-app': {
-                src: 'ionic/www/**/*.html',
+                src: ngTemplates,
                 dest: 'ionic/www/template.js',
                 options: {
                     //usemin: 'dist/vendors.js' // <~~ This came from the <!-- build:js --> block
@@ -418,12 +472,32 @@ module.exports = function(grunt) {
                 files: ['static/partials/**/*'],
                 tasks: ['concat']
             },
+            uglifyAppLibs: {
+                files: uglifyAppLibs,
+                tasks: ['uglify:appLibs']
+            },
+            uglifyNgTemplate: {
+                files: uglifyNgTemplate,
+                tasks: ['uglify:ngTemplate']
+            },
+            uglifyIonicLibs: {
+                files: uglifyIonicLibs,
+                tasks: ['uglify:ionicLibs']
+            },
+            uglifyLtie: {
+                files: uglifyLtie,
+                tasks: ['uglify:ltie']
+            },
+            uglifyBootstrap: {
+                files: uglifyBootstrap,
+                tasks: ['uglify:bootstrap']
+            },
             uglify: {
                 files: ['ionic/www/js/**/*.js', 'ionic/www/lib/**/*.js'],
                 tasks: ['uglify']
             },
             ngtemplates: {
-                files: ['ionic/www/**/*.html'],
+                files: ngTemplates,
                 tasks: ['ngtemplates']
             },
             less: {
@@ -507,16 +581,10 @@ module.exports = function(grunt) {
 
         concurrent: {
             dev: {
-                tasks: [
-                    'nodemon:dev',
-                    'watch:less',
-                    'watch:uglify',
-                    'watch:ngtemplates',
-                    'watch:concat',
-                    'watch:jsonmanifest'
-                ],
+                tasks: concurrentDevTasks,
                 options: {
-                    logConcurrentOutput: true
+                    logConcurrentOutput: true,
+                    limit: concurrentDevTasks.length + 3
                 }
             },
             test: {

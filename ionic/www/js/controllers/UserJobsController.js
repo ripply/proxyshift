@@ -48,7 +48,7 @@ angular.module('scheduling-app.controllers')
             };
 
             function init() {
-                $scope.userClasses = angular.copy(UserInfoService.getSubscribableUserclassesFromGroup(getGroupId()));
+                $scope.userClasses = angular.copy(UserInfoService.getSubscribableUserclassesFromGroupAsArray(getGroupId()));
                 $scope.myUserClasses = UserInfoService.getUserClasses();
                 updateJobs();
             }

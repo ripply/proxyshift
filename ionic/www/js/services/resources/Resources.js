@@ -481,6 +481,14 @@ angular.forEach({
                     method: DELETE,
                     url: base + '/manage/:groupuserclass_id'
                 },
+                manageJobAtSublocation: {
+                    method: POST,
+                    url: base + '/sublocation/:sublocation_id/manage/:groupuserclass_id'
+                },
+                unmanageJobAtSublocation: {
+                    method: DELETE,
+                    url: base + '/sublocation/:sublocation_id/manage/:groupuserclass_id'
+                },
                 listStagger: {
                     method: GET,
                     url: url + locations + '/search/start/:start/end/:end'

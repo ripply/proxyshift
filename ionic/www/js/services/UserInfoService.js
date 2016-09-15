@@ -45,7 +45,7 @@ angular.module('scheduling-app.services')
                     }
                 }
                 return showIgnoredShifts;
-            };
+            }
 
             this.setShowIgnoredShifts = setShowIgnoredShifts;
 
@@ -54,7 +54,7 @@ angular.module('scheduling-app.services')
                 if (localStorageService.isSupported) {
                     localStorageService.set('showIgnoredShifts', show);
                 }
-            };
+            }
 
             this.onUserInfoUpdate = function(scope, fn) {
                 scope.$on(GENERAL_EVENTS.UPDATES.USERINFO.PROCESSED, fn);
@@ -70,6 +70,17 @@ angular.module('scheduling-app.services')
 
             this.getUserClasses = function() {
                 return userclasses;
+            };
+
+            function userClassesToArray() {
+                userClassesAsArray.length = 0;
+                angular.forEach(userclasses, function(userclass) {
+                    userClassesAsArray.push(userclass);
+                });
+            }
+
+            this.getUserClassesAsArray = function() {
+                return userClassesAsArray;
             };
 
             this.getUserClass = function(groupuserclass_id) {
@@ -99,44 +110,110 @@ angular.module('scheduling-app.services')
 
             this.getManagingUserclassesForLocation = function(location_id) {
                 var group_id = getGroupIdForLocation(location_id);
+                var sublocationsMap = getSublocationsForLocationAsMap(location_id);
                 var groupUserclasses = getUserclassesFromGroup(group_id);
                 var managingclassesForGroup = {};
-                angular.forEach(groupUserclasses, function(groupuserclass) {
-                    if (managingclasses.hasOwnProperty(groupuserclass.id)) {
-                        managingclassesForGroup[groupuserclass.id] = groupuserclass;
+                angular.forEach(managingclasses, function(managingclass) {
+                    if (managingclass.location_id == location_id ||
+                        sublocationsMap.hasOwnProperty(managingclass.sublocation_id)) {
+                        managingclassesForGroup[getUserclassKey(managingclass)] = managingclass;
                     }
                 });
                 return managingclassesForGroup;
             };
 
-            this.addManagingUserclassToGroup = function(userclass_id) {
-                if (userclasses.hasOwnProperty(userclass_id)) {
-                    managingclasses[userclass_id] = userclasses[userclass_id];
+            this.getUserClass = getUserClass;
+
+            function getUserClass(userclass_id, sublocation_id) {
+                var userclass = allUserclasses[userclass_id];
+                if (userclass && sublocation_id) {
+                    userclass = angular.copy(userclass);
+                    userclass.location_id = undefined;
+                    userclass.sublocation_id = sublocation_id;
+                }
+                return userclass;
+            }
+
+            this.addManagingUserclassToGroup = function(userclass_id, location_id, sublocation_id) {
+                var key = getUserclassKeyForIds(userclass_id, location_id, sublocation_id);
+                if (!managingclasses.hasOwnProperty(key)) {
+                    var userClass = getUserClass(userclass_id, sublocation_id);
+                    if (userClass) {
+                        userClass = angular.copy(userClass);
+                        if (sublocation_id) {
+                            userClass.location_id = undefined;
+                            userClass.sublocation_id = sublocation_id;
+                        } else {
+                            userClass.location_id = location_id;
+                            userClass.sublocation_id = undefined;
+                        }
+                        managingclasses[key] = userClass;
+                    }
                 }
             };
 
-            this.removeManagingUserclassToGroup = function(userclass_id) {
-                if (managingclasses.hasOwnProperty(userclass_id)) {
-                    delete managingclasses[userclass_id];
+            this.removeManagingUserclassToGroup = function(userclass_id, location_id, sublocation_id) {
+                var key = getUserclassKeyForIds(userclass_id, location_id, sublocation_id);
+                if (managingclasses.hasOwnProperty(key)) {
+                    delete managingclasses[key];
                 }
             };
 
-            this.getSubscribableUserclassesFromGroup = function(group_id) {
-                var userclasses = this.getUserclassesFromGroup(group_id);
-                var subscribableUserClasses = [];
-                var permissionlevel = this.getGroupPermissionLevel(group_id);
+            this.getUserclassKey = getUserclassKey;
+
+            function getUserclassKey(userclass) {
+                if (userclass) {
+                    return getUserclassKeyForIds(
+                        userclass.groupuserclass_id ?
+                            userclass.groupuserclass_id:userclass.id,
+                        userclass.location_id,
+                        userclass.sublocation_id
+                    );
+                }
+            }
+
+            this.getUserclassKeyForIds = getUserclassKeyForIds;
+
+            function getUserclassKeyForIds(groupuserclass_id, location_id, sublocation_id) {
+                if (groupuserclass_id) {
+                    if (sublocation_id) {
+                        return groupuserclass_id + '__' + sublocation_id;
+                    } else if (location_id) {
+                        return groupuserclass_id + '_' + location_id;
+                    }
+                }
+                return groupuserclass_id;
+            }
+
+            this.getSubscribableUserclassesFromGroup = getSubscribableUserclassesFromGroup;
+
+            function getSubscribableUserclassesFromGroup(group_id) {
+                var userclasses = getUserclassesFromGroup(group_id);
+                var subscribableUserClasses = {};
+                var permissionlevel = getGroupPermissionLevel(group_id);
                 angular.forEach(userclasses, function(userclass) {
                     var grouppermission = getGroupPermissionById(userclass.grouppermission_id);
                     if (grouppermission && grouppermission.permissionlevel <= permissionlevel) {
-                        subscribableUserClasses.push(userclass);
+                        subscribableUserClasses[getUserclassKey(userclass)] = userclass;
                     }
                 });
                 return subscribableUserClasses;
+            }
+
+            this.getSubscribableUserclassesFromGroupAsArray = function(group_id) {
+                var userclasses = getSubscribableUserclassesFromGroup(group_id);
+                var userclassesArray = [];
+                angular.forEach(userclasses, function(userclass) {
+                    userclassesArray.push(userclass);
+                });
+                return userclassesArray;
             };
 
-            this.getGroupPermissionLevel = function(group_id) {
+            this.getGroupPermissionLevel = getGroupPermissionLevel;
+
+            function getGroupPermissionLevel(group_id) {
                 var usergroups = $rootScope.userinfo.usergroups;
-                if (this.isGroupOwner(group_id)) {
+                if (isGroupOwner(group_id)) {
                     return 99999999;
                 }
 
@@ -148,9 +225,11 @@ angular.module('scheduling-app.services')
                         return grouppermission.permissionlevel;
                     }
                 }
-            };
+            }
 
-            this.isGroupOwner = function(group_id) {
+            this.isGroupOwner = isGroupOwner;
+
+            function isGroupOwner(group_id) {
                 var groups = $rootScope.userinfo.ownedGroups;
                 if (groups) {
                     for (var i = 0; i < groups.length; i++) {
@@ -161,7 +240,7 @@ angular.module('scheduling-app.services')
                     }
                 }
                 return false;
-            };
+            }
 
             this.getUserclassesFromLocation = function(location_id) {
                 return getUserclassesFromLocationOrSublocation(location_id, undefined);
@@ -241,14 +320,16 @@ angular.module('scheduling-app.services')
                 }
             }
 
-            this.getLocation = function getLocation(location_id) {
+            this.getLocation = getLocation;
+
+            function getLocation(location_id) {
                 if (location_id === undefined || location_id === null) {
                     return undefined;
                 }
                 if (locations.hasOwnProperty(location_id)) {
                     return locations[location_id];
                 }
-            };
+            }
 
             this.getTimezoneAtLocation = function getTimezoneAtLocation(location_id) {
                 var location = this.getLocation(location_id);
@@ -285,6 +366,28 @@ angular.module('scheduling-app.services')
                     }
                 }
             };
+
+            this.getSublocationsForLocationAsMap = getSublocationsForLocationAsMap;
+
+            function getSublocationsForLocationAsMap(location_id) {
+                var sublocations = getSublocationsForLocation(location_id);
+                var sublocationMap = {};
+                angular.forEach(sublocations, function(sublocation) {
+                    sublocationMap[sublocation.id] = sublocation;
+                });
+                return sublocationMap;
+            }
+
+            this.getSublocationsForLocation = getSublocationsForLocation;
+
+            function getSublocationsForLocation(location_id) {
+                var location = getLocation(location_id);
+                if (location && location.sublocations) {
+                    return angular.copy(location.sublocations);
+                } else {
+                    return [];
+                }
+            }
 
             this.getLocationsMemberOfForGroup = function getLocationsForGroup(group_id) {
                 if (group_id === undefined || group_id === null) {
@@ -328,6 +431,7 @@ angular.module('scheduling-app.services')
             var locations = {};
             var areas = {};
             var userclasses = {};
+            var userClassesAsArray = [];
             var allUserclasses = {};
             var managingclasses = {};
 
@@ -448,13 +552,16 @@ angular.module('scheduling-app.services')
                                     }
                                 })
                             }
-                            if (value.hasOwnProperty('managingclassesatlocation')) {
-                                angular.forEach(value.managingclassesatlocation, function(managingclassatlocation) {
-                                    if (!managingclasses.hasOwnProperty(managingclassatlocation.id)) {
-                                        managingclasses[managingclassatlocation.id] = angular.clone(managingclassatlocation);
-                                    }
-                                });
-                            }
+                            angular.forEach(['managingclassesatlocations', 'managingclassesatsublocations'], function(managingclassesat) {
+                                if (value.hasOwnProperty(managingclassesat)) {
+                                    angular.forEach(value[managingclassesat], function(managingclassatlocation) {
+                                        var key = getUserclassKey(managingclassatlocation);
+                                        if (!managingclasses.hasOwnProperty(key)) {
+                                            managingclasses[key] = angular.clone(managingclassatlocation);
+                                        }
+                                    });
+                                }
+                            });
                         });
                     });
                     angular.forEach([
@@ -462,16 +569,21 @@ angular.module('scheduling-app.services')
                         'privilegedMemberOfLocations'
                     ], function(sourceAttribute) {
                         angular.forEach(userinfo[sourceAttribute], function(value, key) {
-                            if (value.hasOwnProperty('managingclassesatlocations')) {
-                                angular.forEach(value.managingclassesatlocations, function(managingclassatlocation) {
-                                    if (!managingclasses.hasOwnProperty(managingclassatlocation.groupuserclass_id)) {
-                                        managingclasses[managingclassatlocation.groupuserclass_id] = angular.copy(managingclassatlocation);
-                                    }
-                                });
-                            }
+                            angular.forEach(['managingclassesatlocations', 'managingclassesatsublocations'], function(managingclassesat) {
+                                if (value.hasOwnProperty(managingclassesat)) {
+                                    angular.forEach(value[managingclassesat], function(managingclassatlocation) {
+                                        var key = getUserclassKey(managingclassatlocation);
+                                        if (!managingclasses.hasOwnProperty(key)) {
+                                            managingclasses[key] = angular.copy(managingclassatlocation);
+                                        }
+                                    });
+                                }
+                            });
+
                         });
                     });
                 }
+                userClassesToArray();
                 $rootScope.$emit(GENERAL_EVENTS.UPDATES.USERINFO.PROCESSED, userinfo);
             };
         }

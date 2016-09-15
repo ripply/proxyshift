@@ -14,13 +14,22 @@
                         <input type="text" ng-model="query" ng-style="{'width' : '100%'}"
                                placeholder="Search by address, city, state, zipcode or phone">
                     </label>
-                    <ion-toggle ng-repeat="userClass in userClasses | filter:query"
-                                ng-model="userClass.subscribed"
-                                ng-disabled="userClass.persisting"
-                                ng-click="saveJob()"
-                                ng-checked="isJob(userClass)">
-                        {{ userClass.title }} - {{ userClass.description }}
-                    </ion-toggle>
+                    <div ng-repeat="userClass in userClasses | filter:query">
+                        <ion-toggle ng-model="uiStateUserClasses[getUserClassKey(userClass)]"
+                                    ng-disabled="persistingUserClasses[getUserClassKey(userClass)]"
+                                    ng-click="saveJob()"
+                                    ng-checked="isManagingUserClass(userClass)">
+                            {{ userClass.title }} - {{ userClass.description }}
+                        </ion-toggle>
+                        <ion-toggle ng-repeat="sublocation in sublocations | filter:query"
+                                    ng-model="uiStateUserClasses[getUserClassKey(userClass, sublocation.id)]"
+                                    ng-disabled="persistingUserClasses[getUserClassKey(userClass, sublocation.id)]"
+                                    ng-click="saveJob()"
+                                    ng-checked="isManagingUserClass(userClass, sublocation.id)"
+                                    class="item-indent">
+                            {{ sublocation.title }} - {{ sublocation.description }}
+                        </ion-toggle>
+                    </div>
                 </div>
             </div>
         </div>
