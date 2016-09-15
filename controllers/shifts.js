@@ -717,85 +717,14 @@ function _getShiftsYouAreManagingFilterByDates(query, before, after) {
     } else if (before) {
         query.where('shifts.end', '>=', before);
     } else if (after) {
-        query.wehre('shifts.end', '<=', after);
+        query.where('shifts.end', '<=', after);
     }
     return query;
 }
-
-function _getShiftsYouAreManaging_joinManagingClasses(query, on, user_id, location_id) {
-    if (location_id) {
-        query.innerJoin('managingclassesatlocations', function() {
-            this.on('managingclassesatlocations.groupuserclass_id', '=', on);
-        })
-        // map sublocation_id to location_id
-        .leftJoin('sublocations', function() {
-            this.on('sublocations.id', '=', 'managingclassesatlocations.sublocation_id');
-        })
-        // confine to locations
-        .innerJoin('locations', function() {
-            this.on('locations.id', '=', 'managingclassesatlocations.location_id')
-                .orOn('locations.id', '=', 'sublocations.location_id');
-        })
-        .where('locations.id', '=', location_id)
-        .andWhere('managingclassesatlocations.managing', '=', controllerCommon.true)
-        .innerJoin('groups', function() {
-            this.on('groups.id', '=', 'locations.group_id');
-        })
-        .innerJoin('groupuserclasses', function() {
-            this.on('groupuserclasses.id', '=', 'managingclassesatlocations.groupuserclass_id');
-        })
-        .innerJoin('grouppermissions', function() {
-            this.on('grouppermissions.group_id', '=', 'groups.id');
-        })
-        .where('grouppermissions.permissionlevel', '>=', managingPermissionLevel);
-    } else {
-        query.innerJoin('managingclassesatlocations', function() {
-            this.on('managingclassesatlocations.groupuserclass_id', '=', on)
-        })
-        .innerJoin('usergroups', function() {
-            this.on('usergroups.id', '=', 'managingclassesatlocations.usergroup_id')
-                .andOn('usergroups.user_id', '=', user_id);
-        });
-    }
-    return query;
-}
-
-// createSelectQueryForAllColumns('Shift', 'shifts').join(', ')
-
-const SQL_GET_MANAGING_SHIFTS_WITH_LOCATION = "\
-distinct shifts.* from shifts \
- left join sublocations on sublocations.id = shifts.sublocation_id\
- inner join locations on locations.id = sublocations.location_id or\
-  locations.id = shifts.location_id\
- inner join groups on groups.id = locations.group_id\
- inner join groupuserclasses on groupuserclasses.group_id = groups.id\
- left join usergroups on usergroups.group_id = groups.id\
- inner join groupuserclasstousers on\
-  groupuserclasstousers.groupuserclass_id = groupuserclasses.id and\
-  (groupuserclasstousers.user_id = ? or groups.user_id = ?)\
- inner join grouppermissions on grouppermissions.id = usergroups.grouppermission_id\
- left join managingclassesatlocations on\
-  managingclassesatlocations.sublocation_id = sublocations.id or\
-  managingclassesatlocations.location_id = locations.id\
- where\
-  (\
-   managingclassesatlocations.managing = " + models.sqlTrue + " and\
-   grouppermissions.permissionlevel >= " + managingPermissionLevel + " and\
-   (\
-    managingclassesatlocations.sublocation_id = shifts.sublocation_id or\
-    managingclassesatlocations.location_id = shifts.location_id\
-   ) and\
-   managingclassesatlocations.groupuserclass_id = shifts.groupuserclass_id\
-  ) or\
-  (\
-   groups.user_id = ?\
-  )";
 
 /**
  * If a location is passed in
  * this method does not check if you are a privileged member of that location
- * @param req
- * @param res
  */
 function getShiftsYouAreManaging(req, res, pendingApprovalsOnly, noApplicationsOnly, approvedOnly, startShift, endShift) {
     // this should grab groups you are a member of
@@ -809,469 +738,64 @@ function getShiftsYouAreManaging(req, res, pendingApprovalsOnly, noApplicationsO
     var after = range[1];
     var location_id = req.params.location_id;
     return models.Shift.query(function(q) {
-        var managingClassesAtLocationSubQuery = undefined;
-        /*
-        if (location_id === undefined) {
-            managingClassesAtLocationSubQuery =
-                knex.select('managingclassesatlocations.groupuserclass_id')
-                    .from('managingclassesatlocations')
-                    .innerJoin('usergroups', function() {
-                        this.on('usergroups.id', '=', 'managingclassesatlocations.usergroup_id')
-                            .andOn('usergroups.user_id', '=', req.user.id);
-                    });
-        } else {
-            // if a specific location is needed
-            managingClassesAtLocationSubQuery =
-                knex.select('managingclassesatlocations.id as id')
-                    .from('managingclassesatlocations')
-                    // map sublocation_id to location_id
-                    .leftJoin('sublocations', function() {
-                        this.on('sublocations.id', '=', 'managingclasses.sublocation_id');
-                    })
-                    // confine to locations
-                    .innerJoin('locations', function() {
-                        this.on('locations.id', '=', 'managingclasses.location_id')
-                            .orOn('locations.id', '=', 'sublocations.location_id');
-                    })
-                    .where('locations.id', '=', location_id)
-                    .andWhere('managingclassesatlocations.managing', '=', controllerCommon.true)
-                    .innerJoin('groups', function() {
-                        this.on('groups.id', '=', 'locations.group_id');
-                    })
-                    .innerJoin('groupuserclasses', function() {
-                        this.on('groupuserclasses.id', '=', 'managingclassesatlocations.groupuserclass_id');
-                    })
-                    .innerJoin('grouppermissions', function() {
-                        this.on('grouppermissions.group_id', '=', 'groups.id');
-                    })
-                    .where('grouppermissions.permissionlevel', '>=', managingPermissionLevel);
-            */
-            /*
-                knex.select('userpermissions.location_id as locationid')
-                    .from('userpermissions')
-                    .leftJoin('sublocations', function() {
-                        this.on('sublocations.id', '=', 'userpermissions.sublocation_id')
-                    })
-                    .where(function() {
-                        this.where('userpermissions.location_id', '=', location_id)
-                            .orWhere('sublocations.location_id', '=', location_id)
-                    })
-                    .andWhere('userpermissions.subscribed', '=', controllerCommon.true)
-                    .innerJoin('locations', function() {
-                        this.on('locations.id', '=', 'userpermissions.location_id');
-                    })
-                    .innerJoin('groups', function() {
-                        this.on('groups.id', '=', 'locations.group_id');
-                    })
-                    .innerJoin('groupuserclasses', function() {
-                        this.on('groupuserclasses.group_id', '=', 'groups.id');
-                    })
-                    .innerJoin('groupuserclasstousers', function() {
-                        this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id')
-                            .andOn('groupuserclasstousers.user_id', '=', req.user.id);
-                    })
-                    .innerJoin('grouppermissions', function () {
-                        this.on('grouppermissions.id', '=', 'groupuserclasses.grouppermission_id');
-                    })
-                    .where('grouppermissions.permissionlevel', '>=', managingPermissionLevel);
-                    */
-
-            // fetch classes you are managing at the location
-            //managingClassesAtLocationSubQuery = managingClassesAtLocationSubQuery
-                //.whereIn('managingclassesatlocations.id', managingMemberOfLocationSubQuery);
-        //}
-
+        // grab all shifts at locations/sublocations that you are a manager of and managing
+        var user_id = req.user.id;
+        q.select('shifts.*')
+            .from('shifts')
+            .leftJoin('sublocations', function() {
+                this.on('sublocations.id', '=', 'shifts.sublocation_id');
+            })
+            .innerJoin('locations', function() {
+                this.on('locations.id', '=', 'sublocations.location_id')
+                    .orOn('locations.id', '=', 'shifts.location_id');
+            })
+            .innerJoin('groups', function() {
+                this.on('groups.id', '=', 'locations.group_id');
+            })
+            .innerJoin('groupuserclasses', function() {
+                this.on('groupuserclasses.group_id', '=', 'groups.id');
+            })
+            .leftJoin('usergroups', function() {
+                this.on('usergroups.group_id', '=', 'groups.id');
+            })
+            .innerJoin('groupuserclasstousers', function() {
+                this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id');
+            })
+            .where(function() {
+                this.where('groupuserclasstousers.user_id', '=', user_id)
+                    .orWhere('groups.user_id', '=', user_id);
+            })
+            .innerJoin('grouppermissions', function() {
+                this.on('grouppermissions.id', '=', 'usergroups.grouppermission_id');
+            })
+            .leftJoin('managingclassesatlocations', function() {
+                this.on('managingclassesatlocations.sublocation_id', '=', 'sublocations.id')
+                    .orOn('managingclassesatlocations.location_id', '=', 'locations.id');
+            })
+            .where(function () {
+                _getShiftsYouAreManagingFilterByDates(this, before, after);
+            })
+            .whereRaw('(\
+        managingclassesatlocations.managing = ' + models.sqlTrue + ' and\
+        grouppermissions.permissionlevel >= ' + managingPermissionLevel + ' and\
+        (\
+            managingclassesatlocations.sublocation_id = shifts.sublocation_id or\
+        managingclassesatlocations.location_id = shifts.location_id\
+    ) and\
+        managingclassesatlocations.groupuserclass_id = shifts.groupuserclass_id\
+    )')
+            .orWhere('groups.user_id', '=', user_id);
         if (location_id) {
-            // grab all shifts at locations/sublocations that are one of your job types
-            q = q.select()
-                .from('shifts')
-                .where('shifts.location_id', '=', req.params.location_id)
-                .andWhere(function () {
-                    _getShiftsYouAreManagingFilterByDates(this, before, after);
-                    //this.where('shifts.start', '>=', before);
-                        /*
-                        .orWhere(function() {
-                            this.where('shifts.end', '>=', before)
-                                .andWhere('shifts.end', '<=', after);
-                        });
-                        */
-                });
-            _getShiftsYouAreManaging_joinManagingClasses(q, 'shifts.groupuserclass_id', req.user.id, req.params.location_id)
-                .union(function () {
-                    this.select('shifts.*')
-                        .from('shifts')
-                        .innerJoin('sublocations', function () {
-                            this.on('shifts.sublocation_id', '=', 'sublocations.id');
-                        })
-                        .where('sublocations.location_id', '=', req.params.location_id)
-                        //.whereIn('sublocations.location_id', relatedLocationsSubQuery)
-                        //.whereIn('shifts.groupuserclass_id', managingClassesAtLocationSubQuery)
-                        .andWhere(function () {
-                            this.where('shifts.start', '<=', before);
-                                /*
-                                .orWhere(function() {
-                                    this.where('shifts.end', '>=', before)
-                                        .andWhere('shifts.end', '<=', after);
-                                });
-                            */
-                        });
-                    _getShiftsYouAreManaging_joinManagingClasses(this, 'shifts.groupuserclass_id', req.user.id, req.params.location_id);
-                });
-        } else {
-            // grab all shifts at locations/sublocations that you are a manager of and managing
-            // TODO: SIMPLIFY THIS GOD AWFUL QUERY, BY USING ORs IT SHOULD BE ABLE TO BE SIMPLIFIED
-            //var columns = createSelectQueryForAllColumns('Shift', 'shifts');
-            //q.raw(SQL_GET_MANAGING_SHIFTS_WITH_LOCATION);
-            var user_id = req.user.id;
-            //q.select(models.knex.raw(SQL_GET_MANAGING_SHIFTS_WITH_LOCATION, [user_id, user_id, user_id]));
-
-            q.select('shifts.*')
-                .from('shifts')
-                .leftJoin('sublocations', function() {
-                    this.on('sublocations.id', '=', 'shifts.sublocation_id');
-                })
-                .innerJoin('locations', function() {
-                    this.on('locations.id', '=', 'sublocations.location_id')
-                        .orOn('locations.id', '=', 'shifts.location_id');
-                })
-                .innerJoin('groups', function() {
-                    this.on('groups.id', '=', 'locations.group_id');
-                })
-                .innerJoin('groupuserclasses', function() {
-                    this.on('groupuserclasses.group_id', '=', 'groups.id');
-                })
-                .leftJoin('usergroups', function() {
-                    this.on('usergroups.group_id', '=', 'groups.id');
-                })
-                .joinRaw('inner join groupuserclasstousers on\
-  groupuserclasstousers.groupuserclass_id = groupuserclasses.id and\
-  (groupuserclasstousers.user_id = ? or groups.user_id = ?)', [user_id, user_id])
-                .innerJoin('grouppermissions', function() {
-                    this.on('grouppermissions.id', '=', 'usergroups.grouppermission_id');
-                })
-                .leftJoin('managingclassesatlocations', function() {
-                    this.on('managingclassesatlocations.sublocation_id', '=', 'sublocations.id')
-                        .orOn('managingclassesatlocations.location_id', '=', 'locations.id');
-                })
-                .where(function () {
-                    _getShiftsYouAreManagingFilterByDates(this, before, after);
-                })
-                .whereRaw('(\
-            managingclassesatlocations.managing = ' + models.sqlTrue + ' and\
-            grouppermissions.permissionlevel >= ' + managingPermissionLevel + ' and\
-            (\
-                managingclassesatlocations.sublocation_id = shifts.sublocation_id or\
-            managingclassesatlocations.location_id = shifts.location_id\
-        ) and\
-            managingclassesatlocations.groupuserclass_id = shifts.groupuserclass_id\
-        )')
-                /*
-                .where(function() {
-                    this.where('managingclassesatlocations.managing', '=', models.sqlTrue)
-                        .andWhere('grouppermissions.permissionlevel', '>=', managingPermissionLevel)
-                        .andWhere(function() {
-                            this.where('managingclassesatlocations.sublocation_id', '=', 'shifts.sublocation_id')
-                                .orWhere('managingclassesatlocations.location_id', '=', 'shifts.location_id');
-                        })
-                        .andWhere('managingclassesatlocations.groupuserclass_id', '=', 'shifts.groupuserclass_id');
-
-                })
-                */
-                .orWhere('groups.user_id', '=', user_id);
-
-
-            /*
-             select distinct shifts.id from shifts
-             left join sublocations on sublocations.id = shifts.sublocation_id
-             inner join locations on locations.id = sublocations.location_id or
-             locations.id = shifts.location_id
-             inner join groups on groups.id = locations.group_id
-             inner join groupuserclasses on groupuserclasses.group_id = groups.id
-             left join usergroups on usergroups.group_id = groups.id
-             inner join groupuserclasstousers on
-             groupuserclasstousers.groupuserclass_id = groupuserclasses.id and
-             (groupuserclasstousers.user_id = 5 or groups.user_id = 5)
-             inner join grouppermissions on grouppermissions.id = usergroups.grouppermission_id
-             left join managingclassesatlocations on
-             managingclassesatlocations.sublocation_id = sublocations.id or
-             managingclassesatlocations.location_id = locations.id
-             where
-             (
-             managingclassesatlocations.managing = 1 and
-             grouppermissions.permissionlevel >= 2 and
-             (
-             managingclassesatlocations.sublocation_id = shifts.sublocation_id or
-             managingclassesatlocations.location_id = shifts.location_id
-             ) and
-             managingclassesatlocations.groupuserclass_id = shifts.groupuserclass_id
-             ) or
-             (groups.user_id = 5)
-             */
-
-            /*
-            q.select(columns)
-                .from('shifts')
-                .where(function() {
-                    _getShiftsYouAreManagingFilterByDates(this, before, after);
-                })
-                .leftJoin('sublocations', function() {
-                    this.on('sublocations.id', '=', 'shifts.sublocation_id');
-                })
-                .joinRaw('INNER JOIN locations ON locations.id = COALESCE(sublocations.location_id, shifts.location_id)')
-                .innerJoin('groups', function() {
-                    this.on('groups.id', '=', 'locations.group_id');
-                })
-                .leftJoin('usergroups', function() {
-                    this.on('usergroups.group_id', '=', 'groups.id');
-                })
-                .innerJoin('groupuserclasses', function() {
-                    this.on('groupuserclasses.group_id', '=', 'groups.id');
-                })
-                .innerJoin('groupuserclasstousers', function() {
-                    this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id')
-                        .orOn(function() {
-                            this.where('groupuserclasstousers.user_id', '=', req.user.id)
-                                .orWhere('groups.user_id', '=', req.user.id);
-                        });
-                })
-                .leftJoin('grouppermissions', function() {
-                    this.on('grouppermissions.id', '=', 'usergroups.grouppermission_id');
-                })
-                .where(function() {
-                    this.where('groups.user_id', '=', req.user.id)
-                        .orWhere('grouppermissions.permissionlevel', '>=', managingPermissionLevel);
-                })
-
-
-            // get shifts by locations you are a manager of and managing class types
-            q.select(columns)
-                .from('shifts')
-                .where(function () {
-                    _getShiftsYouAreManagingFilterByDates(this, before, after);
-                    //this.where('shifts.start', '>=', before);
-                        /*
-                        .andWhere(function() {
-                            this.where('shifts.end', '>=', before)
-                                .andWhere('shifts.end', '<=', after);
-                        });
-                        *\/
-                })
-                //.whereIn('shifts.groupuserclass_id', managingClassesAtLocationSubQuery)
-                .innerJoin('locations', function() {
-                    this.on('locations.id', '=', 'shifts.location_id');
-                })
-                .innerJoin('groups', function() {
-                    this.on('groups.id', '=', 'locations.group_id');
-                })
-                .innerJoin('usergroups', function() {
-                    this.on('usergroups.group_id', '=', 'groups.id')
-                        .andOn('usergroups.user_id', '=', req.user.id);
-                })
-                //.where('usergroups.user_id', '=', req.user.id)
-            /*
-                .innerJoin('groupuserclasses', function() {
-                    this.on('groupuserclasses.group_id', '=', 'groups.id');
-                })
-                .innerJoin('groupuserclasstousers', function() {
-                    this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id')
-                        .andOn('groupuserclasstousers.user_id', '=', req.user.id);
-                })
-                *\/
-                .innerJoin('grouppermissions', function () {
-                    this.on('grouppermissions.id', '=', 'usergroups.grouppermission_id');
-                })
-                .where('grouppermissions.permissionlevel', '>=', managingPermissionLevel)
-                .innerJoin('userpermissions', function() {
-                    this.on('userpermissions.location_id', '=', 'locations.id')
-                })
-                .where('userpermissions.user_id', '=', req.user.id)
-                .andWhere('userpermissions.subscribed', '=', controllerCommon.true)
-                .innerJoin('managingclassesatlocations', function() {
-                    this.on('managingclassesatlocations.location_id', '=', 'locations.id');
-                })
-                .where('managingclassesatlocations.managing', '=', true);
-            filterShiftsByApplications(q, req.user.id, false, approvedOnly, pendingApprovalsOnly, noApplicationsOnly)
-                //.innerJoin('usergroups', function() {
-                    //this.on('usergroups.id', '=', 'managingclassesatlocations.usergroup_id');
-                //})
-                //.where('usergroups.user_id', '=', req.user.id)
-                .union(function() {
-                    // if the user is not a group admin and instead is a privileged user to the group via roles
-                    this.select(columns)
-                        .from('shifts')
-                        .where(function () {
-                            _getShiftsYouAreManagingFilterByDates(this, before, after);
-                            //this.where('shifts.start', '>=', before);
-                                //.orWhere('shifts.end', '>=', after);
-                        })
-                        //.whereIn('shifts.groupuserclass_id', managingClassesAtLocationSubQuery)
-                        .innerJoin('locations', function() {
-                            this.on('locations.id', '=', 'shifts.location_id');
-                        })
-                        .innerJoin('groups', function() {
-                            this.on('groups.id', '=', 'locations.group_id');
-                        })
-                        .innerJoin('usergroups', function() {
-                            this.on('usergroups.group_id', '=', 'groups.id')
-                                .andOn('usergroups.user_id', '=', req.user.id);
-                        })
-                        //.where('usergroups.user_id', '=', req.user.id)
-                        .innerJoin('groupuserclasses', function() {
-                            this.on('groupuserclasses.group_id', '=', 'groups.id');
-                        })
-                        .innerJoin('groupuserclasstousers', function() {
-                            this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id')
-                                .andOn('groupuserclasstousers.user_id', '=', req.user.id);
-                        })
-                        .innerJoin('grouppermissions', function () {
-                            this.on('grouppermissions.id', '=', 'groupuserclasses.grouppermission_id');
-                        })
-                        .where('grouppermissions.permissionlevel', '>=', managingPermissionLevel)
-                        .innerJoin('userpermissions', function() {
-                            this.on('userpermissions.location_id', '=', 'locations.id')
-                        })
-                        .where('userpermissions.user_id', '=', req.user.id)
-                        .andWhere('userpermissions.subscribed', '=', controllerCommon.true)
-                        .innerJoin('managingclassesatlocations', function() {
-                            this.on('managingclassesatlocations.location_id', '=', 'locations.id');
-                        })
-                        .where('managingclassesatlocations.managing', '=', true);
-                    filterShiftsByApplications(this, req.user.id, false, approvedOnly, pendingApprovalsOnly, noApplicationsOnly)
-                        .union(function() {
-                            // get shifts by sublocations you are a manager of via group affiliation
-                            this.select(columns)
-                                .from('shifts')
-                                .where(function () {
-                                    _getShiftsYouAreManagingFilterByDates(this, before, after);
-                                    //this.where('shifts.start', '>=', before);
-                                        //.orWhere('shifts.end', '>=', after);
-                                })
-                                .innerJoin('sublocations', function() {
-                                    this.on('sublocations.id', '=', 'shifts.sublocation_id');
-                                })
-                                .innerJoin('locations', function() {
-                                    this.on('locations.id', '=', 'sublocations.location_id');
-                                })
-                                .innerJoin('groups', function() {
-                                    this.on('groups.id', '=', 'locations.group_id');
-                                })
-                                .innerJoin('usergroups', function() {
-                                    this.on('usergroups.group_id', '=', 'groups.id');
-                                })
-                                .innerJoin('grouppermissions', function () {
-                                    this.on('grouppermissions.id', '=', 'usergroups.grouppermission_id');
-                                })
-                                .where('grouppermissions.permissionlevel', '>=', managingPermissionLevel)
-                                .innerJoin('userpermissions', function() {
-                                    this.on('userpermissions.location_id', '=', 'locations.id')
-                                })
-                                .where('userpermissions.user_id', '=', req.user.id)
-                                .andWhere('userpermissions.subscribed', '=', controllerCommon.true)
-                                .innerJoin('managingclassesatlocations', function() {
-                                    this.on('managingclassesatlocations.location_id', '=', 'locations.id');
-                                })
-                                .where('managingclassesatlocations.managing', '=', true);
-                            filterShiftsByApplications(this, req.user.id, false, approvedOnly, pendingApprovalsOnly, noApplicationsOnly)
-                                .union(function() {
-                                    // get shifts by sublocations you are a manager of and managing class types
-                                    this.select(columns)
-                                        .from('shifts')
-                                        .where(function () {
-                                            _getShiftsYouAreManagingFilterByDates(this, before, after);
-                                            //this.where('shifts.start', '>=', before);
-                                                //.orWhere('shifts.end', '>=', after);
-                                        })
-                                        .innerJoin('sublocations', function() {
-                                            this.on('sublocations.id', '=', 'shifts.sublocation_id');
-                                        })
-                                        .innerJoin('locations', function() {
-                                            this.on('locations.id', '=', 'sublocations.location_id');
-                                        })
-                                        .innerJoin('groups', function() {
-                                            this.on('groups.id', '=', 'locations.group_id');
-                                        })
-                                        .innerJoin('groupuserclasses', function() {
-                                            this.on('groupuserclasses.group_id', '=', 'groups.id');
-                                        })
-                                        .innerJoin('groupuserclasstousers', function() {
-                                            this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id')
-                                                .andOn('groupuserclasstousers.user_id', '=', req.user.id);
-                                        })
-                                        .innerJoin('grouppermissions', function () {
-                                            this.on('grouppermissions.id', '=', 'groupuserclasses.grouppermission_id');
-                                        })
-                                        .where('grouppermissions.permissionlevel', '>=', managingPermissionLevel)
-                                        .innerJoin('userpermissions', function() {
-                                            this.on('userpermissions.location_id', '=', 'locations.id')
-                                        })
-                                        .where('userpermissions.user_id', '=', req.user.id)
-                                        .andWhere('userpermissions.subscribed', '=', controllerCommon.true)
-                                        .innerJoin('managingclassesatlocations', function() {
-                                            this.on('managingclassesatlocations.location_id', '=', 'locations.id');
-                                        })
-                                        .where('managingclassesatlocations.managing', '=', true)
-                                        .innerJoin('usergroups', function() {
-                                            this.on('usergroups.id', '=', 'managingclassesatlocations.usergroup_id')
-                                            //.andOn('usergroups.user_id', '=', req.user.id);
-                                        });
-                                    filterShiftsByApplications(this, req.user.id, false, approvedOnly, pendingApprovalsOnly, noApplicationsOnly)
-                                        //.where('usergroups.user_id', '=', req.user.id)
-                                        .union(function() {
-                                            // get shifts by groups => locations you are an owner of and managing class types
-                                            this.select(columns)
-                                                .from('shifts')
-                                                .where(function () {
-                                                    _getShiftsYouAreManagingFilterByDates(this, before, after);
-                                                    //this.where('shifts.start', '>=', before);
-                                                        /*
-                                                        .orWhere(function() {
-                                                            this.where('shifts.end', '>=', before)
-                                                                .andWhere('shifts.end', '<=', after);
-                                                        });
-                                                        *\/
-                                                })
-                                                //.whereIn('shifts.groupuserclass_id', managingClassesAtLocationSubQuery)
-                                                .innerJoin('locations', function() {
-                                                    this.on('locations.id', '=', 'shifts.location_id');
-                                                })
-                                                .innerJoin('groups', function() {
-                                                    this.on('groups.id', '=', 'locations.group_id');
-                                                })
-                                                // group owner can see all shifts in their group
-                                                .where('groups.user_id', '=', req.user.id);
-                                            filterShiftsByApplications(this, req.user.id, false, approvedOnly, pendingApprovalsOnly, noApplicationsOnly)
-                                                .union(function() {
-                                                    // get shifts by groups => sublocations you are an owner of and managing class types
-                                                    this.select(columns)
-                                                        .from('shifts')
-                                                        .where(function () {
-                                                            _getShiftsYouAreManagingFilterByDates(this, before, after);
-                                                            //this.where('shifts.start', '>=', before);
-                                                            /*
-                                                                .orWhere(function() {
-                                                                    this.where('shifts.end', '>=', before)
-                                                                        .andWhere('shifts.end', '<=', after);
-                                                                });
-                                                                *\/
-                                                        })
-                                                        //.whereIn('shifts.groupuserclass_id', managingClassesAtLocationSubQuery)
-                                                        .innerJoin('sublocations', function() {
-                                                            this.on('sublocations.id', '=', 'shifts.sublocation_id');
-                                                        })
-                                                        .innerJoin('locations', function() {
-                                                            this.on('locations.id', '=', 'sublocations.location_id');
-                                                        })
-                                                        .innerJoin('groups', function() {
-                                                            this.on('groups.id', '=', 'locations.group_id');
-                                                        })
-                                                        .where('groups.user_id', '=', req.user.id)
-                                                    filterShiftsByApplications(this, req.user.id, false, approvedOnly, pendingApprovalsOnly, noApplicationsOnly);
-                                                });
-                                        });
-                                });
-                        });
-                });
-    */
+            q.andWhere('locations.id', '=', location_id);
+        }
+        if (false) { // applied only
+            joinShiftApplications(q, user_id, true);
+        } else if (approvedOnly) {
+            joinApprovedOnly(q);
+        } else if (pendingApprovalsOnly) {
+            joinPendingApprovalsOnly(q);
+        } else if (noApplicationsOnly) {
+            joinNoApplicationsOnly(q);
         }
     })
         .fetchAll({
@@ -1846,19 +1370,6 @@ function getAllShifts(req, res, hideCanceled, appliedOnly, showDividers, hideIgn
         .catch(function(err) {
             error(req, res, err);
         });
-}
-
-function filterShiftsByApplications(query, user_id, appliedOnly, approvedOnly, pendingApprovalsOnly, noApplicationsOnly) {
-    if (appliedOnly) {
-        return joinShiftApplications(query, user_id, appliedOnly);
-    } else if (approvedOnly) {
-        return joinApprovedOnly(query);
-    } else if (pendingApprovalsOnly) {
-        return joinPendingApprovalsOnly(query);
-    } else if (noApplicationsOnly) {
-        return joinNoApplicationsOnly(query);
-    }
-    return query;
 }
 
 /**
