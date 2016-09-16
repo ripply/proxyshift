@@ -740,7 +740,8 @@ function getShiftsYouAreManaging(req, res, pendingApprovalsOnly, noApplicationsO
     return models.Shift.query(function(q) {
         // grab all shifts at locations/sublocations that you are a manager of and managing
         var user_id = req.user.id;
-        q.select('shifts.*')
+        q.distinct()
+            .select('shifts.*')
             .from('shifts')
             .leftJoin('sublocations', function() {
                 this.on('sublocations.id', '=', 'shifts.sublocation_id');
