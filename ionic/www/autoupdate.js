@@ -90,6 +90,20 @@
         return false;
     };
 
+    function localStorageAvailable() {
+        return typeof(Storage) !== "undefined";
+    }
+
+    function isForceUpdateRequired() {
+        return localStorageAvailable() && localStorage.getItem('initial_update') != true;
+    }
+
+    function initialUpdateComplete() {
+        if (localStorageAvailable()) {
+            localStorage.setItem('initial_update', true);
+        }
+    }
+
     var checking = false;
 
     // Check > Download > Update
@@ -145,12 +159,17 @@
             console.log("On WIFI, checking for updates...");
         }
 
-        function doUpdate() {
+        function doUpdate(reload) {
             loader.download(function onProgress(file) {
                 console.log("Downloaded: " + file);
             })
                 .then(function(){
-                    return loader.update();
+                    if (localStorageAvailable()) {
+                        if (isForceUpdateRequired()) {
+                            initialUpdateComplete();
+                        }
+                    }
+                    return loader.update(reload);
                 },function(err){
                     console.error('Auto-update error:',err);
                 });
@@ -189,7 +208,14 @@
         checking = true;
 
         loader.check()
-            .then(function(newManifest){
+            .then(function(updatable){
+                if (!updatable) {
+                    if (!isForceUpdateRequired()) {
+                        initialUpdateComplete();
+                    }
+                    return;
+                }
+                var newManifest = loader.newManifest;
                 checking = false;
                 try {
                     var manifestHash = stringHashcode(JSON.stringify(newManifest));
@@ -219,23 +245,27 @@
                             buttonLabels.push('Ignore');
                         }
                         if (hasCordovaDialogs) {
-                            navigator.notification.confirm(
-                                'There is an update available!',
-                                function updatePromptCallback(buttonClicked) {
-                                    if (buttonClicked == 1) {
-                                        doUpdate();
-                                    } else if (buttonClicked == 2) {
-                                        // do nothing
-                                    } else if (buttonClicked == 3) {
-                                        updateIgnored(manifestHash);
-                                    }
-                                    if (hasStorage) {
-                                        localStorage.setItem('next_update_time', '' + nextUpdate);
-                                    }
-                                },
-                                'Update Available',
-                                buttonLabels
-                            );
+                            if (!isForceUpdateRequired()) {
+                                doUpdate(true);
+                            } else {
+                                navigator.notification.confirm(
+                                    'There is an update available!',
+                                    function updatePromptCallback(buttonClicked) {
+                                        if (buttonClicked == 1) {
+                                            doUpdate();
+                                        } else if (buttonClicked == 2) {
+                                            // do nothing
+                                        } else if (buttonClicked == 3) {
+                                            updateIgnored(manifestHash);
+                                        }
+                                        if (hasStorage) {
+                                            localStorage.setItem('next_update_time', '' + nextUpdate);
+                                        }
+                                    },
+                                    'Update Available',
+                                    buttonLabels
+                                );
+                            }
                         } else {
                             doUpdate();
                         }
@@ -259,7 +289,7 @@
     // Couple events:
 
     // 1. On launch
-    check();
+    check(!isForceUpdateRequired());
 
     // 2. Cordova: On resume
     fs.deviceready.then(function(){
