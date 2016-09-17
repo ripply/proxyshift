@@ -1103,6 +1103,16 @@ input[type="password"] :focus {
 .square-content span .icon {
   font-size: 6em;
 }
+@media screen and (min-aspect-ratio: 1/1) {
+  .square-box {
+    width: 25%;
+  }
+}
+@media all and (orientation: landscape) {
+  .square-box {
+    width: 25%;
+  }
+}
 @media only screen and (max-width: 300px) {
   .login-container {
     height: 100%;

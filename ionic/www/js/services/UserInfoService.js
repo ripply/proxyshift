@@ -435,6 +435,29 @@ angular.module('scheduling-app.services')
             var allUserclasses = {};
             var managingclasses = {};
 
+            var serverVersion = {};
+
+            if (typeof(Storage) !== "undefined") {
+                var lastUsedVersion = localStorage.getItem('lastUsedVersion');
+                if (lastUsedVersion !== window.ApiVersion.string) {
+                    // mark the last version that we used so that if the user updates
+                    // and in the future we add a what's new popup after updating
+                    // then we know what the last version that the user had
+                    localStorage.setItem('lastUsedVersion', window.ApiVersion.string);
+                }
+            }
+
+            this.isUpdateRequired = isUpdateRequired;
+
+            function isUpdateRequired() {
+                if (serverVersion.major !== undefined &&
+                    serverVersion.minor !== undefined) {
+                    return window.ApiVersion.compatible(serverVersion);
+                } else {
+                    return false;
+                }
+            }
+
             this.updateUserInfo = function updateUserInfo() {
                 var userinfo = $rootScope.userinfo;
                 angular.forEach(managingclasses, function(value, key) {
@@ -456,6 +479,16 @@ angular.module('scheduling-app.services')
                 });
 
                 if (userinfo) {
+                    if (userinfo.version) {
+                        serverVersion.major = userinfo.version.major;
+                        serverVersion.minor = userinfo.version.minor;
+                        serverVersion.patch = userinfo.version.patch;
+                    }
+                    if (isUpdateRequired()) {
+                        if (window.forceUpdate) {
+                            window.forceUpdate();
+                        }
+                    }
                     angular.forEach([
                         // first get full list of groups
                         {

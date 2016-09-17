@@ -205,7 +205,7 @@ angular.module('scheduling-app', [
             function requireSession() {
                 var sess = getSessionService();
                 if (sess) {
-                    return sess.requrieSession();
+                    return sess.requireSession();
                 } else {
                     return false;
                 }

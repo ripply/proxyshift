@@ -20,6 +20,7 @@ var models = require('../app/models'),
     utils = require('../app/utils'),
     appLogic = require('../app'),
     variables = require('./variables'),
+    apiversion = require('../ionic/www/js/shared/ApiVersion.js'),
     Bookshelf = models.Bookshelf;
 
 var modifiableAccountFields = [
@@ -730,6 +731,7 @@ function getUserInfo(user_id, next) {
                                                             if (arealocations) {
                                                                 userJson.arealocations = arealocations.toJSON();
                                                             }
+                                                            userJson.version = apiversion.version;
 
                                                             next(undefined, userJson);
                                                         });

@@ -8206,6 +8206,9 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                More Information\n" +
     "            </div>\n" +
     "            <ion-item>\n" +
+    "                Version: {{version.major}}.{{version.minor}}.{{version.patch}}\n" +
+    "            </ion-item>\n" +
+    "            <ion-item>\n" +
     "                Support\n" +
     "            </ion-item>\n" +
     "            <ion-item href=\"#{{states.PRIVACYPOLICY_URL}}\">\n" +

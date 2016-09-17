@@ -108,6 +108,7 @@ module.exports = function(grunt) {
         <!-- **** DIRECTIVES **** -->
         'ionic/www/js/shared/Validation.js',
         'ionic/www/js/shared/ShiftShared.js',
+        'ionic/www/js/shared/ApiVersion.js',
         'ionic/www/js/directives/ValidationDirectiveGenerator.js',
         'ionic/www/js/directives/Directives.js',
         'ionic/www/js/directives/LoginDirective.js',

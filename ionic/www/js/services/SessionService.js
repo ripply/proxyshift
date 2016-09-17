@@ -142,7 +142,21 @@ angular.module('scheduling-app.session', [
                 deferred.reject(value);
             }
 
+            function isNetOnline() {
+                if (window.navigator &&
+                    window.navigator.connection &&
+                    window.navigator.connection.type == Connection.NONE) {
+                    return false;
+                }
+                return true;
+            }
+
             function checkAuthentication(loggingOut, forceCheck) {
+                if (!isNetOnline()) {
+                    var tempDeferred = $q.defer();
+                    tempDeferred.reject("Offline");
+                    return tempDeferred.promise;
+                }
                 var deferred;
                 if (checkingAuthenticationPromise !== false) {
                     // blocking wait for auth to finish

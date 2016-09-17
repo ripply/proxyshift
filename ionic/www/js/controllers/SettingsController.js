@@ -27,6 +27,8 @@ angular.module('scheduling-app.controllers')
             $scope.isList = false;
             $scope.fetch();
 
+            $scope.version = window.ApiVersion.version;
+
             $scope.groupsList = UserInfoService.getGroupList();
 
             $scope.close = function close() {

@@ -76,6 +76,10 @@
         check(true);
     };
 
+    window.forceUpdate = function forceUpdate() {
+        check(true, true);
+    };
+
     window.checkForUpdatesSetting = function checkForUpdatesSetting(newSetting) {
         if (typeof(Storage) !== "undefined") {
             if (newSetting !== undefined) {
@@ -107,7 +111,7 @@
     var checking = false;
 
     // Check > Download > Update
-    function check(force){
+    function check(force, required){
         if (checking) {
             return;
         }
@@ -245,7 +249,7 @@
                             buttonLabels.push('Ignore');
                         }
                         if (hasCordovaDialogs) {
-                            if (!isForceUpdateRequired()) {
+                            if (required || !isForceUpdateRequired()) {
                                 doUpdate(true);
                             } else {
                                 navigator.notification.confirm(
