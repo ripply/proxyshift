@@ -906,6 +906,10 @@ ion-header-bar.bar.bar-positive {
   background-color: transparent;
   box-shadow: none;
 }
+.popup-title,
+.popup-sub-title {
+  color: #000000;
+}
 .gradient-colorrr {
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #159deb), color-stop(1, #159deb));
   background-image: -o-linear-gradient(bottom, #159deb 30%, #159deb 100%);

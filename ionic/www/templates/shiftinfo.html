@@ -28,7 +28,7 @@
                 <div class="item item-input row"
                     ng-if="shift.shiftapplications.length > 0">
                     <div class="col col-50 list-item-padding">
-                        <h4 class="sub-subheader">Shift Applications</h4>
+                        <h4 class="sub-subheader">Applications</h4>
                     </div>
                     <div class="col list-item-padding">
                         &nbsp;
@@ -62,20 +62,20 @@
                 <div class="item row">
                     <div class="col">
                         <button style="width: 100%"
+                                ng-if="!shift.applied"
                                 class="button button-block button-positive activated"
-                                ng-click="next()">
+                                ng-click="registerForShift()">
                             Apply
                         </button>
-                    </div>
-                    <div class="col">
                         <button style="width: 100%"
+                                ng-if="shift.applied"
                                 class="button button-block button-positive activated"
-                                ng-click="next()">
-                            Decline
+                                ng-click="unregisterForShift()">
+                            Cancel shift application
                         </button>
                     </div>
                 </div>
-                <div class="item row">
+                <div class="item row" ng-if="shift.privileged">
                     <div class="col">
                         <button style="width: 100%"
                                 class="button button-block button-assertive activated"

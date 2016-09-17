@@ -7633,7 +7633,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                <div class=\"item item-input row\"\n" +
     "                    ng-if=\"shift.shiftapplications.length > 0\">\n" +
     "                    <div class=\"col col-50 list-item-padding\">\n" +
-    "                        <h4 class=\"sub-subheader\">Shift Applications</h4>\n" +
+    "                        <h4 class=\"sub-subheader\">Applications</h4>\n" +
     "                    </div>\n" +
     "                    <div class=\"col list-item-padding\">\n" +
     "                        &nbsp;\n" +
@@ -7667,20 +7667,20 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                <div class=\"item row\">\n" +
     "                    <div class=\"col\">\n" +
     "                        <button style=\"width: 100%\"\n" +
+    "                                ng-if=\"!shift.applied\"\n" +
     "                                class=\"button button-block button-positive activated\"\n" +
-    "                                ng-click=\"next()\">\n" +
+    "                                ng-click=\"registerForShift()\">\n" +
     "                            Apply\n" +
     "                        </button>\n" +
-    "                    </div>\n" +
-    "                    <div class=\"col\">\n" +
     "                        <button style=\"width: 100%\"\n" +
+    "                                ng-if=\"shift.applied\"\n" +
     "                                class=\"button button-block button-positive activated\"\n" +
-    "                                ng-click=\"next()\">\n" +
-    "                            Decline\n" +
+    "                                ng-click=\"unregisterForShift()\">\n" +
+    "                            Cancel shift application\n" +
     "                        </button>\n" +
     "                    </div>\n" +
     "                </div>\n" +
-    "                <div class=\"item row\">\n" +
+    "                <div class=\"item row\" ng-if=\"shift.privileged\">\n" +
     "                    <div class=\"col\">\n" +
     "                        <button style=\"width: 100%\"\n" +
     "                                class=\"button button-block button-assertive activated\"\n" +

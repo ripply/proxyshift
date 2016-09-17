@@ -345,7 +345,8 @@ module.exports = {
                     res,
                     'Success',
                     [
-                        'id'
+                        'id',
+                        'user_id'
                     ]
                 );
             }
@@ -1634,7 +1635,9 @@ function getShifts(req, res, appliedOnly, showDividers) {
                     // we need to strip the 'shiftapplications'
                     // relation from the response
                     // non-managers should not be able to access that
-                    res.json(shift.toJSON());
+                    var shiftJson = shift.toJSON();
+                    shiftJson.privileged = privilegedshift;
+                    res.json(shiftJson);
                 }
             });
     /*
@@ -1845,24 +1848,28 @@ function unregisterForShift(req, res) {
                     .fetch()
                     .tap(function() {
                         // TODO: Transaction
-                        return models.ShiftRescissionReason.forge({
-                            user_id: req.user.id,
-                            shiftapplication_id: shiftapplicationIds[0],
-                            date: date,
-                            reason: reason
-                        })
-                            .save()
-                            .tap(function(shiftrecissionreason) {
-                                // shift has been recinded
-                                // send notifications
-                                clientCreate(req, res, 201, shiftrecissionreason.get('id'));
-                                return triggerShiftApplicationRecinsionNotification(shiftapplicationIds[0], shiftrecissionreason.get('id'));
+                        if (shiftapplicationIds[0]) {
+                            return models.ShiftRescissionReason.forge({
+                                user_id: req.user.id,
+                                shiftapplication_id: shiftapplicationIds[0],
+                                date: date,
+                                reason: reason
                             })
-                            .catch(function(err) {
-                                // TODO: Transaction so can rollback on possible error
-                                error(req, res, err);
-                                console.log(err);
-                            });
+                                .save()
+                                .tap(function(shiftrecissionreason) {
+                                    // shift has been recinded
+                                    // send notifications
+                                    clientCreate(req, res, 201, shiftrecissionreason.get('id'));
+                                    return triggerShiftApplicationRecinsionNotification(shiftapplicationIds[0], shiftrecissionreason.get('id'));
+                                })
+                                .catch(function(err) {
+                                    // TODO: Transaction so can rollback on possible error
+                                    error(req, res, err);
+                                    console.log(err);
+                                });
+                        } else {
+                            res.sendStatus(200);
+                        }
                     }
                 );
             } else {
