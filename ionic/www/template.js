@@ -7664,7 +7664,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                        </li>\n" +
     "                    </div>\n" +
     "                </ul>\n" +
-    "                <div class=\"item row\">\n" +
+    "                <div class=\"item row\" ng-if=\"shift.applied || canApply\">\n" +
     "                    <div class=\"col\">\n" +
     "                        <button style=\"width: 100%\"\n" +
     "                                ng-if=\"!shift.applied\"\n" +

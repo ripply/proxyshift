@@ -59,7 +59,7 @@
                         </li>
                     </div>
                 </ul>
-                <div class="item row">
+                <div class="item row" ng-if="shift.applied || canApply">
                     <div class="col">
                         <button style="width: 100%"
                                 ng-if="!shift.applied"

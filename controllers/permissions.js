@@ -343,6 +343,49 @@ module.exports = {
                 });
         },
 
+        'user can apply for shift or has applied already': function(req, act) {
+            var shift_id = req.params.shift_id;
+
+            if (shift_id === undefined) {
+                throw new Error("Shift not passed into route");
+            }
+
+            // a user can apply for a shift if
+            // they are a part of the group user class attached to a shift
+            return models.GroupUserClass.query(function(q) {
+                q.select('id')
+                    .from('groupuserclasses')
+                    .innerJoin('shifts', function() {
+                        this.on('shifts.groupuserclass_id', '=', 'groupuserclasses.id');
+                    })
+                    .where('shifts.id', '=', shift_id)
+                    .innerJoin('groupuserclasstousers', function() {
+                        this.on('groupuserclasstousers.groupuserclass_id', '=', 'groupuserclasses.id');
+                    })
+                    .where('groupuserclasstousers.user_id', '=', req.user.id);
+            })
+                .fetch({require: true})
+                .then(function(groupuserclass) {
+                    return true;
+                })
+                .catch(function(err) {
+                    return models.ShiftApplications.query(function(q) {
+                        q.select('id')
+                            .from('shiftapplications')
+                            .where('shiftapplications.shift_id', '=', shift_id)
+                            .andWhere('shiftapplications.user_id', '=', req.user.id)
+                            .andWhere('shiftapplications.recinded', '=', models.sqlFalse);
+                    })
+                        .fetch({require: true})
+                        .then(function() {
+                            return true;
+                        })
+                        .catch(function(err) {
+                            return false;
+                        })
+                });
+        },
+
         'mark if user is member of location': function markIfUserIsMemberOfLocation(req, act) {
             return models.UserPermission.query(function(q) {
                 q.select()

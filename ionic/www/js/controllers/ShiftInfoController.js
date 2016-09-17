@@ -8,6 +8,7 @@ angular.module('scheduling-app.controllers')
         'toastr',
         'StateHistoryService',
         'ShiftProcessingService',
+        'UserInfoService',
         'ResourceService',
         'GENERAL_EVENTS',
         'STATES',
@@ -19,12 +20,16 @@ angular.module('scheduling-app.controllers')
                  toastr,
                  StateHistoryService,
                  ShiftProcessingService,
+                 UserInfoService,
                  ResourceService,
                  GENERAL_EVENTS,
                  STATES
         ) {
             $controller('BaseModelController', {$scope: $scope});
-            $scope.beforeEnter = fetch;
+            $scope.beforeEnter = function() {
+                $scope.myUserClasses = UserInfoService.getUserClasses();
+                fetch();
+            };
 
             $scope.busy = {
                 register: false,
@@ -35,6 +40,14 @@ angular.module('scheduling-app.controllers')
             $scope.data = {
                 reason: ''
             };
+
+            $scope.$watch('shift', function(newVal) {
+                if (newVal && newVal.hasOwnProperty('groupuserclass_id')) {
+                    $scope.canApply = $scope.myUserClasses.hasOwnProperty(newVal.groupuserclass_id);
+                } else {
+                    $scope.canApply = false;
+                }
+            });
 
             function fetch() {
                 if ($scope.busy.fetch) {

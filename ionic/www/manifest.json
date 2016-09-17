@@ -38,11 +38,11 @@
     },
     "libs.min.js": {
       "filename": "libs.min.js",
-      "version": "828048d645f2bb1d759cece63396671086b6238b79f7c5d12f0db759cdb78d78"
+      "version": "9809308d99907ac60a96b496c91c9b2e7d74a377b610e88d2b7887ada0aa9745"
     },
     "template.min.js": {
       "filename": "template.min.js",
-      "version": "56bd096792ae1ed1b0fd0a382d071d1949b50a04d17dfaeeaa4b33923cd3dc95"
+      "version": "811669c8155609c3f835494f8b34f3b75b666922b2a91bbc20d8846a49806ca1"
     },
     "toastr/dist/angular-toastr.css": {
       "filename": "lib/angular-toastr/dist/angular-toastr.css",

@@ -511,11 +511,11 @@ module.exports = {
             }
         },
         'put': {
-            auth: ['mark groupuserclass options for shift', 'user can apply for shift'],
+            auth: ['mark groupuserclass options for shift', 'user can apply for shift or has applied already'],
             route: unregisterForShift
         },
         'delete': {
-            auth: ['mark groupuserclass options for shift', 'user can apply for shift'],
+            auth: ['mark groupuserclass options for shift', 'user can apply for shift or has applied already'],
             route: unregisterForShift
         }
     },
