@@ -145,7 +145,8 @@ angular.module('scheduling-app.session', [
             function isNetOnline() {
                 if (window.navigator &&
                     window.navigator.connection &&
-                    window.navigator.connection.type == Connection.NONE) {
+                    window.Connection &&
+                    window.navigator.connection.type == window.Connection.NONE) {
                     return false;
                 }
                 return true;
