@@ -158,6 +158,18 @@ angular.module('scheduling-app.controllers')
                 }
             }
 
+            function loadedEvent() {
+                if ($scope.loaded !== undefined) {
+                    $scope.loaded();
+                }
+            }
+
+            function unloadedEvent() {
+                if ($scope.unloaded !== undefined) {
+                    $scope.unloaded();
+                }
+            }
+
             $scope.errorToast = function(title, body, other) {
                 toast('error', title, body, other);
             };
@@ -177,6 +189,8 @@ angular.module('scheduling-app.controllers')
             }
 
             angular.forEach({
+                'loaded': loadedEvent,
+                'unloaded': unloadedEvent,
                 'beforeEnter': beforeEnterEvent,
                 'afterEnter': afterEnterEvent,
                 'enter': enterEvent,

@@ -26,7 +26,7 @@ angular.module('scheduling-app.controllers')
                  STATES
         ) {
             $controller('BaseModelController', {$scope: $scope});
-            $scope.beforeEnter = function() {
+            $scope.enter = function() {
                 setupUserClasses();
                 fetch();
             };
@@ -41,9 +41,25 @@ angular.module('scheduling-app.controllers')
                 reason: ''
             };
 
+            $scope.error = undefined;
+
             function setupUserClasses() {
                 $scope.myUserClasses = UserInfoService.getUserClasses();
             }
+
+            function networkUp() {
+                if ($scope.error && $scope.statusCode !== 403) {
+                    fetch();
+                }
+            }
+
+            $scope.loaded = function() {
+                document.addEventListener('online', networkUp, false);
+            };
+
+            $scope.unloaded = function() {
+                document.removeEventListener('online', networkUp);
+            };
 
             $rootScope.$on(GENERAL_EVENTS.UPDATES.USERINFO.PROCESSED, function(state, userInfo) {
                 setupUserClasses();
@@ -58,17 +74,26 @@ angular.module('scheduling-app.controllers')
             });
 
             function fetch() {
+                console.log('fetchhhh');
                 if ($scope.busy.fetch) {
+                    console.log('NMOPEEEE');
                     return;
                 }
                 $scope.busy.fetch = true;
                 if ($stateParams.shift_id) {
                     ResourceService.getShift($stateParams.shift_id, function(response) {
                         $scope.shift = response;
+                        $scope.error = undefined;
+                        $scope.statusCode = 200;
                         $scope.busy.fetch = false;
                     }, function(error) {
                         // TODO: RETRY HANDLING
+                        $scope.error = error;
+                        $scope.statusCode = error.status;
                         $scope.busy.fetch = false;
+                        if (error.status == 403) {
+                            close();
+                        }
                     });
                 }
             }

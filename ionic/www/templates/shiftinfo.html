@@ -86,8 +86,11 @@
                 </div>
             </div>
         </div>
-        <div ng-if="!shift">
+        <div ng-if="!shift && error == undefined">
             Loading...
+        </div>
+        <div ng-if="!shift && error">
+            An error occurred {{statusCode}}
         </div>
     </ion-content>
 </ion-view>

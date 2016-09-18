@@ -7691,8 +7691,11 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                </div>\n" +
     "            </div>\n" +
     "        </div>\n" +
-    "        <div ng-if=\"!shift\">\n" +
+    "        <div ng-if=\"!shift && error == undefined\">\n" +
     "            Loading...\n" +
+    "        </div>\n" +
+    "        <div ng-if=\"!shift && error\">\n" +
+    "            An error occurred {{statusCode}}\n" +
     "        </div>\n" +
     "    </ion-content>\n" +
     "</ion-view>\n"
