@@ -289,7 +289,7 @@ angular.module('scheduling-app.services')
             function doesShiftHaveNonRescindedApplications(shift) {
                 if (shift && shift.shiftapplications) {
                     for (var i = 0; i < shift.shiftapplications.length; i++) {
-                        var rescinded = shift.shiftapplications[i].recinded;
+                        var rescinded = shift.shiftapplications[i].rescinded;
                         if (rescinded === 0 || rescinded === false) {
                             return true;
                         }
@@ -335,7 +335,7 @@ angular.module('scheduling-app.services')
             };
 
             function shiftApplicationIsAccepted(application) {
-                if (!application.recinded && application.shiftapplicationacceptdeclinereasons) {
+                if (!application.rescinded && application.shiftapplicationacceptdeclinereasons) {
                     var reasons = application.shiftapplicationacceptdeclinereasons;
                     sortShiftApplicationAcceptDeny(reasons);
                     if (reasons.length > 0) {
@@ -350,7 +350,7 @@ angular.module('scheduling-app.services')
             this.shiftApplicationIsDeclined = shiftApplicationIsDeclined;
 
             function shiftApplicationIsDeclined(application) {
-                if (!application.recinded && application.shiftapplicationacceptdeclinereasons) {
+                if (!application.rescinded && application.shiftapplicationacceptdeclinereasons) {
                     var reasons = application.shiftapplicationacceptdeclinereasons;
                     sortShiftApplicationAcceptDeny(reasons);
                     if (reasons.length > 0) {
@@ -454,7 +454,7 @@ angular.module('scheduling-app.services')
                 if (shift.shiftapplications) {
                     for (var i = 0; i < shift.shiftapplications.length; i++) {
                         var shiftapplication = shift.shiftapplications[i];
-                        if (!shiftapplication.recinded) {
+                        if (!shiftapplication.rescinded) {
                             return true;
                         }
                     }

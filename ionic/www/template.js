@@ -6658,7 +6658,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
 
 
   $templateCache.put('templates/notifications/recindshiftreason.html',
-    "<textarea rows=\"3\" ng-model=\"data.recindreason\"></textarea>\n"
+    "<textarea rows=\"3\" ng-model=\"data.rescindreason\"></textarea>\n"
   );
 
 
@@ -7643,7 +7643,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                    ng-repeat=\"shiftapplication in shift.shiftapplications\"\n" +
     "                    ng-if=\"shift.shiftapplications.length > 0\">\n" +
     "                    <div class=\"col list-item-padding\"\n" +
-    "                         ng-if=\"!shiftapplication.recinded\">\n" +
+    "                         ng-if=\"!shiftapplication.rescinded\">\n" +
     "                        <li class=\"item shiftapplication\" ng-class=\"{'shift-approved': shiftApplicationIsAccepted(shiftapplication), 'shift-declined': shiftApplicationIsDeclined(shiftapplication)}\">\n" +
     "                            <div style=\"float:right;\">\n" +
     "                                <button class=\"button button-assertive\" style=\"float: right;\"\n" +

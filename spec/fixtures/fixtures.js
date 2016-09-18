@@ -1164,7 +1164,7 @@ module.exports = {
                 shift_id: '@shifts:description:month long shift ending now',
                 user_id: '@users:username:shiftapplied',
                 date: formatDateForDb(moment(new Date()).unix()),
-                recinded: false
+                rescinded: false
             }
         ],
         managingclassesatlocations: [

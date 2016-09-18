@@ -428,7 +428,7 @@ module.exports = {
                             } else {
                                 // user does not need manager approval to apply for the shift
                                 if (otherUsersHaveAppliedBeforeUser) {
-                                    // other users have already applied and have not recinded their shift...
+                                    // other users have already applied and have not rescinded their shift...
                                     // we need to create an application but not automatically approve it
                                     return createShiftApplication(false);
                                 } else {
@@ -443,7 +443,7 @@ module.exports = {
                                     shift_id: req.params.shift_id,
                                     user_id: req.user.id,
                                     date: shiftApplicationTime,
-                                    recinded: false
+                                    rescinded: false
                                 })
                                     .save(null, sqlOptions)
                                     .tap(function createShiftApplicationSuccess(model) {
@@ -1380,12 +1380,12 @@ function getAllShifts(req, res, hideCanceled, appliedOnly, showDividers, hideIgn
  * @returns {*}
  */
 function joinShiftApplications(query, user_id, appliedOnly) {
-    // TODO: Figure out how to use this query without recinded != true see:
+    // TODO: Figure out how to use this query without rescinded != true see:
     // https://stackoverflow.com/questions/9592875/sql-server-left-outer-join-with-top-1-to-select-at-most-one-row
     query = query.joinRaw(
         'left join shiftapplications on shiftapplications.id = (' +
             'select id from shiftapplications ' +
-            'where shiftapplications.recinded <> ' + models.sqlTrue + ' ' +
+            'where shiftapplications.rescinded <> ' + models.sqlTrue + ' ' +
             'and shiftapplications.shift_id = shifts.id ' +
             'and shiftapplications.user_id = ? ' +
             'order by shiftapplications.date desc ' +
@@ -1422,7 +1422,7 @@ function joinPendingApprovalsOnly(query) {
         ')'
     )
         .where('shiftapplicationacceptdeclinereasons.accept', '<>', models.sqlTrue)
-        .andWhere('shiftapplications.recinded', '<>', models.sqlTrue);
+        .andWhere('shiftapplications.rescinded', '<>', models.sqlTrue);
 }
 
 /**
@@ -1440,7 +1440,7 @@ function joinApprovedOnly(query) {
         ')'
     )
         .where('shiftapplicationacceptdeclinereasons.accept', '=', models.sqlTrue)
-        .andWhere('shiftapplications.recinded', '<>', models.sqlTrue);
+        .andWhere('shiftapplications.rescinded', '<>', models.sqlTrue);
 }
 
 /**
@@ -1453,7 +1453,7 @@ function joinNoApplicationsOnly(query) {
         this.on('shiftapplications.shift_id', '=', 'shifts.id');
     })
         .whereNull('shiftapplications.shift_id')
-        .andWhere('shiftapplications.recinded', '<>', models.sqlTrue);
+        .andWhere('shiftapplications.rescinded', '<>', models.sqlTrue);
 }
 
 /**
@@ -1821,8 +1821,8 @@ function unregisterForShift(req, res) {
             .where('shiftapplications.user_id', '=', req.user.id)
             .andWhere('shiftapplications.shift_id', '=', req.params.shift_id)
             .andWhere(function() {
-                this.where('shiftapplications.recinded', '!=', '1')
-                    .orWhereNull('shiftapplications.recinded');
+                this.where('shiftapplications.rescinded', '!=', '1')
+                    .orWhereNull('shiftapplications.rescinded');
             });
     })
         .fetchAll({
@@ -1836,15 +1836,15 @@ function unregisterForShift(req, res) {
                     shiftapplicationIds.push(shiftapplication.get('id'));
                 });
                 // user has registered for shift
-                // recind it
+                // rescind it
                 var date = getCurrentTimeForInsertionIntoDatabase();
                 models.ShiftApplication.query(function(q) {
                     q.select()
                         .from('shiftapplications')
                         .whereIn('id', shiftapplicationIds)
                         .update({
-                            recinded: true,
-                            recindeddate: date
+                            rescinded: true,
+                            rescindeddate: date
                         });
                 })
                     .fetch()
@@ -1859,7 +1859,7 @@ function unregisterForShift(req, res) {
                             })
                                 .save()
                                 .tap(function(shiftrecissionreason) {
-                                    // shift has been recinded
+                                    // shift has been rescinded
                                     // send notifications
                                     clientCreate(req, res, 201, shiftrecissionreason.get('id'));
                                     return triggerShiftApplicationRecinsionNotification(shiftapplicationIds[0], shiftrecissionreason.get('id'));

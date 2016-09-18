@@ -14,16 +14,16 @@ var RAW = 'RAW';
 // http://blog.ragingflame.co.za/2014/7/21/using-nodejs-with-mysql
 
 var Function = {
-    'shiftapplicationsonlyonenonrecinded(integer, integer)': {
-        name: 'shiftapplicationsonlyonenonrecinded',
-            up: 'function shiftapplicationsonlyonenonrecinded(shift_id integer, user_id integer) returns boolean as $$ ' +
+    'shiftapplicationsonlyonenonrescinded(integer, integer)': {
+        name: 'shiftapplicationsonlyonenonrescinded',
+            up: 'function shiftapplicationsonlyonenonrescinded(shift_id integer, user_id integer) returns boolean as $$ ' +
         'select count(*) <= 1 from shiftapplications ' +
         'where shiftapplications.shift_id = shift_id ' +
         'and shiftapplications.user_id = user_id ' +
-        'and (shiftapplications.recinded is null ' +
-        'or shiftapplications.recinded = false); ' +
+        'and (shiftapplications.rescinded is null ' +
+        'or shiftapplications.rescinded = false); ' +
         '$$ language sql;',
-            down: 'drop function if exists shiftapplicationsonlyonenonrecinded(integer, integer);'
+            down: 'drop function if exists shiftapplicationsonlyonenonrescinded(integer, integer);'
     }
 };
 
@@ -775,20 +775,20 @@ var Schema = {
             index: {},
             nullable: false
         },
-        // application for shift has been recinded
-        recinded: {
+        // application for shift has been rescinded
+        rescinded: {
             type: boolean,
             index: {},
             default: false,
             nullable: false,
-            comment: 'Shift application has been recinded',
+            comment: 'Shift application has been rescinded',
             /*
             check: {
-                'shiftapplicationsonlyonenonrecinded(integer, integer)': ['shift_id', 'user_id']
+                'shiftapplicationsonlyonenonrescinded(integer, integer)': ['shift_id', 'user_id']
             }
             */
         },
-        recindeddate: {
+        rescindeddate: {
             type: date,
             index: {},
             nullable: true

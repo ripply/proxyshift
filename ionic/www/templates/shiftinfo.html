@@ -38,7 +38,7 @@
                     ng-repeat="shiftapplication in shift.shiftapplications"
                     ng-if="shift.shiftapplications.length > 0">
                     <div class="col list-item-padding"
-                         ng-if="!shiftapplication.recinded">
+                         ng-if="!shiftapplication.rescinded">
                         <li class="item shiftapplication" ng-class="{'shift-approved': shiftApplicationIsAccepted(shiftapplication), 'shift-declined': shiftApplicationIsDeclined(shiftapplication)}">
                             <div style="float:right;">
                                 <button class="button button-assertive" style="float: right;"

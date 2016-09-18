@@ -591,7 +591,7 @@ App.prototype.shiftApplicationApprovedOrDenied = function shiftApplicationApprov
             'approver.firstname as approver_firstname',
             'approver.lastname as approver_lastname',
             'shiftapplications.user_id as applicant_userid',
-            'shiftapplications.recinded as recinded',
+            'shiftapplications.rescinded as rescinded',
             'applicant.username as applicant_username',
             'applicant.firstname as applicant_firstname',
             'applicant.lastname as applicant_lastname',
@@ -652,9 +652,9 @@ App.prototype.shiftApplicationApprovedOrDenied = function shiftApplicationApprov
                         console.log(approvalOrDenial.approved_denied_id);
                     }
                     if (approvalOrDenial.approved_denied_id != shiftapplicationacceptdeclinereason_id &&
-                        approvalOrDenial.recinded &&
+                        approvalOrDenial.rescinded &&
                         approvalOrDenial.shift_accepted) {
-                        // there was a previous accepted shift that was recinded
+                        // there was a previous accepted shift that was rescinded
                         // this means that all users that were declined or not approved
                         // were already sent notifications saying they were denied
                         // so we do not need to re-send notifications letting them know
@@ -749,7 +749,7 @@ App.prototype.handleNewShiftApplication = function handleNewShiftApplication(job
             q.select(
                 Bookshelf.knex.raw(
                     'shiftapplications.date as date, ' +
-                    'shiftapplications.recindeddate as recindeddate, ' +
+                    'shiftapplications.rescindeddate as rescindeddate, ' +
                     'shiftapplications.user_id as user_id, ' +
                     'shifts.start as start, ' +
                     'shifts.canceled as canceled, ' +
@@ -799,9 +799,9 @@ App.prototype.handleNewShiftApplication = function handleNewShiftApplication(job
                         .orWhere('shifts.canceled', '<>', 1);
                 })
                 .andWhere(function() {
-                    this.whereNull('shiftapplications.recinded')
-                        .orWhere('shiftapplications.recinded', '<>', true)
-                        .orWhere('shiftapplications.recinded', '<>', 1);
+                    this.whereNull('shiftapplications.rescinded')
+                        .orWhere('shiftapplications.rescinded', '<>', true)
+                        .orWhere('shiftapplications.rescinded', '<>', 1);
                 });
         })
             .fetchAll(sqlOptions)
@@ -2001,7 +2001,7 @@ function getApprovedDeniedUsersForShift(user_id, shift_id, sqlOptions, success, 
             'shiftapplications.id as shiftapplication_id',
             'shiftapplications.user_id as shiftapplicant',
             'shiftapplications.date as shiftapplication_date',
-            'shiftapplications.recinded as recinded',
+            'shiftapplications.rescinded as rescinded',
             'shiftapplicationacceptdeclinereasons.accept as accept',
             'shiftapplicationacceptdeclinereasons.autoaccepted as autoaccepted',
             'shiftapplicationacceptdeclinereasons.date as acceptdecline_date',
@@ -2048,7 +2048,7 @@ function getApprovedDeniedUsersForShift(user_id, shift_id, sqlOptions, success, 
                 var approvedApplicantApplicationId;
                 // iterate through the list of applications
                 // figure out if someone has been approved for the shift
-                // the first non recinded, accepted shift is the approved one
+                // the first non rescinded, accepted shift is the approved one
                 var shiftApproved = false;
                 var userIsApproved = false;
                 var otherUsersHaveAppliedBeforeUser = false;
@@ -2059,7 +2059,7 @@ function getApprovedDeniedUsersForShift(user_id, shift_id, sqlOptions, success, 
                     if (!shiftInfoFilled) {
                         shiftInfo = _.pick(shiftapplication, approvedDeniedUsersShiftInfoKeys);
                     }
-                    if (shiftapplication.recinded) {
+                    if (shiftapplication.rescinded) {
                         // ignore
                     } else {
                         var applicant = shiftapplication.shiftapplicant;

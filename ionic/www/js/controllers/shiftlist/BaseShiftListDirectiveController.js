@@ -112,16 +112,16 @@ angular.module('scheduling-app.controllers')
             });
 
             $rootScope.$on(GENERAL_EVENTS.SHIFTS.DECLINE, function(state, shift) {
-                $scope.recindApplicationForAShift(shift.id, 'test');
+                $scope.rescindApplicationForAShift(shift.id, 'test');
             });
 
             $scope.promptRecindShift = function(id) {
                 // TODO: Angular replacement for website
                 $rootScope.$emit(GENERAL_EVENTS.POPUP.REQUESTED, function($ionicPopup) {
                     $scope.prompt = $ionicPopup.show({
-                        templateUrl: 'templates/notifications/recindshiftreason.html',
+                        templateUrl: 'templates/notifications/rescindshiftreason.html',
                         title: 'Provide a reason',
-                        subTitle: 'for recinding this shift application',
+                        subTitle: 'for rescinding this shift application',
                         scope: $scope,
                         buttons: [
                             {
@@ -134,10 +134,10 @@ angular.module('scheduling-app.controllers')
                                 text: 'OK',
                                 type: 'button-positive',
                                 onTap: function(e) {
-                                    if (!$scope.data.recindreason || $scope.data.recindreason == '') {
+                                    if (!$scope.data.rescindreason || $scope.data.rescindreason == '') {
                                         e.preventDefault();
                                     } else {
-                                        return $scope.data.recindreason;
+                                        return $scope.data.rescindreason;
                                     }
                                 }
                             }
@@ -147,7 +147,7 @@ angular.module('scheduling-app.controllers')
                     $scope.prompt.then(function(reason) {
                         delete $scope.data.reason;
                         if (reason) {
-                            $scope.recindApplicationForAShift(id, reason);
+                            $scope.rescindApplicationForAShift(id, reason);
                         }
                     });
                 });
@@ -372,7 +372,7 @@ angular.module('scheduling-app.controllers')
                 });
             };
 
-            $scope.recindApplicationForAShift = function(id, reason) {
+            $scope.rescindApplicationForAShift = function(id, reason) {
                 var shift = getShift(id);
                 if (shift) {
                     if (!shift.applied) {
@@ -402,7 +402,7 @@ angular.module('scheduling-app.controllers')
                             failedShift.failed = true;
                         }
                         $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);
-                        $rootScope.$emit(GENERAL_EVENTS.TOAST, 'info', 'Recision', 'Successfully recinded shift application ' + id);
+                        $rootScope.$emit(GENERAL_EVENTS.TOAST, 'info', 'Recision', 'Successfully rescinded shift application ' + id);
                     });
             };
 
@@ -533,7 +533,7 @@ angular.module('scheduling-app.controllers')
 
             $scope.decline = function(shift) {
                 closeButtons();
-                $scope.recindApplicationForAShift(shift.id, 'test');
+                $scope.rescindApplicationForAShift(shift.id, 'test');
             };
 
             $scope.ignore = function(shift) {

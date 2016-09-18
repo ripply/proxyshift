@@ -374,7 +374,7 @@ module.exports = {
                             .from('shiftapplications')
                             .where('shiftapplications.shift_id', '=', shift_id)
                             .andWhere('shiftapplications.user_id', '=', req.user.id)
-                            .andWhere('shiftapplications.recinded', '=', models.sqlFalse);
+                            .andWhere('shiftapplications.rescinded', '=', models.sqlFalse);
                     })
                         .fetch({require: true})
                         .then(function() {
