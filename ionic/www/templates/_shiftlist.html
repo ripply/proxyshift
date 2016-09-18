@@ -25,7 +25,7 @@
                 </div>
                 <div ng-if="shift.isDivider && shift.type == 'noApplications'"
                      class="shift-item list-padding">
-                    Shifts without applications
+                    Not filled
                 </div>
                 <div ng-if="shift.isDivider && shift.type == 'noApplicationsExpired'"
                      class="shift-item list-padding">
@@ -78,7 +78,7 @@
                     </ion-option-button>
                     <div ng-if="!manageable">
                         <ion-option-button class="shift-button-apply"
-                                           ng-if="!shift.applied"
+                                           ng-if="!shift.applied && canApplyToShift(shift)"
                                            ng-click="accept(shift)">
                             Apply
                         </ion-option-button>
@@ -89,7 +89,7 @@
                         </ion-option-button>
                         <ion-option-button class="shift-button-ignore"
                                            ng-click="ignore(shift)"
-                                           ng-if="!shift.applied && !ignoredShift(shift)">
+                                           ng-if="!shift.applied && !ignoredShift(shift) && canApplyToShift(shift)">
                             Ignore
                         </ion-option-button>
                     </div>
@@ -98,7 +98,7 @@
         </div>
     </div>
     <ion-item
-        ng-show="Model.length == 0 && myUserClasses.length > 0"
+        ng-show="Model.length == 0 && hasUserClasses()"
         class="item item-icon-right">
         <p>There are currently no open shifts</p>
     </ion-item>

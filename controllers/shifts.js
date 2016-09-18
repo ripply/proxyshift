@@ -535,7 +535,7 @@ module.exports = {
     },
     '/:shift_id/ignore': {
         'post': {
-            auth: ['user can apply for shift'],
+            auth: ['user can apply for shift or has applied already'],
             route: function(req, res) {
                 var ignoreShiftData = {
                     shift_id: req.params.shift_id,

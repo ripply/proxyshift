@@ -508,6 +508,12 @@ angular.module('scheduling-app.controllers')
                 return window.ShiftShared.grabNormalShiftRange();
             }
 
+            $scope.canApplyToShift = function(shift) {
+                return shift &&
+                    shift.hasOwnProperty('groupuserclass_id') &&
+                    myUserClasses.hasOwnProperty(shift.groupuserclass_id);
+            };
+
             $scope.ellipsis = function(text, length) {
                 if (text.length > length) {
                     return text.substr(0, length) + "...";

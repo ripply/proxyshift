@@ -33,9 +33,10 @@ angular.module('scheduling-app.controllers')
 
             var APPROVED_GROUP = -1;
             var PENDING_GROUP = 1;
-            var DECLINED_GROUP = 2;
-            var EXPIRED_GROUP = 3;
-            var EXPIRED_SEE_MORE_GROUP = 4;
+            var NOAPPLICATION_GROUP = 2;
+            var DECLINED_GROUP = 3;
+            var EXPIRED_GROUP = 4;
+            var EXPIRED_SEE_MORE_GROUP = 5;
 
             if (!$scope.MODELNAME) {
                 $scope.MODELNAME = 'AllShifts';
@@ -99,6 +100,7 @@ angular.module('scheduling-app.controllers')
                         console.log("Checking for dividers..................");
                         var approved = false;
                         var pendingApprovals = false;
+                        var noapplications = false;
                         var declined = false;
                         var expired = false;
                         var lastExpired = false;
@@ -122,7 +124,7 @@ angular.module('scheduling-app.controllers')
                                     pendingApprovals = true;
                                 }
                             } else {
-                                // we don't want to show this in my shifts
+                                noapplications = true;
                             }
                             if (approved && pendingApprovals && declined) {
                                 break;
@@ -141,6 +143,14 @@ angular.module('scheduling-app.controllers')
                             data.splice(0, 0, {
                                 type: $scope._pendingApproval || 'pendingApproval',
                                 sort: $scope._pendingGroup || PENDING_GROUP,
+                                isDivider: true
+                            });
+                        }
+                        if (noapplications) {
+                            console.log('no applications exist!');
+                            data.splice(0, 0, {
+                                type: $scope._noapplications || 'noApplications',
+                                sort: $scope._noapplicationsGroup|| NOAPPLICATION_GROUP,
                                 isDivider: true
                             });
                         }
@@ -191,6 +201,8 @@ angular.module('scheduling-app.controllers')
                     } else {
                         return PENDING_GROUP;
                     }
+                } else {
+                    return NOAPPLICATION_GROUP;
                 }
             }
 

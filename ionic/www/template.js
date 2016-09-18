@@ -4637,7 +4637,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                </div>\n" +
     "                <div ng-if=\"shift.isDivider && shift.type == 'noApplications'\"\n" +
     "                     class=\"shift-item list-padding\">\n" +
-    "                    Shifts without applications\n" +
+    "                    Not filled\n" +
     "                </div>\n" +
     "                <div ng-if=\"shift.isDivider && shift.type == 'noApplicationsExpired'\"\n" +
     "                     class=\"shift-item list-padding\">\n" +
@@ -4690,7 +4690,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                    </ion-option-button>\n" +
     "                    <div ng-if=\"!manageable\">\n" +
     "                        <ion-option-button class=\"shift-button-apply\"\n" +
-    "                                           ng-if=\"!shift.applied\"\n" +
+    "                                           ng-if=\"!shift.applied && canApplyToShift(shift)\"\n" +
     "                                           ng-click=\"accept(shift)\">\n" +
     "                            Apply\n" +
     "                        </ion-option-button>\n" +
@@ -4701,7 +4701,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                        </ion-option-button>\n" +
     "                        <ion-option-button class=\"shift-button-ignore\"\n" +
     "                                           ng-click=\"ignore(shift)\"\n" +
-    "                                           ng-if=\"!shift.applied && !ignoredShift(shift)\">\n" +
+    "                                           ng-if=\"!shift.applied && !ignoredShift(shift) && canApplyToShift(shift)\">\n" +
     "                            Ignore\n" +
     "                        </ion-option-button>\n" +
     "                    </div>\n" +
@@ -4710,7 +4710,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "        </div>\n" +
     "    </div>\n" +
     "    <ion-item\n" +
-    "        ng-show=\"Model.length == 0 && myUserClasses.length > 0\"\n" +
+    "        ng-show=\"Model.length == 0 && hasUserClasses()\"\n" +
     "        class=\"item item-icon-right\">\n" +
     "        <p>There are currently no open shifts</p>\n" +
     "    </ion-item>\n" +

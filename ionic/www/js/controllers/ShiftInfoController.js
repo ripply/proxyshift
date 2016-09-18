@@ -27,7 +27,7 @@ angular.module('scheduling-app.controllers')
         ) {
             $controller('BaseModelController', {$scope: $scope});
             $scope.beforeEnter = function() {
-                $scope.myUserClasses = UserInfoService.getUserClasses();
+                setupUserClasses();
                 fetch();
             };
 
@@ -40,6 +40,14 @@ angular.module('scheduling-app.controllers')
             $scope.data = {
                 reason: ''
             };
+
+            function setupUserClasses() {
+                $scope.myUserClasses = UserInfoService.getUserClasses();
+            }
+
+            $rootScope.$on(GENERAL_EVENTS.UPDATES.USERINFO.PROCESSED, function(state, userInfo) {
+                setupUserClasses();
+            });
 
             $scope.$watch('shift', function(newVal) {
                 if (newVal && newVal.hasOwnProperty('groupuserclass_id')) {
