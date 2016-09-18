@@ -1421,7 +1421,8 @@ function joinPendingApprovalsOnly(query) {
             'limit 1 ' +
         ')'
     )
-        .where('shiftapplicationacceptdeclinereasons.accept', '<>', models.sqlTrue);
+        .where('shiftapplicationacceptdeclinereasons.accept', '<>', models.sqlTrue)
+        .andWhere('shiftapplications.recinded', '<>', models.sqlTrue);
 }
 
 /**
@@ -1438,7 +1439,8 @@ function joinApprovedOnly(query) {
             'limit 1 ' +
         ')'
     )
-        .where('shiftapplicationacceptdeclinereasons.accept', '=', models.sqlTrue);
+        .where('shiftapplicationacceptdeclinereasons.accept', '=', models.sqlTrue)
+        .andWhere('shiftapplications.recinded', '<>', models.sqlTrue);
 }
 
 /**

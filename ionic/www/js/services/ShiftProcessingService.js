@@ -254,7 +254,7 @@ angular.module('scheduling-app.services')
 
             function now(shift) {
                 return moment().unix();
-            };
+            }
 
             this.isShiftExpired = function isShiftExpired(shift, now) {
                 if (now === undefined) {
@@ -283,8 +283,20 @@ angular.module('scheduling-app.services')
             };
 
             this.isShiftAppliedFor = function isShiftAppliedFor(shift) {
-                return shift.applied || (shift.shiftapplications && shift.shiftapplications.length > 0);
+                return shift.applied || (shift.shiftapplications && shift.shiftapplications.length > 0 && doesShiftHaveNonRescindedApplications(shift));
             };
+
+            function doesShiftHaveNonRescindedApplications(shift) {
+                if (shift && shift.shiftapplications) {
+                    for (var i = 0; i < shift.shiftapplications.length; i++) {
+                        var rescinded = shift.shiftapplications[i].recinded;
+                        if (rescinded === 0 || rescinded === false) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
 
             this.compareShiftByDate = function compareShiftByDate(left, right) {
                 if (left.start < right.start) {
