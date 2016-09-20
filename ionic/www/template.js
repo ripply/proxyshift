@@ -4454,13 +4454,13 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "    <meta name=\"viewport\" content=\"initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width\">\n" +
     "    <title></title>\n" +
     "\n" +
-    "    <link href=\"lib/ionic/release/css/ionic.css\" rel=\"stylesheet\">\n" +
+    "    <link href=\"css/ionic.css\" rel=\"stylesheet\">\n" +
     "    <link href=\"css/proxyshift.css\" rel=\"stylesheet\">\n" +
     "    <link rel=\"stylesheet\" type=\"text/css\" href=\"lib/angular-toastr/dist/angular-toastr.css\">\n" +
     "\n" +
     "    <!-- In windows apps this fixes dynamic content errors -->\n" +
     "    <script src=\"lib/winstore-jscompat/winstore-jscompat.js\"></script>\n" +
-    "    <script src=\"lib/ionic/release/js/ionic.bundle.min.js\"></script>\n" +
+    "    <script src=\"ionic.bundle.min.js\"></script>\n" +
     "    <script src=\"lib/validator-js/validator.min.js\"></script>\n" +
     "    <script src=\"lib/angular-toastr/dist/angular-toastr.tpls.js\"></script>\n" +
     "    <script src=\"lib/ng-material-floating-button/src/mfb-directive.js\"></script>\n" +

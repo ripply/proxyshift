@@ -22,6 +22,8 @@ module.exports = function(grunt) {
     ];
 
     var uglifyAppLibs = [
+        'ionic/www/lib/stacktrace-js/dist/stacktrace.js',
+        'ionic/www/js/ErrorReporter.js',
         <!-- In windows apps this fixes dynamic content errors -->
         //'ionic/www/lib/ionic/release/js/ionic.bundle.js',
         'ionic/www/lib/jquery/dist/jquery.js',
@@ -183,7 +185,6 @@ module.exports = function(grunt) {
     var concurrentDevTasks = [
         'nodemon:dev',
         'watch:less',
-        //'watch:uglify',
         'watch:uglifyAppLibs',
         'watch:uglifyNgTemplate',
         'watch:uglifyIonicLibs',
@@ -421,31 +422,55 @@ module.exports = function(grunt) {
                 mangle: false
             },
             appLibs: {
+                options: {
+                    sourceMap: true,
+                    sourceMapRoot: '/'
+                },
                 files: [{
                     'ionic/www/libs.min.js': uglifyAppLibs
                 }]
             },
             ngTemplate: {
+                options: {
+                    sourceMap: true,
+                    sourceMapRoot: '/'
+                },
                 files: [{
                     'ionic/www/template.min.js': uglifyNgTemplate
                 }]
             },
             ionicLibs: {
+                options: {
+                    sourceMap: true,
+                    sourceMapRoot: '/site/js/'
+                },
                 files: [{
                     'static/js/mainlibs.min.js': uglifyIonicLibs
                 }]
             },
             ltie: {
+                options: {
+                    sourceMap: true,
+                    sourceMapRoot: '/site/js/'
+                },
                 files: [{
                     'static/js/ltie9.min.js': uglifyLtie
                 }]
             },
             ionicBundle: {
+                options: {
+                    sourceMap: true,
+                    sourceMapRoot: '/'
+                },
                 files: [{
                     'ionic/www/ionic.bundle.min.js': uglifyIonicBundle
                 }]
             },
             bootstrap: {
+                options: {
+                    sourceMap: true,
+                    sourceMapRoot: '/'
+                },
                 files: [{
                     'ionic/www/bootstrap.js': uglifyBootstrap
                 }]

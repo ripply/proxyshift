@@ -109,6 +109,14 @@ angular.module('scheduling-app', [
                  // of the previous and current state
                  //StateHistoryService
         ) {
+            $provide.decorator("$exceptionHandler", function($delegate, $injector){
+                return function(exception, cause){
+                    console.log("CAUSE");
+                    console.log(cause);
+                    console.log('1-0234-09184');
+                    window.onerror(cause, null, null, null, exception);
+                };
+            });
             // https://github.com/markmarijnissen/cordova-app-loader#step-1-bootstrap-your-app
             window.BOOTSTRAP_OK = true;
             $httpProvider.interceptors.push('timeoutHttpIntercept');

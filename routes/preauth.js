@@ -598,6 +598,10 @@ module.exports = function(app, settings){
         slack.error(req, JSON.stringify(req.body));
     });
 
+    app.post('/api/v1/errorreport', function(req, res, next) {
+        slack.info(JSON.stringify(req.body), '#clienterror');
+    });
+
     // creating users is ok to do without being logged in
     app.post('/api/users', notLoggedIn, users['/'].post.route);
     app.post('/api/v1/users', notLoggedIn, users['/'].post.route);
