@@ -117,6 +117,8 @@ angular.module('scheduling-app', [
                     window.onerror(cause, null, null, null, exception);
                 };
             });
+            var LOCALSTORAGE_PREFIX = 'proxyshift';
+            localStorageServiceProvider.setPrefix(LOCALSTORAGE_PREFIX);
             // https://github.com/markmarijnissen/cordova-app-loader#step-1-bootstrap-your-app
             window.BOOTSTRAP_OK = true;
             $httpProvider.interceptors.push('timeoutHttpIntercept');
@@ -145,35 +147,19 @@ angular.module('scheduling-app', [
                 console.log("Running in browser using dev api source: " + GENERAL_CONFIG.APP_URL);
             }
 
-            var doNotTrack = false;
-
-            if (navigator.doNotTrack == 1) {
-                doNotTrack = true;
-            } else {
-                if (typeof(Storage) !== "undefined") {
-                    doNotTrack = localStorage.getItem('doNotTrack') == 1;
-                } else {
-                    // Sorry! No Web Storage support..
-                }
+            var disableAnalytics = false;
+            if (typeof(Storage) !== "undefined") {
+                disableAnalytics = localStorage.getItem(LOCALSTORAGE_PREFIX + '.disableAnalytics');
+                disableAnalytics = disableAnalytics || disableAnalytics == 'true';
             }
 
             AnalyticsProvider
+                .setAccount('UA-81239001-1')
+                .setPageEvent('$stateChangeSuccess')
                 .logAllCalls(true)
-                .setHybridMobileSupport(true);
-
-            if (doNotTrack) {
-                console.log("DO NOT TRACK DETECTED: DISABLING ANALYTICS");
-                AnalyticsProvider
-                    .startOffline(true)
-                    .disableAnalytics(true);
-            } else {
-                console.log("ENABLING GOOGLE ANALYTICS: ENABLE DO NOT TRACK TO OPT OUT");
-                AnalyticsProvider
-                    .setAccount('UA-81239001-1')
-                    .setPageEvent('$stateChangeSuccess')
-                    .readFromRoute(true)
-                    .startOffline(false);
-            }
+                .setHybridMobileSupport(true)
+                .readFromRoute(true)
+                .startOffline(disableAnalytics);
 
             console.log("APP-uRL=" + GENERAL_CONFIG.APP_URL);
 

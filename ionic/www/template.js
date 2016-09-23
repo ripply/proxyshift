@@ -8227,6 +8227,12 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                Account Actions\n" +
     "            </div>\n" +
     "            <div class=\"item-indent\">\n" +
+    "                <ion-toggle ng-model=\"localSettings.analyticsEnabled\"\n" +
+    "                            ng-checked=\"localSettings.analyticsEnabled\">\n" +
+    "                    <i class=\"icon ion-ios-analytics\" ng-if=\"!localSettings.analyticsEnabled\"></i>\n" +
+    "                    <i class=\"icon ion-ios-analytics-outline\" ng-if=\"localSettings.analyticsEnabled\"></i>\n" +
+    "                    Analytics\n" +
+    "                </ion-toggle>\n" +
     "                <ion-item ng-if=\"checkForUpdate != undefined\"\n" +
     "                          ng-click=\"checkForUpdate()\">\n" +
     "                    <i class=\"icon ion-loop\"></i>\n" +

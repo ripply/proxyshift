@@ -10,7 +10,7 @@
     "cordova-plugin-whitelist": {
         "source": {
             "type": "registry",
-            "id": "cordova-plugin-whitelist"
+            "id": "cordova-plugin-whitelist@1.3.0"
         },
         "is_top_level": true,
         "variables": {}
@@ -21,9 +21,7 @@
             "id": "phonegap-plugin-push"
         },
         "is_top_level": true,
-        "variables": {
-            "SENDER_ID": "635706604728"
-        }
+        "variables": {}
     },
     "org.apache.cordova.dialogs": {
         "source": {
@@ -44,7 +42,7 @@
     "cordova-plugin-splashscreen": {
         "source": {
             "type": "registry",
-            "id": "cordova-plugin-splashscreen"
+            "id": "cordova-plugin-splashscreen@4.0.0"
         },
         "is_top_level": true,
         "variables": {}

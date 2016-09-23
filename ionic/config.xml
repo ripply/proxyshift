@@ -23,7 +23,8 @@
     <preference name="AutoHideSplashScreen" value="true" />
     <preference name="SplashScreenDelay" value="3000" />
     <preference name="deployment-target" value="5.0" />
-    <splash src="splash" />
+    <splash src="resources/splash.png" />
+    <icon src="resources/icon.png"/>
     <preference name="SplashScreen" value="screen" />
     <feature name="StatusBar">
         <param name="ios-package" value="CDVStatusBar" onload="true"/>
@@ -62,7 +63,14 @@
         <preference name="SplashMaintainAspectRatio" value="true" />
         <preference name="android-build-tool" value="gradle" />
 
+        <icon src="resources/android/icon/drawable-ldpi-icon.png" platform="android" gap:qualifier="ldpi" />
+        <icon src="resources/android/icon/drawable-mdpi-icon.png" platform="android" gap:qualifier="mdpi" />
         <icon src="resources/android/icon/drawable-hdpi-icon.png" platform="android" gap:qualifier="hdpi" />
+        <icon src="resources/android/icon/drawable-xdpi-icon.png" platform="android" gap:qualifier="xhdpi" />
+        <icon src="resources/android/icon/drawable-xxdpi-icon.png" platform="android" gap:qualifier="xxhdpi" />
+        <icon src="resources/android/icon/drawable-xxxdpi-icon.png" platform="android" gap:qualifier="xxxhdpi" />
+
+        <icon src="resources/android/icon/drawable-ldpi-icon.png" platform="android" gap:qualifier="ldpi" />
         <icon src="resources/android/icon/drawable-mdpi-icon.png" platform="android" gap:qualifier="mdpi" />
         <icon src="resources/android/icon/drawable-hdpi-icon.png" platform="android" gap:qualifier="hdpi" />
         <icon src="resources/android/icon/drawable-xdpi-icon.png" platform="android" gap:qualifier="xhdpi" />

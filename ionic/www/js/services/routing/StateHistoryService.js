@@ -4,10 +4,16 @@ angular.module('scheduling-app.services.routing.statehistory', [
         '$rootScope',
         '$state',
         '$ionicHistory',
+        'UserInfoService',
+        'Analytics',
+        'CORDOVA_SETTINGS',
         'STATES',
         function($rootScope,
                  $state,
                  $ionicHistory,
+                 UserInfoService,
+                 Analytics,
+                 CORDOVA_SETTINGS,
                  STATES
         ) {
             $rootScope.states = STATES;
@@ -17,9 +23,8 @@ angular.module('scheduling-app.services.routing.statehistory', [
             console.log(STATES);
             var goingTo;
             $rootScope.$on('$stateChangeSuccess', function(ev, to, toParams, from, fromParams) {
-                console.log("STATE CHANGE SUCCESS: " + to.name);
                 if (to == goingTo) {
-                    goinTo = null;
+                    goingTo = null;
                 }
                 $rootScope.previousState = from.name;
                 $rootScope.previousStateParams = fromParams;
@@ -27,6 +32,29 @@ angular.module('scheduling-app.services.routing.statehistory', [
                 $rootScope.currentStateParams = toParams;
                 gotoHistory.push(from.name);
             });
+
+            function isAnalyticsDisabled() {
+                return UserInfoService.getAnalyticsDisabled();
+            }
+
+            Analytics.set('client', CORDOVA_SETTINGS.currentPlatform);
+            setTimeout(function startAnalyticsBatching() {
+                var openInterval = 15000;
+                setInterval(ANALYTICS_BATCH_OPEN, openInterval);
+                setTimeout(function DELAY_START_CLOSE() {
+                    setInterval(ANALYTICS_BATCH_CLOSE, openInterval)
+                }, 1000);
+            }, 15000);
+
+            function ANALYTICS_BATCH_OPEN() {
+                if (!isAnalyticsDisabled()) {
+                    Analytics.offline(false);
+                }
+            }
+
+            function ANALYTICS_BATCH_CLOSE() {
+                Analytics.offline(true);
+            }
 
             this.previousState = function() {
                 return $rootScope.previousState;

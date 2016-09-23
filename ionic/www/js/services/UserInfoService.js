@@ -3,9 +3,11 @@ angular.module('scheduling-app.services')
     .service('UserInfoService', [
         '$rootScope',
         'localStorageService',
+        'Analytics',
         'GENERAL_EVENTS',
         function($rootScope,
                  localStorageService,
+                 Analytics,
                  GENERAL_EVENTS
         ) {
             var MEMBER = 0;
@@ -34,25 +36,50 @@ angular.module('scheduling-app.services')
             };
 
             var showIgnoredShifts = getShowIgnoredShifts();
+            var analyticsDisabled = getAnalyticsDisabled();
 
             this.getShowIgnoredShifts = getShowIgnoredShifts;
+            this.getAnalyticsDisabled = getAnalyticsDisabled;
 
             function getShowIgnoredShifts() {
                 if (showIgnoredShifts === undefined) {
-                    showIgnoredShifts = localStorageService.get('showIgnoredShifts');
-                    if (showIgnoredShifts === undefined || showIgnoredShifts === null) {
-                        showIgnoredShifts = false;
-                    }
+                    showIgnoredShifts = getSetting('showIgnoredShifts');
                 }
                 return showIgnoredShifts;
             }
 
+            function getAnalyticsDisabled() {
+                if (analyticsDisabled === undefined) {
+                    analyticsDisabled = getSetting('disableAnalytics');
+                }
+                return analyticsDisabled;
+            }
+
+            function getSetting(key) {
+                var value = localStorageService.get(key);
+                if (value === undefined || value === null) {
+                    value = false;
+                }
+                return value || value == 'true';
+            }
+
             this.setShowIgnoredShifts = setShowIgnoredShifts;
+            this.setAnalyticsDisabled = setAnalyticsDisabled;
 
             function setShowIgnoredShifts(show) {
                 showIgnoredShifts = show;
+                saveSetting('showIgnoredShifts', show);
+            }
+
+            function setAnalyticsDisabled(disable) {
+                analyticsDisabled = disable;
+                Analytics.offline(disable);
+                saveSetting('disableAnalytics', disable);
+            }
+
+            function saveSetting(key, value) {
                 if (localStorageService.isSupported) {
-                    localStorageService.set('showIgnoredShifts', show);
+                    localStorageService.set(key, value);
                 }
             }
 

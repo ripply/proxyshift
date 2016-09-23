@@ -36,11 +36,16 @@ angular.module('scheduling-app.controllers')
             };
 
             $scope.localSettings = {
-                showIgnoredShifts: UserInfoService.getShowIgnoredShifts()
+                showIgnoredShifts: UserInfoService.getShowIgnoredShifts(),
+                analyticsEnabled: !UserInfoService.getAnalyticsDisabled()
             };
 
             $scope.$watch('localSettings.showIgnoredShifts', function(newValue, oldValue) {
                 UserInfoService.setShowIgnoredShifts(newValue);
+            });
+
+            $scope.$watch('localSettings.analyticsEnabled', function(newValue, oldValue) {
+                UserInfoService.setAnalyticsDisabled(!newValue);
             });
 
             $scope.checkForUpdate = window.checkForUpdate;

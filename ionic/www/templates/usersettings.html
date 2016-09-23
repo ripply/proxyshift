@@ -67,6 +67,12 @@
                 Account Actions
             </div>
             <div class="item-indent">
+                <ion-toggle ng-model="localSettings.analyticsEnabled"
+                            ng-checked="localSettings.analyticsEnabled">
+                    <i class="icon ion-ios-analytics" ng-if="!localSettings.analyticsEnabled"></i>
+                    <i class="icon ion-ios-analytics-outline" ng-if="localSettings.analyticsEnabled"></i>
+                    Analytics
+                </ion-toggle>
                 <ion-item ng-if="checkForUpdate != undefined"
                           ng-click="checkForUpdate()">
                     <i class="icon ion-loop"></i>
