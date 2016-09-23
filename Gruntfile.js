@@ -358,6 +358,12 @@ module.exports = function(grunt) {
                 ],
                 dest: 'ionic/www/templates/settings/terms-of-service.html'
             },
+            'CordovaApiVersion.js': {
+                src: [
+                    'ionic/www/js/shared/ApiVersion.js'
+                ],
+                dest: 'ionic/www/js/shared/CordovaApiVersion.js'
+            },
             handlebarsMain : {
                 src: [
                     'static/partials/main.header.html',

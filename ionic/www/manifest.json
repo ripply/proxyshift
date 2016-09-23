@@ -38,11 +38,11 @@
     },
     "libs.min.js": {
       "filename": "libs.min.js",
-      "version": "b1186d1f3d61ebe44f32c048c175d8dd146cfef20d4776aa3783f8cbf2d13af3"
+      "version": "28e02f6ffd4920892a6268f917de35ecbaba480da3ebc4e5d9e15e7308a7935c"
     },
     "template.min.js": {
       "filename": "template.min.js",
-      "version": "006f458ebbdfa8f2749cc4c0b8e77fb8368ee3aa33e2f63fe1498d8ed66f9e5d"
+      "version": "5d8d2508b6df3baa5600b3f6e0bf0f76f9bc934b3e3b511e2076aa985ee7e520"
     },
     "toastr/dist/angular-toastr.css": {
       "filename": "lib/angular-toastr/dist/angular-toastr.css",
@@ -58,7 +58,7 @@
     },
     "autoupdate.js": {
       "filename": "autoupdate.js",
-      "version": "15e615b78921ffaa6d829d036a92c17479279bb368fc9826c59fc46d1db8800e"
+      "version": "4d788d581c498880dbf4a82962dbdaeb1c9dc555f5145358d60d8ce7d150bae7"
     }
   },
   "load": [
@@ -79,5 +79,5 @@
     "autoupdate.js"
   ],
   "root": "./",
-  "version": "0.1.3"
+  "version": "0.1.6"
 }

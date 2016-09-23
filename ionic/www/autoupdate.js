@@ -12,6 +12,7 @@
         serverRoot;
 
     var PROMPT_FOR_UPDATES = false;
+    var RESETTING = false;
 
     function getConnection() {
         if (isCordova) {
@@ -114,7 +115,7 @@
 
     // Check > Download > Update
     function check(force, required){
-        if (checking) {
+        if (checking || RESETTING) {
             return;
         }
         if (
@@ -306,20 +307,26 @@
     }
 
     // Couple events:
+    if (window.CordovaApiVersion &&
+        window.CordovaApiVersion.isCordovaVersionHigher()) {
+        // user just updated, revert 'down' to that version
+        RESETTING = true;
+        loader.reset();
+    } else {
+        // 1. On launch
+        check(!isForceUpdateRequired());
 
-    // 1. On launch
-    check(!isForceUpdateRequired());
+        // 2. Cordova: On resume
+        fs.deviceready.then(function(){
+            document.addEventListener('resume', check);
+        });
 
-    // 2. Cordova: On resume
-    fs.deviceready.then(function(){
-        document.addEventListener('resume', check);
-    });
-
-    // 3. Chrome: On page becomes visible again
-    function handleVisibilityChange() {
-        if (!document.webkitHidden) {
-            check();
+        // 3. Chrome: On page becomes visible again
+        function handleVisibilityChange() {
+            if (!document.webkitHidden) {
+                check();
+            }
         }
+        document.addEventListener("webkitvisibilitychange", handleVisibilityChange, false);
     }
-    document.addEventListener("webkitvisibilitychange", handleVisibilityChange, false);
 })();

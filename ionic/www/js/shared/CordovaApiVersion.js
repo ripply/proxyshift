@@ -1,7 +1,7 @@
 var version = {
     major: 0,
     minor: 1,
-    patch: 6
+    patch: 4
 };
 
 var exports = {
@@ -11,31 +11,28 @@ var exports = {
     string: version.major + '.' + version.minor + '.' + version.patch
 };
 
-function canUpdateTo(them, sameOk, dis) {
-    if (dis === undefined) {
-        dis = version;
-    }
+function canUpdateTo(them, sameOk) {
     if (typeof them == 'string') {
         them = parseVersion(them);
     }
-    if (them.major > dis.major) {
+    if (them.major > version.major) {
         return true;
     } else if (
-        them.major == dis.major &&
-        them.minor > dis.minor
+        them.major == version.major &&
+        them.minor > version.minor
     ) {
         return true;
     } else if (
-        them.major == dis.major &&
-        them.minor == dis.minor &&
-        them.patch > dis.patch
+        them.major == version.major &&
+        them.minor == version.minor &&
+        them.patch > version.patch
     ) {
         return true;
     } else if (
         sameOk &&
-        them.major == dis.major &&
-        them.minor == dis.minor &&
-        them.patch == dis.patch
+        them.major == version.major &&
+        them.minor == version.minor &&
+        them.patch == version.patch
     ) {
         return true;
     } else {
