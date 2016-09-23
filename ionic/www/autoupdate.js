@@ -11,6 +11,8 @@
     // ...that contains the serverRoot
         serverRoot;
 
+    var PROMPT_FOR_UPDATES = false;
+
     function getConnection() {
         if (isCordova) {
             return navigator.connection.type;
@@ -212,7 +214,8 @@
         checking = true;
 
         loader.check()
-            .then(function(updatable){
+            .then(function(updatable) {
+                checking = false;
                 if (!updatable) {
                     if (!isForceUpdateRequired()) {
                         initialUpdateComplete();
@@ -220,7 +223,13 @@
                     return;
                 }
                 var newManifest = loader.newManifest;
-                checking = false;
+                if (newManifest.version &&
+                    window.ApiVersion &&
+                    window.ApiVersion.canUpdateTo) {
+                    if (!window.ApiVersion.canUpdateTo(newManifest.version)) {
+                        return;
+                    }
+                }
                 try {
                     var manifestHash = stringHashcode(JSON.stringify(newManifest));
                     if (isCordova) {
@@ -249,9 +258,14 @@
                             buttonLabels.push('Ignore');
                         }
                         if (hasCordovaDialogs) {
+                            function setNextCheck() {
+                                if (hasStorage) {
+                                    localStorage.setItem('next_update_time', '' + nextUpdate);
+                                }
+                            }
                             if (required || !isForceUpdateRequired()) {
                                 doUpdate(true);
-                            } else {
+                            } else if (PROMPT_FOR_UPDATES) {
                                 navigator.notification.confirm(
                                     'There is an update available!',
                                     function updatePromptCallback(buttonClicked) {
@@ -262,13 +276,14 @@
                                         } else if (buttonClicked == 3) {
                                             updateIgnored(manifestHash);
                                         }
-                                        if (hasStorage) {
-                                            localStorage.setItem('next_update_time', '' + nextUpdate);
-                                        }
+                                        setNextCheck();
                                     },
                                     'Update Available',
                                     buttonLabels
                                 );
+                            } else {
+                                doUpdate(false);
+                                setNextCheck();
                             }
                         } else {
                             doUpdate();

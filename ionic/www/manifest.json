@@ -38,11 +38,11 @@
     },
     "libs.min.js": {
       "filename": "libs.min.js",
-      "version": "48d9a2bfec85b29d56606287c95bbb3435689cb7a201ce82272fa6222e343fc3"
+      "version": "b1186d1f3d61ebe44f32c048c175d8dd146cfef20d4776aa3783f8cbf2d13af3"
     },
     "template.min.js": {
       "filename": "template.min.js",
-      "version": "59f40478973e6f1d7630dfea5cf5dd04009744fb9cc6ba64f063d37f22110f18"
+      "version": "006f458ebbdfa8f2749cc4c0b8e77fb8368ee3aa33e2f63fe1498d8ed66f9e5d"
     },
     "toastr/dist/angular-toastr.css": {
       "filename": "lib/angular-toastr/dist/angular-toastr.css",
@@ -58,7 +58,7 @@
     },
     "autoupdate.js": {
       "filename": "autoupdate.js",
-      "version": "c79370d317f1774fdee1b1b0929d129b1859fabd532402e6c829657832cf379f"
+      "version": "15e615b78921ffaa6d829d036a92c17479279bb368fc9826c59fc46d1db8800e"
     }
   },
   "load": [
@@ -78,5 +78,6 @@
     "fonts/ionicons.woff",
     "autoupdate.js"
   ],
-  "root": "./"
+  "root": "./",
+  "version": "0.1.3"
 }

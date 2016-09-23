@@ -15,6 +15,8 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "\n" +
     "    <!-- In windows apps this fixes dynamic content errors -->\n" +
     "    <script type=\"text/javascript\" src=\"cordova.js\"></script>\n" +
+    "    <script src=\"js/shared/ApiVersion.js\"></script>\n" +
+    "    <script src=\"js/shared/CordovaVersion.js\"></script>\n" +
     "    <script type=\"text/javascript\" timeout=\"10000\" manifest=\"manifest.json\" server=\"https://www.proxyshift.com\" src=\"bootstrap.js\"></script>\n" +
     "</head>\n" +
     "  <body ng-app=\"scheduling-app\">\n" +

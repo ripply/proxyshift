@@ -732,6 +732,7 @@ module.exports = function(grunt) {
                     }
                 });
             }
+            json.version = require('./ionic/www/js/shared/ApiVersion').string;
             //write out the JSON to the manifest files
             file.dest.forEach(function(f) {
                 grunt.file.write(f, JSON.stringify(json, null, 2));

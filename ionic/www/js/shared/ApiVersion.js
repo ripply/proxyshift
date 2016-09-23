@@ -1,21 +1,64 @@
 var version = {
     major: 0,
     minor: 1,
-    patch: 2
+    patch: 3
 };
 
 var exports = {
     compatible: compatible,
+    canUpdateTo: canUpdateTo,
     version: version,
     string: version.major + '.' + version.minor + '.' + version.patch
 };
+
+function canUpdateTo(them, sameOk) {
+    if (typeof them == 'string') {
+        them = parseVersion(them);
+    }
+    if (them.major > version.major) {
+        return true;
+    } else if (
+        them.major == version.major &&
+        them.minor > version.minor
+    ) {
+        return true;
+    } else if (
+        them.major == version.major &&
+        them.minor == version.minor &&
+        them.patch > version.patch
+    ) {
+        return true;
+    } else if (
+        sameOk &&
+        them.major == version.major &&
+        them.minor == version.minor &&
+        them.patch == version.patch
+    ) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 function compatible(them) {
     return them.major === version.major && them.minor === version.minor;
 }
 
+function parseVersion(version) {
+    var versions = version.split('.');
+    if (versions.length > 3) {
+        return {
+            major: versions[0],
+            minor: versions[1],
+            patch: versions[2]
+        };
+    }
+    return {};
+}
+
 if (typeof window == 'undefined') {
     module.exports = exports
 } else {
+    console.log("WINDOWAPIVERSION");
     window.ApiVersion = exports;
 }
