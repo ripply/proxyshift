@@ -38,7 +38,7 @@
     },
     "libs.min.js": {
       "filename": "libs.min.js",
-      "version": "28e02f6ffd4920892a6268f917de35ecbaba480da3ebc4e5d9e15e7308a7935c"
+      "version": "d87f19dc819e38d5ee0b2700122ad517320bf957d99d2f1aba04626e493b00b6"
     },
     "template.min.js": {
       "filename": "template.min.js",
@@ -79,5 +79,5 @@
     "autoupdate.js"
   ],
   "root": "./",
-  "version": "0.1.6"
+  "version": "0.1.7"
 }

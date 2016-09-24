@@ -7,7 +7,7 @@ window.onerror = function(msg, file, line, col, error) {
         sendError = (reportErrors === undefined || reportErrors === null || reportErrors === true);
     }
     if (sendError) {
-        var ERROR_REPORT = "/api/v1/errorreport";
+        var ERROR_REPORT = "https://www.proxyshift.com/api/v1/errorreport";
         var message = JSON.stringify({
             message: error.toString(),
             version: window.ApiVersion.string,
