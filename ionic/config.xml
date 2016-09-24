@@ -3,6 +3,7 @@
         version="0.0.1"
         xmlns="http://www.w3.org/ns/widgets"
         xmlns:gap= "http://phonegap.com/ns/1.0"
+        xmlns:android = "http://schemas.android.com/apk/res/android"
         xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Proxy Shift</name>
     <description>
@@ -91,6 +92,16 @@
         <splash src="resources/android/splash/drawable-port-xxhdpi-screen" platform="android" gap:qualifier="port-xxhdpi" />
         <splash src="resources/android/splash/drawable-port-xxxhdpi-screen.png" platform="android" gap:qualifier="port-xxxhdpi" />
     </platform>
+    <gap:config-file platform="android" parent="/manifest">
+        <supports-screens
+            android:xlargeScreens="true"
+            android:largeScreens="true"
+            android:smallScreens="true" />
+        <application android:theme="@android:style/Theme.NoTitleBar" >
+            <activity android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+            </activity>
+        </application>
+    </gap:config-file>
     <platform name="windows">
         <preference name="SplashScreen" value="splash" />
         <!-- images are determined by width and height. The following are supported -->
