@@ -1,7 +1,7 @@
 var version = {
     major: 0,
     minor: 1,
-    patch: 4
+    patch: 8
 };
 
 var exports = {
@@ -11,28 +11,31 @@ var exports = {
     string: version.major + '.' + version.minor + '.' + version.patch
 };
 
-function canUpdateTo(them, sameOk) {
+function canUpdateTo(them, sameOk, dis) {
+    if (dis === undefined) {
+        dis = version;
+    }
     if (typeof them == 'string') {
         them = parseVersion(them);
     }
-    if (them.major > version.major) {
+    if (them.major > dis.major) {
         return true;
     } else if (
-        them.major == version.major &&
-        them.minor > version.minor
+        them.major == dis.major &&
+        them.minor > dis.minor
     ) {
         return true;
     } else if (
-        them.major == version.major &&
-        them.minor == version.minor &&
-        them.patch > version.patch
+        them.major == dis.major &&
+        them.minor == dis.minor &&
+        them.patch > dis.patch
     ) {
         return true;
     } else if (
         sameOk &&
-        them.major == version.major &&
-        them.minor == version.minor &&
-        them.patch == version.patch
+        them.major == dis.major &&
+        them.minor == dis.minor &&
+        them.patch == dis.patch
     ) {
         return true;
     } else {
@@ -46,7 +49,7 @@ function compatible(them) {
 
 function parseVersion(version) {
     var versions = version.split('.');
-    if (versions.length > 3) {
+    if (versions.length == 3) {
         return {
             major: versions[0],
             minor: versions[1],
@@ -59,6 +62,5 @@ function parseVersion(version) {
 if (typeof window == 'undefined') {
     module.exports = exports
 } else {
-    console.log("WINDOWAPIVERSION");
     window.ApiVersion = exports;
 }

@@ -191,13 +191,99 @@ module.exports = function(grunt) {
         'watch:uglifyLtie',
         'watch:uglifyBootstrap',
         'watch:ngtemplates',
-        'watch:concat',
+        'watch:concatIndex',
+        'watch:concatContactusFail',
+        'watch:concatContactusSuccess',
+        'watch:concatPrivacyPolicy',
+        'watch:concatMobilePrivacyPolicy',
+        'watch:concatTermsOfService',
+        'watch:concatMobileTermsOfService',
+        'watch:concatMobileCordovaApiVersion',
+        'watch:concatHandlebarsMain',
         'watch:jsonmanifest'
     ];
 
     var cordovaFonts = [
         'ionic/www/lib/ionic/release/fonts/ionicons.ttf',
         'ionic/www/lib/ionic/release/fonts/ionicons.woff'
+    ];
+
+    var concatIndex = [
+        'static/partials/main.header.html',
+        'static/partials/main.header.includes.html',
+        'static/partials/main.header.body.html',
+        'static/partials/main.body.html',
+        'static/partials/main.footer.nonsticky.html',
+        'static/partials/main.footer.content.html',
+        'static/partials/main.body.javascript.html',
+        'static/partials/main.end.html'
+    ];
+
+    var concatContactusFail = [
+        'static/partials/main.header.html',
+        'static/partials/main.header.body.html',
+        'static/partials/contactusfail.body.html',
+        'static/partials/main.footer.sticky.html',
+        'static/partials/main.footer.content.html',
+        'static/partials/main.end.html'
+    ];
+
+    var concatContactusSuccess = [
+        'static/partials/main.header.html',
+        'static/partials/main.header.body.html',
+        'static/partials/contactussuccess.body.html',
+        'static/partials/main.footer.sticky.html',
+        'static/partials/main.footer.content.html',
+        'static/partials/main.end.html'
+    ];
+
+    var concatPrivacyPolicy = [
+        'static/partials/main.header.html',
+        'static/partials/privacypolicy.header.html',
+        'static/partials/main.header.body.html',
+        'static/partials/privacypolicy.body.html',
+        'static/partials/main.footer.sticky.html',
+        'static/partials/main.footer.content.html',
+        'static/partials/main.end.html'
+    ];
+
+    var concatMobilePrivacyPolicy = [
+        'static/partials/ionic/ion.privacypolicy.header.html',
+        'static/partials/ionic/ion.content.header.html',
+        'static/partials/privacypolicy.body.html',
+        'static/partials/ionic/ion.content.footer.html',
+        'static/partials/ionic/ion.view.footer.html'
+    ];
+
+    var concatTermsOfService = [
+        'static/partials/main.header.html',
+        'static/partials/privacypolicy.header.html',
+        'static/partials/main.header.body.html',
+        'static/partials/tos.body.html',
+        'static/partials/main.footer.sticky.html',
+        'static/partials/main.footer.content.html',
+        'static/partials/main.end.html'
+    ];
+
+    var concatMobileTermsOfService = [
+        'static/partials/ionic/ion.tos.header.html',
+        'static/partials/ionic/ion.content.header.html',
+        'static/partials/tos.body.html',
+        'static/partials/ionic/ion.content.footer.html',
+        'static/partials/ionic/ion.view.footer.html'
+    ];
+
+    var concatMobileCordovaApiVersion = [
+        'ionic/www/js/shared/ApiVersion.js'
+    ];
+
+    var concatHandlebarsMain = [
+        'static/partials/main.header.html',
+        'static/partials/main.header.body.html',
+        'static/partials/main.handlebars',
+        'static/partials/main.footer.sticky.html',
+        'static/partials/main.footer.content.html',
+        'static/partials/main.end.html'
     ];
 
     grunt.initConfig({
@@ -271,108 +357,48 @@ module.exports = function(grunt) {
             }
         },
 
-        concatt: {
-            'build/<%= pkg.name %>.js': ['build/vendor.js', 'build/app.js']
-        },
+        //concatt: {
+            //'build/<%= pkg.name %>.js': ['build/vendor.js', 'build/app.js']
+        //},
 
         concat : {
             options: {
                 //sourceMap :true
             },
             index: {
-                src: [
-                    'static/partials/main.header.html',
-                    'static/partials/main.header.includes.html',
-                    'static/partials/main.header.body.html',
-                    'static/partials/main.body.html',
-                    'static/partials/main.footer.nonsticky.html',
-                    'static/partials/main.footer.content.html',
-                    'static/partials/main.body.javascript.html',
-                    'static/partials/main.end.html'
-                ],
+                src: concatIndex,
                 dest: 'static/index.html'
             },
             contactusfail: {
-                src: [
-                    'static/partials/main.header.html',
-                    'static/partials/main.header.body.html',
-                    'static/partials/contactusfail.body.html',
-                    'static/partials/main.footer.sticky.html',
-                    'static/partials/main.footer.content.html',
-                    'static/partials/main.end.html'
-                ],
+                src: concatContactusFail,
                 dest: 'static/contactusfail.html'
             },
             contactussuccess: {
-                src: [
-                    'static/partials/main.header.html',
-                    'static/partials/main.header.body.html',
-                    'static/partials/contactussuccess.body.html',
-                    'static/partials/main.footer.sticky.html',
-                    'static/partials/main.footer.content.html',
-                    'static/partials/main.end.html'
-                ],
+                src: concatContactusSuccess,
                 dest: 'static/contactussuccess.html'
             },
             privacypolicy: {
-                src: [
-                    'static/partials/main.header.html',
-                    'static/partials/privacypolicy.header.html',
-                    'static/partials/main.header.body.html',
-                    'static/partials/privacypolicy.body.html',
-                    'static/partials/main.footer.sticky.html',
-                    'static/partials/main.footer.content.html',
-                    'static/partials/main.end.html'
-                ],
+                src: concatPrivacyPolicy,
                 dest: 'static/privacy-policy.html'
             },
             'mobile.privacypolicy': {
-                src: [
-                    'static/partials/ionic/ion.privacypolicy.header.html',
-                    'static/partials/ionic/ion.content.header.html',
-                    'static/partials/privacypolicy.body.html',
-                    'static/partials/ionic/ion.content.footer.html',
-                    'static/partials/ionic/ion.view.footer.html'
-                ],
+                src: concatMobilePrivacyPolicy,
                 dest: 'ionic/www/templates/settings/privacy-policy.html'
             },
             termsofservice: {
-                src: [
-                    'static/partials/main.header.html',
-                    'static/partials/privacypolicy.header.html',
-                    'static/partials/main.header.body.html',
-                    'static/partials/tos.body.html',
-                    'static/partials/main.footer.sticky.html',
-                    'static/partials/main.footer.content.html',
-                    'static/partials/main.end.html'
-                ],
+                src: concatTermsOfService,
                 dest: 'static/terms-of-service.html'
             },
             'mobile.termsofservice': {
-                src: [
-                    'static/partials/ionic/ion.tos.header.html',
-                    'static/partials/ionic/ion.content.header.html',
-                    'static/partials/tos.body.html',
-                    'static/partials/ionic/ion.content.footer.html',
-                    'static/partials/ionic/ion.view.footer.html'
-                ],
+                src: concatMobileTermsOfService,
                 dest: 'ionic/www/templates/settings/terms-of-service.html'
             },
             'CordovaApiVersion.js': {
-                src: [
-                    'ionic/www/js/shared/ApiVersion.js'
-                ],
+                src: concatMobileCordovaApiVersion,
                 dest: 'ionic/www/js/shared/CordovaApiVersion.js'
             },
             handlebarsMain : {
-                src: [
-                    'static/partials/main.header.html',
-                    'static/partials/main.header.body.html',
-                    'static/partials/main.handlebars',
-                    'static/partials/main.footer.sticky.html',
-                    'static/partials/main.footer.content.html',
-                    'static/partials/main.end.html'
-                ],
+                src: concatHandlebarsMain,
                 dest: 'views/layouts/main.handlebars'
             }
         },
@@ -500,9 +526,41 @@ module.exports = function(grunt) {
                 files: ['client/templates/**/*', 'client/src/**/*.js', 'views/**/*'],
                 tasks: ['clean:dev', 'concat', 'copy:dev']
             },
-            concat: {
-                files: ['static/partials/**/*'],
-                tasks: ['concat']
+            concatIndex: {
+                files: concatIndex,
+                tasks: ['concat:index']
+            },
+            concatContactusFail: {
+                files: concatContactusFail,
+                tasks: ['concat:contactusfail']
+            },
+            concatContactusSuccess: {
+                files: concatContactusSuccess,
+                tasks: ['concat:contactussuccess']
+            },
+            concatPrivacyPolicy: {
+                files: concatPrivacyPolicy,
+                tasks: ['concat:privacypolicy']
+            },
+            concatMobilePrivacyPolicy: {
+                files: concatMobilePrivacyPolicy,
+                tasks: ['concat:mobile.privacypolicy']
+            },
+            concatTermsOfService: {
+                files: concatTermsOfService,
+                tasks: ['concat:termsofservice']
+            },
+            concatMobileTermsOfService: {
+                files: concatMobileTermsOfService,
+                tasks: ['concat:mobile.termsofservice']
+            },
+            concatMobileCordovaApiVersion: {
+                files: concatMobileCordovaApiVersion,
+                tasks: ['concat:CordovaApiVersion.js']
+            },
+            concatHandlebarsMain: {
+                files: concatHandlebarsMain,
+                tasks: ['concat:handlebarsMain']
             },
             uglifyAppLibs: {
                 files: uglifyAppLibs,
@@ -651,8 +709,9 @@ module.exports = function(grunt) {
     //grunt.registerTask('init:dev', ['clean', 'bower', 'browserify:vendor']);
     grunt.registerTask('init:dev', ['bower']);
 
-    grunt.registerTask('build:dev', ['clean:dev', 'browserify:vendor', 'browserify:app', 'browserify:test', 'jshint:dev', 'less:transpile', 'uglify', 'concat', 'copy:dev']);
-    grunt.registerTask('build:prod', ['clean:prod', 'browserify:vendor', 'browserify:app', 'jshint:all', 'less:transpile', 'concat', 'cssmin', 'uglify', 'copy:prod']);
+    //grunt.registerTask('build:dev', ['clean:dev', 'browserify:vendor', 'browserify:app', 'browserify:test', 'jshint:dev', 'less:transpile', 'uglify', 'concat', 'copy:dev']);
+    //grunt.registerTask('build:prod', ['clean:prod', 'browserify:vendor', 'browserify:app', 'jshint:all', 'less:transpile', 'concat', 'cssmin', 'uglify', 'copy:prod']);
+    grunt.registerTask('build:prod', ['concat', 'less', 'ngtemplates', 'uglify', 'jsonmanifest']);
 
     grunt.registerTask('heroku', ['init:dev', 'build:dev']);
 

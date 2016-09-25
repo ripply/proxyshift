@@ -117,4 +117,3 @@ angular.module('scheduling-app.controllers')
         }]
 )
 ;
-V
