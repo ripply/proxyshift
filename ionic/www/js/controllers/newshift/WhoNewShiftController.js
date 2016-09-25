@@ -46,7 +46,6 @@ angular.module('scheduling-app.controllers')
             };
 
             $scope.next = function next() {
-                console.log($scope.description);
                 var params = angular.extend({
                     who: $scope.encodeWho(getSelectedJobType()),
                     description: $scope.other.description,

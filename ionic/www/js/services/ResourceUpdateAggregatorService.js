@@ -10,7 +10,6 @@ angular.module('scheduling-app.services', [
         ) {
             $rootScope.$on(GENERAL_EVENTS.UPDATES.RESOURCE,
                 function(event, resourceName, newResourceValue, oldResourceValue) {
-                    console.log("Received UPDATE EVENT ON ROOTSCOPE: " + resourceName);
                     $rootScope[resourceName] = newResourceValue;
                 }
             );

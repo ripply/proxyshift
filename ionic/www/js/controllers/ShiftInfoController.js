@@ -74,9 +74,7 @@ angular.module('scheduling-app.controllers')
             });
 
             function fetch() {
-                console.log('fetchhhh');
                 if ($scope.busy.fetch) {
-                    console.log('NMOPEEEE');
                     return;
                 }
                 $scope.busy.fetch = true;
@@ -183,13 +181,9 @@ angular.module('scheduling-app.controllers')
                 }
                 $scope.busy.approveDecline = true;
                 ResourceService.approveShiftApplication(shiftapplication.id, function(response) {
-                    console.log('SUCCESS');
-                    console.log(response);
                     fetch();
                     $scope.busy.approveDecline = false;
                 }, function(err) {
-                    console.log("ERR");
-                    console.log(err);
                     fetch();
                     $scope.busy.approveDecline = false;
                 });
@@ -202,13 +196,9 @@ angular.module('scheduling-app.controllers')
                 }
                 $scope.busy.approveDecline = true;
                 ResourceService.declineShiftApplication(shiftapplication.id, reason, function(response) {
-                    console.log('SUCCESS');
-                    console.log(response);
                     fetch();
                     $scope.busy.approveDecline = false;
                 }, function(err) {
-                    console.log("ERR");
-                    console.log(err);
                     fetch();
                     $scope.busy.approveDecline = false;
                 });

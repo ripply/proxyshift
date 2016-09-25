@@ -20,7 +20,6 @@ angular.module('scheduling-app.services.routing.statehistory', [
             angular.forEach(STATES, function(value, key) {
                 STATES[key + "_URL"] = value.replace(/\./g, "/");
             });
-            console.log(STATES);
             var goingTo;
             $rootScope.$on('$stateChangeSuccess', function(ev, to, toParams, from, fromParams) {
                 if (to == goingTo) {

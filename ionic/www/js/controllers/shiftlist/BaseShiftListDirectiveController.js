@@ -207,7 +207,6 @@ angular.module('scheduling-app.controllers')
                         reason: reason
                     })
                     .then(function(result) {
-                        console.log(result);
                         var ignoredShift = addShiftToCanceledShifts(id);
                         if (ignoredShift) {
                             ignoredShift.busy = false;
@@ -242,7 +241,6 @@ angular.module('scheduling-app.controllers')
                     .all('cancel')
                     .remove()
                     .then(function(result) {
-                        console.log(result);
                         var unIgnoredShift = removeShiftFromCanceledShifts(id);
                         if (unIgnoredShift) {
                             unIgnoredShift.busy = false;
@@ -276,7 +274,6 @@ angular.module('scheduling-app.controllers')
                 ResourceService.ignoreShift(
                     id,
                     function(result) {
-                        console.log(result);
                         var ignoredShift = addShiftToIgnoredShifts(id);
                         if (ignoredShift) {
                             ignoredShift.busy = false;
@@ -310,7 +307,6 @@ angular.module('scheduling-app.controllers')
                 ResourceService.unIgnoreShift(
                     id,
                     function(result) {
-                        console.log(result);
                         var unIgnoredShift = removeShiftFromIgnoredShifts(id);
                         if (unIgnoredShift) {
                             unIgnoredShift.busy = false;

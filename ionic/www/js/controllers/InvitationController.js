@@ -41,11 +41,8 @@ angular.module('scheduling-app.controllers')
                 }
                 UsersModel.post($scope.user)
                     .then(function() {
-                        console.log("User successfully signed up.");
                         $rootScope.$broadcast(GENERAL_EVENTS.SIGNUP.SUCCESS);
                     }, function(response) {
-                        console.log("User failed to signup.");
-                        console.log(response);
                         $rootScope.$broadcast(GENERAL_EVENTS.SIGNUP.FAILED, ErrorMessageService.parse(response, 'An error occurred'));
                     });
             };
@@ -120,3 +117,4 @@ angular.module('scheduling-app.controllers')
         }]
 )
 ;
+V

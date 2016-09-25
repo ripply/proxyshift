@@ -38,7 +38,6 @@ angular.module('scheduling-app.services')
                     },
                     function(response) {
                         // failure
-                        console.log("FAIL");
                         $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);
                         errorCallback(response, angular.copy(lastUserSettingsFromServer));
                     }

@@ -9,13 +9,12 @@ angular.module("scheduling-app.controllers")
                  STATES,
                  AuthenticationService) {
             $scope.logout = function() {
-                console.log("Logout controller... logging out...");
                 AuthenticationService.logout()
                     .then(function() {
                         console.log("Logged out");
                         $state.go(STATES.LOGIN);
                     }, function() {
-                        console.log("Failed to logout!!!");
+                        console.log("Failed to logout");
                         $state.go(STATES.LOGIN);
                     });
             };

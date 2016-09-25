@@ -739,11 +739,18 @@ module.exports = function(grunt) {
                 });
             }
             json.version = require('./ionic/www/js/shared/ApiVersion').string;
-            //write out the JSON to the manifest files
+            // write out the JSON to the manifest files
             file.dest.forEach(function(f) {
                 grunt.file.write(f, JSON.stringify(json, null, 2));
             });
 
+            // update version in config.xml
+            var configXml = grunt.file.read('ionic/config.xml');
+            var updatedConfigXml = configXml.replace(/(<widget[\s\S]*version=)"[^"]*"/m, '$1"' + json.version + '"');
+            if (configXml != updatedConfigXml) {
+                console.log('Updated config.xml with new version');
+                grunt.file.write('ionic/config.xml', updatedConfigXml);
+            }
             done();
         });
 

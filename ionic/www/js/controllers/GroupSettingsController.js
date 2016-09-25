@@ -75,8 +75,6 @@ angular.module('scheduling-app.controllers')
                     getGroupId(),
                     $scope[variableName],
                     function saveGroupSettingsThen(result, wat) {
-                        console.log(result);
-                        console.log(wat);
                     }, function saveGroupSettingsError(response) {
                         $scope[variableName] = angular.copy(lastSuccessfulResult);
                         $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);

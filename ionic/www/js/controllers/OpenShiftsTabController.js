@@ -27,7 +27,6 @@ angular.module('scheduling-app.controllers')
                 if (validTabPages.indexOf($state.current.name) >= 0) {
                     $rootScope.currentTabPage = $state.href($state.current.name);
                     $rootScope.currentTagPageState = $state.current.name;
-                    console.log("Update to: " + $rootScope.currentTabPage);
                 }
             };
 

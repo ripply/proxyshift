@@ -34,8 +34,6 @@ angular.module('scheduling-app.controllers')
             var latestLocations;
 
             function getSubscribed(location) {
-                console.log('190-823740-912830-489');
-                console.log(location);
                 if (location.userpermissions &&
                     location.userpermissions instanceof Array &&
                     location.userpermissions.length > 0) {

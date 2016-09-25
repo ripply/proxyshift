@@ -74,7 +74,6 @@ angular.module('scheduling-app.controllers')
 
             $scope.saveJob = function() {
                 var toUpdate = [];
-                console.log('SAVE JOB');
                 angular.forEach($scope.userClasses, function(userClass) {
                     if (!userClass.persisting && userClass.subscribed != isJob(userClass.id)) {
                         var method;
@@ -103,8 +102,6 @@ angular.module('scheduling-app.controllers')
                             userClass.subscribed = !clonedUserClass.subscribed;
                             userClass.persisting = false;
                         });
-                    } else {
-                        console.log("NOPEEE");
                     }
                 });
             };

@@ -131,6 +131,7 @@
                 // ok, try updating
             } else {
                 // too early, don't bother hitting local storage
+                console.debug("UPDATE: Not updating too early.");
                 return
             }
         }
@@ -141,6 +142,7 @@
             nextUpdateTime = localStorage.getItem('next_update_time');
             var checkForUpdates = localStorage.getItem('check_for_updates');
             if (!force && checkForUpdates == false) {
+                console.debug("UPDATE: Not updating, checking for updates disabled.");
                 return;
             }
             if (nextUpdateTime !== undefined &&
@@ -156,6 +158,7 @@
         }
 
         if (!force && !okToUpdate(nextUpdateTime)) {
+            console.debug("UPDATE: Not updating, not forced and not ok to update.");
             return;
         }
 
@@ -218,6 +221,7 @@
             .then(function(updatable) {
                 checking = false;
                 if (!updatable) {
+                    console.debug("UPDATE: Not updatable.");
                     if (!isForceUpdateRequired()) {
                         initialUpdateComplete();
                     }
@@ -228,6 +232,7 @@
                     window.ApiVersion &&
                     window.ApiVersion.canUpdateTo) {
                     if (!window.ApiVersion.canUpdateTo(newManifest.version)) {
+                        console.debug("UPDATE: Running same version as server. " + window.ApiVersion.string + ' vs ' + newManifest.version);
                         return;
                     }
                 }
@@ -265,6 +270,7 @@
                                 }
                             }
                             if (required || !isForceUpdateRequired()) {
+                                console.debug("UPDATE: Forcing update.");
                                 doUpdate(true);
                             } else if (PROMPT_FOR_UPDATES) {
                                 navigator.notification.confirm(
@@ -283,6 +289,7 @@
                                     buttonLabels
                                 );
                             } else {
+                                console.debug("UPDATE: Updating, not required.");
                                 doUpdate(false);
                                 setNextCheck();
                             }

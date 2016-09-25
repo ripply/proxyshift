@@ -13,7 +13,7 @@ angular.module('scheduling-app.controllers')
             var location = onlyMemberOfOneLocation();
             if (location !== false) {
                 // goto next page
-                console.log("Only a member of one location");
+                // console.log("Only a member of one location");
             }
 
             function onlyMemberOfOneLocation() {

@@ -90,7 +90,6 @@ angular.module('scheduling-app.controllers')
                 } else if ($scope.location_id !== null &&
                     $scope.location_id !== undefined) {
                     getLocation(function(result) {
-                        console.log(result);
                     }, function(response) {
                     });
                 }
@@ -148,12 +147,10 @@ angular.module('scheduling-app.controllers')
                     $scope.location.zipcode,
                     $scope.location.phonenumber,
                     function createLocationSuccess(response) {
-                        console.log(response);
                         $scope.message = 'Success';
                         $scope.saving = false;
                     },
                     function createLocationError(response) {
-                        console.log(response);
                         if (response.data.data && response.data.error && response.data.data.message) {
                             $scope.message = response.data.data.message;
                         }
@@ -179,12 +176,10 @@ angular.module('scheduling-app.controllers')
                     $scope.location.zipcode,
                     $scope.location.phonenumber,
                     function editLocationSuccess(response) {
-                        console.log(response);
                         $scope.message = 'Success';
                         $scope.saving = false;
                     },
                     function editLocationError(response) {
-                        console.log(response);
                         if (response.data.data && response.data.error && response.data.data.message) {
                             $scope.message = response.data.data.message;
                         }
@@ -199,18 +194,15 @@ angular.module('scheduling-app.controllers')
                 }
                 $scope.saving = true;
                 $scope.message = '';
-                console.log("Creating sublocation under '" + getLocationId() + "'");
                 ResourceService.createSublocation(
                     getLocationId(),
                     $scope.sublocation.title,
                     $scope.sublocation.description,
                     function createSublocationSuccess(response) {
-                        console.log(response);
                         $scope.message = 'Success';
                         $scope.saving = false;
                     },
                     function createSublocationError(response) {
-                        console.log(response);
                         if (response.data.data && response.data.error && response.data.data.message) {
                             $scope.message = response.data.data.message;
                         }
@@ -231,12 +223,10 @@ angular.module('scheduling-app.controllers')
                     $scope.sublocation.title,
                     $scope.sublocation.description,
                     function editSublocationSuccess(response) {
-                        console.log(response);
                         $scope.message = 'Success';
                         $scope.saving = false;
                     },
                     function editSublocationError(response) {
-                        console.log(response);
                         if (response.data.data && response.data.error && response.data.data.message) {
                             $scope.message = response.data.data.message;
                         }
@@ -245,11 +235,6 @@ angular.module('scheduling-app.controllers')
                 );
             };
 
-            //$scope.createLocation = ResourceService.createLocation;
-            //$scope.editLocation = ResourceService.editLocation;
             $scope.deleteLocation = ResourceService.deleteLocation;
-
-            //$scope.createSublocation = ResourceService.createSublocation;
-            //$scope.editSublocation = ResourceService.editSublocation;
             $scope.deleteSublocation = ResourceService.deleteSublocation;
         }]);

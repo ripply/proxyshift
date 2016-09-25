@@ -72,7 +72,6 @@ angular.module('scheduling-app.controllers')
                                 return left.key < right.key ? -1:1;
                             }
                         });
-                        console.log($scope.date);
                     } else {
                         $scope.date = [];
                         //resetSteps();
@@ -82,7 +81,6 @@ angular.module('scheduling-app.controllers')
             });
 
             $scope.getDatesString = function() {
-                console.log($scope.date);
                 var dates = [];
                 angular.forEach($scope.date, function(date) {
                     dates.push(date.key);

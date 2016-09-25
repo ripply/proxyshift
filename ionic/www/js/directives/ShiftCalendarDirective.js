@@ -1,4 +1,3 @@
-console.log("LoginDirective js file loaded?");
 angular.module('scheduling-app.directives')
     .directive('shiftCalendar', [
         '$rootScope',

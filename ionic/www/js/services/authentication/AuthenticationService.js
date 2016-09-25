@@ -47,7 +47,7 @@ angular.module('scheduling-app.authentication', [
                 var expires = UserSettingService.get(tokenExpiresKey);
                 if (expires) {
                     if (now > expires) {
-                        console.log("Token issued by server expired, must sign in again");
+                        console.info("Token issued by server expired, must sign in again");
                         UserSettingService.clear(tokenKey, tokenExpiresKey);
                     }
                 }
@@ -114,7 +114,7 @@ angular.module('scheduling-app.authentication', [
                                         setupAngularHttpAuthentication(data.token);
                                         storeToken(data.token, data.expires);
                                     } else {
-                                        console.log("Server did not issue an authentication token");
+                                        console.debug("Server did not issue an authentication token");
                                     }
 
                                     if (data.hasOwnProperty('registeredForPush')) {
@@ -134,7 +134,6 @@ angular.module('scheduling-app.authentication', [
                                     SessionService.setAuthenticated(true);
                                     resolveLogin(deferred);
                                     $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.CONFIRMED);
-                                    console.log("Fired login confirmed event");
                                     authService.loginConfirmed(data, function (config) {  // Step 2 & 3
                                         //config.headers.Authorization = data.authorizationToken;
                                         //deferred.resolve(config);
@@ -157,7 +156,6 @@ angular.module('scheduling-app.authentication', [
 
             function fireLogoutSuccessEvent() {
                 $rootScope.$broadcast(GENERAL_EVENTS.LOGOUT.COMPLETE);
-                console.log("Fired logout success");
             }
 
             var loggingOut = false;
@@ -222,7 +220,6 @@ angular.module('scheduling-app.authentication', [
             });
 
             function notAuthenticated() {
-                console.log("NOT AUTHENTICATED???????????????????????????");
                 $rootScope.authenticated = false;
             }
 

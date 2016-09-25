@@ -39,7 +39,6 @@ angular.module('scheduling-app.controllers')
             });
 
             $scope.$watch('grouppermission_id', function(newValue, oldValue) {
-                console.log(oldValue + ' -> ' + newValue);
                 if ($scope.permissions) {
                     setOnlyOneSelected($scope.permissions, newValue);
                 }

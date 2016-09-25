@@ -23,10 +23,8 @@ angular.module('scheduling-app.services')
                     .customPOST(body)
                     .then(function(result) {
                         // success
-                        console.log(result);
                     }, function(response) {
                         // fail
-                        console.log(response);
                     });
             };
 
@@ -389,7 +387,7 @@ angular.module('scheduling-app.services')
                     if (shift.timezone) {
                         return moment.tz(shift.start * 1000, shift.timezone.name);
                     } else {
-                        console.log("UNKNOWN TIMEZONE: " + JSON.stringify(shift));
+                        console.debug("UNKNOWN TIMEZONE: " + JSON.stringify(shift));
                         return moment(shift.start * 1000);
                     }
                 } else {
@@ -408,7 +406,7 @@ angular.module('scheduling-app.services')
                     if (shift.timezone) {
                         return moment.tz(shift.end * 1000, shift.timezone.name);
                     } else {
-                        console.log("UNKNOWN TIMEZONE: " + JSON.stringify(shift));
+                        console.debug("UNKNOWN TIMEZONE: " + JSON.stringify(shift));
                         return moment(shift.end * 1000);
                     }
                 } else {

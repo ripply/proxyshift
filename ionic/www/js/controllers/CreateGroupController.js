@@ -32,9 +32,7 @@ angular.module('scheduling-app.controllers')
                         $scope.group.weburl = null;
                         $scope.group.contactemail = null;
                         $scope.group.contactphone = null;
-                        console.log("Successfully created group?");
                     }, function(response) {
-                        console.log("Failed to create group with response: " + response.status);
                     });
             };
 

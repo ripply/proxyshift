@@ -13,7 +13,7 @@ angular.module('scheduling-app.directives')
             });
 
             function link(scope, element, attributes) {
-                console.log("Link called");
+
             }
         }]
 );

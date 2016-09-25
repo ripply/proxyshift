@@ -108,7 +108,6 @@ angular.module('scheduling-app.controllers')
                     .one('application', shiftapplication_id)
                     .post()
                     .then(function(result) {
-                        console.log(result);
                     });
             }
 
@@ -162,7 +161,6 @@ angular.module('scheduling-app.controllers')
                         reason: reason
                     })
                     .then(function(result) {
-                        console.log(result);
                     });
             }
         }]);

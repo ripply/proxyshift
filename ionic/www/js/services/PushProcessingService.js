@@ -194,7 +194,6 @@ angular.module('scheduling-app.push', [
                                 //navigator.notification.alert("Failed to get push id", function(i) {}, "Failure", ['ok']);
                                 deferred.reject(data);
                             }
-                            console.log("REGISTRATION: " + JSON.stringify(data));
                         });
                         self.push.on('error', function(e) {
                             finished = true;
@@ -204,7 +203,6 @@ angular.module('scheduling-app.push', [
                             }
                         });
                         self.push.on('notification', function(data) {
-                            console.log("RECEIVED NOTIFICATION:" + JSON.stringify(data));
                             var additionalData = data.additionalData;
                             if (additionalData && additionalData.hasOwnProperty('action')) {
                                 var foreground = additionalData.foreground;
@@ -253,7 +251,7 @@ angular.module('scheduling-app.push', [
                     } catch (err) {
                         alert("Error initializing push notifications");
                         alert(err);
-                        console.log(err);
+                        console.error(err);
                         // push notification plugin was most likely not included with build
                         deferred.reject(err);
                         // page wont load properly if this service errors

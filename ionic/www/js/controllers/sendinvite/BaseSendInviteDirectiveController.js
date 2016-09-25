@@ -91,7 +91,6 @@ angular.module('scheduling-app.controllers')
                         selectOnlyOne($scope.filteredUserclasses, $scope.userclass_id);
                     }
                     selectOnlyOne($scope.filteredGrouppermissions, $scope.grouppermission_id);
-                    console.log($scope.filteredUserclasses);
                 }
             }
 

@@ -479,7 +479,7 @@ angular.module('scheduling-app.services')
             function isUpdateRequired() {
                 if (serverVersion.major !== undefined &&
                     serverVersion.minor !== undefined) {
-                    return window.ApiVersion.compatible(serverVersion);
+                    return !window.ApiVersion.compatible(serverVersion);
                 } else {
                     return false;
                 }

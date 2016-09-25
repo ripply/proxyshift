@@ -131,14 +131,12 @@ angular.module('scheduling-app.session', [
             function resolve(deferred, value) {
                 showLoadingScreen(false);
                 checkingAuthenticationPromise = false;
-                console.log("checkAuthentication returning TRUE");
                 deferred.resolve(value);
             }
 
             function reject(deferred, value) {
                 showLoadingScreen(false);
                 checkingAuthenticationPromise = false;
-                console.log("checkAuthentication returning FALSE");
                 deferred.reject(value);
             }
 
@@ -177,8 +175,6 @@ angular.module('scheduling-app.session', [
                     var api_url = GENERAL_CONFIG.APP_URL;
 
                     if (!forceCheck && isAuthenticated()) {
-                        console.debug("Already logged in.");
-                        console.trace();
                         resolve(deferred);
                     } else if (!forceCheck && failedLogin) {
                         reject(deferred);
@@ -191,19 +187,16 @@ angular.module('scheduling-app.session', [
                             .success(function (data, status, headers, config) {
                                 // successfully accessed a restriced resource
                                 // we are already logged in
-                                console.debug("Able to access protected resource, logged in.");
                                 updateUserInfo($rootScope, function() {
                                     fireAuthenticationConfirmedEvent(loggingOut);
                                     resolve(deferred);
                                 }, function() {
-                                    console.debug("Failed to fetch userinfo, which is required");
                                     failedLoginFunc();
                                 });
                             })
                             .error(function (data, status, headers, config) {
                                 // failed to access a protected resource
                                 // TODO: Handle connection timeouts here
-                                console.debug("Failed to access protected resource, not logged in");
                                 failedLoginFunc();
                             });
 

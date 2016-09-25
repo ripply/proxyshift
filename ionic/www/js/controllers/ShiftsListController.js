@@ -49,14 +49,11 @@ angular.module('scheduling-app.controllers')
             $scope.shiftOuterHeight = 120;
             $scope.shiftInnerHeight = 64 + 4 * 2;
 
-            console.log('SHIFTLISTCONTROLLER SETUP');
 
             $rootScope.$on(GENERAL_EVENTS.UPDATES.RESOURCE, function(state, resource, value) {
                 if (resource == $scope.MODELNAME) {
-                    console.log('GOT UPDATE');
                     ShiftIntervalTreeCacheService.updateShifts(value);
                 } else {
-                    console.log('IGNORING UPDATE');
                 }
             });
 
@@ -97,7 +94,6 @@ angular.module('scheduling-app.controllers')
                     $scope.Model = data;
                     deferred.resolve(data);
                     if ($scope.showDividers) {
-                        console.log("Checking for dividers..................");
                         var approved = false;
                         var pendingApprovals = false;
                         var noapplications = false;
@@ -131,7 +127,6 @@ angular.module('scheduling-app.controllers')
                             }
                         }
                         if (approved) {
-                            console.log('Approved shifts exist!');
                             data.splice(0, 0, {
                                 type: $scope._approved || 'approved',
                                 sort: $scope._approvedGroup || APPROVED_GROUP,
@@ -139,7 +134,6 @@ angular.module('scheduling-app.controllers')
                             });
                         }
                         if (pendingApprovals) {
-                            console.log('Pending approvals exist!');
                             data.splice(0, 0, {
                                 type: $scope._pendingApproval || 'pendingApproval',
                                 sort: $scope._pendingGroup || PENDING_GROUP,
@@ -147,7 +141,6 @@ angular.module('scheduling-app.controllers')
                             });
                         }
                         if (noapplications) {
-                            console.log('no applications exist!');
                             data.splice(0, 0, {
                                 type: $scope._noapplications || 'noApplications',
                                 sort: $scope._noapplicationsGroup|| NOAPPLICATION_GROUP,
@@ -155,7 +148,6 @@ angular.module('scheduling-app.controllers')
                             });
                         }
                         if (expired !== false) {
-                            console.log('Expired shifts exist!');
                             data.splice(expired, 0, {
                                 type: $scope._expired || 'expired',
                                 sort: $scope._expiredGroup || EXPIRED_GROUP,
@@ -169,7 +161,6 @@ angular.module('scheduling-app.controllers')
                         });
                         /*
                         if (declined) {
-                            console.log('Declined shifts exist!');
                             data.splice(0, 0, {
                                 type: 'declined',
                                 sort: DECLINED_GROUP,
@@ -220,14 +211,8 @@ angular.module('scheduling-app.controllers')
                         return ShiftProcessingService.compareShiftByDate(left, right);
                     }
                 } else if (leftGroup < rightGroup) {
-                    if (leftGroup == EXPIRED_GROUP || rightGroup == EXPIRED_GROUP) {
-                        console.log('lr: ' + (leftGroup == EXPIRED_GROUP ? 'l':'r'));
-                    }
                     return -1;
                 } else {
-                    if (leftGroup == EXPIRED_GROUP || rightGroup == EXPIRED_GROUP) {
-                        console.log('rl: ' + (leftGroup == EXPIRED_GROUP ? 'l':'r'));
-                    }
                     return 1;
                 }
             }

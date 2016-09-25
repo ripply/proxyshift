@@ -29,9 +29,6 @@ angular.module('scheduling-app.directives')
             } else {
                 scope.swipable = true;
             }
-            scope.$on('$ionicView.afterEnter', function() {
-                console.log("After enter in directive link");
-            });
         }
     }
 );

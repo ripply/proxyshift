@@ -61,9 +61,6 @@ angular.module('scheduling-app.authentication.csrf', [])
                                 });
                         }
                 }
-                console.log("http request failed...");
-                console.log(response);
-                console.log("end of rejection");
                 // TODO: Retry request again
                 return $q.reject(response);
             }

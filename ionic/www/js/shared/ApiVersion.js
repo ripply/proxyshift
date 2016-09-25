@@ -1,7 +1,7 @@
 var version = {
     major: 0,
     minor: 1,
-    patch: 7
+    patch: 8
 };
 
 var exports = {
@@ -49,7 +49,7 @@ function compatible(them) {
 
 function parseVersion(version) {
     var versions = version.split('.');
-    if (versions.length > 3) {
+    if (versions.length == 3) {
         return {
             major: versions[0],
             minor: versions[1],
@@ -62,6 +62,5 @@ function parseVersion(version) {
 if (typeof window == 'undefined') {
     module.exports = exports
 } else {
-    console.log("WINDOWAPIVERSION");
     window.ApiVersion = exports;
 }

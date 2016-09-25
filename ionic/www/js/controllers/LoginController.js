@@ -15,7 +15,6 @@ angular.module('scheduling-app.controllers')
                  PushProcessingSerivce,
                  GENERAL_EVENTS,
                  STATES) {
-            console.log("LoginControllerService INIT");
             $rootScope.user = {
                 username: null,
                 password: null,
@@ -30,7 +29,6 @@ angular.module('scheduling-app.controllers')
             this.showLoginModal = showLoginModal;
 
             var hideLoginModal = function hideLoginModal() {
-                console.log("Hide login modal... going " + ($rootScope.previousState || STATES.HOME));
                 if ($state.current.name == STATES.LOGIN) {
                     $state.go(STATES.HOME, {}, {reload: false, inherit: true});
                 } else {
@@ -66,7 +64,6 @@ angular.module('scheduling-app.controllers')
                 $rootScope.user.username = null;
                 $rootScope.user.password = null;
                 $rootScope.message = null;
-                console.log("Got auth confirmed event");
                 hideLoginModal();
             });
 
@@ -174,9 +171,9 @@ angular.module('scheduling-app.controllers')
                 }
                 AuthenticationService.login($rootScope.user)
                     .then(function() {
-                        console.log("Logged in!");
+                        console.info("Logged in successfully");
                     }, function() {
-                        console.log("Failed to login :(");
+                        console.info("Failed to login");
                     }, function() {
                         // notify, do nothing
                     })

@@ -43,12 +43,9 @@ angular.module('scheduling-app.controllers')
                 UsersModel.post($scope.user)
                     .then(function() {
                         $scope.busy = false;
-                        console.log("User successfully signed up.");
                         $rootScope.$broadcast(GENERAL_EVENTS.SIGNUP.SUCCESS);
                     }, function(response) {
                         $scope.busy = false;
-                        console.log("User failed to signup.");
-                        console.log(response);
                         $rootScope.$broadcast(GENERAL_EVENTS.SIGNUP.FAILED, ErrorMessageService.parse(response, 'An error occurred'));
                     });
             };

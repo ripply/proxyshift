@@ -56,7 +56,6 @@ angular.module('scheduling-app', [
             sessionHack.push(SessionService);
             StateHistoryService.setDefaultState(STATES.HOME);
             function triggerAuthenticationCheck() {
-                console.log("Triggering auth check");
                 $rootScope.$broadcast(GENERAL_EVENTS.AUTHENTICATION.CHECK);
             }
             $ionicPlatform.ready(function() {
@@ -111,9 +110,6 @@ angular.module('scheduling-app', [
         ) {
             $provide.decorator("$exceptionHandler", function($delegate, $injector){
                 return function(exception, cause){
-                    console.log("CAUSE");
-                    console.log(cause);
-                    console.log('1-0234-09184');
                     window.onerror(cause, null, null, null, exception);
                 };
             });
@@ -135,16 +131,16 @@ angular.module('scheduling-app', [
 
             if (CORDOVA_SETTINGS.isWebView) {
                 GENERAL_CONFIG.APP_URL = GENERAL_CONFIG.APP_URL_PROD;
-                console.log("Detected running inside a webview using api source: " + GENERAL_CONFIG.APP_URL_PROD);
+                // console.log("Detected running inside a webview using api source: " + GENERAL_CONFIG.APP_URL_PROD);
             } else if (window.cordova) {
                 GENERAL_CONFIG.APP_URL = GENERAL_CONFIG.APP_URL_PROD;
-                console.log("Detected cordova, using api source: " + GENERAL_CONFIG.APP_URL_PROD);
+                // console.log("Detected cordova, using api source: " + GENERAL_CONFIG.APP_URL_PROD);
             } else if (document.location.protocol == "file:") {
                 GENERAL_CONFIG.APP_URL = GENERAL_CONFIG.APP_URL_PROD;
-                console.log("Detected running in ionic view, using api source: " + GENERAL_CONFIG.APP_URL_PROD);
+                // console.log("Detected running in ionic view, using api source: " + GENERAL_CONFIG.APP_URL_PROD);
             } else {
                 GENERAL_CONFIG.APP_URL = GENERAL_CONFIG.APP_URL_DEV;
-                console.log("Running in browser using dev api source: " + GENERAL_CONFIG.APP_URL);
+                // console.log("Running in browser using dev api source: " + GENERAL_CONFIG.APP_URL);
             }
 
             var disableAnalytics = false;
@@ -160,8 +156,6 @@ angular.module('scheduling-app', [
                 .setHybridMobileSupport(true)
                 .readFromRoute(true)
                 .startOffline(disableAnalytics);
-
-            console.log("APP-uRL=" + GENERAL_CONFIG.APP_URL);
 
             angular.extend(toastrConfig, {
                 //autoDismiss: false,

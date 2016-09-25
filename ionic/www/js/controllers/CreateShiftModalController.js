@@ -334,7 +334,6 @@ angular.module('scheduling-app.controllers')
             function recalculateSteps() {
                 var existingSteps = $scope.steps;
                 $scope.steps = {};
-                console.log($scope.steps);
                 angular.forEach($scope.computedState, function(state, id) {
                     $scope.steps[id] = {
                         show: true,
@@ -358,7 +357,6 @@ angular.module('scheduling-app.controllers')
                         };
                     }
                 });
-                console.log($scope.steps);
             }
 
             function getCurrentScreen(index, subindex) {
@@ -559,7 +557,6 @@ angular.module('scheduling-app.controllers')
             //getLocations();
 
             $scope.$on('modal:createshift:reset', function() {
-                console.log('reset');
                 $ionicScrollDelegate.scrollTop(false);
                 $rootScope.$broadcast('events:calendar:reset', calendarName);
                 $rootScope.$broadcast('events:calendar:show', calendarName);
@@ -677,7 +674,6 @@ angular.module('scheduling-app.controllers')
             }
 
             function slideTo(location) {
-                console.log("Sliding: " + location);
                 if ($scope.sliding) {
                     return;
                 }
@@ -730,10 +726,8 @@ angular.module('scheduling-app.controllers')
                 recalculateSteps();
                 if (parentId) {
                     $scope.steps[parentId].locked = false;
-                    console.log("Unlocking " + parentId);
                 }
                 $scope.steps[location].locked = false;
-                console.log("Unlocking" + location);
 
 
                 $scope.sliding = true;
@@ -804,9 +798,6 @@ angular.module('scheduling-app.controllers')
             }
 
             $scope.sublocationClicked = function(clickedSublocation) {
-                console.log("************8");
-                console.log(clickedSublocation);
-                console.log("*************");
                 if (clickedSublocation.selected) {
                     unselect($scope.sublocations);
                 } else {
@@ -825,7 +816,6 @@ angular.module('scheduling-app.controllers')
                 var shifts = [];
                 var location_id = $scope.location;
                 var sublocation_id = $scope.sublocation;
-                console.log($scope.selectedJobType);
                 var location = {
                     title: 'text',
                     description: $scope.description,
@@ -849,11 +839,7 @@ angular.module('scheduling-app.controllers')
                 });
 
                 ResourceService.createMultipleShifts(shifts, function(result) {
-                    console.log("SUCCESS");
-                    console.log(result);
                 }, function(err) {
-                    console.log("ERR");
-                    console.log(err);
                 });
             };
 
@@ -881,7 +867,6 @@ angular.module('scheduling-app.controllers')
                     }
                 });
                 $scope.selectedJobType = undefined;
-                console.log($scope.jobTypes);
             }
 
             function getLocationsOld() {
@@ -891,7 +876,6 @@ angular.module('scheduling-app.controllers')
                 angular.forEach($scope.locationsObject, function(location, locationid) {
                     $scope.locations.push(angular.copy(location));
                 });
-                console.log($scope.locations);
             }
 
             slideTo(actions[0].id);

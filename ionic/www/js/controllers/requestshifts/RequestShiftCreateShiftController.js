@@ -34,11 +34,11 @@ angular.module('scheduling-app.controllers')
 
             function timePickerCallback(val) {
                 if (typeof (val) === 'undefined') {
-                    console.log('Time not selected');
+                    console.debug('Time not selected');
                 } else {
                     var selectedTime = new Date(val * 1000);
                     $scope.shiftStart = val;
-                    console.log('Selected epoch is : ', val, 'and the time is ', selectedTime.getUTCHours(), ':', selectedTime.getUTCMinutes(), 'in UTC');
+                    console.debug('Selected epoch is : ', val, 'and the time is ', selectedTime.getUTCHours(), ':', selectedTime.getUTCMinutes(), 'in UTC');
                 }
             }
 
@@ -68,9 +68,9 @@ angular.module('scheduling-app.controllers')
 
             var datePickerCallback = function (val) {
                 if (typeof(val) === 'undefined') {
-                    console.log('No date selected');
+                    console.debug('No date selected');
                 } else {
-                    console.log('Selected date is : ', val)
+                    console.debug('Selected date is : ', val)
                 }
             };
 

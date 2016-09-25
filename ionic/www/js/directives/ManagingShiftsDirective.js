@@ -12,16 +12,12 @@ angular.module('scheduling-app.directives')
         });
 
         function link(scope, element, attributes) {
-            console.log(attributes);
             scope.expiredPendingApproval = attributes.expiredPendingApproval;
             scope.expiredNoApplications = attributes.expiredNoApplications;
             scope.expiredApproved = attributes.expiredApproved;
             scope.manageable = attributes.manageable == 'true' || attributes.manageable == true;
             scope.swipable = true;
             scope.name = attributes.name;
-            scope.$on('$ionicView.afterEnter', function() {
-                console.log("After enter in directive link");
-            });
         }
     }
 );
