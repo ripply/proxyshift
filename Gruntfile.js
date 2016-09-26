@@ -35,7 +35,7 @@ module.exports = function(grunt) {
         'ionic/www/lib/moment/min/moment.min.js',
         'ionic/www/lib/moment-timezone/builds/moment-timezone-with-data.js',
         'ionic/www/lib/tzdetect/tzdetect.js',
-        'ionic/www/lib/jstz/jstz.js',
+        //'ionic/www/lib/jstz/jstz.js',
         'ionic/www/lib/angular-ui-grid/ui-grid.js',
         'ionic/www/lib/angular-gettext/dist/angular-gettext.js',
         'ionic/www/lib/angular-local-storage/dist/angular-local-storage.js',
@@ -192,6 +192,7 @@ module.exports = function(grunt) {
         'watch:uglifyBootstrap',
         'watch:ngtemplates',
         'watch:concatIndex',
+        'watch:concatLicense',
         'watch:concatContactusFail',
         'watch:concatContactusSuccess',
         'watch:concatPrivacyPolicy',
@@ -286,6 +287,14 @@ module.exports = function(grunt) {
         'static/partials/main.end.html'
     ];
 
+    var concatLicenses = [
+        'static/partials/ionic/ion.license.header.html',
+        'static/partials/ionic/ion.content.header.html',
+        'static/partials/license.body.html',
+        'static/partials/ionic/ion.content.footer.html',
+        'static/partials/ionic/ion.view.footer.html',
+    ];
+
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 
@@ -318,6 +327,108 @@ module.exports = function(grunt) {
                 src: jsonmainfestSrc,
                 dest: ['ionic/www/manifest.json']
             }
+        },
+
+        updatelicenses: {
+            generate: {
+                files: {
+                    'angular-animate': {
+                        files: 'ionic/www/lib/angular-animate'
+                    },
+                    'angular-cookies': {
+                        files: 'ionic/www/lib/angular-cookies'
+                    },
+                    'angular-gettext': {
+                        files: 'ionic/www/lib/angular-gettext'
+                    },
+                    'angular-google-analytics': {
+                        files: 'ionic/www/lib/angular-google-analytics'
+                    },
+                    'angular-http-auth': {
+                        files: 'ionic/www/lib/angular-http-auth'
+                    },
+                    'angular-local-storage': {
+                        files: 'ionic/www/lib/angular-local-storage'
+                    },
+                    'angular-message': {
+                        files: 'ionic/www/lib/angular-messages'
+                    },
+                    'angular-resource': {
+                        files: 'ionic/www/lib/angular-resource'
+                    },
+                    'angular-sanitize': {
+                        files: 'ionic/www/lib/angular-resource'
+                    },
+                    'angular-toastr': {
+                        files: 'ionic/www/lib/angular-toastr'
+                    },
+                    'angular-ui-router': {
+                        files: 'ionic/www/lib/angular-ui-router'
+                    },
+                    'bluebird': {
+                        files: 'ionic/www/lib/bluebird'
+                    },
+                    'cordova-app-loader': {
+                        files: 'ionic/www/lib/cordova-app-loader'
+                    },
+                    'cordova-promise-fs': {
+                        files: 'ionic/www/lib/cordova-promise-fs'
+                    },
+                    'ionic': {
+                        files: 'ionic/www/lib/ionic'
+                    },
+                    'ionic-fancy-select': {
+                        files: 'ionic/www/lib/ionic-fancy-select'
+                    },
+                    'ionic-datepicker': {
+                        // TODO: REMOVE THIS IT ISN'T USED KILL IT FROM APP
+                        files: 'ionic/www/lib/ionic-datepicker'
+                    },
+                    'ionic-timepicker': {
+                        // TODO: REMOVE THIS IT ISN'T USED KILL IT FROM APP
+                        files: 'ionic/www/lib/ionic-timepicker'
+                    },
+                    'jquery': {
+                        files: 'ionic/www/lib/jquery'
+                    },
+                    /*
+                     // Not used?, commented out, wont be included in libs uglification
+                     'jstz': {
+                     files: 'ionic/www/lib/jstz',
+                     // MIT
+                     },
+                     */
+                    'lodash': {
+                        files: 'ionic/www/lib/lodash'
+                    },
+                    'momentjs': {
+                        files: 'ionic/www/lib/moment'
+                    },
+                    'moment-timezone': {
+                        files: 'ionic/www/lib/moment-timezone'
+                    },
+                    'ng-material-floating-button': {
+                        // TODO: REMOVE THIS IT ISN'T USED KILL IT FROM APP
+                        files: 'ionic/www/lib/ng-material-floating-button'
+                    },
+                    /*
+                    'stacktrace-js': {
+                        // Public domain, don't need to include
+                        files: 'ionic/www/lib/stacktrace-js'
+                    },
+                    */
+                    'tzdetect.js': {
+                        files: 'ionic/www/lib/tzdetect'
+                    },
+                    'validator-js': {
+                        files: 'ionic/www/lib/validator-js'
+                    },
+                    'winstore-jscompat': {
+                        files: 'ionic/www/lib/winstore-jscompat'
+                    }
+                },
+            },
+            //tasks: ['updatelicenses']
         },
 
         clean: {
@@ -368,6 +479,11 @@ module.exports = function(grunt) {
             index: {
                 src: concatIndex,
                 dest: 'static/index.html'
+            },
+            license: {
+                src: concatLicenses,
+                //dest: 'static/licenses.html'
+                dest: 'ionic/www/templates/settings/licenses.html'
             },
             contactusfail: {
                 src: concatContactusFail,
@@ -526,9 +642,108 @@ module.exports = function(grunt) {
                 files: ['client/templates/**/*', 'client/src/**/*.js', 'views/**/*'],
                 tasks: ['clean:dev', 'concat', 'copy:dev']
             },
+            updateLicenses: {
+                files: {
+                    'angular-animate': {
+                        files: 'ionic/www/lib/angular-animate'
+                    },
+                    'angular-cookies': {
+                        files: 'ionic/www/lib/angular-cookies'
+                    },
+                    'angular-gettext': {
+                        files: 'ionic/www/lib/angular-gettext'
+                    },
+                    'angular-google-analytics': {
+                        files: 'ionic/www/lib/angular-google-analyticsw'
+                    },
+                    'angular-http-auth': {
+                        files: 'ionic/www/lib/angular-http-auth'
+                    },
+                    'angular-local-storage': {
+                        files: 'ionic/www/lib/angular-local-storage'
+                    },
+                    'angular-message': {
+                        files: 'ionic/www/lib/angular-messages'
+                    },
+                    'angular-resource': {
+                        files: 'ionic/www/lib/angular-resource'
+                    },
+                    'angular-sanitize': {
+                        files: 'ionic/www/lib/angular-resource'
+                    },
+                    'angular-toastr': {
+                        files: 'ionic/www/lib/angular-toastr'
+                    },
+                    'angular-ui-router': {
+                        files: 'ionic/www/lib/angular-ui-router'
+                    },
+                    'bluebird': {
+                        files: 'ionic/www/lib/bluebird'
+                    },
+                    'cordova-app-loader': {
+                        files: 'ionic/www/lib/cordova-app-loader'
+                    },
+                    'cordova-promise-fs': {
+                        files: 'ionic/www/lib/cordova-promise-fs'
+                    },
+                    'ionic': {
+                        files: 'ionic/www/lib/ionic'
+                    },
+                    'ionic-fancy-select': {
+                        files: 'ionic/www/lib/',
+
+                    },
+                    'ionic-datepicker': {
+                        // TODO: REMOVE THIS IT ISN'T USED KILL IT FROM APP
+                        files: 'ionic/www/lib/ionic-datepicker'
+                    },
+                    'ionic-timepicker': {
+                        // TODO: REMOVE THIS IT ISN'T USED KILL IT FROM APP
+                        files: 'ionic/www/lib/ionic-timepicker'
+                    },
+                    'jquery': {
+                        files: 'ionic/www/lib/jquery'
+                    },
+                    /*
+                    // Not used?, commented out, wont be included in libs uglification
+                    'jstz': {
+                        files: 'ionic/www/lib/jstz',
+                        // MIT
+                    },
+                    */
+                    'lodash': {
+                        files: 'ionic/www/lib/lodash'
+                    },
+                    'momentjs': {
+                        files: 'ionic/www/lib/moment'
+                    },
+                    'moment-timezone': {
+                        files: 'ionic/www/lib/moment-timezone'
+                    },
+                    'ng-material-floating-button': {
+                        // TODO: REMOVE THIS IT ISN'T USED KILL IT FROM APP
+                        files: 'ionic/www/lib/ng-material-floating-button'
+                    },
+                    'stacktrace-js': {
+                        files: 'ionic/www/lib/stacktrace-js'
+                    },
+                    'tzdetect.js': {},
+                    'validator-js': {
+                        files: 'ionic/www/lib/validator-js'
+                    },
+                    'winstore-jscompat': {
+                        files: 'ionic/www/lib/winstore-jscompat'
+                    }
+                },
+                tasks: ['updatelicenses']
+            },
             concatIndex: {
                 files: concatIndex,
                 tasks: ['concat:index']
+            },
+            concatLicense: {
+                files: concatLicenses,
+                tasks: ['concat:license']
             },
             concatContactusFail: {
                 files: concatContactusFail,
@@ -711,7 +926,7 @@ module.exports = function(grunt) {
 
     //grunt.registerTask('build:dev', ['clean:dev', 'browserify:vendor', 'browserify:app', 'browserify:test', 'jshint:dev', 'less:transpile', 'uglify', 'concat', 'copy:dev']);
     //grunt.registerTask('build:prod', ['clean:prod', 'browserify:vendor', 'browserify:app', 'jshint:all', 'less:transpile', 'concat', 'cssmin', 'uglify', 'copy:prod']);
-    grunt.registerTask('build:prod', ['concat', 'less', 'ngtemplates', 'uglify', 'jsonmanifest']);
+    grunt.registerTask('build:prod', ['updatelicenses', 'concat', 'less', 'ngtemplates', 'uglify', 'jsonmanifest']);
 
     grunt.registerTask('heroku', ['init:dev', 'build:dev']);
 
@@ -812,6 +1027,121 @@ module.exports = function(grunt) {
             }
             done();
         });
+
+    });
+
+    grunt.registerMultiTask('updatelicenses', 'Stick together licenses', function () {
+        var done = this.async();
+
+        var path = require('path');
+
+        var allLicenses = '';
+
+        var licenseFileNames = [
+            'LICENSE',
+            'LICENSE.txt',
+            'License.txt',
+            'LICENSE.MD',
+            'LICENSE.md'
+        ];
+
+        function getLicense(folder) {
+            for (var i = 0; i < licenseFileNames.length; i++) {
+                var licenseFileName = licenseFileNames[i];
+                var fullLicensePath = folder + '/' + licenseFileName;
+                if (grunt.file.exists(fullLicensePath)) {
+                    return grunt.file.read(fullLicensePath);
+                }
+            }
+            throw new Error("CANNOT FIND LICENSE: " + folder);
+        }
+
+        this.files.forEach(function (library) {
+            var files = library.orig.src[0].files;
+            allLicenses += '<p class="license-library-name">' + library.dest + '</p>' + "\n<p class=\"license\">" + getLicense(files) + '</p>\n';
+
+            //
+
+            /*
+            //manifest format
+            var json = {
+                "files": options.files,
+                "load": options.load,
+                "root": options.root
+            };
+
+            //clear load array if loading all found assets
+            if(options.loadall) {
+                json.load = [];
+            }
+
+            // check to see if src has been set
+            if (typeof file.src === "undefined") {
+                grunt.fatal('Need to specify which files to include in the json manifest.', 2);
+            }
+
+            // if a basePath is set, expand using the original file pattern
+            if (options.basePath) {
+                files = grunt.file.expand({cwd: options.basePath}, file.orig.src);
+            } else {
+                files = file.src;
+            }
+
+            // Exclude files
+            if (options.exclude) {
+                files = files.filter(function (item) {
+                    return options.exclude.indexOf(item) === -1;
+                });
+            }
+
+            // Set default destination file
+            if (!file.dest) {
+                file.dest = ['manifest.json'];
+            }
+
+            // add files
+            if (files) {
+                files.forEach(function (item) {
+
+                    var isDir = grunt.file.isDir(path.join(options.basePath, item));
+
+                    if (!isDir)
+                    {
+                        var hasher = require('crypto').createHash('sha256');
+                        var filename = encodeURI(item);
+                        var key = filename.split("-").slice(1).join('-');
+                        if (key == '') {
+                            key = filename;
+                        }
+                        json.files[key] = {};
+                        json.files[key]['filename'] = filename;
+                        json.files[key]['version'] = hasher.update(grunt.file.read(path.join(options.basePath, item))).digest("hex");
+
+                        if(options.loadall)
+                        {
+                            json.load.push(filename);
+                        }
+                    }
+                });
+            }
+            json.version = require('./ionic/www/js/shared/ApiVersion').string;
+            // write out the JSON to the manifest files
+            file.dest.forEach(function(f) {
+                grunt.file.write(f, JSON.stringify(json, null, 2));
+            });
+
+            // update version in config.xml
+            var configXml = grunt.file.read('ionic/config.xml');
+            var updatedConfigXml = configXml.replace(/(<widget[\s\S]*version=)"[^"]*"/m, '$1"' + json.version + '"');
+            if (configXml != updatedConfigXml) {
+                console.log('Updated config.xml with new version');
+                grunt.file.write('ionic/config.xml', updatedConfigXml);
+            }
+            */
+        });
+
+        grunt.file.write('static/partials/license.body.html', allLicenses.replace(/\n/g, '<br>'));
+        done();
 
     });
 };

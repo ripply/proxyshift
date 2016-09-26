@@ -653,6 +653,21 @@ angular.module('scheduling-app', [
                     }
                 })
 
+                .state('settings.licenses', {
+                    url: "/licenses",
+                    pageTrack: '/app/settings/licenses',
+                    controller: 'SettingsController',
+                    views: {
+                        'content': {
+                            templateUrl: "templates/settings/licenses.html",
+                            controller: 'SettingsController'
+                        }
+                    },
+                    resolve: {
+                        //TODO: Check /userinfo
+                    }
+                })
+
                 .state('settings.tos', {
                     url: "/tos",
                     pageTrack: '/app/settings/tos',
