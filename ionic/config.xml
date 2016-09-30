@@ -12,7 +12,7 @@
     <author email="chase.ripplinger@gmail.com" href="https://www.proxyshift.com/">
         Chase Ripplinger
     </author>
-    <content src="index.html"/>
+    <content src="loader.html"/>
     <access origin="https://www.proxyshift.com"/>
     <access origin="cdvfile://*" />
     <allow-intent href="cdvfile://*" />

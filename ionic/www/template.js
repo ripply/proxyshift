@@ -4439,6 +4439,21 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
   );
 
 
+  $templateCache.put('loader.html',
+    "<!doctype html>\n" +
+    "<html>\n" +
+    "<head>\n" +
+    "    <title>Proxy Shift</title>\n" +
+    "    <!-- https://stackoverflow.com/questions/12319809/application-error-the-connection-to-the-server-was-unsuccessful-file-andr#31377846 -->\n" +
+    "    <script>\n" +
+    "        window.location='./index.html';\n" +
+    "    </script>\n" +
+    "<body>\n" +
+    "</body>\n" +
+    "</html>\n"
+  );
+
+
   $templateCache.put('loaderio-30bf3d04e2a06876357265dae10aa1b5.html',
     "loaderio-30bf3d04e2a06876357265dae10aa1b5\n"
   );
