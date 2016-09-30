@@ -226,7 +226,7 @@ function launchServer() {
             }
         });
         app.use(httpLog);
-    } else {
+    } else if (process.env.LOG_REQUESTS == "true") {
         app.use(morgan('dev')); // log every request to the console
     }
 

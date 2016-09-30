@@ -1290,17 +1290,14 @@ function checkRememberMeToken(token, consume, next) {
                     })
                         .fetch()
                         .tap(function() {
-                            console.log('Refreshed token: '+ token + ' to ' + nowExpiresAt);
                             return next(null, user_id);
                         });
                 } else {
-                    console.log('Found token: ' + token);
                     return next(null, user_id);
                 }
             }
         })
         .catch(function(err) {
-            console.log("Failed to fetch remember me token" + err);
             return next(null, null);
         });
 }
