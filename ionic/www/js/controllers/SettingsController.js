@@ -75,7 +75,7 @@ angular.module('scheduling-app.controllers')
                 message: ''
             };
             $scope.saving = false;
-            $scope.error = false;
+            $scope.error = undefined;
 
             $scope.submitSupportInquiry = function() {
                 if ($scope.saving ||
