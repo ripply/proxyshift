@@ -173,7 +173,7 @@ angular.module('scheduling-app.authentication', [
             this.logout = function() {
                 var deferred;
                 if (loggingOut !== false) {
-                    return loggingOut;
+                    return loggingOut.promise;
                 } else {
                     deferred = $q.defer();
                     loggingOut = deferred;
