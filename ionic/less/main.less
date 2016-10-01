@@ -54,7 +54,7 @@
 @width-medium: 350px;
 @width-big: 400px;
 @width-massive: 500px;
-@width-landscape-small: 950px;
+@width-landscape-small: 580px;
 @width-landscape-big: 1300px;
 
 body, .pane, .scroll-content, .list, .logo {
@@ -556,7 +556,7 @@ input[type="text"], input[type="password"] {
     }
 
     .square-content span .icon {
-        font-size: @larger-font-size * 1.5;
+        font-size: @larger-font-size * 1.3;
     }
 }
 
@@ -566,7 +566,19 @@ input[type="text"], input[type="password"] {
     }
 
     .square-content span .icon {
-        font-size: @larger-font-size * 1.5;
+        font-size: @larger-font-size * 1.3;
+    }
+}
+
+@media all and (min-aspect-ratio: 1/1) and (min-width: @width-landscape-small) and (max-width: @width-landscape-big - 1) {
+    .square-content span .icon {
+        font-size: @larger-font-size;
+    }
+}
+
+@media all and (orientation: landscape) and (min-width: @width-landscape-small) and (max-width: @width-landscape-big - 1) {
+    .square-content span .icon {
+        font-size: @larger-font-size;
     }
 }
 
@@ -578,7 +590,7 @@ input[type="text"], input[type="password"] {
 
 @media all and (orientation: landscape) and (min-width: @width-landscape-big) {
     .square-content span .icon {
-        font-size: @larger-font-size *3;
+        font-size: @larger-font-size * 3;
     }
 }
 

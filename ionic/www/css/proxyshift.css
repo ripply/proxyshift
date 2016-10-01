@@ -1213,7 +1213,7 @@ input[type="password"] :focus {
     width: 25%;
   }
   .square-content span .icon {
-    font-size: 9em;
+    font-size: 7.800000000000001em;
   }
 }
 @media all and (orientation: landscape) {
@@ -1221,7 +1221,17 @@ input[type="password"] :focus {
     width: 25%;
   }
   .square-content span .icon {
-    font-size: 9em;
+    font-size: 7.800000000000001em;
+  }
+}
+@media all and (min-aspect-ratio: 1/1) and (min-width: 580px) and (max-width: 1300px - 1) {
+  .square-content span .icon {
+    font-size: 6em;
+  }
+}
+@media all and (orientation: landscape) and (min-width: 580px) and (max-width: 1300px - 1) {
+  .square-content span .icon {
+    font-size: 6em;
   }
 }
 @media all and (min-aspect-ratio: 1/1) and (min-width: 1300px) {
