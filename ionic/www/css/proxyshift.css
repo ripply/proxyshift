@@ -907,7 +907,8 @@ ion-header-bar.bar.bar-positive {
   box-shadow: none;
 }
 .popup-title,
-.popup-sub-title {
+.popup-sub-title,
+.popup-body {
   color: #000000;
 }
 .gradient-colorrr {

@@ -5058,16 +5058,26 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "    </ion-header-bar>\n" +
     "    <ion-content>\n" +
     "        <div ng-controller=\"SignupController\">\n" +
-    "            <form name=\"passwordResetForm\" ng-submit=\"forgotPassword(passwordResetForm.$valid)\" novalidate>\n" +
-    "                <div class=\"list\">\n" +
+    "            <form name=\"passwordResetForm\" ng-submit=\"forgotPassword()\">\n" +
+    "                <div class=\"list list-inset centered-input\">\n" +
     "                    <div class=\"item\">\n" +
     "                        Enter your username or email and we'll send an email shortly\n" +
     "                    </div>\n" +
-    "                    <label class=\"item item-input\">\n" +
-    "                        <span class=\"input-label\">Username or email</span>\n" +
-    "                        <input type=\"text\" name=\"username\" ng-model=\"usernameOrPassword\" validate-user-username>\n" +
-    "                    </label>\n" +
-    "                    <button class=\"button button-block button-steelblue\" type=\"submit\">Reset password</button>\n" +
+    "                    <div class=\"item item-input row\">\n" +
+    "                        <div class=\"col col-25 list-item-padding\">\n" +
+    "                            <h4 class=\"sub-subheader\">\n" +
+    "                                Username or email\n" +
+    "                            </h4>\n" +
+    "                        </div>\n" +
+    "                        <div class=\"col\">\n" +
+    "                            <input type=\"text\"\n" +
+    "                                   placeholder=\"Username\"\n" +
+    "                                   ng-model=\"usernameOrPassword\">\n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
+    "                    <button class=\"button button-block button-steelblue\"\n" +
+    "                            type=\"submit\"\n" +
+    "                            ng-disabled=\"!usernameOrPassword || busy\">Reset password</button>\n" +
     "                </div>\n" +
     "            </form>\n" +
     "        </div>\n" +

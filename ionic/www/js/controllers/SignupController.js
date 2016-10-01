@@ -50,12 +50,12 @@ angular.module('scheduling-app.controllers')
                     });
             };
 
-            $scope.forgotPassword = function(valid) {
-                if (!valid && !$scope.busy) {
+            $scope.forgotPassword = function() {
+                var usernameOrPassword = $scope.usernameOrPassword;
+                if (!usernameOrPassword && !$scope.busy) {
                     return;
                 }
                 $scope.busy = true;
-                var usernameOrPassword = $scope.usernameOrPassword;
                 ResourceService.resetPassword(usernameOrPassword, function resetPasswordSuccess() {
                     $scope.busy = false;
                         $rootScope.$emit(GENERAL_EVENTS.POPUP.REQUESTED, function($ionicPopup) {
