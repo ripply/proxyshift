@@ -355,7 +355,7 @@ angular.module('scheduling-app.controllers')
                         shift.applied = registrationId;
                         removeShiftFromIgnoredShifts(shift.id);
                         $ionicScrollDelegate.resize();
-                        $rootScope.$emit(GENERAL_EVENTS.TOAST, 'info', 'Applied', 'Applied for shift ' + id);
+                        //$rootScope.$emit(GENERAL_EVENTS.TOAST, 'info', 'Applied', 'Applied for shift ' + id);
                     }, function(response) {
                         // failure
                         var failedShift = getShift(id);
@@ -364,7 +364,7 @@ angular.module('scheduling-app.controllers')
                             failedShift.failed = true;
                         }
                         $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);
-                        $rootScope.$emit(GENERAL_EVENTS.TOAST, 'error', 'Applied', 'Error applying for shift ' + id);
+                        $rootScope.$emit(GENERAL_EVENTS.TOAST, 'error', 'Error applying for shift');
                 });
             };
 
@@ -398,7 +398,7 @@ angular.module('scheduling-app.controllers')
                             failedShift.failed = true;
                         }
                         $rootScope.$emit(GENERAL_EVENTS.UPDATES.FAILURE, response);
-                        $rootScope.$emit(GENERAL_EVENTS.TOAST, 'info', 'Recision', 'Successfully rescinded shift application ' + id);
+                        $rootScope.$emit(GENERAL_EVENTS.TOAST, 'info', 'Successfully rescinded shift application');
                     });
             };
 

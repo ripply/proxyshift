@@ -3,6 +3,7 @@
  */
 angular.module('scheduling-app.controllers')
     .controller('SettingsController', [
+        '$rootScope',
         '$scope',
         '$controller',
         'RemoteUserSettingsService',
@@ -10,14 +11,17 @@ angular.module('scheduling-app.controllers')
         'SupportModel',
         'StateHistoryService',
         'STATES',
+        'GENERAL_EVENTS',
         'UserInfoService',
-        function($scope,
+        function($rootScope,
+                 $scope,
                  $controller,
                  RemoteUserSettingsService,
                  UsersModel,
                  SupportModel,
                  StateHistoryService,
                  STATES,
+                 GENERAL_EVENTS,
                  UserInfoService
         ) {
             $controller('BaseModelController', {$scope: $scope});
@@ -71,6 +75,7 @@ angular.module('scheduling-app.controllers')
                 message: ''
             };
             $scope.saving = false;
+            $scope.error = false;
 
             $scope.submitSupportInquiry = function() {
                 if ($scope.saving ||
@@ -83,8 +88,13 @@ angular.module('scheduling-app.controllers')
                     $scope.support,
                     function success() {
                         $scope.saving = false;
+                        $scope.error = false;
+                        $scope.support.message = '';
+                        $rootScope.$broadcast(GENERAL_EVENTS.TOAST, 'info', 'Submitted support inquiry');
                     }, function error(error) {
                         $scope.saving = false;
+                        $scope.error = true;
+                        $rootScope.$broadcast(GENERAL_EVENTS.TOAST, 'error', 'Error submitting support inquiry');
                     });
             }
 

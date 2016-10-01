@@ -74,7 +74,7 @@ angular.module('scheduling-app.services')
 
             this.setShowIgnoredShifts = setShowIgnoredShifts;
             this.setAnalyticsDisabled = setAnalyticsDisabled;
-            this.setDisableErrorReporting = setDisableErrorReporting ;
+            this.setDisableErrorReporting = setDisableErrorReporting;
 
             function setShowIgnoredShifts(show) {
                 showIgnoredShifts = show;

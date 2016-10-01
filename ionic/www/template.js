@@ -7348,14 +7348,15 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "            <div class=\"list list-inset centered-input\">\n" +
     "                <div class=\"item item-input row\">\n" +
     "                    <div class=\"col\">\n" +
-    "                        <textarea rows=\"20\" ng-model=\"support.message\">What's up?</textarea>\n" +
+    "                        <textarea ng-disabled=\"saving\" rows=\"20\" ng-model=\"support.message\">What's up?</textarea>\n" +
     "                    </div>\n" +
     "                </div>\n" +
     "                <button ng-disabled=\"saving || support.message == '' || !support.message\"\n" +
     "                        class=\"button button-block button-steelblue\"\n" +
     "                        type=\"submit\">\n" +
     "                    <span ng-if=\"saving\">Submitting...</span>\n" +
-    "                    <span ng-if=\"!saving\">Submit support inquiry</span>\n" +
+    "                    <span ng-if=\"!saving && !error\">Submit support inquiry</span>\n" +
+    "                    <span ng-if=\"!saving && error\">Retry submitting support inquiry</span>\n" +
     "                </button>\n" +
     "            </div>\n" +
     "        </form>\n" +

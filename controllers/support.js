@@ -29,8 +29,10 @@ module.exports = {
             // auth: // anyone logged in
             route: function (req, res) {
                 res.sendStatus(200);
-                var supportMessage = "USERID: " + req.user.id +
-                        "\nMESSAGE: '" + req.body.message + "'";
+                var supportMessage = "\nUSER: " + req.user.id +
+                    ' ' + req.user.get('username') +
+                    ' ' + req.user.get('email') +
+                    "\nMESSAGE: '" + req.body.message + "'";
                 console.log("Support inquiry: " + supportMessage);
                 slack.info(
                     supportMessage,
