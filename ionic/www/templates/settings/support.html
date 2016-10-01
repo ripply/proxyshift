@@ -1,0 +1,20 @@
+<ion-view view-title="Support" can-swipe-back="false">
+    <ion-content>
+        <h4 class="new-shift-title">Having trouble? Let us know</h4>
+        <form name="sublocationUpdateForm" ng-submit="submitSupportInquiry()" novalidate>
+            <div class="list list-inset centered-input">
+                <div class="item item-input row">
+                    <div class="col">
+                        <textarea rows="20" ng-model="support.message">What's up?</textarea>
+                    </div>
+                </div>
+                <button ng-disabled="saving || support.message == '' || !support.message"
+                        class="button button-block button-steelblue"
+                        type="submit">
+                    <span ng-if="saving">Submitting...</span>
+                    <span ng-if="!saving">Submit support inquiry</span>
+                </button>
+            </div>
+        </form>
+    </ion-content>
+</ion-view>

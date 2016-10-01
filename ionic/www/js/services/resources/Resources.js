@@ -390,6 +390,21 @@ angular.forEach({
             }
         }
     },
+    'Support': function(url) {
+        var locations = '/support';
+        var base = url + locations;
+        return {
+            route: base,
+            params: {
+            },
+            actions: {
+                inquiry: {
+                    method: POST,
+                    url: url + locations + '/inquiry'
+                }
+            }
+        }
+    },
     'Locations': function(url) {
         var locations = '/locations';
         var base = url + locations + '/:location_id';

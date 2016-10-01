@@ -48,10 +48,7 @@
             <div class="item item-divider">
                 More Information
             </div>
-            <ion-item>
-                Version: {{version.major}}.{{version.minor}}.{{version.patch}}
-            </ion-item>
-            <ion-item>
+            <ion-item ui-sref="settings.support">
                 Support
             </ion-item>
             <ion-item href="#{{states.PRIVACYPOLICY_URL}}">
@@ -67,11 +64,20 @@
                 Account Actions
             </div>
             <div class="item-indent">
+                <ion-item>
+                    Version {{version.major}}.{{version.minor}}.{{version.patch}}
+                </ion-item>
                 <ion-toggle ng-model="localSettings.analyticsEnabled"
                             ng-checked="localSettings.analyticsEnabled">
-                    <i class="icon ion-ios-analytics" ng-if="!localSettings.analyticsEnabled"></i>
-                    <i class="icon ion-ios-analytics-outline" ng-if="localSettings.analyticsEnabled"></i>
-                    Analytics
+                    <i class="icon ion-ios-analytics" ng-if="localSettings.analyticsEnabled"></i>
+                    <i class="icon ion-ios-analytics-outline" ng-if="!localSettings.analyticsEnabled"></i>
+                    Usage data
+                </ion-toggle>
+                <ion-toggle ng-model="localSettings.errorReporting"
+                            ng-checked="localSettings.errorReporting">
+                    <i class="icon ion-alert-circled" ng-if="!localSettings.errorReporting"></i>
+                    <i class="icon ion-alert-circled" ng-if="localSettings.errorReporting"></i>
+                    Crash reports
                 </ion-toggle>
                 <ion-item ng-if="checkForUpdate != undefined"
                           ng-click="checkForUpdate()">

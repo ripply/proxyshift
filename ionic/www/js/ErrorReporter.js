@@ -3,8 +3,8 @@ window.onerror = function(msg, file, line, col, error) {
     // send to server if user has not opted out
     var sendError = true;
     if (typeof(Storage) !== "undefined") {
-        var reportErrors = localStorage.getItem('reportErrors');
-        sendError = (reportErrors === undefined || reportErrors === null || reportErrors === true);
+        var disableErrorReporting = localStorage.getItem('disableErrorReporting');
+        sendError = (disableErrorReporting === undefined || disableErrorReporting === null || disableErrorReporting !== true);
     }
     if (sendError) {
         var ERROR_REPORT = "https://www.proxyshift.com/api/v1/errorreport";

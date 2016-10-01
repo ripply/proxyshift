@@ -7,6 +7,7 @@ angular.module('scheduling-app.controllers')
         '$controller',
         'RemoteUserSettingsService',
         'UsersModel',
+        'SupportModel',
         'StateHistoryService',
         'STATES',
         'UserInfoService',
@@ -14,6 +15,7 @@ angular.module('scheduling-app.controllers')
                  $controller,
                  RemoteUserSettingsService,
                  UsersModel,
+                 SupportModel,
                  StateHistoryService,
                  STATES,
                  UserInfoService
@@ -37,6 +39,7 @@ angular.module('scheduling-app.controllers')
 
             $scope.localSettings = {
                 showIgnoredShifts: UserInfoService.getShowIgnoredShifts(),
+                errorReporting: !UserInfoService.getDisableErrorReporting(),
                 analyticsEnabled: !UserInfoService.getAnalyticsDisabled()
             };
 
@@ -48,6 +51,10 @@ angular.module('scheduling-app.controllers')
                 UserInfoService.setAnalyticsDisabled(!newValue);
             });
 
+            $scope.$watch('localSettings.errorReporting', function(newValue, oldValue) {
+                UserInfoService.setDisableErrorReporting(!newValue);
+            });
+
             $scope.checkForUpdate = window.checkForUpdate;
 
             $scope.commitSettings = function commitSettings() {
@@ -57,6 +64,27 @@ angular.module('scheduling-app.controllers')
                     }, function saveSettingsError(response, lastGoodSettings) {
                         // TODO: Notify user about failure to save settings
                         $scope.UserSettings = lastGoodSettings;
+                    });
+            };
+
+            $scope.support = {
+                message: ''
+            };
+            $scope.saving = false;
+
+            $scope.submitSupportInquiry = function() {
+                if ($scope.saving ||
+                    $scope.support.message == '' ||
+                    $scope.support.message === undefined) {
+                    return;
+                }
+                $scope.saving = true;
+                SupportModel.inquiry(
+                    $scope.support,
+                    function success() {
+                        $scope.saving = false;
+                    }, function error(error) {
+                        $scope.saving = false;
                     });
             }
 

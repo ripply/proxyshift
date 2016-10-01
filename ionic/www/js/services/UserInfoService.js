@@ -37,9 +37,11 @@ angular.module('scheduling-app.services')
 
             var showIgnoredShifts = getShowIgnoredShifts();
             var analyticsDisabled = getAnalyticsDisabled();
+            var disableErrorReporting = getDisableErrorReporting();
 
             this.getShowIgnoredShifts = getShowIgnoredShifts;
             this.getAnalyticsDisabled = getAnalyticsDisabled;
+            this.getDisableErrorReporting = getDisableErrorReporting;
 
             function getShowIgnoredShifts() {
                 if (showIgnoredShifts === undefined) {
@@ -55,6 +57,13 @@ angular.module('scheduling-app.services')
                 return analyticsDisabled;
             }
 
+            function getDisableErrorReporting() {
+                if (disableErrorReporting === undefined) {
+                    disableErrorReporting = getSetting('disableErrorReporting');
+                }
+                return disableErrorReporting;
+            }
+
             function getSetting(key) {
                 var value = localStorageService.get(key);
                 if (value === undefined || value === null) {
@@ -65,6 +74,7 @@ angular.module('scheduling-app.services')
 
             this.setShowIgnoredShifts = setShowIgnoredShifts;
             this.setAnalyticsDisabled = setAnalyticsDisabled;
+            this.setDisableErrorReporting = setDisableErrorReporting ;
 
             function setShowIgnoredShifts(show) {
                 showIgnoredShifts = show;
@@ -75,6 +85,11 @@ angular.module('scheduling-app.services')
                 analyticsDisabled = disable;
                 Analytics.offline(disable);
                 saveSetting('disableAnalytics', disable);
+            }
+
+            function setDisableErrorReporting (enable) {
+                disableErrorReporting = enable;
+                saveSetting('disableErrorReporting', enable);
             }
 
             function saveSetting(key, value) {

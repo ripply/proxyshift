@@ -638,6 +638,21 @@ angular.module('scheduling-app', [
                     }
                 })
 
+                .state('settings.support', {
+                    url: "/support",
+                    pageTrack: '/app/settings/support',
+                    controller: 'SettingsController',
+                    views: {
+                        'content': {
+                            templateUrl: "templates/settings/support.html",
+                            controller: 'SettingsController'
+                        }
+                    },
+                    resolve: {
+                        //TODO: Check /userinfo
+                    }
+                })
+
                 .state('settings.privacypolicy', {
                     url: "/privacypolicy",
                     pageTrack: '/app/settings/privacypolicy',

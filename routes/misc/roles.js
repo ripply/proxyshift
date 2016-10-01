@@ -9,6 +9,7 @@ var controllers = [
     require('../../controllers/groups'),
     require('../../controllers/shifts'),
     require('../../controllers/users'),
+    require('../../controllers/support'),
     require('../../controllers/locations')
 ];
 

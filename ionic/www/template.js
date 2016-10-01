@@ -7340,6 +7340,30 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
   );
 
 
+  $templateCache.put('templates/settings/support.html',
+    "<ion-view view-title=\"Support\" can-swipe-back=\"false\">\n" +
+    "    <ion-content>\n" +
+    "        <h4 class=\"new-shift-title\">Having trouble? Let us know</h4>\n" +
+    "        <form name=\"sublocationUpdateForm\" ng-submit=\"submitSupportInquiry()\" novalidate>\n" +
+    "            <div class=\"list list-inset centered-input\">\n" +
+    "                <div class=\"item item-input row\">\n" +
+    "                    <div class=\"col\">\n" +
+    "                        <textarea rows=\"20\" ng-model=\"support.message\">What's up?</textarea>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <button ng-disabled=\"saving || support.message == '' || !support.message\"\n" +
+    "                        class=\"button button-block button-steelblue\"\n" +
+    "                        type=\"submit\">\n" +
+    "                    <span ng-if=\"saving\">Submitting...</span>\n" +
+    "                    <span ng-if=\"!saving\">Submit support inquiry</span>\n" +
+    "                </button>\n" +
+    "            </div>\n" +
+    "        </form>\n" +
+    "    </ion-content>\n" +
+    "</ion-view>\n"
+  );
+
+
   $templateCache.put('templates/settings/terms-of-service.html',
     "<ion-view view-title=\"TOS\" can-swipe-back=\"false\">\n" +
     "\n" +
@@ -8234,10 +8258,7 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "            <div class=\"item item-divider\">\n" +
     "                More Information\n" +
     "            </div>\n" +
-    "            <ion-item>\n" +
-    "                Version: {{version.major}}.{{version.minor}}.{{version.patch}}\n" +
-    "            </ion-item>\n" +
-    "            <ion-item>\n" +
+    "            <ion-item ui-sref=\"settings.support\">\n" +
     "                Support\n" +
     "            </ion-item>\n" +
     "            <ion-item href=\"#{{states.PRIVACYPOLICY_URL}}\">\n" +
@@ -8253,11 +8274,20 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                Account Actions\n" +
     "            </div>\n" +
     "            <div class=\"item-indent\">\n" +
+    "                <ion-item>\n" +
+    "                    Version {{version.major}}.{{version.minor}}.{{version.patch}}\n" +
+    "                </ion-item>\n" +
     "                <ion-toggle ng-model=\"localSettings.analyticsEnabled\"\n" +
     "                            ng-checked=\"localSettings.analyticsEnabled\">\n" +
-    "                    <i class=\"icon ion-ios-analytics\" ng-if=\"!localSettings.analyticsEnabled\"></i>\n" +
-    "                    <i class=\"icon ion-ios-analytics-outline\" ng-if=\"localSettings.analyticsEnabled\"></i>\n" +
-    "                    Analytics\n" +
+    "                    <i class=\"icon ion-ios-analytics\" ng-if=\"localSettings.analyticsEnabled\"></i>\n" +
+    "                    <i class=\"icon ion-ios-analytics-outline\" ng-if=\"!localSettings.analyticsEnabled\"></i>\n" +
+    "                    Usage data\n" +
+    "                </ion-toggle>\n" +
+    "                <ion-toggle ng-model=\"localSettings.errorReporting\"\n" +
+    "                            ng-checked=\"localSettings.errorReporting\">\n" +
+    "                    <i class=\"icon ion-alert-circled\" ng-if=\"!localSettings.errorReporting\"></i>\n" +
+    "                    <i class=\"icon ion-alert-circled\" ng-if=\"localSettings.errorReporting\"></i>\n" +
+    "                    Crash reports\n" +
     "                </ion-toggle>\n" +
     "                <ion-item ng-if=\"checkForUpdate != undefined\"\n" +
     "                          ng-click=\"checkForUpdate()\">\n" +
