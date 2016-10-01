@@ -1,20 +1,6 @@
 <ion-view view-title="When" hide-back-button="true" can-swipe-back="false">
     <ion-content class="has-header has-footer">
         <h4 class="new-shift-title">Please review the shift request before submitting</h4>
-        <div class="list compacted-list list-inset full-width-inputs">
-            <div ng-if="description.length > 0">
-                <div class="item item-stacked-label row">
-                    <div class="col list-item-padding">
-                        <h4 class="">Shift Description</h4>
-                    </div>
-                </div>
-                <div class="item row">
-                    <div class="col list-item-padding">
-                        <textarea rows="4" cols="50" style="width: 100%;" disabled>{{description}}</textarea>
-                    </div>
-                </div>
-            </div>
-        </div>
         <shift-list dismissable="true" name="newShifts" swipable="false"></shift-list>
         <div class="list compacted-list list-inset full-width-inputs">
             <div class="item row">

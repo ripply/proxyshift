@@ -6461,20 +6461,6 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "<ion-view view-title=\"When\" hide-back-button=\"true\" can-swipe-back=\"false\">\n" +
     "    <ion-content class=\"has-header has-footer\">\n" +
     "        <h4 class=\"new-shift-title\">Please review the shift request before submitting</h4>\n" +
-    "        <div class=\"list compacted-list list-inset full-width-inputs\">\n" +
-    "            <div ng-if=\"description.length > 0\">\n" +
-    "                <div class=\"item item-stacked-label row\">\n" +
-    "                    <div class=\"col list-item-padding\">\n" +
-    "                        <h4 class=\"\">Shift Description</h4>\n" +
-    "                    </div>\n" +
-    "                </div>\n" +
-    "                <div class=\"item row\">\n" +
-    "                    <div class=\"col list-item-padding\">\n" +
-    "                        <textarea rows=\"4\" cols=\"50\" style=\"width: 100%;\" disabled>{{description}}</textarea>\n" +
-    "                    </div>\n" +
-    "                </div>\n" +
-    "            </div>\n" +
-    "        </div>\n" +
     "        <shift-list dismissable=\"true\" name=\"newShifts\" swipable=\"false\"></shift-list>\n" +
     "        <div class=\"list compacted-list list-inset full-width-inputs\">\n" +
     "            <div class=\"item row\">\n" +

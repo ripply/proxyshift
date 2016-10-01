@@ -71,10 +71,10 @@ angular.module('scheduling-app.controllers')
                         startdate.add(starttime.hours(), 'hours');
                         startdate.add(starttime.minutes(), 'minutes');
                         startdate.add(starttime.seconds(), 'seconds');
-                        if (startdate == length) {
+                        if (starttime == length) {
                             date.add(24, 'hours');
                         } else {
-                            if (startdate > length) {
+                            if (starttime > length) {
                                 // crosses midnight
                                 date.add(24, 'hours');
                             } else {
