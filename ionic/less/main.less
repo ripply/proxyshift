@@ -54,6 +54,8 @@
 @width-medium: 350px;
 @width-big: 400px;
 @width-massive: 500px;
+@width-landscape-small: 950px;
+@width-landscape-big: 1300px;
 
 body, .pane, .scroll-content, .list, .logo {
     background: @background;
@@ -407,18 +409,6 @@ input[type="text"], input[type="password"] {
     }
 }
 
-@media screen and (min-aspect-ratio: 1/1) {
-    .square-box {
-        width: 25%;
-    }
-}
-
-@media all and (orientation: landscape) {
-    .square-box {
-        width: 25%;
-    }
-}
-
 @media only screen and (max-width: @width-small) {
 
     .login-container {
@@ -559,6 +549,39 @@ input[type="text"], input[type="password"] {
     }
 
 }
+
+@media screen and (min-aspect-ratio: 1/1) {
+    .square-box {
+        width: 25%;
+    }
+
+    .square-content span .icon {
+        font-size: @larger-font-size * 1.5;
+    }
+}
+
+@media all and (orientation: landscape) {
+    .square-box {
+        width: 25%;
+    }
+
+    .square-content span .icon {
+        font-size: @larger-font-size * 1.5;
+    }
+}
+
+@media all and (min-aspect-ratio: 1/1) and (min-width: @width-landscape-big) {
+    .square-content span .icon {
+        font-size: @larger-font-size * 3;
+    }
+}
+
+@media all and (orientation: landscape) and (min-width: @width-landscape-big) {
+    .square-content span .icon {
+        font-size: @larger-font-size *3;
+    }
+}
+
 
 @header-font-size: 17px;
 

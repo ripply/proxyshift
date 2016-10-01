@@ -1108,16 +1108,6 @@ input[type="password"] :focus {
 .square-content span .icon {
   font-size: 6em;
 }
-@media screen and (min-aspect-ratio: 1/1) {
-  .square-box {
-    width: 25%;
-  }
-}
-@media all and (orientation: landscape) {
-  .square-box {
-    width: 25%;
-  }
-}
 @media only screen and (max-width: 300px) {
   .login-container {
     height: 100%;
@@ -1214,6 +1204,32 @@ input[type="password"] :focus {
   .shift-description {
     width: 80%;
   }
+  .square-content span .icon {
+    font-size: 18em;
+  }
+}
+@media screen and (min-aspect-ratio: 1/1) {
+  .square-box {
+    width: 25%;
+  }
+  .square-content span .icon {
+    font-size: 9em;
+  }
+}
+@media all and (orientation: landscape) {
+  .square-box {
+    width: 25%;
+  }
+  .square-content span .icon {
+    font-size: 9em;
+  }
+}
+@media all and (min-aspect-ratio: 1/1) and (min-width: 1300px) {
+  .square-content span .icon {
+    font-size: 18em;
+  }
+}
+@media all and (orientation: landscape) and (min-width: 1300px) {
   .square-content span .icon {
     font-size: 18em;
   }
