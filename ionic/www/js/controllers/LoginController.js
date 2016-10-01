@@ -12,7 +12,7 @@ angular.module('scheduling-app.controllers')
         function($rootScope,
                  $state,
                  SessionService,
-                 PushProcessingSerivce,
+                 PushProcessingService,
                  GENERAL_EVENTS,
                  STATES) {
             $rootScope.user = {
