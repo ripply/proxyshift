@@ -1056,9 +1056,11 @@ module.exports = function(grunt) {
             throw new Error("CANNOT FIND LICENSE: " + folder);
         }
 
+        var separator = '==============================<br>';
+
         this.files.forEach(function (library) {
             var files = library.orig.src[0].files;
-            allLicenses += '<p class="license-library-name">' + library.dest + '</p>' + "\n<p class=\"license\">" + getLicense(files) + '</p>\n';
+            allLicenses += '<p class="license-library-name">' + separator + library.dest + '<br>' + separator + '</p>' + "\n<p class=\"license\">" + getLicense(files) + '</p>\n';
 
             //
 

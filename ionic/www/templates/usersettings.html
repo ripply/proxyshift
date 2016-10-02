@@ -71,13 +71,13 @@
                             ng-checked="localSettings.analyticsEnabled">
                     <i class="icon ion-ios-analytics" ng-if="localSettings.analyticsEnabled"></i>
                     <i class="icon ion-ios-analytics-outline" ng-if="!localSettings.analyticsEnabled"></i>
-                    Usage data
+                    Usage Data
                 </ion-toggle>
                 <ion-toggle ng-model="localSettings.errorReporting"
                             ng-checked="localSettings.errorReporting">
                     <i class="icon ion-alert-circled" ng-if="!localSettings.errorReporting"></i>
                     <i class="icon ion-alert-circled" ng-if="localSettings.errorReporting"></i>
-                    Crash reports
+                    Crash Reports
                 </ion-toggle>
                 <ion-item ng-if="checkForUpdate != undefined"
                           ng-click="checkForUpdate()">

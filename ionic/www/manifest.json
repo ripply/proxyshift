@@ -42,7 +42,7 @@
     },
     "template.min.js": {
       "filename": "template.min.js",
-      "version": "a95be2118713c5ecc2ba2634f008b906bda67b538174088ea341c5c7b5ba090c"
+      "version": "53003f91e6d9ad307fbbfe5a79d6b34ef1372eb4b32f843231f4efe855db841a"
     },
     "toastr/dist/angular-toastr.css": {
       "filename": "lib/angular-toastr/dist/angular-toastr.css",
