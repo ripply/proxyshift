@@ -72,7 +72,8 @@ angular.module('scheduling-app.controllers')
             };
 
             $scope.support = {
-                message: ''
+                message: '',
+                userAgent: navigator.userAgent
             };
             $scope.saving = false;
             $scope.error = undefined;

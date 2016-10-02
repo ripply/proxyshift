@@ -32,6 +32,7 @@ module.exports = {
                 var supportMessage = "\nUSER: " + req.user.id +
                     ' ' + req.user.get('username') +
                     ' ' + req.user.get('email') +
+                    "\nUserAgent: " + req.body.userAgent +
                     "\nMESSAGE: '" + req.body.message + "'";
                 console.log("Support inquiry: " + supportMessage);
                 slack.info(

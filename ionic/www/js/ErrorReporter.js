@@ -11,7 +11,7 @@ window.onerror = function(msg, file, line, col, error) {
         var message = JSON.stringify({
             message: error.toString(),
             version: window.ApiVersion.string,
-            browser: navigator.appVersion
+            browser: navigator.userAgent
         });
         StackTrace
             .fromError(error)
