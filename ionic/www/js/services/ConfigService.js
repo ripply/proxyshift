@@ -22,8 +22,8 @@ var config_data = {
             interval: 'm'
         },
         'LOADING': {
-            'NOBACKDROP': false,
-            'DELAY': 700 // ms
+            'NOBACKDROP': true,
+            'DELAY': 250 // ms
         },
         'LOGIN_TIMEOUT': 15 * 1000 // milliseconds
     },

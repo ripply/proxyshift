@@ -5527,6 +5527,16 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
   );
 
 
+  $templateCache.put('templates/loading-android.html',
+    "<ion-spinner icon=\"android\"></ion-spinner>\n"
+  );
+
+
+  $templateCache.put('templates/loading-ios.html',
+    "<ion-spinner icon=\"ios\"></ion-spinner>\n"
+  );
+
+
   $templateCache.put('templates/loading.html',
     "<ion-spinner icon=\"lines\"></ion-spinner>\n"
   );

@@ -13,7 +13,6 @@ window.onerror = function(msg, file, line, col, error) {
             version: window.ApiVersion.string,
             browser: navigator.userAgent
         });
-        /*
         StackTrace
             .fromError(error)
             .then(function onError(stackframes) {
@@ -30,7 +29,6 @@ window.onerror = function(msg, file, line, col, error) {
                         console.error(finalStackError);
                     });
             });
-            */
     }
     return false;
 };

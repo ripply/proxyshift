@@ -22,7 +22,7 @@
     <preference name="DisallowOverscroll" value="true"/>
     <preference name="BackupWebStorage" value="none"/>
     <preference name="AutoHideSplashScreen" value="true" />
-    <preference name="SplashScreenDelay" value="3000" />
+    <preference name="SplashScreenDelay" value="10000" />
     <preference name="deployment-target" value="5.0" />
     <splash src="resources/splash.png" />
     <icon src="resources/icon.png"/>
@@ -91,16 +91,15 @@
         <splash src="resources/android/splash/drawable-port-xhdpi-screen.png" platform="android" gap:qualifier="port-xhdpi" />
         <splash src="resources/android/splash/drawable-port-xxhdpi-screen" platform="android" gap:qualifier="port-xxhdpi" />
         <splash src="resources/android/splash/drawable-port-xxxhdpi-screen.png" platform="android" gap:qualifier="port-xxxhdpi" />
-
-        <gap:plugin name="cordova-plugin-datepicker" source="npm" />
     </platform>
     <gap:config-file platform="android" parent="/manifest">
         <supports-screens
             android:xlargeScreens="true"
             android:largeScreens="true"
             android:smallScreens="true" />
-        <application android:theme="@android:style/Theme.NoTitleBar" >
-            <activity android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+        <!-- https://android.googlesource.com/platform/frameworks/base/+/refs/heads/master/core/res/res/values/themes_material.xml -->
+        <application android:theme="@android:style/Theme.Material.NoActionBar" >
+            <activity android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen" >
             </activity>
         </application>
     </gap:config-file>
