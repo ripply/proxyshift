@@ -15,22 +15,84 @@
  *
  * @usage
  * ```html
- * <ion-slides on-slide-changed="slideHasChanged($index)">
- *   <ion-slide-page>
- *     <div class="box blue"><h1>BLUE</h1></div>
- *   </ion-slide-page>
- *   <ion-slide-page>
- *     <div class="box yellow"><h1>YELLOW</h1></div>
- *   </ion-slide-page>
- *   <ion-slide-page>
- *     <div class="box pink"><h1>PINK</h1></div>
- *   </ion-slide-page>
- * </ion-slides>
+ * <ion-content scroll="false">
+ *   <ion-slides  options="options" slider="data.slider">
+ *     <ion-slide-page>
+ *       <div class="box blue"><h1>BLUE</h1></div>
+ *     </ion-slide-page>
+ *     <ion-slide-page>
+ *       <div class="box yellow"><h1>YELLOW</h1></div>
+ *     </ion-slide-page>
+ *     <ion-slide-page>
+ *       <div class="box pink"><h1>PINK</h1></div>
+ *     </ion-slide-page>
+ *   </ion-slides>
+ * </ion-content>
  * ```
  *
- * @param {string=} delegate-handle The handle used to identify this slideBox
- * with {@link ionic.service:$ionicSlideBoxDelegate}.
- * @param {object=} options to pass to the widget. See the full ist here: [http://www.idangero.us/swiper/api/](http://www.idangero.us/swiper/api/)
+ * ```js
+ * $scope.options = {
+ *   loop: false,
+ *   effect: 'fade',
+ *   speed: 500,
+ * }
+ *
+ * $scope.$on("$ionicSlides.sliderInitialized", function(event, data){
+ *   // data.slider is the instance of Swiper
+ *   $scope.slider = data.slider;
+ * });
+ *
+ * $scope.$on("$ionicSlides.slideChangeStart", function(event, data){
+ *   console.log('Slide change is beginning');
+ * });
+ *
+ * $scope.$on("$ionicSlides.slideChangeEnd", function(event, data){
+ *   // note: the indexes are 0-based
+ *   $scope.activeIndex = data.activeIndex;
+ *   $scope.previousIndex = data.previousIndex;
+ * });
+ *
+ * ```
+ *
+ * ## Slide Events
+ *
+ * The slides component dispatches events when the active slide changes
+ *
+ * <table class="table">
+ *   <tr>
+ *     <td><code>$ionicSlides.slideChangeStart</code></td>
+ *     <td>This event is emitted when a slide change begins</td>
+ *   </tr>
+ *   <tr>
+ *     <td><code>$ionicSlides.slideChangeEnd</code></td>
+ *     <td>This event is emitted when a slide change completes</td>
+ *   </tr>
+ *   <tr>
+ *     <td><code>$ionicSlides.sliderInitialized</code></td>
+ *     <td>This event is emitted when the slider is initialized. It provides access to an instance of the slider.</td>
+ *   </tr>
+ * </table>
+ *
+ *
+ * ## Updating Slides Dynamically
+ * When applying data to the slider at runtime, typically everything will work as expected.
+ *
+ * In the event that the slides are looped, use the `updateLoop` method on the slider to ensure the slides update correctly.
+ *
+ * ```
+ * $scope.$on("$ionicSlides.sliderInitialized", function(event, data){
+ *   // grab an instance of the slider
+ *   $scope.slider = data.slider;
+ * });
+ *
+ * function dataChangeHandler(){
+ *   // call this function when data changes, such as an HTTP request, etc
+ *   if ( $scope.slider ){
+ *     $scope.slider.updateLoop();
+ *   }
+ * }
+ * ```
+ *
  */
 IonicModule
 .directive('ionSlides', [
@@ -64,9 +126,16 @@ function($animate, $timeout, $compile) {
             _this.__slider.createLoop();
           }
 
+          var slidesLength = _this.__slider.slides.length;
+
           // Don't allow pager to show with > 10 slides
-          if (_this.__slider.slides.length > 10) {
+          if (slidesLength > 10) {
             $scope.showPager = false;
+          }
+
+          // When slide index is greater than total then slide to last index
+          if (_this.__slider.activeIndex > slidesLength - 1) {
+            _this.__slider.slideTo(slidesLength - 1);
           }
         });
       };
@@ -82,7 +151,7 @@ function($animate, $timeout, $compile) {
       var options = $scope.options || {};
 
       var newOptions = angular.extend({
-        pagination: '.swiper-pagination',
+        pagination: $element.children().children()[1],
         paginationClickable: true,
         lazyLoading: true,
         preloadImages: false
@@ -93,16 +162,23 @@ function($animate, $timeout, $compile) {
       $timeout(function() {
         var slider = new ionic.views.Swiper($element.children()[0], newOptions, $scope, $compile);
 
+        $scope.$emit("$ionicSlides.sliderInitialized", { slider: slider });
+
         _this.__slider = slider;
         $scope.slider = _this.__slider;
 
         $scope.$on('$destroy', function() {
           slider.destroy();
+          _this.__slider = null;
         });
       });
 
-    }],
+      $timeout(function() {
+        // if it's a loop, render the slides again just incase
+        _this.rapidUpdate();
+      }, 200);
 
+    }],
 
     link: function($scope) {
       $scope.showPager = true;
@@ -120,6 +196,10 @@ function($animate, $timeout, $compile) {
     template: '<div class="swiper-slide" ng-transclude></div>',
     link: function($scope, $element, $attr, ionSlidesCtrl) {
       ionSlidesCtrl.rapidUpdate();
+
+      $scope.$on('$destroy', function() {
+        ionSlidesCtrl.rapidUpdate();
+      });
     }
   };
 }]);
