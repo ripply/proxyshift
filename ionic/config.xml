@@ -91,6 +91,8 @@
         <splash src="resources/android/splash/drawable-port-xhdpi-screen.png" platform="android" gap:qualifier="port-xhdpi" />
         <splash src="resources/android/splash/drawable-port-xxhdpi-screen" platform="android" gap:qualifier="port-xxhdpi" />
         <splash src="resources/android/splash/drawable-port-xxxhdpi-screen.png" platform="android" gap:qualifier="port-xxxhdpi" />
+
+        <gap:plugin name="cordova-plugin-datepicker" source="npm" />
     </platform>
     <gap:config-file platform="android" parent="/manifest">
         <supports-screens
@@ -109,14 +111,16 @@
     </platform>
     <gap:plugin name="cordova-plugin-splashscreen" source="npm" />
     <gap:plugin name="cordova-plugin-whitelist" source="npm" />
-    <gap:plugin name="phonegap-plugin-push" source="npm" spec="1.5.3">
+    <gap:plugin name="phonegap-plugin-push" source="npm" spec="1.8.2">
         <param name="SENDER_ID" value="635706604728"/>
     </gap:plugin>
-    <gap:plugin name="cordova-plugin-dialogs" />
+    <gap:plugin name="cordova-plugin-dialogs" source="npm" />
     <gap:plugin name="cordova-plugin-vibration" />
     <gap:plugin name="cordova-plugin-statusbar" source="npm" />
     <gap:plugin name="cordova-plugin-network-information" />
     <gap:plugin name="cordova-plugin-file" />
     <gap:plugin name="cordova-plugin-file-transfer" />
+    <gap:plugin name="cordova-plugin-calendar" />
+    <gap:plugin name="cordova-plugin-globalization" />
     <gap:plugin name="ionic-plugin-keyboard" source="npm" />
 </widget>

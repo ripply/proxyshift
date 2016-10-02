@@ -1190,6 +1190,8 @@ App.prototype.sendNotificationsAboutNewShifts = function sendNotificationsAboutN
                             console.log(_.difference(interestedManagers.user_ids, interested[user_ids_key]));
                             var interestedUsersMinusManagersWithoutParameters = interestedManagers[user_ids_key].slice();
                             interestedUsersMinusManagersWithoutParameters.splice(0, 0, interested[user_ids_key]);
+                            console.log(interested);
+                            console.log(interestedManagers);
                             _.each(interested.groupedShifts, function (groupedShift) {
                                 self.sendToUsers(
                                     // do not send this notification to managers who also happen to be interested in the shift
@@ -1241,6 +1243,7 @@ App.prototype.sendNotificationsAboutNewShifts = function sendNotificationsAboutN
                             // interested users exist that we can send notifications to
                             // but, no interested managers exist that we can notify, user does not need to know that
                             // managers that can approve the shift exist
+                            console.log(interested);
                             _.each(interested.groupedShifts, function (groupedShift) {
                                 self.sendToUsers(
                                     interested[user_ids_key],
@@ -1267,6 +1270,7 @@ App.prototype.sendNotificationsAboutNewShifts = function sendNotificationsAboutN
                             // interested users exist that we can send notifications to
                             // but, no managers even can approve this shift
 
+                            console.log(interested);
                             // notify all users like normal
                             _.each(interested.groupedShifts, function (groupedShift) {
                                 self.sendToUsers(

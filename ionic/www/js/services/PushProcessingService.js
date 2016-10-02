@@ -44,6 +44,7 @@ angular.module('scheduling-app.push', [
 
             window.newShift = {
                 apply: function(data) {
+                    console.log(data);
                     ResourceService.registerForShift(data.additionalData.data.shift_id[0], function() {
                         showToast('success', 'Successfully', 'Registered for shift', {
                             onTap: function(clicked, toast) {
