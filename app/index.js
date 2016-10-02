@@ -1976,6 +1976,7 @@ function processFetchedInterestedUsers(interestedUsers) {
         start: start,
         end: end,
         shifts: shifts,
+        shift_ids: Object.keys(shifts),
         groupedShifts: _.values(groupedShifts),
         shiftcreator_id: shiftcreator_id,
         shiftcreator_firstname: shiftcreator_firstname,
