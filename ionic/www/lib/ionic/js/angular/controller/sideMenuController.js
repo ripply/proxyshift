@@ -157,10 +157,9 @@ function($scope, $attrs, $ionicSideMenuDelegate, $ionicPlatform, $ionicBody, $io
     // equal 0, otherwise remove the class from the body element
     $ionicBody.enableClass((percentage !== 0), 'menu-open');
 
-    self.content.setCanScroll(percentage == 0);
+    freezeAllScrolls(false);
   };
 
-  /*
   function freezeAllScrolls(shouldFreeze) {
     if (shouldFreeze && !self.isScrollFreeze) {
       $ionicScrollDelegate.freezeAllScrolls(shouldFreeze);
@@ -170,7 +169,6 @@ function($scope, $attrs, $ionicSideMenuDelegate, $ionicPlatform, $ionicBody, $io
     }
     self.isScrollFreeze = shouldFreeze;
   }
-  */
 
   /**
    * Open the menu the given pixel amount.
@@ -303,15 +301,14 @@ function($scope, $attrs, $ionicSideMenuDelegate, $ionicPlatform, $ionicBody, $io
     self.close();
 
     isAsideExposed = shouldExposeAside;
-    if ((self.left && self.left.isEnabled) && (self.right && self.right.isEnabled)) {
-      self.content.setMarginLeftAndRight(isAsideExposed ? self.left.width : 0, isAsideExposed ? self.right.width : 0);
-    } else if (self.left && self.left.isEnabled) {
+    if (self.left && self.left.isEnabled) {
       // set the left marget width if it should be exposed
       // otherwise set false so there's no left margin
       self.content.setMarginLeft(isAsideExposed ? self.left.width : 0);
     } else if (self.right && self.right.isEnabled) {
       self.content.setMarginRight(isAsideExposed ? self.right.width : 0);
     }
+
     self.$scope.$emit('$ionicExposeAside', isAsideExposed);
   };
 
@@ -321,6 +318,8 @@ function($scope, $attrs, $ionicSideMenuDelegate, $ionicPlatform, $ionicBody, $io
 
   // End a drag with the given event
   self._endDrag = function(e) {
+    freezeAllScrolls(false);
+
     if (isAsideExposed) return;
 
     if (isDragging) {
@@ -358,7 +357,7 @@ function($scope, $attrs, $ionicSideMenuDelegate, $ionicPlatform, $ionicBody, $io
 
     if (isDragging) {
       self.openAmount(offsetX + (lastX - startX));
-      //self.content.setCanScroll(false);
+      freezeAllScrolls(true);
     }
   };
 
@@ -397,7 +396,7 @@ function($scope, $attrs, $ionicSideMenuDelegate, $ionicPlatform, $ionicBody, $io
     var menuEnabled = enableMenuWithBackViews ? true : !backView;
     if (!menuEnabled) {
       var currentView = $ionicHistory.currentView() || {};
-      return (dragIsWithinBounds && (backView.historyId !== currentView.historyId));
+      return backView.historyId !== currentView.historyId;
     }
 
     return ($scope.dragContent || self.isOpen()) &&
@@ -437,10 +436,12 @@ function($scope, $attrs, $ionicSideMenuDelegate, $ionicPlatform, $ionicBody, $io
     deregisterBackButtonAction();
     self.$scope = null;
     if (self.content) {
-      self.content.setCanScroll(true);
       self.content.element = null;
       self.content = null;
     }
+
+    // ensure scrolls are unfrozen
+    freezeAllScrolls(false);
   });
 
   self.initialize({

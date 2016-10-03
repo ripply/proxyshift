@@ -100,15 +100,13 @@ function($scope, $attrs, $element, $timeout) {
     };
     var computedStyle = window.getComputedStyle(self.scrollEl) || {};
     return {
-      left: maxValues.left &&
-        (computedStyle.overflowX === 'scroll' ||
-        computedStyle.overflowX === 'auto' ||
-        self.scrollEl.style['overflow-x'] === 'scroll') ?
+      left: computedStyle.overflowX === 'scroll' ||
+      computedStyle.overflowX === 'auto' ||
+      self.scrollEl.style['overflow-x'] === 'scroll' ?
         calculateMaxValue(maxValues.left) : -1,
-      top: maxValues.top &&
-        (computedStyle.overflowY === 'scroll' ||
-        computedStyle.overflowY === 'auto' ||
-        self.scrollEl.style['overflow-y'] === 'scroll' ) ?
+      top: computedStyle.overflowY === 'scroll' ||
+      computedStyle.overflowY === 'auto' ||
+      self.scrollEl.style['overflow-y'] === 'scroll' ?
         calculateMaxValue(maxValues.top) : -1
     };
   };

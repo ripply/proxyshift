@@ -18,14 +18,10 @@
  * For example, if `retain` is called three times, the backdrop will be shown until `release`
  * is called three times.
  *
- * **Notes:**
- * - The backdrop service will broadcast 'backdrop.shown' and 'backdrop.hidden' events from the root scope,
- * this is useful for alerting native components not in html.
- *
  * @usage
  *
  * ```js
- * function MyController($scope, $ionicBackdrop, $timeout, $rootScope) {
+ * function MyController($scope, $ionicBackdrop, $timeout) {
  *   //Show a backdrop for one second
  *   $scope.action = function() {
  *     $ionicBackdrop.retain();
@@ -33,24 +29,13 @@
  *       $ionicBackdrop.release();
  *     }, 1000);
  *   };
- *
- *   // Execute action on backdrop disappearing
- *   $scope.$on('backdrop.hidden', function() {
- *     // Execute action
- *   });
- *
- *   // Execute action on backdrop appearing
- *   $scope.$on('backdrop.shown', function() {
- *     // Execute action
- *   });
- *
  * }
  * ```
  */
 IonicModule
 .factory('$ionicBackdrop', [
-  '$document', '$timeout', '$$rAF', '$rootScope',
-function($document, $timeout, $$rAF, $rootScope) {
+  '$document', '$timeout', '$$rAF',
+function($document, $timeout, $$rAF) {
 
   var el = jqLite('<div class="backdrop">');
   var backdropHolds = 0;
@@ -82,7 +67,6 @@ function($document, $timeout, $$rAF, $rootScope) {
     backdropHolds++;
     if (backdropHolds === 1) {
       el.addClass('visible');
-      $rootScope.$broadcast('backdrop.shown');
       $$rAF(function() {
         // If we're still at >0 backdropHolds after async...
         if (backdropHolds >= 1) el.addClass('active');
@@ -92,7 +76,6 @@ function($document, $timeout, $$rAF, $rootScope) {
   function release() {
     if (backdropHolds === 1) {
       el.removeClass('active');
-      $rootScope.$broadcast('backdrop.hidden');
       $timeout(function() {
         // If we're still at 0 backdropHolds after async...
         if (backdropHolds === 0) el.removeClass('visible');

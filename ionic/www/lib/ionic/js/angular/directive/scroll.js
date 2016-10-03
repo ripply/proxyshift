@@ -44,21 +44,18 @@ IonicModule
   '$timeout',
   '$controller',
   '$ionicBind',
-  '$ionicConfig',
-function($timeout, $controller, $ionicBind, $ionicConfig) {
+function($timeout, $controller, $ionicBind) {
   return {
     restrict: 'E',
     scope: true,
     controller: function() {},
-    compile: function(element, attr) {
+    compile: function(element) {
       element.addClass('scroll-view ionic-scroll');
 
       //We cannot transclude here because it breaks element.data() inheritance on compile
       var innerElement = jqLite('<div class="scroll"></div>');
       innerElement.append(element.contents());
       element.append(innerElement);
-
-      var nativeScrolling = attr.overflowScroll !== "false" && (attr.overflowScroll === "true" || !$ionicConfig.scrolling.jsScrolling());
 
       return { pre: prelink };
       function prelink($scope, $element, $attr) {
@@ -87,12 +84,6 @@ function($timeout, $controller, $ionicBind, $ionicConfig) {
         if (!$scope.direction) { $scope.direction = 'y'; }
         var isPaging = $scope.$eval($scope.paging) === true;
 
-        if (nativeScrolling) {
-          $element.addClass('overflow-scroll');
-        }
-
-        $element.addClass('scroll-' + $scope.direction);
-
         var scrollViewOptions = {
           el: $element[0],
           delegateHandle: $attr.delegateHandle,
@@ -106,10 +97,8 @@ function($timeout, $controller, $ionicBind, $ionicConfig) {
           zooming: $scope.$eval($scope.zooming) === true,
           maxZoom: $scope.$eval($scope.maxZoom) || 3,
           minZoom: $scope.$eval($scope.minZoom) || 0.5,
-          preventDefault: true,
-          nativeScrolling: nativeScrolling
+          preventDefault: true
         };
-
         if (isPaging) {
           scrollViewOptions.speedMultiplier = 0.8;
           scrollViewOptions.bouncing = false;

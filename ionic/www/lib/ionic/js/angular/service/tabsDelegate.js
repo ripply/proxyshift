@@ -48,16 +48,7 @@ IonicModule
    * @name $ionicTabsDelegate#selectedIndex
    * @returns `number` The index of the selected tab, or -1.
    */
-  'selectedIndex',
-  /**
-   * @ngdoc method
-   * @name $ionicTabsDelegate#showBar
-   * @description
-   * Set/get whether the {@link ionic.directive:ionTabs} is shown
-   * @param {boolean} show Whether to show the bar.
-   * @returns {boolean} Whether the bar is shown.
-   */
-  'showBar'
+  'selectedIndex'
   /**
    * @ngdoc method
    * @name $ionicTabsDelegate#$getByHandle
@@ -69,3 +60,4 @@ IonicModule
    * Example: `$ionicTabsDelegate.$getByHandle('my-handle').select(0);`
    */
 ]));
+

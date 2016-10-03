@@ -2,7 +2,7 @@
   "files": {
     "css/ionic.css": {
       "filename": "css/ionic.css",
-      "version": "414a2494829c4473fc6d1999868c4aa1769e44c47d443ebd59f7c970a884f729"
+      "version": "82acefdf114d1f9ca32b2e4de750f1b6cd0185952bee697581980b547608186e"
     },
     "css/proxyshift.css": {
       "filename": "css/proxyshift.css",
@@ -26,7 +26,7 @@
     },
     "lib/ionic/release/js/ionic.bundle.js": {
       "filename": "lib/ionic/release/js/ionic.bundle.js",
-      "version": "fa60616005239f1abcbe7b45a76fd027cd97cbe827379a0cdbc5203cd9c8a9ed"
+      "version": "a7572e0a65ccfe2573be74781569092d6e7a2c522ff154943c7aae43cd180189"
     },
     "toastr/dist/angular-toastr.tpls.js": {
       "filename": "lib/angular-toastr/dist/angular-toastr.tpls.js",
@@ -42,7 +42,7 @@
     },
     "template.min.js": {
       "filename": "template.min.js",
-      "version": "43ff6c1bf09b5267e29398eb3ac4e50bd4221b9a20449212feb499a7dfbcc40f"
+      "version": "89eb56d643ee596162b6964c8f336ca1725c3299a1e9b6dbcb0a788cf9417619"
     },
     "toastr/dist/angular-toastr.css": {
       "filename": "lib/angular-toastr/dist/angular-toastr.css",

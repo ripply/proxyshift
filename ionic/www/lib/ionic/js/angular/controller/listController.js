@@ -11,20 +11,18 @@
  * method to control specific ionList instances.
  *
  * @usage
- * ```html
- * {% raw %}
+ *
+ * ````html
  * <ion-content ng-controller="MyCtrl">
  *   <button class="button" ng-click="showDeleteButtons()"></button>
  *   <ion-list>
  *     <ion-item ng-repeat="i in items">
- *       Hello, {{i}}!
+ *       {% raw %}Hello, {{i}}!{% endraw %}
  *       <ion-delete-button class="ion-minus-circled"></ion-delete-button>
  *     </ion-item>
  *   </ion-list>
  * </ion-content>
- * {% endraw %}
  * ```
-
  * ```js
  * function MyCtrl($scope, $ionicListDelegate) {
  *   $scope.showDeleteButtons = function() {

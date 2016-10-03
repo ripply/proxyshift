@@ -338,15 +338,17 @@ function CollectionRepeatDirective($ionicCollectionManager, $parse, $window, $$r
 
       // If it's a constant, it's either a percent or just a constant pixel number.
       if (isConstant) {
+        var intValue = parseInt(parsedValue());
+
         // For percents, store the percent getter on .getValue()
         if (attrValue.indexOf('%') > -1) {
-          var decimalValue = parseFloat(parsedValue()) / 100;
+          var decimalValue = intValue / 100;
           dimensionData.getValue = dimensionData === heightData ?
             function() { return Math.floor(decimalValue * scrollView.__clientHeight); } :
             function() { return Math.floor(decimalValue * scrollView.__clientWidth); };
         } else {
           // For static constants, just store the static constant.
-          dimensionData.value = parseInt(parsedValue());
+          dimensionData.value = intValue;
         }
 
       } else {
@@ -355,14 +357,14 @@ function CollectionRepeatDirective($ionicCollectionManager, $parse, $window, $$r
           function heightGetter(scope, locals) {
             var result = parsedValue(scope, locals);
             if (result.charAt && result.charAt(result.length - 1) === '%') {
-              return Math.floor(parseFloat(result) / 100 * scrollView.__clientHeight);
+              return Math.floor(parseInt(result) / 100 * scrollView.__clientHeight);
             }
             return parseInt(result);
           } :
           function widthGetter(scope, locals) {
             var result = parsedValue(scope, locals);
             if (result.charAt && result.charAt(result.length - 1) === '%') {
-              return Math.floor(parseFloat(result) / 100 * scrollView.__clientWidth);
+              return Math.floor(parseInt(result) / 100 * scrollView.__clientWidth);
             }
             return parseInt(result);
           };

@@ -1,6 +1,6 @@
 
 IonicModule
-//.directive('ionHeaderBar', tapScrollToTopDirective())
+.directive('ionHeaderBar', tapScrollToTopDirective())
 
 /**
  * @ngdoc directive
@@ -34,7 +34,7 @@ IonicModule
  *     <button class="button">Right Button</button>
  *   </div>
  * </ion-header-bar>
- * <ion-content class="has-header">
+ * <ion-content>
  *   Some content!
  * </ion-content>
  * ```
@@ -61,7 +61,7 @@ IonicModule
  *
  * @usage
  * ```html
- * <ion-content class="has-footer">
+ * <ion-content>
  *   Some content!
  * </ion-content>
  * <ion-footer-bar align-title="left" class="bar-assertive">
@@ -77,7 +77,7 @@ IonicModule
  */
 .directive('ionFooterBar', headerFooterBarDirective(false));
 
-function tapScrollToTopDirective() { //eslint-disable-line no-unused-vars
+function tapScrollToTopDirective() {
   return ['$ionicScrollDelegate', function($ionicScrollDelegate) {
     return {
       restrict: 'E',

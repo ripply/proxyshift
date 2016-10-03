@@ -3,14 +3,12 @@
  * @ngdoc directive
  * @name ionSlideBox
  * @module ionic
- * @codepen AjgEB
- * @deprecated will be removed in the next Ionic release in favor of the new ion-slides component.
- * Don't depend on the internal behavior of this widget.
  * @delegate ionic.service:$ionicSlideBoxDelegate
  * @restrict E
  * @description
  * The Slide Box is a multi-page container where each page can be swiped or dragged between:
  *
+ * ![SlideBox](http://ionicframework.com.s3.amazonaws.com/docs/controllers/slideBox.gif)
  *
  * @usage
  * ```html
@@ -39,13 +37,12 @@
  */
 IonicModule
 .directive('ionSlideBox', [
-  '$animate',
   '$timeout',
   '$compile',
   '$ionicSlideBoxDelegate',
   '$ionicHistory',
   '$ionicScrollDelegate',
-function($animate, $timeout, $compile, $ionicSlideBoxDelegate, $ionicHistory, $ionicScrollDelegate) {
+function($timeout, $compile, $ionicSlideBoxDelegate, $ionicHistory, $ionicScrollDelegate) {
   return {
     restrict: 'E',
     replace: true,
@@ -58,14 +55,12 @@ function($animate, $timeout, $compile, $ionicSlideBoxDelegate, $ionicHistory, $i
       pagerClick: '&',
       disableScroll: '@',
       onSlideChanged: '&',
-      activeSlide: '=?',
-      bounce: '@'
+      activeSlide: '=?'
     },
     controller: ['$scope', '$element', '$attrs', function($scope, $element, $attrs) {
       var _this = this;
 
       var continuous = $scope.$eval($scope.doesContinue) === true;
-      var bouncing = ($scope.$eval($scope.bounce) !== false); //Default to true
       var shouldAutoPlay = isDefined($attrs.autoPlay) ? !!$scope.autoPlay : false;
       var slideInterval = shouldAutoPlay ? $scope.$eval($scope.slideInterval) || 4000 : 0;
 
@@ -74,7 +69,6 @@ function($animate, $timeout, $compile, $ionicSlideBoxDelegate, $ionicHistory, $i
         auto: slideInterval,
         continuous: continuous,
         startSlide: $scope.activeSlide,
-        bouncing: bouncing,
         slidesChanged: function() {
           $scope.currentSlide = slider.currentIndex();
 
@@ -145,6 +139,7 @@ function($animate, $timeout, $compile, $ionicSlideBoxDelegate, $ionicHistory, $i
       };
 
       this.onPagerClick = function(index) {
+        console.log('pagerClick', index);
         $scope.pagerClick({index: index});
       };
 
@@ -158,9 +153,6 @@ function($animate, $timeout, $compile, $ionicSlideBoxDelegate, $ionicHistory, $i
     '</div>',
 
     link: function($scope, $element, $attr) {
-      // Disable ngAnimate for slidebox and its children
-      $animate.enabled($element, false);
-
       // if showPager is undefined, show the pager
       if (!isDefined($attr.showPager)) {
         $scope.showPager = true;
@@ -189,7 +181,7 @@ function($animate, $timeout, $compile, $ionicSlideBoxDelegate, $ionicHistory, $i
 .directive('ionSlide', function() {
   return {
     restrict: 'E',
-    require: '?^ionSlideBox',
+    require: '^ionSlideBox',
     compile: function(element) {
       element.addClass('slider-slide');
     }

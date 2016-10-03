@@ -20,7 +20,7 @@ IonicModule
 })
 .provider('$ionicPlatform', function() {
   return {
-    $get: ['$q', '$ionicScrollDelegate', function($q, $ionicScrollDelegate) {
+    $get: ['$q', function($q) {
       var self = {
 
         /**
@@ -164,11 +164,6 @@ IonicModule
           var q = $q.defer();
 
           ionic.Platform.ready(function() {
-
-            window.addEventListener('statusTap', function() {
-              $ionicScrollDelegate.scrollTop(true);
-            });
-
             q.resolve();
             cb && cb();
           });
@@ -176,7 +171,6 @@ IonicModule
           return q.promise;
         }
       };
-
       return self;
     }]
   };
