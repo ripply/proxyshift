@@ -529,7 +529,11 @@ angular.module('scheduling-app.controllers')
 
             $scope.decline = function(shift) {
                 closeButtons();
-                $scope.rescindApplicationForAShift(shift.id, 'test');
+                ShiftProcessingService.promptRescindShiftApplication($scope, function userProvidedReason(reason) {
+                    $scope.rescindApplicationForAShift(shift.id, reason);
+                }, function userCanceled() {
+                    // do nothing
+                });
             };
 
             $scope.ignore = function(shift) {

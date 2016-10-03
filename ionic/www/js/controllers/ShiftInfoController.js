@@ -96,79 +96,6 @@ angular.module('scheduling-app.controllers')
                 }
             }
 
-            function promptRecindShiftApplication(success, cancel) {
-                $rootScope.$emit(GENERAL_EVENTS.POPUP.REQUESTED, function($ionicPopup) {
-                    $scope.prompt = $ionicPopup.show({
-                        templateUrl: 'templates/notifications/cancelshiftreason.html',
-                        title: 'Provide a reason',
-                        subTitle: 'for canceling your shift application',
-                        scope: $scope,
-                        buttons: [
-                            {
-                                text: 'Cancel',
-                                onTap: function(e) {
-                                    delete $scope.data.reason;
-                                }
-                            },
-                            {
-                                text: 'OK',
-                                type: 'button-positive',
-                                onTap: function(e) {
-                                    if (!$scope.data.reason || $scope.data.reason == '') {
-                                        e.preventDefault();
-                                    } else {
-                                        return $scope.data.reason;
-                                    }
-                                }
-                            }
-                        ]
-                    });
-
-                    $scope.prompt.then(function(reason) {
-                        delete $scope.data.reason;
-                        if (reason) {
-                            success(reason);
-                        } else {
-                            cancel();
-                        }
-                    });
-                });
-            }
-
-            function promptDeleteShift(success, cancel) {
-                $rootScope.$emit(GENERAL_EVENTS.POPUP.REQUESTED, function($ionicPopup) {
-                    $scope.prompt = $ionicPopup.show({
-                        //templateUrl: 'templates/notifications/cancelshiftreason.html',
-                        title: 'Are you sure',
-                        subTitle: 'you want to delete this shift?',
-                        scope: $scope,
-                        buttons: [
-                            {
-                                text: 'No',
-                                onTap: function(e) {
-                                    return false;
-                                }
-                            },
-                            {
-                                text: 'Yes',
-                                type: 'button-assertive',
-                                onTap: function(e) {
-                                    return true;
-                                }
-                            }
-                        ]
-                    });
-
-                    $scope.prompt.then(function(ok) {
-                        if (ok) {
-                            success();
-                        } else {
-                            cancel();
-                        }
-                    });
-                });
-            }
-
             $scope.close = close;
 
             function close() {
@@ -209,7 +136,7 @@ angular.module('scheduling-app.controllers')
                     return;
                 }
                 $scope.busy.delete = true;
-                promptDeleteShift(function() {
+                ShiftProcessingService.promptDeleteShift($scope, function() {
                     $scope._removeShift(shift.id, function shiftDeleted() {
                         $scope.busy.delete = false;
                         close();
@@ -251,7 +178,7 @@ angular.module('scheduling-app.controllers')
                     return;
                 }
                 $scope.busy.register = true;
-                promptRecindShiftApplication(function(reason) {
+                ShiftProcessingService.promptRescindShiftApplication($scope, function(reason) {
                     ResourceService.unregisterForShift($stateParams.shift_id, reason, function success() {
                         $scope.shift.applied = undefined;
                         $scope.busy.register = false;

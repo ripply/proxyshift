@@ -108,11 +108,13 @@ angular.module('scheduling-app', [
                  // of the previous and current state
                  //StateHistoryService
         ) {
-            $provide.decorator("$exceptionHandler", function($delegate, $injector){
-                return function(exception, cause){
-                    window.onerror(cause, null, null, null, exception);
-                };
-            });
+            if (window.onerror) {
+                $provide.decorator("$exceptionHandler", function($delegate, $injector){
+                    return function(exception, cause){
+                        window.onerror(cause, null, null, null, exception);
+                    };
+                });
+            }
             var LOCALSTORAGE_PREFIX = 'proxyshift';
             localStorageServiceProvider.setPrefix(LOCALSTORAGE_PREFIX);
             // https://github.com/markmarijnissen/cordova-app-loader#step-1-bootstrap-your-app

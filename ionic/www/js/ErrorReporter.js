@@ -1,5 +1,6 @@
 window.onerror = function(msg, file, line, col, error) {
-    console.error(error);
+    StackTrace.fromError(error)
+        .then(console.log);
     // send to server if user has not opted out
     var sendError = true;
     if (typeof(Storage) !== "undefined") {

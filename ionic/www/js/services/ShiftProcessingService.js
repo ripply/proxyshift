@@ -2,10 +2,12 @@
 angular.module('scheduling-app.services')
     .service('ShiftProcessingService', [
         '$rootScope',
+        '$q',
         'UserInfoService',
         'GENERAL_EVENTS',
         function(
             $rootScope,
+            $q,
             UserInfoService,
             GENERAL_EVENTS
         ) {
@@ -459,6 +461,99 @@ angular.module('scheduling-app.services')
                 }
 
                 return false;
+            };
+
+            this.promptRescindShiftApplication = function promptRescindShiftApplication(scope, success, cancel) {
+                return $q(function(resolve, reject) {
+                    $rootScope.$emit(GENERAL_EVENTS.POPUP.REQUESTED, function($ionicPopup) {
+                        if (!scope.data) {
+                            scope.data = {
+                                reason: ''
+                            };
+                        }
+
+                        var prompt = $ionicPopup.show({
+                            templateUrl: 'templates/notifications/cancelshiftreason.html',
+                            title: 'Provide a reason',
+                            subTitle: 'for canceling your shift application',
+                            scope: scope,
+                            buttons: [
+                                {
+                                    text: 'Cancel',
+                                    onTap: function(e) {
+                                        delete scope.data.reason;
+                                    }
+                                },
+                                {
+                                    text: 'OK',
+                                    type: 'button-positive',
+                                    onTap: function(e) {
+                                        if (!scope.data.reason || scope.data.reason == '') {
+                                            e.preventDefault();
+                                        } else {
+                                            return scope.data.reason;
+                                        }
+                                    }
+                                }
+                            ]
+                        });
+
+                        prompt.then(function(reason) {
+                            delete scope.data.reason;
+                            if (reason) {
+                                success(reason);
+                            } else {
+                                cancel();
+                            }
+                        });
+
+                        resolve(prompt);
+                    });
+                });
+            };
+
+            this.promptDeleteShift = function promptDeleteShift(scope, success, cancel) {
+                return $q(function(resolve, reject) {
+                    $rootScope.$emit(GENERAL_EVENTS.POPUP.REQUESTED, function($ionicPopup) {
+                        if (!scope.data) {
+                            scope.data = {
+                                reason: ''
+                            };
+                        }
+
+                        var prompt = $ionicPopup.show({
+                            title: 'Are you sure',
+                            subTitle: 'you want to delete this shift?',
+                            scope: $scope,
+                            buttons: [
+                                {
+                                    text: 'No',
+                                    onTap: function(e) {
+                                        return false;
+                                    }
+                                },
+                                {
+                                    text: 'Yes',
+                                    type: 'button-assertive',
+                                    onTap: function(e) {
+                                        return true;
+                                    }
+                                }
+                            ]
+                        });
+
+                        prompt.then(function(reason) {
+                            delete scope.data.reason;
+                            if (reason) {
+                                success(reason);
+                            } else {
+                                cancel();
+                            }
+                        });
+
+                        resolve(prompt);
+                    });
+                });
             };
 
             $rootScope.$on(GENERAL_EVENTS.UPDATES.RESOURCE, function(state, resource, value) {
