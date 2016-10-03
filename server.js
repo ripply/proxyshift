@@ -331,7 +331,9 @@ function launchServer() {
         '/mobile.htm',
         '/mobile.shtml',
         '/mobile.shtm',
-        '/mobile.xhtml'
+        '/mobile.xhtml',
+        '/demo',
+        '/demo.html'
     ], function(path) {
         app.get(path, serveMobileIndex);
     });

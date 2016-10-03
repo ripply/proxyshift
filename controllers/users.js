@@ -140,6 +140,9 @@ module.exports = {
         'get': {
             // auth: ['anyone'],
             route: function getPasswordResetCaptcha(req, res) {
+                if (req.user.get('username') == 'demo') {
+                    return res.sendStatus('403');
+                }
                 var token = req.query.token;
                 if(token) {
                     return models.ResetPasswordToken.query(function findPasswordResetToken(q) {

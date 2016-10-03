@@ -5,12 +5,14 @@ angular.module('scheduling-app.controllers')
     .service('LoginControllerService',[
         '$rootScope',
         '$state',
+        '$location',
         'SessionService',
         'PushProcessingService',
         'GENERAL_EVENTS',
         'STATES',
         function($rootScope,
                  $state,
+                 $location,
                  SessionService,
                  PushProcessingService,
                  GENERAL_EVENTS,
@@ -21,10 +23,20 @@ angular.module('scheduling-app.controllers')
                 remember_me: false
             };
 
+            checkIfDemo();
+
             var showLoginModal = function() {
+                checkIfDemo();
                 $state.go(STATES.LOGIN, {}, {reload: false, inherit: true});
                 //$rootScope.loginModal.show();
             };
+
+            function checkIfDemo() {
+                if ($location.path().substring('/demo') != -1) {
+                    $rootScope.user.username = 'demo';
+                    $rootScope.user.password = 'supersecretdemopasswordpleasedontabuse';
+                }
+            }
 
             this.showLoginModal = showLoginModal;
 

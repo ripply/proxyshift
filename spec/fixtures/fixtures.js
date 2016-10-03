@@ -42,6 +42,7 @@ function defaultTimezone() {
 
 // don't even actually do this calculation, its *very* slow
 var encrypted_password = '$2a$10$TqoucSy5v/xPYrJqUpJgZ.I/CgmP4RWGADhWL6rtilF5w0X2h6TYG'; //encrypt(password);
+var demo_encrypted_password = '$2a$10$cgIEF7KTjIRKNnBElMRffer72li84sATkZZIahrBSJVqCRd6DYEWG'; //encrypt('supersecretdemopasswordpleasedontabuse');
 
 var users = [
     {
@@ -400,6 +401,19 @@ var users = [
         pagernumber: '12345',
         usersetting_id: 'usersettings:26'
     },
+    {
+        username: 'demo',
+        password: demo_encrypted_password,
+        firstname: 'demo',
+        lastname: 'demo',
+        email: 'demo@example.com',
+        squestion: 'emo',
+        sanswer: 'you cant reset this password',
+        phonehome: '12345',
+        phonemobile: '12345',
+        pagernumber: '12345',
+        usersetting_id: 'usersettings:27'
+    },
 ];
 
 var usersettings = [];
@@ -652,6 +666,11 @@ module.exports = {
             },
             {
                 user_id: '@users:username:retail_manager',
+                group_id: '@groups:name:Retail Store Chain',
+                grouppermission_id: '@grouppermissions:description:privileged (retail)'
+            },
+            {
+                user_id: '@users:username:demo',
                 group_id: '@groups:name:Retail Store Chain',
                 grouppermission_id: '@grouppermissions:description:privileged (retail)'
             },
