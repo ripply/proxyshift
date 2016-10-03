@@ -6,7 +6,7 @@
     },
     "css/proxyshift.css": {
       "filename": "css/proxyshift.css",
-      "version": "22a6b443c8fffc74e28d2811b6e36914d293cc5675562e5a9e9b128d29aa5e0d"
+      "version": "476ee18aa45a869f13332050b90c1f28c40f2494e014f73d03299a5b70a16411"
     },
     "app-loader/dist/cordova-app-loader-complete.js": {
       "filename": "lib/cordova-app-loader/dist/cordova-app-loader-complete.js",
@@ -42,7 +42,7 @@
     },
     "template.min.js": {
       "filename": "template.min.js",
-      "version": "95994c8abaacaf8b06d5719c011f8d496fdefccb4cff9d70ee666391ef8073d5"
+      "version": "43ff6c1bf09b5267e29398eb3ac4e50bd4221b9a20449212feb499a7dfbcc40f"
     },
     "toastr/dist/angular-toastr.css": {
       "filename": "lib/angular-toastr/dist/angular-toastr.css",

@@ -7752,10 +7752,13 @@ angular.module('scheduling-app').run(['$templateCache', function($templateCache)
     "                </div>\n" +
     "            </div>\n" +
     "        </div>\n" +
-    "        <div ng-if=\"!shift && error == undefined\">\n" +
-    "            Loading...\n" +
+    "        <div class=\"shift-info-loading\" ng-if=\"!shift && error == undefined\">\n" +
+    "            <h4 class=\"new-shift-title\">&nbsp;</h4>\n" +
+    "            <div class=\"row\">\n" +
+    "                <div class=\"col\"><ion-spinner icon=\"lines\"></ion-spinner></div>\n" +
+    "            </div>\n" +
     "        </div>\n" +
-    "        <div ng-if=\"!shift && error\">\n" +
+    "        <div class=\"shift-info-error\" ng-if=\"!shift && error\">\n" +
     "            An error occurred {{statusCode}}\n" +
     "        </div>\n" +
     "    </ion-content>\n" +

@@ -1385,6 +1385,17 @@ input[type="password"] :focus {
   margin-right: auto;
   text-align: center;
 }
+.shift-info-loading {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+.shift-info-loading .spinner svg {
+  width: 50px;
+  height: 50px;
+  stroke: #444;
+  fill: #444;
+}
 .greyed-out {
   color: rgba(255, 255, 255, 0.4);
 }

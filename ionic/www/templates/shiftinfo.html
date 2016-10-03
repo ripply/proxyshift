@@ -86,10 +86,13 @@
                 </div>
             </div>
         </div>
-        <div ng-if="!shift && error == undefined">
-            Loading...
+        <div class="shift-info-loading" ng-if="!shift && error == undefined">
+            <h4 class="new-shift-title">&nbsp;</h4>
+            <div class="row">
+                <div class="col"><ion-spinner icon="lines"></ion-spinner></div>
+            </div>
         </div>
-        <div ng-if="!shift && error">
+        <div class="shift-info-error" ng-if="!shift && error">
             An error occurred {{statusCode}}
         </div>
     </ion-content>
