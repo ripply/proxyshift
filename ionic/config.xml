@@ -23,7 +23,6 @@
     <preference name="BackupWebStorage" value="none"/>
     <preference name="AutoHideSplashScreen" value="true" />
     <preference name="SplashScreenDelay" value="10000" />
-    <preference name="deployment-target" value="5.0" />
     <splash src="resources/splash.png" />
     <icon src="resources/icon.png"/>
     <preference name="SplashScreen" value="screen" />
@@ -32,6 +31,7 @@
     </feature>
     <platform name="ios">
         <preference name="SplashScreen" value="splash" />
+        <preference name="deployment-target" value="8.0.0" />
         <icon src="resources/ios/icon/icon.png" width="57" height="57"/>
         <icon src="resources/ios/icon/icon@2x.png" width="114" height="114"/>
         <icon src="resources/ios/icon/icon-40.png" width="40" height="40"/>
