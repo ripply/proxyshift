@@ -32,14 +32,9 @@ angular.module('scheduling-app.controllers')
             };
 
             function checkIfDemo() {
-                console.log($location.path());
-                if ($location.path().indexOf('/demo') != -1) {
-                    console.log("!!!!");
-                    console.log($location.path().substring('/demo'));
+                if ($location.absUrl().indexOf('/demo') != -1) {
                     $rootScope.user.username = 'demo';
                     $rootScope.user.password = 'supersecretdemopasswordpleasedontabuse';
-                } else {
-                    console.log("NOPE");
                 }
             }
 
