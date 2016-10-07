@@ -510,11 +510,6 @@ module.exports = function(app, settings){
             if (err) { return next(err); }
             // authentication failed, send 401 unauthorized
             if (!user) { return res.sendStatus(401); }
-            if (req.body.deviceid && req.body.deviceid != '') {
-                console.log("User sent a deviceid, attempting to send message after 10s");
-                console.log("Sending device a push notification... " + req.body.deviceid);
-                appLogic.fireEvent('loggedIn', user.id);
-            }
             req.login(user, function (err) {
                 if (err) { return next(err); }
 
