@@ -4,7 +4,14 @@ window.onerror = function(msg, file, line, col, error) {
     // send to server if user has not opted out
     var sendError = true;
     if (typeof(Storage) !== "undefined") {
-        var disableErrorReporting = localStorage.getItem('disableErrorReporting');
+        var disableErrorReporting = false;
+        try {
+            if (window.localStorage) {
+                disableErrorReporting = localStorage.getItem('disableErrorReporting');
+            }
+        } catch (e) {
+            // local storage disabled
+        }
         sendError = (disableErrorReporting === undefined || disableErrorReporting === null || disableErrorReporting !== true);
     }
     if (sendError) {
