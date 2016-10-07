@@ -480,12 +480,17 @@ angular.module('scheduling-app.services')
             var serverVersion = {};
 
             if (typeof(Storage) !== "undefined") {
-                var lastUsedVersion = localStorage.getItem('lastUsedVersion');
-                if (lastUsedVersion !== window.ApiVersion.string) {
-                    // mark the last version that we used so that if the user updates
-                    // and in the future we add a what's new popup after updating
-                    // then we know what the last version that the user had
-                    localStorage.setItem('lastUsedVersion', window.ApiVersion.string);
+                var lastUsedVersion;
+                try {
+                    lastUsedVersion = localStorage.getItem('lastUsedVersion');
+                    if (lastUsedVersion !== window.ApiVersion.string) {
+                        // mark the last version that we used so that if the user updates
+                        // and in the future we add a what's new popup after updating
+                        // then we know what the last version that the user had
+                        localStorage.setItem('lastUsedVersion', window.ApiVersion.string);
+                    }
+                } catch (e) {
+                    // blocked by browser
                 }
             }
 
