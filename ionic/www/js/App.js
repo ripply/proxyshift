@@ -147,13 +147,13 @@ angular.module('scheduling-app', [
 
             var disableAnalytics = false;
             if (typeof(Storage) !== "undefined") {
-                if (window.localStorage) {
-                    try {
+                try {
+                    if (window.localStorage) {
                         disableAnalytics = localStorage.getItem(LOCALSTORAGE_PREFIX + '.disableAnalytics');
                         disableAnalytics = disableAnalytics || disableAnalytics == 'true';
-                    } catch (e) {
-                        // disabled in browser
                     }
+                } catch (e) {
+                    // disabled in browser
                 }
             }
 
