@@ -100,8 +100,8 @@ var eventInvitedToGroupMessages = {
         "Invited to group <%- group %>",
         "Invited to group <%- group %>",
         "Invited to group <%- group %>",
-        3,
-        3
+        0,
+        0
     ),
     email: {
         from: transactionalEmailAddress,
@@ -118,8 +118,8 @@ var eventInvitedToGroupExistingAccount = {
         "Invited to group <%- group %> check your email",
         "Invited to group <%- group %> check your email",
         "Invited to group <%- group %> check your email",
-        3,
-        3
+        0,
+        0
     ),
     email: {
         from: transactionalEmailAddress,
@@ -136,8 +136,8 @@ var groupPromotion = {
         "Your Proxy Shift Account Permission Level has increased at <%- group %>",
         "Your Proxy Shift Account Permission Level has increased at <%- group %>",
         "Your Proxy Shift Account Permission Level has increased at <%- group %>",
-        3,
-        3
+        0,
+        0
     ),
     email: {
         from: transactionalEmailAddress,
@@ -154,8 +154,8 @@ var groupDemotion = {
         "Your Proxy Shift Account Permission Level has decreased at <%- group %>",
         "Your Proxy Shift Account Permission Level has decreased at <%- group %>",
         "Your Proxy Shift Account Permission Level has decreased at <%- group %>",
-        3,
-        3
+        0,
+        0
     ),
     email: {
         from: transactionalEmailAddress,
@@ -172,8 +172,8 @@ var removedFromGroup = {
         "You have left the <%- group %> Proxy Shift Group",
         "You have left the <%- group %> Proxy Shift Group",
         "You have left the <%- group %> Proxy Shift Group",
-        3,
-        3
+        0,
+        0
     ),
     email: {
         from: transactionalEmailAddress,
@@ -190,8 +190,8 @@ var companyActivated = {
         "Successful <%- group %> Proxy Shift Account Activation",
         "Successful <%- group %> Proxy Shift Account Activation",
         "Successful <%- group %> Proxy Shift Account Activation",
-        3,
-        3
+        0,
+        0
     ),
     email: {
         from: transactionalEmailAddress,
@@ -208,8 +208,8 @@ var eventLoggedInMesages = {
         'You logged in!',
         'Push: You logged in!',
         'Successfully!',
-        3,
-        3,
+        0,
+        0,
         undefined,
         'loggedIn'
     )
@@ -316,8 +316,8 @@ function newShiftApplication(
             'New Shift Applications',
             'Available employees are waiting for your confirmation for the ' + job_title + ' open shift on ' + formatted.date + ' at ' + formatted.start,
             'body android only',
-            3,
-            3,
+            0,
+            0,
             'manageShift',
             'manageShift',
             {
@@ -379,8 +379,8 @@ function newShift(
                     (formatted.location + ' has a ' + formatted.length + ' long ' + job_title + ' open shift starting at ' + formatted.start + ' on ' + formatted.date):
                     (formatted.location + ' needs ' + shift_count + ' ' + job_title + ' to fill ' + formatted.length + ' long open shifts starting at ' + formatted.start + ' on ' + formatted.date),
                 'body android only',
-                3,
-                3,
+                0,
+                0,
                 'newShift',
                 'newShift',
                 {
@@ -425,8 +425,8 @@ function newShift(
             'New Shift' + (shift_count <= 1 ? '':'s') + ' In Progress',
             message,
             'body android only',
-            3,
-            3,
+            0,
+            0,
             'newShift',
             'newShift',
             {
@@ -460,8 +460,8 @@ function newShiftForManagers(
                 (combineFirstLastName(calledout_user_firstname, calledout_user_lastname) + ' (' + job_title + ') has called out from ' + shift_location + ' for ' + formatted.length + ' on ' + formatted.date + ' at ' + formatted.start) :
                 (combineFirstLastName(calledout_user_firstname, calledout_user_lastname) + ' (' + job_title + ') has requested ' + shift_count + ' employees to cover at ' + shift_location + ' for ' + formatted.length + ' on ' + formatted.date + ' at ' + formatted.start),
             'body android only',
-            3,
-            3,
+            0,
+            0,
             'manageShift',
             'manageShift',
             {
@@ -494,8 +494,8 @@ function newShiftButNoManagersCanApprove(
             'Notice',
             'There are no managers registered to approve this shift. Please contact your manager.',
             'body android only',
-            3,
-            3,
+            0,
+            0,
             'manageShift',
             'manageShift',
             {
@@ -528,8 +528,8 @@ function newShiftNoInterestedUsersManagersInterestedToCreator(
             'Notice',
             'You shift request has been sent. Please note no users have set their notification settings turned on.',
             'body android only',
-            3,
-            3,
+            0,
+            0,
             'manageShift',
             'manageShift',
             {
@@ -571,8 +571,8 @@ function newShiftNoInterestedUsersManagersInterestedToManager(
             'Notice',
             message,
             'body android only',
-            3,
-            3,
+            0,
+            0,
             'manageShift',
             'manageShift',
             {
@@ -608,8 +608,8 @@ function newShiftNoInterestedUsersNoInterestedManagersToCreator(
             'Notice',
             message,
             'body android only',
-            3,
-            3,
+            0,
+            0,
             'manageShift',
             'manageShift',
             {
@@ -644,8 +644,8 @@ function newShiftNoInterestedUsersNoManagersToCreator(
             'Notice',
             message,
             'body android only',
-            3,
-            3,
+            0,
+            0,
             'manageShift',
             'manageShift',
             {
@@ -680,8 +680,8 @@ function newShiftNoUsersInterestedManagersToCreator(
             'Notice',
             message,
             'body android only',
-            3,
-            3,
+            0,
+            0,
             'manageShift',
             'manageShift',
             {
@@ -724,8 +724,8 @@ function newShiftNoUsersInterestedManagersToManager(
             'Notice',
             message,
             'body android only',
-            3,
-            3,
+            0,
+            0,
             'manageShift',
             'manageShift',
             {
@@ -758,8 +758,8 @@ function newShiftNoUsersNoInterestedManagerToCreator(
             'Notice',
             message,
             'body android only',
-            3,
-            3,
+            0,
+            0,
             'manageShift',
             'manageShift',
             {
@@ -792,8 +792,8 @@ function newShiftNoUsersNoManagersToCreator(
             'Notice',
             message,
             'body android only',
-            3,
-            3,
+            0,
+            0,
             'manageShift',
             'manageShift',
             {
@@ -837,8 +837,8 @@ function acceptOrDeniedShiftApplication(data) {
             data.shift_accepted ? 'Approved Shift' : 'Denied Shift',
             (data.shift_accepted ? 'APPROVED' : 'DENIED') + ' for ' + data.start + ' at ' + data.length + ' at ' + data.location,
             'body android only',
-            3,
-            3,
+            0,
+            0,
             'shiftApplicationApproveDeny',
             'shiftApplicationApproveDeny',
             {
@@ -889,8 +889,8 @@ function newShiftApplicationApprovedToInterestedUsers(
             'APPROVED',
             message,
             'body android only',
-            3,
-            3,
+            0,
+            0,
             'manageShift',
             'manageShift',
             {
@@ -934,8 +934,8 @@ function newShiftApplicationApprovedToManagers(
             'APPROVED',
             message,
             'body android only',
-            3,
-            3,
+            0,
+            0,
             'manageShift',
             'manageShift',
             {
@@ -990,8 +990,8 @@ function newShiftApplicationApproved(
             'APPROVED',
             message,
             'body android only',
-            3,
-            3,
+            0,
+            0,
             'manageShift',
             'manageShift',
             {
@@ -1030,8 +1030,8 @@ function newShiftCancellationNoticeToCreator(
             'APPROVED',
             message,
             'body android only',
-            3,
-            3,
+            0,
+            0,
             'manageShift',
             'manageShift',
             {
@@ -1072,8 +1072,8 @@ function newShiftCancellationNoticeToManager(
             'APPROVED',
             message,
             'body android only',
-            3,
-            3,
+            0,
+            0,
             'manageShift',
             'manageShift',
             {
@@ -1115,8 +1115,8 @@ function newShiftApplicationApprovedToDeniedUsers(
             'DENIED',
             message,
             'body android only',
-            3,
-            3,
+            0,
+            0,
             'manageShift',
             'manageShift',
             {
