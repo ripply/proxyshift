@@ -108,7 +108,7 @@ angular.module('scheduling-app', [
                  // of the previous and current state
                  //StateHistoryService
         ) {
-            if (window._onerror) {
+            if (window.onerror) {
                 $provide.decorator("$exceptionHandler", function($delegate, $injector){
                     return function(exception, cause){
                         window.onerror(cause, null, null, null, exception);

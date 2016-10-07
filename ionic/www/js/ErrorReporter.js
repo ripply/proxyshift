@@ -1,4 +1,4 @@
-window.__onerror = function(msg, file, line, col, error) {
+window.onerror = function(msg, file, line, col, error) {
     StackTrace.fromError(error)
         .then(console.log);
     // send to server if user has not opted out
