@@ -295,6 +295,65 @@ module.exports = function(grunt) {
         'static/partials/ionic/ion.view.footer.html',
     ];
 
+    function emailPartial(file) {
+        return 'static/partials/emails/' + file;
+    }
+
+    function emailDest(file) {
+        return 'static/emails/' + file;
+    }
+
+    var email_header = emailPartial('email.header.html');
+    var email_footer = emailPartial('email.footer.html');
+    var email_footer_install = emailPartial('email.footer.install.html');
+
+    function emailPartials() {
+        var args = Array.prototype.slice.call(arguments);
+        args.unshift(email_header);
+        args.push(email_footer);
+        return args;
+    }
+
+    var concatEmailAccountInvitation = emailPartials(
+        emailPartial('email.account_invitation.html'),
+        email_footer_install
+    );
+    var concatEmailAddedToGroup = emailPartials(
+        emailPartial('email.added_to_group.html')
+    );
+    var concatCreateGroupInvitation = emailPartials(
+        emailPartial('email.create_group_invitation.html')
+    );
+    var concatEmailVerification = emailPartials(
+        emailPartial('email.email_verification.html'),
+        email_footer_install
+    );
+    var concatFailedAccountActivation = emailPartials(
+        emailPartial('email.failed_account_activation.html')
+    );
+    var concatFailedGroupActivation = emailPartials(
+        emailPartial('email.failed_group_activation.html')
+    );
+    var concatPasswordReset = emailPartials(
+        emailPartial('email.password_reset.html')
+    );
+    var concatPermissionLevelDecrease = emailPartials(
+        emailPartial('email.permission_level_decrease.html')
+    );
+    var concatPermissionLevelIncrease = emailPartials(
+        emailPartial('email.permission_level_increase.html')
+    );
+    var concatSuccessfulAccountActivation = emailPartials(
+        emailPartial('email.successful_account_activation.html'),
+        email_footer_install
+    );
+    var concatSuccessfulGroupActivation = emailPartials(
+        emailPartial('email.successful_group_activation.html')
+    );
+    var concatRemoveFromGroup = emailPartials(
+        emailPartial('email.remove_from_group.html')
+    );
+
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 
@@ -516,7 +575,55 @@ module.exports = function(grunt) {
             handlebarsMain : {
                 src: concatHandlebarsMain,
                 dest: 'views/layouts/main.handlebars'
-            }
+            },
+            'email.account_invitation': {
+                src: concatEmailAccountInvitation,
+                dest: emailDest('email.account_invitation.html')
+            },
+            'email.added_to_group': {
+                src: concatEmailAddedToGroup,
+                dest: emailDest('email.added_to_group.html')
+            },
+            'email.create_group_invitation': {
+                src: concatCreateGroupInvitation,
+                dest: emailDest('email.create_group_invitation.html')
+            },
+            'email.email_verification': {
+                src: concatEmailVerification,
+                dest: emailDest('email.email_verification.html')
+            },
+            'email.failed_account_activation': {
+                src: concatFailedAccountActivation,
+                dest: emailDest('email.failed_account_activation.html')
+            },
+            'email.failed_group_activation': {
+                src: concatFailedGroupActivation,
+                dest: emailDest('email.failed_group_activation.html')
+            },
+            'email.password_reset': {
+                src: concatPasswordReset,
+                dest: emailDest('email.password_reset.html')
+            },
+            'email.permission_level_decreaese': {
+                src: concatPermissionLevelDecrease,
+                dest: emailDest('email.permission_level_decrease.html')
+            },
+            'email.permission_level_increase': {
+                src: concatPermissionLevelIncrease,
+                dest: emailDest('email.permission_level_increase.html')
+            },
+            'email.successful_account_activation': {
+                src: concatSuccessfulAccountActivation,
+                dest: emailDest('email.successful_account_activation.html')
+            },
+            'email.successful_group_activation': {
+                src: concatSuccessfulGroupActivation,
+                dest: emailDest('email.successful_group_activation.html')
+            },
+            'email.remove_from_group': {
+                src: concatRemoveFromGroup,
+                dest: emailDest('email.remove_from_group.html')
+            },
         },
 
         copy: {
