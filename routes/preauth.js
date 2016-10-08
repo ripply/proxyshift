@@ -459,6 +459,56 @@ module.exports = function(app, settings){
         }
     });
 
+    app.get('/unsubscribe', function getUnsubscribeFromAllEmails(req, res, next) {
+        var data = {
+            email: req.user ? req.user.get('email') : undefined
+        };
+        if (data.email) {
+            data.name = req.user.get('firstname');
+        }
+        res.render('layouts/unsubscribe/enteremail', data);
+    });
+
+    app.post('/unsubscribe', function postUnsubscribeFromAllEmails(req, res, next) {
+        var email = req.body.email;
+        if (!email) {
+            res.render('layouts/unsubscribe/enteremail');
+        } else {
+            unsubscribeFromEmail(req, res, req.body.email, function success() {
+                res.render('layouts/unsubscribe/success');
+            });
+        }
+    });
+
+    function unsubscribeFromEmail(req, res, email, success) {
+        return models.Users.query(function(q) {
+            q.select('usersetting_id')
+                .from('users')
+                .whereRaw('LOWER(email) LIKE ?', email.toLowerCase());
+        })
+            .fetch()
+            .tap(function(userid) {
+                if (userid) {
+                    return models.UserSettings.query(function(q) {
+                        q.select()
+                            .from('usersettings')
+                            .where('usersettings.id', '=', userid.get('usersetting_id'))
+                            .update({
+                                emailnotifications: false
+                            });
+                    })
+                        .fetch()
+                        .then(success);
+                } else {
+                    success();
+                }
+            })
+            .catch(function failedToEmailUnsubscribe(err) {
+                slack.error(req, 'Failed to unsubscribe from emails', err);
+                return res.render('layouts/error/500');
+            });
+    }
+
     // consumes email verification token
     app.get('/emailverify', function getEmailVerify(req, res, next) {
         if(req.query.hasOwnProperty('token')) {
@@ -493,6 +543,7 @@ module.exports = function(app, settings){
                 });
             })
                 .catch(function (err) {
+                    slack.error(req, "Error verifying email", err);
                     res.sendStatus(500);
                 });
         } else {

@@ -21,7 +21,36 @@ I18n.translations["en"] = {
             },
             login: 'Or use the mobile web version'
         },
-        resetpassword: 'Reset your password'
+        resetpassword: 'Reset your password',
+        unsubscribe: {
+            email: 'Unsubscribe'
+        }
+    },
+    error: {
+        500: 'An internal error has occurred, we have been notified about the error. Please try again later'
+    },
+    unsubscribe: {
+        email: {
+            success: {
+                message: 'The specifie email has been unsubscribed from all emails (including transactional emails)',
+                undo: 'You can also do this from Settings in the app at any time'
+            }
+        },
+        from: {
+            email: {
+                message: 'Unsubscribe from all emails'
+            }
+        },
+        already: {
+            loggedin: 'Hi {{1}}, enter the email address you want to unsubscribe from'
+        },
+        please: {
+            enter: {
+                email: {
+                    address: 'Please enter your email address'
+                }
+            }
+        }
     },
     invites: {
         join: {

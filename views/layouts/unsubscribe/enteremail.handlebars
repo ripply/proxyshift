@@ -1,0 +1,40 @@
+<link rel="stylesheet" type="text/css"  href="site/css/login-form-style.css">
+<div class="login-form">
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2 text center">
+            <h1>{{_ 'unsubscribe.from.email.message'}}</h1>
+            <div class="description">
+                {{#if message}}
+                    <p>{{_ message}}</p>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+
+            <div class="form-box">
+                <div class="form-top">
+                    <div class="">
+                        {{#if email }}
+                        <h3>{{_ 'unsubscribe.already.loggedin' name }}</h3>
+                        {{else}}
+                        <h3>{{_ 'unsubscribe.please.enter.email.address'}}</h3>
+                        {{/if}}
+                        <h5>{{_ 'unsubscribe.email.success.undo'}}</h5>
+                    </div>
+                </div>
+                <div class="form-bottom">
+                    <form role="form" action="/unsubscribe" method="post" class="login-form">
+                        <div class="form-group">
+                            <label class="sr-only" for="password">{{_ 'form.email' }}</label>
+                            <input type="text" name="email" placeholder="{{_ 'form.email' }}..." value="{{ email }}" class="form-email form-control" id="form-email">
+                        </div>
+                        <button type="submit" class="btn">{{_ 'welcome.unsubscribe.email' }}</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<a href="/mobile" class="navbar-toggle collapsed">LOGIN</a>
