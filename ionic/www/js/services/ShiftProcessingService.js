@@ -524,7 +524,7 @@ angular.module('scheduling-app.services')
                         var prompt = $ionicPopup.show({
                             title: 'Are you sure',
                             subTitle: 'you want to delete this shift?',
-                            scope: $scope,
+                            scope: scope,
                             buttons: [
                                 {
                                     text: 'No',
