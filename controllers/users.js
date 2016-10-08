@@ -115,23 +115,28 @@ module.exports = {
                         .json({error: true, data: {message: 'Password required'}});
 
                 } else {
-                    models.User.query(function (q) {
-                        q.select()
-                            .from('users')
-                            .where({
-                                id: req.user.id,
-                                // require password to delete account
-                                password: encryptKey(req.body.password)
+                    encryptKey(req.body.password, function(error, hashedPassword) {
+                        if (error) {
+                            return error(req, res, err);
+                        }
+                        models.User.query(function (q) {
+                                q.select()
+                                    .from('users')
+                                    .where({
+                                        id: req.user.id,
+                                        // require password to delete account
+                                        password: hashedPassword
+                                    });
+                            })
+                            .destroy()
+                            .then(function () {
+                                logout(req, res);
+                                res.json({error: false, data: {message: 'User successfully deleted'}});
+                            })
+                            .catch(function (err) {
+                                error(req, res, err);
                             });
-                    })
-                        .destroy()
-                        .then(function () {
-                            logout(req, res);
-                            res.json({error: false, data: {message: 'User successfully deleted'}});
-                        })
-                        .catch(function (err) {
-                            error(req, res, err);
-                        });
+                    });
                 }
             }
         }
@@ -140,19 +145,22 @@ module.exports = {
         'get': {
             // auth: ['anyone'],
             route: function getPasswordResetCaptcha(req, res) {
-                if (req.user.get('username') == 'demo') {
-                    return res.sendStatus('403');
-                }
                 var token = req.query.token;
                 if(token) {
                     return models.ResetPasswordToken.query(function findPasswordResetToken(q) {
                         q.select()
                             .from('resetpasswordtokens')
+                            .innerJoin('users', function() {
+                                this.on('users.id', '=', 'resetpasswordtokens.user_id');
+                            })
                             .where('resetpasswordtokens.token', '=', token);
                     })
                         .fetch()
                         .tap(function foundPasswordResetToken(resetpasswordtoken) {
                             if (resetpasswordtoken) {
+                                if (resetpasswordtoken.get('username') == 'demo') {
+                                    return res.render('layouts/demoaccount');
+                                }
                                 res.render('layouts/passwordreset/accept', {
                                     token: token
                                 });
@@ -171,7 +179,6 @@ module.exports = {
                 var token = req.body.token;
                 var newpassword = req.body.password;
                 var verifypassword = req.body.verifypassword;
-                console.log(req.body);
                 var verify = false;
                 if (usernameOrEmail) {
                     usernameOrEmail = usernameOrEmail.toLowerCase();
@@ -194,146 +201,155 @@ module.exports = {
                         });
                     }
                 } else {
-                    return res.sendStatus(400);
+                    var error = 'Unknown error';
+                    if (!token) {
+                        error = 'Missing token';
+                    } else if (!newpassword || !verifypassword) {
+                        error = 'Missing password'
+                    }
+                    return res.render('layouts/error/400', {
+                        error: error
+                    });
                 }
-                Bookshelf.transaction(function(t) {
-                    var sqlOptions = {
-                        transacting: t
-                    };
+                encryptKey(newpassword, function(error, hashedPassword) {
+                    Bookshelf.transaction(function(t) {
+                        var sqlOptions = {
+                            transacting: t
+                        };
 
-                    if (verify) {
-                        console.log("Verifying...");
-                        return models.ResetPasswordToken.query(function findPasswordResetToken(q) {
-                            q.select()
-                                .from('resetpasswordtokens')
-                                .where('resetpasswordtokens.token', '=', token);
-                        })
-                            .fetch(sqlOptions)
-                            .tap(function foundPasswordResetToken(resetpasswordtoken) {
-                                if (resetpasswordtoken) {
-                                    // token is valid
-                                    // set user's password to the newpassword
-                                    return models.User.query(function resetUsersPasswordQuery(q) {
-                                        q.select()
-                                            .from('users')
-                                            .where('users.id', '=', resetpasswordtoken.get('user_id'))
-                                            .update({
-                                                password: encryptKey(newpassword),
-                                                // also verify email because they got this link from their email!
-                                                verified_email: true
-                                            });
-                                    })
-                                        .fetch(sqlOptions)
-                                        .tap(function usersPasswordReset() {
-                                            return models.ResetPasswordToken.query(function resetPasswordConsumeToken(q) {
+                        if (verify) {
+                            return models.ResetPasswordToken.query(function findPasswordResetToken(q) {
+                                    q.select()
+                                        .from('resetpasswordtokens')
+                                        .where('resetpasswordtokens.token', '=', token);
+                                })
+                                .fetch(sqlOptions)
+                                .tap(function foundPasswordResetToken(resetpasswordtoken) {
+                                    if (resetpasswordtoken) {
+                                        // token is valid
+                                        // set user's password to the newpassword
+                                        return models.User.query(function resetUsersPasswordQuery(q) {
                                                 q.select()
-                                                    .from('resetpasswordtokens')
-                                                    .where('resetpasswordtokens.token', '=', token)
-                                                    .del();
+                                                    .from('users')
+                                                    .where('users.id', '=', resetpasswordtoken.get('user_id'))
+                                                    .update({
+                                                        password: hashedPassword,
+                                                        // also verify email because they got this link from their email!
+                                                        verified_email: true
+                                                    });
                                             })
-                                                .fetch(sqlOptions)
-                                                .tap(function usersPasswordResetComplete() {
-                                                    res.render('layouts/passwordreset/success');
-                                                });
-                                        });
-                                } else {
-                                    return res.render('layouts/passwordreset/unknown');
-                                }
-                            });
-                    } else {
-                        // check if the username/email is valid
-                        return models.User.query(function postPasswordResetFindUsernameOrEmail(q) {
-                            q.select('users.id as id')
-                                .from('users')
-                                .where('users.username', '=', usernameOrEmail)
-                                .orWhere('users.email', '=', usernameOrEmail);
-                        })
-                            .fetch(sqlOptions)
-                            .tap(function postPasswordResetFoundUser(user) {
-                                if (user) {
-                                    return models.ResetPasswordToken.query(function (q) {
-                                        q.select()
-                                            .from('resetpasswordtokens')
-                                            .where('resetpasswordtokens.user_id', '=', user.get('id'));
-                                    })
-                                        .fetch(sqlOptions)
-                                        .tap(function postPasswordResetFindExistingTokens(token) {
-                                            var now = time.nowInUtc();
-                                            var generatedToken = null;
-                                            if (token) {
-                                                // token already exists
-                                                // see if it has been a bit since we last sent an email
-                                                // if it has been a little, re-send the same email
-                                                if (token.get('expires') >= now) {
-                                                    // token expired
-                                                    // update it and resend the invite email
-                                                    generatedToken = generatePasswordToken();
-                                                    return models.ResetPasswordToken.query(function(q) {
+                                            .fetch(sqlOptions)
+                                            .tap(function usersPasswordReset() {
+                                                return models.ResetPasswordToken.query(function resetPasswordConsumeToken(q) {
                                                         q.select()
                                                             .from('resetpasswordtokens')
-                                                            .where('id', '=', token.get('id'))
-                                                            .update({
-                                                                token: generatedToken,
-                                                                expires: passwordTokenExpiresAt(now),
-                                                                lastEmailSent: now
-                                                            })
+                                                            .where('resetpasswordtokens.token', '=', token)
+                                                            .del();
                                                     })
-                                                        .fetchAll(sqlOptions)
-                                                        .tap(passwordTokenCreated);
-                                                } else {
-                                                    // token is not expired
-                                                    // check if it has been a little bit since it was last sent
-                                                    var interval = getEmailResetInterval();
-                                                    var canSendFrom = now + interval;
-                                                    if (token.get('lastEmailSent') > canSendFrom) {
+                                                    .fetch(sqlOptions)
+                                                    .tap(function usersPasswordResetComplete() {
+                                                        res.render('layouts/passwordreset/success');
+                                                    });
+                                            });
+                                    } else {
+                                        return res.render('layouts/passwordreset/unknown');
+                                    }
+                                });
+                        } else {
+                            // check if the username/email is valid
+                            return models.User.query(function postPasswordResetFindUsernameOrEmail(q) {
+                                    q.select('users.id as id')
+                                        .from('users')
+                                        .where('users.username', '=', usernameOrEmail)
+                                        .orWhere('users.email', '=', usernameOrEmail);
+                                })
+                                .fetch(sqlOptions)
+                                .tap(function postPasswordResetFoundUser(user) {
+                                    if (user) {
+                                        return models.ResetPasswordToken.query(function (q) {
+                                                q.select()
+                                                    .from('resetpasswordtokens')
+                                                    .where('resetpasswordtokens.user_id', '=', user.get('id'));
+                                            })
+                                            .fetch(sqlOptions)
+                                            .tap(function postPasswordResetFindExistingTokens(token) {
+                                                var now = time.nowInUtc();
+                                                var generatedToken = null;
+                                                if (token) {
+                                                    // token already exists
+                                                    // see if it has been a bit since we last sent an email
+                                                    // if it has been a little, re-send the same email
+                                                    if (token.get('expires') >= now) {
+                                                        // token expired
+                                                        // update it and resend the invite email
+                                                        generatedToken = generatePasswordToken();
                                                         return models.ResetPasswordToken.query(function(q) {
-                                                            q.select()
-                                                                .from('resetpasswordtokens')
-                                                                .update({
-                                                                    lastEmailSent: now
-                                                                });
-                                                        })
+                                                                q.select()
+                                                                    .from('resetpasswordtokens')
+                                                                    .where('id', '=', token.get('id'))
+                                                                    .update({
+                                                                        token: generatedToken,
+                                                                        expires: passwordTokenExpiresAt(now),
+                                                                        lastEmailSent: now
+                                                                    })
+                                                            })
                                                             .fetchAll(sqlOptions)
                                                             .tap(passwordTokenCreated);
                                                     } else {
-                                                        // don't send
-                                                        return res.sendStatus(200);
+                                                        // token is not expired
+                                                        // check if it has been a little bit since it was last sent
+                                                        var interval = getEmailResetInterval();
+                                                        var canSendFrom = now + interval;
+                                                        if (token.get('lastEmailSent') > canSendFrom) {
+                                                            return models.ResetPasswordToken.query(function(q) {
+                                                                    q.select()
+                                                                        .from('resetpasswordtokens')
+                                                                        .update({
+                                                                            lastEmailSent: now
+                                                                        });
+                                                                })
+                                                                .fetchAll(sqlOptions)
+                                                                .tap(passwordTokenCreated);
+                                                        } else {
+                                                            // don't send
+                                                            return res.sendStatus(200);
+                                                        }
                                                     }
+                                                } else {
+                                                    // create a token and trigger email event
+                                                    generatedToken = generatePasswordToken();
+                                                    return models.ResetPasswordToken.forge({
+                                                            user_id: user.get('id'),
+                                                            token: generatedToken,
+                                                            expires: passwordTokenExpiresAt(now),
+                                                            lastEmailSent: now
+                                                        })
+                                                        .save(undefined, sqlOptions)
+                                                        .tap(passwordTokenCreated);
                                                 }
-                                            } else {
-                                                // create a token and trigger email event
-                                                generatedToken = generatePasswordToken();
-                                                return models.ResetPasswordToken.forge({
-                                                    user_id: user.get('id'),
-                                                    token: generatedToken,
-                                                    expires: passwordTokenExpiresAt(now),
-                                                    lastEmailSent: now
-                                                })
-                                                    .save(undefined, sqlOptions)
-                                                    .tap(passwordTokenCreated);
-                                            }
 
-                                            function generatePasswordToken() {
-                                                return utils.randomString(64);
-                                            }
+                                                function generatePasswordToken() {
+                                                    return utils.randomString(64);
+                                                }
 
-                                            function passwordTokenExpiresAt(now) {
-                                                return now + (60 * 60); // 1 hour
-                                            }
+                                                function passwordTokenExpiresAt(now) {
+                                                    return now + (60 * 60); // 1 hour
+                                                }
 
-                                            function passwordTokenCreated() {
-                                                appLogic.fireEvent('passwordReset', user.get('id'), {
-                                                    token: generatedToken
-                                                });
-                                                return res.sendStatus(200);
-                                            }
-                                        });
-                                } else {
-                                    // send success even if it failed (which it did)
-                                    return res.sendStatus(200);
-                                }
-                            });
-                    }
+                                                function passwordTokenCreated() {
+                                                    appLogic.fireEvent('passwordReset', user.get('id'), {
+                                                        token: generatedToken
+                                                    });
+                                                    return res.sendStatus(200);
+                                                }
+                                            });
+                                    } else {
+                                        // send success even if it failed (which it did)
+                                        return res.sendStatus(200);
+                                    }
+                                });
+                        }
+                    });
                 });
             }
         }

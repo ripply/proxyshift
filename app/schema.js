@@ -111,8 +111,8 @@ var Schema = {
             index: {},
             unique: false,
             maxlen: 100,
-            nullable: false,
-            encrypt: true
+            nullable: false
+            //encrypt: true
         },
         squestion: {
             type: string,

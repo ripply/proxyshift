@@ -42,11 +42,13 @@ passport.use(new LocalStrategy(function(username, password, done) {
     })
         .fetch({require: true})
         .then(function (user) {
-            if(bcrypt.compareSync(password, user.get('password'))) {
-                return done(null, user);
-            } else {
-                return done(null, false, { message: 'Invalid Password' });
-            }
+            return bcrypt.compare(password, user.get('password'), function(error, match) {
+                if (match) {
+                    return done(null, user);
+                } else {
+                    return done(null, false, { message: 'Invalid Password' });
+                }
+            });
         })
         .catch(function (err) {
             return done(null, false, {error: true, data: {message: err.message}});

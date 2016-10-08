@@ -21,7 +21,7 @@ var _schema = require('./schema'),
     timers = require('timers'),
     momentTimezone = require('moment-timezone'),
 // TODO: move encryption file to this folder if encrypting with bookshelf events turns out to work well
-    encryptKey = require('../controllers/encryption/encryption').encryptKey,
+    encryptKeySync = require('../controllers/encryption/encryption').encryptKeySync,
     time = require('./time'),
     slack = require('./slack'),
     SALT_WORK_FACTOR = 10;
@@ -321,7 +321,7 @@ var specialFieldList = {
 
                 if (value !== undefined) {
                     // encrypt
-                    model.set(columnName, encryptKey(value));
+                    model.set(columnName, encryptKeySync(value));
                 }
             });
         });
