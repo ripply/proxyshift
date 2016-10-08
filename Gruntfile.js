@@ -201,6 +201,7 @@ module.exports = function(grunt) {
         'watch:concatMobileTermsOfService',
         'watch:concatMobileCordovaApiVersion',
         'watch:concatHandlebarsMain',
+        'watch:concatEmails',
         'watch:jsonmanifest'
     ];
 
@@ -604,7 +605,7 @@ module.exports = function(grunt) {
                 src: concatPasswordReset,
                 dest: emailDest('email.password_reset.html')
             },
-            'email.permission_level_decreaese': {
+            'email.permission_level_decrease': {
                 src: concatPermissionLevelDecrease,
                 dest: emailDest('email.permission_level_decrease.html')
             },
@@ -883,6 +884,23 @@ module.exports = function(grunt) {
             concatHandlebarsMain: {
                 files: concatHandlebarsMain,
                 tasks: ['concat:handlebarsMain']
+            },
+            concatEmails: {
+                files: 'static/partials/emails/*.html',
+                tasks: [
+                    'concat:email.account_invitation',
+                    'concat:email.added_to_group',
+                    'concat:email.create_group_invitation',
+                    'concat:email.email_verification',
+                    'concat:email.failed_account_activation',
+                    'concat:email.failed_group_activation',
+                    'concat:email.password_reset',
+                    'concat:email.permission_level_decrease',
+                    'concat:email.permission_level_increase',
+                    'concat:email.successful_account_activation',
+                    'concat:email.successful_group_activation',
+                    'concat:email.remove_from_group'
+                ]
             },
             uglifyAppLibs: {
                 files: uglifyAppLibs,
