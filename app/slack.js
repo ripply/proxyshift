@@ -126,6 +126,7 @@ if (botConfig.token) {
         getChannels(startElection);
     });
     bot.on('message', function slackbotMessageReceived(message) {
+        console.log(message);
         if (channels.hasOwnProperty(message.channel)) {
             message.channelName = channels[message.channel];
         }
