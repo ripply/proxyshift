@@ -32,7 +32,8 @@ I18n.translations["en"] = {
     unsubscribe: {
         email: {
             success: {
-                message: 'The specified email has been unsubscribed from all emails if it exists (including transactional emails)',
+                message: 'The specified email has been unsubscribed from all emails if it exists',
+                transactional: '(including transactional emails)',
                 undo: 'You can also do this from Settings in the app at any time'
             }
         },
