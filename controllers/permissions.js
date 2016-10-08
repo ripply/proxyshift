@@ -18,6 +18,8 @@ var setMark = common.setMark;
 var clearMarks = common.clearMarks;
 var error = common.error;
 
+var slack = require('../app/slack');
+
 function errorOccurred(req, act, err) {
     // TODO: Hook up to general logging facility
     error(req, null, err);
@@ -490,7 +492,7 @@ function checkLocationPermissionLevel(permissionLevel, req, act) {
     return models.UserPermission.query(function(q) {
         q.select('userpermissions.*')
             .leftJoin('sublocations', function() {
-                this.on('sublocations', '=', 'userpermissions.sublocation_id');
+                this.on('sublocations.id', '=', 'userpermissions.sublocation_id');
             })
             .innerJoin('locations', function() {
                 this.on('locations.id', '=', 'userpermissions.location_id')
@@ -524,6 +526,7 @@ function checkLocationPermissionLevel(permissionLevel, req, act) {
             }
         })
         .catch(function(err) {
+            slack.error(req, 'Error checking location permission level', err);
             return false;
         });
 }
