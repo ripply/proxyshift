@@ -21,9 +21,11 @@ var models = require('../app/models'),
     Bookshelf = models.Bookshelf;
 
 var validator;
+var validatorLoaded = false;
 
 try {
     validator = require('validator');
+    validatorLoaded = true;
 } catch (e) {
     console.log("FAILED TO LOAD VALIDATOR");
     validator = {
@@ -425,11 +427,12 @@ module.exports = {
 
                 userclasses = _.filter(userclasses, rejectNullOrUndefinedOrEmpty);
                 emails = _.filter(emails, rejectNullOrUndefinedOrEmpty);
-                for (var i = 0; i < emails.length; i++) {
-                    console.log(emails[i]);
-                    if (!validator.isEmail(emails[i])) {
-                        console.log('Invalid email provided to send group invitation to');
-                        return clientError(req, res, 400, 'Invalid email');
+                if (validatorLoaded || process.env.FORCE_EMAIL_VALIDATIONS == 'true') {
+                    for (var i = 0; i < emails.length; i++) {
+                        if (!validator.isEmail(emails[i])) {
+                            console.log('Invalid email provided to send group invitation to');
+                            return clientError(req, res, 400, 'Invalid email');
+                        }
                     }
                 }
 
