@@ -1223,7 +1223,7 @@ module.exports = {
             emailArgs
         );
     },
-    inviteUserToCreateCompany: function inviteUserToCreateCompany(email, message) {
+    inviteUserToCreateCompany: function inviteUserToCreateCompany(email, message, next) {
         var token = utils.createToken();
         email = filterEmail(email);
         console.log(email);
@@ -1248,6 +1248,9 @@ module.exports = {
                     undefined,
                     invite
                 );
+                if (next) {
+                    next(invite);
+                }
             });
     },
     existingUserInvitedToGroup: function(token, user_id, inviter_user, message, args) {

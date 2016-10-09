@@ -5,6 +5,7 @@ var middleware = require('./misc/middleware'),
     Notifications = models.Notifications,
     path = require('path'),
     time = require('../app/time'),
+    basicAuth = require('basic-auth-connect'),
     users = require('../controllers/users'),
     error = require('../controllers/controllerCommon').error,
     appLogic = require('../app'),
@@ -654,5 +655,41 @@ module.exports = function(app, settings){
     app.get('/passwordreset', users['/passwordreset'].get.route);
     app.post('/passwordreset', users['/passwordreset'].post.route);
     app.post('/api/v1/users/passwordreset', users['/passwordreset'].post.route);
+
+    app.use('/admin', basicAuth('admin', 'ANXDNb86jj3ZacPzlYhgscNueLgBwHrIOGzFChuzKWQkTU0D5anUjHCt2XdwuPnE'));
+    /*
+    app.use('/admin', function(req, res, next) {
+        if (!req.user || req.user.username != 'admin') {
+            return res.sendStatus(401);
+        }
+        next();
+    });
+    */
+
+    app.get('/admin', function(req, res, next) {
+        var data = {};
+        res.render('layouts/admin/index', data);
+    });
+
+    app.get('/admin/inviteuser', function(req, res, next) {
+        res.render('layouts/admin/inviteuser', {});
+    });
+
+    app.post('/admin/inviteuser', function(req, res, next) {
+        var data = {};
+        if (!req.body.email || !req.body.message) {
+            return res.render('layouts/admin/inviteuser');
+        }
+
+        appLogic.inviteUserToCreateCompany(req.body.email, req.body.message, function(invite) {
+            data.invite = invite;
+            data.message = 'Successfully invited: ' + invite.url;
+            res.render('layouts/admin/inviteuser', data);
+        })
+            .catch(function(err) {
+                slack.error(req, "Failed to create group invitation", err);
+                res.render('layouts/admin/inviteuser');
+            });
+    });
 
 };

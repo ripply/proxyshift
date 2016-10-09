@@ -1260,7 +1260,6 @@ function checkRememberMeToken(token, consume, next) {
         .fetch()
         .then(function(foundToken) {
             if (!foundToken) {
-                console.log("Failed to find token: " + token);
                 return next(null, null);
             }
             var user_id = foundToken.get('user_id');

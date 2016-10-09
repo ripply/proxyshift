@@ -1,11 +1,10 @@
-<link rel="stylesheet" type="text/css"  href="/site/css/login-form-style.css">
+<link rel="stylesheet" type="text/css"  href="site/css/login-form-style.css">
 <div class="login-form">
     <div class="row">
         <div class="col-sm-8 col-sm-offset-2 text center">
-            <h1>{{_ 'unsubscribe.from.email.message'}}</h1>
             <div class="description">
                 {{#if message}}
-                    <p>{{_ message}}</p>
+                    <p>{{message}}</p>
                 {{/if}}
             </div>
         </div>
@@ -16,21 +15,20 @@
             <div class="form-box">
                 <div class="form-top">
                     <div class="">
-                        {{#if email }}
-                        <h3>{{_ 'unsubscribe.already.loggedin' name }}</h3>
-                        {{else}}
-                        <h3>{{_ 'unsubscribe.please.enter.email.address'}}</h3>
-                        {{/if}}
-                        <h5>{{_ 'unsubscribe.email.success.undo'}}</h5>
+                        <h3>{{_ 'admin.invite.create.group' }}</h3>
                     </div>
                 </div>
                 <div class="form-bottom">
-                    <form role="form" action="/unsubscribe" method="post" class="login-form">
+                    <form role="form" action="/admin/inviteuser" method="post" class="login-form">
                         <div class="form-group">
-                            <label class="sr-only" for="password">{{_ 'form.email' }}</label>
+                            <label class="sr-only" for="email">{{_ 'form.email' }}</label>
                             <input type="text" name="email" placeholder="{{_ 'form.email' }}..." value="{{ email }}" class="form-email form-control" id="form-email">
                         </div>
-                        <button type="submit" class="btn">{{_ 'welcome.unsubscribe.email' }}</button>
+                        <div class="form-group">
+                            <label class="sr-only" for="message">{{_ 'form.message' }}</label>
+                            <input type="text" name="message" placeholder="{{_ 'form.message' }}..." value="{{ message }}" class="form-message form-control" id="form-message">
+                        </div>
+                        <button type="submit" class="btn">{{_ 'admin.invite.create.group' }}</button>
                     </form>
                 </div>
             </div>

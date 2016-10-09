@@ -53,6 +53,13 @@ I18n.translations["en"] = {
             }
         }
     },
+    admin: {
+        invite: {
+            create: {
+                group: 'Invite to create a Company'
+            }
+        }
+    },
     invites: {
         join: {
             group: "You've been invited to join {{1}}'s Proxy Shift group by {{2}}",
@@ -144,6 +151,7 @@ I18n.translations["en"] = {
             mobile: 'Phone (Mobile)',
             pager: 'Pager number'
         },
+        message: 'Message',
         submit: {
             join: {
                 group: {
