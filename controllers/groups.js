@@ -426,6 +426,7 @@ module.exports = {
                 userclasses = _.filter(userclasses, rejectNullOrUndefinedOrEmpty);
                 emails = _.filter(emails, rejectNullOrUndefinedOrEmpty);
                 for (var i = 0; i < emails.length; i++) {
+                    console.log(emails[i]);
                     if (!validator.isEmail(emails[i])) {
                         console.log('Invalid email provided to send group invitation to');
                         return clientError(req, res, 400, 'Invalid email');
