@@ -115,7 +115,7 @@ module.exports = {
             if (group_id !== undefined) {
                 return models.Group.query(function (q) {
                     q.select('groups.*')
-                        .innerJoin('usergroups', function () {
+                        .leftJoin('usergroups', function () {
                             this.on('groups.id', '=', 'usergroups.group_id')
                                 .andOn('groups.user_id', '=', user_id);
                         })

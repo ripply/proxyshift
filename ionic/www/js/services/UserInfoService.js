@@ -293,11 +293,12 @@ angular.module('scheduling-app.services')
             };
 
             this.isPrivilegedGroupMember = function isPrivilegedGroupMember(group_id) {
-                return isMemberOf('privilegedMemberOfGroups', group_id);
+                return isMemberOf('privilegedMemberOfGroups', group_id) || isGroupOwner(group_id);
             };
 
             this.isPrivilegedMemberOfLocation = function isPrivilegedMemberOfLocation(location_id) {
-                return isMemberOf('privilegedMemberOfLocations', location_id);
+                return isMemberOf('privilegedMemberOfLocations', location_id) ||
+                    isGroupOwner(getGroupIdForLocation(location_id));
             };
 
             function isMemberOf(key, id) {
