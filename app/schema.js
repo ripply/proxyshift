@@ -507,6 +507,16 @@ var Schema = {
             type: increments,
             index: {}
         },
+        consumed_user_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'users'
+        },
+        consumed_group_id: {
+            type: integer,
+            references: 'id',
+            inTable: 'groups'
+        },
         message: {
             type: string
         },

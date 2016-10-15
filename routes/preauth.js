@@ -646,6 +646,10 @@ module.exports = function(app, settings){
     });
 
     app.post('/api/v1/errorreport', function(req, res, next) {
+        res.sendStatus(200);
+        if (req.user) {
+            req.body.user_id = req.user.id;
+        }
         slack.info(JSON.stringify(req.body), '#clienterror');
     });
 
@@ -655,6 +659,398 @@ module.exports = function(app, settings){
     app.get('/passwordreset', users['/passwordreset'].get.route);
     app.post('/passwordreset', users['/passwordreset'].post.route);
     app.post('/api/v1/users/passwordreset', users['/passwordreset'].post.route);
+
+    app.get('/creategroup', createGroupInvite);
+    app.post('/creategroup', createGroupInvite);
+
+    function createGroupInvite(req, res, next) {
+        var token;
+        var username;
+        var password;
+        var loggedIn = isLoggedIn(req);
+        var acceptOnThisAccount = false;
+        var action = req.body.action;
+        var signin = action == 'signin';
+        var signup = action == 'signup';
+        var accept = action == 'accept';
+        var creategroup = action == 'create_group';
+        var getting = true;
+        if (req.method == 'GET') {
+            token = req.query.token;
+        } else {
+            getting = false;
+            token = req.body.token;
+        }
+        if (!token) {
+            if (req.body.recurse !== true && req.user) {
+                // if the user is logged in
+                // and they have an invite open
+                // use that token
+                return models.GroupCreationInvitation.query(function acceptGroupInviteFindToken(q) {
+                        q.select()
+                            .from('groupcreationinvitations')
+                            .where('groupcreationinvitations.consumed_user_id', '=', req.user.id);
+                    })
+                    .fetch()
+                    .tap(function acceptGroupCreateGotToken(groupCreateToken) {
+                        if (groupCreateToken) {
+                            var token = groupCreateToken.get('token');
+                            req.body.token = token;
+                            req.query.token = token;
+                            // flag to prevent infinite recursion
+                            req.body.recurse = true;
+                            return createGroupInvite(req, res, next);
+                        } else {
+                            // no token
+                            res.redirect('/');
+                        }
+                    })
+                    .catch(function (err) {
+                        res.status(500);
+                        res.render('layouts/error/500');
+                        slack.error(req, 'Error, user specified no token error while seeing if a token exists', err);
+                    });
+            } else {
+                res.redirect('/');
+            }
+        } else {
+            return models.GroupCreationInvitation.query(function acceptGroupInviteFindToken(q) {
+                    q.select()
+                        .from('groupcreationinvitations')
+                        .where('groupcreationinvitations.token', '=', token);
+                })
+                .fetch()
+                .tap(function acceptGroupCreateGotToken(groupCreateToken) {
+                    var data = {};
+                    if (groupCreateToken) {
+                        var groupCreateJson = groupCreateToken.toJSON();
+                        var now = time.nowInUtc();
+                        data = {
+                            token: token,
+                            invitation: groupCreateJson
+                        };
+                        if (now >= groupCreateJson.expires) {
+                            return res.render('layouts/creategroup/expired', data);
+                        }
+                        if (loggedIn && accept) {
+                            if (groupCreateJson.consumed_user_id !== null &&
+                                groupCreateJson.consumed_user_id !== undefined &&
+                                groupCreateJson.consumed_user_id !== req.user.id) {
+                                return res.render('layouts/creategroup/consumed');
+                            }
+                            return models.Users.query(function acceptGroupInviteGetLoggedInUser(q) {
+                                    q.select(models.usersColumns)
+                                        .from('users')
+                                        .where('users.id', '=', req.user.id);
+                                })
+                                .fetch({
+                                    require: true
+                                })
+                                .tap(function acceptGroupInviteGotLoggedInUser(loggedIn) {
+                                    data.loggedIn = loggedIn.toJSON();
+                                    if (data.loggedIn instanceof Array && data.loggedIn.length > 0) {
+                                        data.loggedIn = data.loggedIn[0]
+                                    }
+                                    return afterGettingLoggedInUsersStuff();
+                                })
+                                .catch(function failedToRenderAcceptInvitationAccepting(err) {
+                                    slack.error(req, "/creategroup error", err);
+                                    showPage(err.message);
+                                });
+                        } else {
+                            try {
+                                return afterGettingLoggedInUsersStuff()
+                            } catch (err) {
+                                slack.error(req, "/creategroup error", err);
+                                showPage(err.message);
+                            }
+                        }
+                    } else {
+                        renderPage('layouts/creategroup/unknown');
+                    }
+
+                    function renderPage(path, message) {
+                        // reject fields that we don't want to leak to a template
+                        if (data.invited) {
+                            var validKeys = _.reject(Object.keys(data.invited), function (columnName) {
+                                return (users.bannedFields.indexOf(columnName) < 0);
+                            });
+
+                            data.invited = _.reduce(validKeys, function (memo, validColumn) {
+                                memo[validColumn] = data.invited[validColumn];
+                                return memo;
+                            }, {});
+                        }
+
+                        data.message = message;
+
+                        res.render(path, data);
+                    }
+
+                    function showPage() {
+                        renderPage("layouts/creategroup/accept", data);
+                    }
+
+                    function showPageErrorUserIsInviter() {
+                        showPage("That user did the inviting");
+                    }
+
+                    function afterGettingLoggedInUsersStuff() {
+                        if (getting) {
+                            if (req.user) {
+                                return afterLoggedInConsumeToken();
+                            } else {
+                                showPage();
+                            }
+                        } else {
+                            if ((loggedIn && accept) || signup || creategroup) {
+                                return afterLoggedInConsumeToken();
+                            } else if (signin) {
+                                return passport.authenticate('local', {session: true}, function (err, user, info) {
+                                    if (err) {return next(err); }
+                                    if (!user) {
+                                        data.loginFailure = true;
+                                        data.inputUsername = username;
+                                        showPage();
+                                    } else {
+                                        return req.login(user, function (err) {
+                                            if (err) {
+                                                res.status(500);
+                                                res.render('layouts/errors/500');
+                                                return slack.error(req, 'Error logging in', err);
+                                            }
+
+                                            return models.issueToken(req.user, function (err, token, tokenid) {
+                                                if (err) {
+                                                    slack.error(req, 'Error issuing token', err);
+                                                    return res.redirect('/');
+                                                }
+                                                return models.registerDeviceIdForUser(req.user.id, req.body.deviceid, req.body.platform, getWhenRememberMeTokenExpires(), tokenid, function (deviceIdRegistered, err) {
+                                                    if (err) {
+                                                        console.log("Failed to register user's device for push notifications - userid: " + req.user.id + " deviceid:" + req.body.deviceid + "\n" + err);
+                                                    }
+                                                    res.cookie('remember_me', token, {path: '/', httpOnly: true, maxAge: maxAgeInMs});
+
+                                                    return afterLoggedInConsumeToken();
+                                                });
+                                            });
+                                        });
+                                    }
+                                })(req, res, function() {
+                                    return showPage();
+                                });
+                            }
+                        }
+                    }
+
+                    function afterLoggedInConsumeToken() {
+                        if (signup) {
+                            if (groupCreateJson.consumed_user_id !== null &&
+                                groupCreateJson.consumed_user_id !== undefined) {
+                                // user already used invite to create an account
+                                return res.render('layouts/creategroup/consumed');
+                            }
+                            // signup
+                            signup = false;
+                            var verified_email = groupCreateJson.email !== undefined && groupCreateJson.email == req.body.email;
+                            return users.createUser(undefined, req, verified_email, function consumeInviteSignupUser(err, user) {
+                                if (err) {
+                                    return showPage('message.username_or_email.exists');
+                                }
+                                return models.GroupCreationInvitation.query(function(q) {
+                                    q.select()
+                                        .from('groupcreationinvitations')
+                                        .where('id', '=', groupCreateJson.id)
+                                        .update('consumed_user_id', user.id);
+                                })
+                                    .fetch()
+                                    .tap(function consumedCretionInivitation(user) {
+                                        // need to sign in as user
+                                        return req.login(user, function (err) {
+                                            if (err) {
+                                                res.status(500);
+                                                res.render('layouts/error/500');
+                                                return slack.error(req, 'Error logging user in', err);
+                                            }
+
+                                            return models.issueToken(req.user, function (err, token, tokenid) {
+                                                if (err) {
+                                                    return res.redirect('/');
+                                                }
+                                                return models.registerDeviceIdForUser(req.user.id, req.body.deviceid, req.body.platform, getWhenRememberMeTokenExpires(), tokenid, function (deviceIdRegistered, err) {
+                                                    if (err) {
+                                                        console.log("Failed to register user's device for push notifications - userid: " + req.user.id + " deviceid:" + req.body.deviceid + "\n" + err);
+                                                    }
+                                                    res.cookie('remember_me', token, {path: '/', httpOnly: true, maxAge: maxAgeInMs});
+
+                                                    return afterLoggedInConsumeToken();
+                                                });
+                                            });
+                                        });
+                                    });
+                            });
+                        }
+
+                        if (creategroup) {
+                            if (groupCreateJson.consumed_group_id) {
+                                return res.render('layouts/error/400', {
+                                    error: "A company has already been created with this invite"
+                                });
+                            }
+
+                            var groupData = {
+                                user_id: req.user.id,
+                                name: req.body.name,
+                                state: req.body.state,
+                                city: req.body.city,
+                                address: req.body.address,
+                                zipcode: req.body.zipcode,
+                                weburl: req.body.weburl,
+                                contactemail: req.body.contactemail,
+                                contactphone: req.body.contactphone
+                            };
+
+                            return models.Bookshelf.transaction(function createNewGroup(t) {
+                                var sqlOptions = {
+                                    transacting: t
+                                };
+                                return models.GroupSetting.forge({
+                                        allowalltocreateshifts: false,
+                                        requireshiftconfirmation: true
+                                    })
+                                    .save(undefined, sqlOptions)
+                                    .tap(function (groupsetting) {
+                                        groupData.groupsetting_id = groupsetting.get('id');
+                                        return models.Group.forge(groupData)
+                                            .save(undefined, sqlOptions)
+                                            .tap(function (newGroup) {
+                                                return models.GroupCreationInvitation.query(function (q) {
+                                                    var updateData = {
+                                                        consumed_group_id: newGroup.get('id')
+                                                    };
+                                                    if (!groupCreateJson.consumed_user_id) {
+                                                        updateData.consumed_user_id = req.user.id;
+                                                    }
+                                                    q.select()
+                                                        .from('groupcreationinvitations')
+                                                        .where('token', '=', groupCreateJson.token)
+                                                        .update(updateData);
+                                                })
+                                                    .fetch(sqlOptions)
+                                                    .tap(function () {
+                                                        return res.render('layouts/creategroup/addlocations');
+                                                    });
+                                            });
+                                    });
+                            })
+                                .catch(function(err) {
+                                    if (err.errors) {
+                                        _.extend(data, req.body);
+                                        data.errors = err.errors;
+                                        console.log('req.body');
+                                        console.log(req.body);
+                                        console.log('data');
+                                        console.log(data);
+                                        res.render('layouts/creategroup/loggedin', data);
+                                    } else {
+                                        res.status(500);
+                                        res.render('layouts/error/500');
+                                        slack.error(req, "Error creating group via invitation", err);
+                                    }
+                                });
+                        } else if (groupCreateJson.consumed_group_id) {
+                            return res.render('layouts/creategroup/addlocations');
+                        } else {
+                            return res.render('layouts/creategroup/loggedin', data);
+                        }
+
+                        return models.Bookshelf.transaction(function consumeInviteTokenTransaction(t) {
+                                var sqlOptions = {
+                                    transacting: t
+                                };
+
+                                return consumeInviteTokenAddUserToGroup();
+
+                                function consumeInviteTokenAddUserToGroup() {
+                                    // make the user a member of the group with the specified permission level
+                                    return models.UserGroup.forge({
+                                            group_id: data.group.id,
+                                            user_id: req.user.id,
+                                            grouppermission_id: data.invitation.grouppermission_id
+                                        })
+                                        .save(undefined, sqlOptions)
+                                        .tap(function consumeInviteTokenCreateUserGroups() {
+                                            var groupuserclass_ids = _.reduce(data.userclasses, function(memo, userclass) {
+                                                memo.push(userclass.groupuserclass.id);
+                                                return memo;
+                                            }, []);
+                                            // figure out what job types they already have
+                                            // then don't grant them a duplicate of any of them
+                                            return models.GroupUserClassToUser.query(function consumeInviteTokenGetExistingUserclasses(q) {
+                                                    q.select('groupuserclasstousers.groupuserclass_id as groupuserclass_id')
+                                                        .from('groupuserclasstousers')
+                                                        .whereIn('groupuserclasstousers.groupuserclass_id', groupuserclass_ids);
+                                                })
+                                                .fetchAll(sqlOptions)
+                                                .tap(function consumeInviteTokenGotExistingUserclasses(existingUserclasses) {
+                                                    var userclassesIdsMap = _.reduce(existingUserclasses.toJSON(), function(memo, userclass) {
+                                                        memo['' + userclass.groupuserclass_id] = true;
+                                                        return memo;
+                                                    }, {});
+
+                                                    var newGroupUserClassToUser = _.reduce(groupuserclass_ids, function(memo, groupuserclass_id) {
+                                                        if (!userclassesIdsMap.hasOwnProperty('' + groupuserclass_id)) {
+                                                            memo.push({
+                                                                user_id: data.invited.id,
+                                                                groupuserclass_id: groupuserclass_id
+                                                            });
+                                                        }
+                                                        return memo;
+                                                    }, []);
+
+                                                    if (newGroupUserClassToUser.length > 0) {
+                                                        // grant the user the specified job types
+                                                        var jobTypes = models.GroupUserClassToUsers.forge(newGroupUserClassToUser);
+                                                        return Promise.all(jobTypes.invoke('save', undefined, sqlOptions))
+                                                            .tap(consumeInviteTokenUsergroupsGranted);
+                                                    } else {
+                                                        return consumeInviteTokenUsergroupsGranted();
+                                                    }
+
+                                                    function consumeInviteTokenUsergroupsGranted() {
+                                                        // finally delete the invitation
+                                                        return models.GroupInvitation.query(function consumeInviteTokenDeleteInvitation(q) {
+                                                                q.select()
+                                                                    .from('groupinvitations')
+                                                                    .where('groupinvitations.id', '=', data.invitation.id)
+                                                                    .del();
+                                                            })
+                                                            .fetch(sqlOptions)
+                                                            .tap(function consumeInviteTokenInvitationDeleted() {
+                                                                // success!
+                                                                // user has been added to the group
+                                                                // and set to the specified job types
+                                                                // and the invitation has been deleted
+                                                                renderPage('layouts/groupinvite/success');
+                                                            });
+                                                    }
+                                                });
+                                        });
+                                }
+                            })
+                            .catch(function(err) {
+                                slack.error(req, "Error accepting a group invitation", err);
+                                showPage('messsage.internalerror');
+                            });
+                    }
+                })
+                .catch(function(err) {
+                    slack.error(req, 'Failed to render /creategroup', err);
+                    res.status(500);
+                    res.render('layouts/errors/500');
+                })
+        }
+    }
 
     app.use('/admin', basicAuth('admin', 'ANXDNb86jj3ZacPzlYhgscNueLgBwHrIOGzFChuzKWQkTU0D5anUjHCt2XdwuPnE'));
     /*

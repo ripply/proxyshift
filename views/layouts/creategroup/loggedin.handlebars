@@ -1,0 +1,80 @@
+<link rel="stylesheet" type="text/css"  href="site/css/login-form-style.css">
+
+<div class="login-form">
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2 text center">
+            <h1>welcome</h1>
+            <div class="description">
+                <p>
+                    {{_ "invites.create.group.welcome" }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+
+            <div class="form-box">
+                <div class="form-top">
+                    <div class="form-top-left">
+                        <h3>{{_ "invites.create.group.headline" }}</h3>
+                        <p>{{_ "invites.create.group.details" }}:</p>
+                    </div>
+                    <div class="form-top-right">
+                        <i class="fa fa-pencil"></i>
+                    </div>
+                </div>
+                <div class="form-bottom">
+                    <form role="form" action="/creategroup" method="post" class="registration-form">
+                        <input type="hidden" name="action" value="create_group">
+                        <input type="hidden" name="token" value="{{token}}">
+                        <div class="form-group{{#if errors.name}} has-error{{/if}}">
+                            {{#if errors.name}}<label class="control-label" for="form-company-name">{{errors.name}}</label>{{/if}}
+                            <label class="sr-only" for="name">{{_ 'form.companyname' }}</label>
+                            <input type="text" name="name" placeholder="{{_ 'form.companyname' }}..." class="form-company-name form-control" id="form-company-name" value="{{name}}">
+                        </div>
+                        <div class="form-group{{#if errors.state}} has-error{{/if}}">
+                            {{#if errors.state}}<label class="control-label" for="form-state">{{errors.state}}</label>{{/if}}
+                            <label class="sr-only" for="state">{{_ 'form.state' }}</label>
+                            <input type="text" name="state" placeholder="{{_ 'form.state' }}..." class="form-state form-control" id="form-state" value="{{state}}">
+                        </div>
+                        <div class="form-group{{#if errors.city}} has-error{{/if}}">
+                            {{#if errors.city}}<label class="control-label" for="form-city">{{errors.city}}</label>{{/if}}
+                            <label class="sr-only" for="city">{{_ 'form.city' }}</label>
+                            <input type="text" name="city" placeholder="{{_ 'form.city' }}..." class="form-city form-control" id="form-city" value="{{city}}">
+                        </div>
+                        <div class="form-group{{#if errors.address}} has-error{{/if}}">
+                            {{#if errors.address}}<label class="control-label" for="form-address">{{errors.address}}</label>{{/if}}
+                            <label class="sr-only" for="address">{{_ 'form.address' }}</label>
+                            <input type="text" name="address" placeholder="{{_ 'form.address' }}..." class="form-address form-control" id="form-address" value="{{address}}">
+                        </div>
+                        <div class="form-group{{#if errors.zipcode}} has-error{{/if}}">
+                            {{#if errors.zipcode}}<label class="control-label" for="form-zipcode">{{errors.zipcode}}</label>{{/if}}
+                            <label class="sr-only" for="zipcode">{{_ 'form.zipcode' }}</label>
+                            <input type="text" name="zipcode" placeholder="{{_ 'form.zipcode' }}..." class="form-zipcode form-control" id="form-zipcode" value="{{zipcode}}">
+                        </div>
+                        <div class="form-group{{#if errors.weburl}} has-error{{/if}}">
+                            {{#if errors.weburl}}<label class="control-label" for="form-weburl">{{errors.weburl}}</label>{{/if}}
+                            <label class="sr-only" for="weburl">{{_ 'form.weburl' }}</label>
+                            <input type="text" name="weburl" placeholder="{{_ 'form.weburl' }}..." class="form-weburl form-control" id="form-weburl" value="{{weburl}}">
+                        </div>
+                        <div class="form-group{{#if errors.contactemail}} has-error{{/if}}">
+                            {{#if errors.contactemail}}<label class="control-label" for="form-contactemail">{{errors.contactemail}}</label>{{/if}}
+                            <label class="sr-only" for="contactemail">{{_ 'form.contactemail' }}</label>
+                            <input type="text" name="contactemail" placeholder="{{_ 'form.contactemail' }}..." class="form-contactemail form-control" id="form-contactemail" value="{{contactemail}}">
+                        </div>
+                        <div class="form-group{{#if errors.contactphone}} has-error{{/if}}">
+                            {{#if errors.contactphone}}<label class="control-label" for="form-contactphone">{{errors.contactphone}}</label>{{/if}}
+                            <label class="sr-only" for="contactphone">{{_ 'form.contactphone' }}</label>
+                            <input type="text" name="contactphone" placeholder="{{_ 'form.contactphone' }}..." class="form-contactphone form-control" id="form-contactphone" value="{{contactphone}}">
+                        </div>
+                        <button type="submit" class="btn">{{_ 'form.submit.create.group.new' }}</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

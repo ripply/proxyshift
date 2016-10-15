@@ -6,7 +6,7 @@
             <h1>{{_ 'welcome.to.proxyshift'}}</h1>
             <div class="description">
                 <p>
-                    {{_ 'invites.join.group' group.name inviter.firstname }}
+                    {{_ 'invites.create.group.welcome' }}
                 </p>
                 {{#if loggedIn}}
                 {{else}}
@@ -33,7 +33,7 @@
                     </div>
                 </div>
                 <div class="form-bottom">
-                    <form role="form" action="/acceptinvitation" method="post" class="login-form">
+                    <form role="form" action="/creategroup" method="post" class="login-form">
                         <input type="hidden" name="action" value="signin">
                         <input type="hidden" name="token" value="{{invitation.token}}">
                         <div class="form-group">
@@ -44,7 +44,7 @@
                             <label class="sr-only" for="password">{{_ 'form.password' }}</label>
                             <input type="password" name="password" placeholder="{{_ 'form.password' }}..." class="form-password form-control" id="form-password">
                         </div>
-                        <button type="submit" class="btn">{{_ 'form.submit.join.group.login' group.name }}</button>
+                        <button type="submit" class="btn">{{_ 'form.submit.create.group.login' }}</button>
                     </form>
                 </div>
             </div>
@@ -55,7 +55,7 @@
                     {{#if message}}
                         <p>{{message}}</p>
                     {{/if}}
-                    <form action="/acceptinvitation" method="post">
+                    <form action="/creategroup" method="post">
                         <input type="hidden" name="action" value="accept">
                         <input type="hidden" name="token" value="{{invitation.token}}">
                         <input class="btn btn-primary" type="submit" value="{{_ 'accept.invitation.thisaccount.clickhere' loggedIn.username}}">
@@ -98,7 +98,7 @@
                     </div>
                 </div>
                 <div class="form-bottom">
-                    <form role="form" action="/acceptinvitation" method="post" class="registration-form">
+                    <form role="form" action="/creategroup" method="post" class="registration-form">
                         <input type="hidden" name="action" value="signup">
                         <input type="hidden" name="token" value="{{invitation.token}}">
                         <div class="form-group">
@@ -141,7 +141,7 @@
                             <label class="sr-only" for="pagernumber">{{_ 'form.phone.pager' }}</label>
                             <input type="text" name="pagernumber" placeholder="{{_ 'form.phone.pager' }}..." class="form-email form-control" id="form-email">
                         </div>
-                        <button type="submit" class="btn">{{_ 'form.submit.join.group.signup' group.name }}</button>
+                        <button type="submit" class="btn">{{_ 'form.submit.create.group.signup' group.name }}</button>
                     </form>
                 </div>
             </div>

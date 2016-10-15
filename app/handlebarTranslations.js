@@ -56,7 +56,7 @@ I18n.translations["en"] = {
     admin: {
         invite: {
             create: {
-                group: 'Invite to create a Company'
+                group: "Invite to create a Company"
             }
         }
     },
@@ -70,6 +70,17 @@ I18n.translations["en"] = {
             success: "You have joined {{1}}'s Proxy Shift group",
             unknown: 'Unknown invitation'
         },
+        create: {
+            group: {
+                welcome: "You've been invited to create your own company on Proxy Shift",
+                headline: "CREATE GROUP HEADLINE",
+                details: "CREATE GROUP DETAILS",
+                expired: {
+                    headline: "Invitation to create company expired",
+                    details: ""
+                }
+            }
+        }
     },
     password: {
         reset: {
@@ -155,11 +166,26 @@ I18n.translations["en"] = {
         submit: {
             join: {
                 group: {
-                    existing: 'Login and join {{1}}',
-                    new: 'Sign me up and join {{1}}'
+                    login: 'Login and join {{1}}',
+                    signup: 'Sign me up and join {{1}}'
                 }
             },
-        }
+            create: {
+                group: {
+                    new: 'Create new company',
+                    login: 'Login and create my company',
+                    signup: 'Sign me up and create my company'
+                }
+            }
+        },
+        companyname: 'Name',
+        state: 'State',
+        city: 'City',
+        address: 'Address',
+        zipcode: 'Zipcode',
+        weburl: 'Website URL',
+        contactemail: 'Contact Email',
+        contactphone: 'Contact Phone'
     },
     message: {
         internalerror: 'Internal error',
