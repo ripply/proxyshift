@@ -358,5 +358,7 @@ function send(message) {
             console.log(message);
         }
         return slack.send(message);
+    } else {
+        console.log(message);
     }
 }

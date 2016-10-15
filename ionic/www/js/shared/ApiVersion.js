@@ -1,7 +1,7 @@
 var version = {
     major: 0,
     minor: 9,
-    patch: 2
+    patch: 3
 };
 
 var exports = {

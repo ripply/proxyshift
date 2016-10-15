@@ -3,16 +3,20 @@ angular.module('scheduling-app.services')
         '$rootScope',
         '$controller',
         'GENERAL_EVENTS',
+        'UserInfoService',
         'UsersModel',
         'LocationsModel',
         'GroupsModel',
+        'ErrorReportModel',
         'ShiftsModel',
         function($rootScope,
                  $controller,
                  GENERAL_EVENTS,
+                 UserInfoService,
                  UsersModel,
                  LocationsModel,
                  GroupsModel,
+                 ErrorReportModel,
                  ShiftsModel
         ) {
             function updateUserInfo(callback, argument) {
@@ -21,6 +25,17 @@ angular.module('scheduling-app.services')
                     callback(argument);
                 }
             }
+
+            this.errorReport = function errorReport(data, success, error) {
+                andThen(
+                    ErrorReportModel.errorreport({}, {
+                        userid: UserInfoService.getUserId,
+                        data: data
+                    }),
+                    success,
+                    error
+                );
+            };
 
             this.getGroupSettings = function getGroupSettings(group_id, success, error) {
                 andThen(
@@ -35,8 +50,8 @@ angular.module('scheduling-app.services')
             this.saveGroupSettings = function saveGroupSettings(group_id, settings, success, error) {
                 andThen(
                     GroupsModel.updateSettings({
-                            group_id: group_id
-                        },
+                        group_id: group_id
+                    },
                         settings
                     ),
                     success,

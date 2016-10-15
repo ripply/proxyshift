@@ -49,6 +49,16 @@ angular.module('scheduling-app.controllers')
                         }
                     }
 
+                    if (!groupUserclass) {
+                        console.error("No userclasses below ours");
+                        if ($scope.usersUserclasses && $scope.usersUserclasses.length > 0) {
+                            console.debug($scope.usersUserclasses);
+                        } else {
+                            console.debug("No userclasses assigned to us, reporting this to server as this shouldn't happen");
+                            ResourceService.errorReport('No userclasses assigned to us');
+                        }
+                    }
+
                     var grouppermissionIdMap = {};
                     var lowestGrouppermissionlevel;
                     for (i = 0; i < $rootScope.userinfo.allGroupPermissions.length; i++) {
@@ -62,7 +72,15 @@ angular.module('scheduling-app.controllers')
 
                     $scope.grouppermission_id = lowestGrouppermissionlevel.id;
 
-                    var ourGroupPermission = grouppermissionIdMap[groupUserclass.grouppermission_id];
+                    var ourGroupPermission;
+                    if (groupUserclass) {
+                        ourGroupPermission = grouppermissionIdMap[groupUserclass.grouppermission_id];
+                    } else {
+                        // couldn't find our group permission, fake it
+                        ourGroupPermission = {
+                            permissionlevel: 0
+                        };
+                    }
 
                     $scope.filteredGrouppermissions = [];
                     for (i = 0; i < $scope.group.grouppermissions.length; i++) {

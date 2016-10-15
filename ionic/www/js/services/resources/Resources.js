@@ -20,7 +20,6 @@ angular.forEach({
                 user_id: '@user_id'
             },
             actions: {
-
                 userinfo: {
                     method: GET,
                     url: url + '/userinfo'
@@ -401,6 +400,17 @@ angular.forEach({
                 inquiry: {
                     method: POST,
                     url: url + locations + '/inquiry'
+                }
+            }
+        }
+    },
+    'ErrorReport': function(url) {
+        return {
+            route: url,
+            actions: {
+                errorreport: {
+                    method: POST,
+                    url: url + '/errorreport'
                 }
             }
         }
