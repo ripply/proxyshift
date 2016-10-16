@@ -1074,17 +1074,19 @@ module.exports = function(app, settings){
     app.post('/admin/inviteuser', function(req, res, next) {
         var data = {};
         if (!req.body.email || !req.body.message) {
-            return res.render('layouts/admin/inviteuser');
+            req.body.messagedesc = (req.body.email ? 'Email message' : 'Email address') + ' required'
+            return res.render('layouts/admin/inviteuser', req.body);
         }
 
         appLogic.inviteUserToCreateCompany(req.body.email, req.body.message, function(invite) {
             data.invite = invite;
-            data.message = 'Successfully invited: ' + invite.url;
+            data.messagedesc = 'Successfully invited: ' + invite.url;
             res.render('layouts/admin/inviteuser', data);
         })
             .catch(function(err) {
                 slack.error(req, "Failed to create group invitation", err);
-                res.render('layouts/admin/inviteuser');
+                req.body.messagedesc = err;
+                res.render('layouts/admin/inviteuser', req.body);
             });
     });
 
