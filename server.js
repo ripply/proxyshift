@@ -347,8 +347,9 @@ function launchServer() {
     routes.initialize(app);
 
     app.use(function errorHandler(err, req, res, next) {
-        error(req, res, error, next);
+        error(req, res, err);
         console.error(err.stack);
+        next();
     });
 
     console.log('workerCount: ' + workerCount);
