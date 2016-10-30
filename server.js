@@ -256,6 +256,7 @@ function launchServer() {
 
     app.use(compression());
 
+    /*
     var csrfProtection = csrf({
         cookie: true,
         value: function (req) {
@@ -263,6 +264,7 @@ function launchServer() {
             return req.cookies['XSRF-TOKEN'];
         }
     });
+    */
 
     /**app.use(function(req, res, next) {
     // https://github.com/expressjs/csurf/issues/21
