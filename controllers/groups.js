@@ -1835,11 +1835,9 @@ function sendEmail(token, to, user_id, inviter_user, message, emailArgs) {
     }
     return new Promise(function sendInviteEmailPromise(resolve, reject) {
         if (user_id) {
-            console.log('yeey');
             // user has an account already
             appLogic.existingUserInvitedToGroup(token, user_id, inviter_user, message, emailArgs);
         } else {
-            console.log('nop, to: ' + to + " " + user_id);
             // user does not have an account, send different notifications
             appLogic.sendInviteEmail(token, to, inviter_user, message, emailArgs);
         }

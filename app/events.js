@@ -1196,6 +1196,24 @@ module.exports = {
     newShiftApplicationAutoApproved: newShiftApplicationAutoApproved,
     // 14
     newShiftApplicationApprovedToDeniedUsers: newShiftApplicationApprovedToDeniedUsers,
+    processEmailTemplate: function processEmailTemplate(email, args) {
+        var result = {};
+        if (email.email) {
+            email = email.email;
+            result.subject = email.subject(args);
+            result.text = email.text(args);
+            result.html = email.html(args);
+            result.from = email.from;
+            if (!result.from && args.from) {
+                result.from = args.from;
+            }
+            result.template_id = email.template_id;
+            if (result.template_id) {
+                args.template_id = result.template_id;
+            }
+        }
+        return result;
+    },
     invitedToGroup: function eventInvitedToGroup(user_ids, args) {
         // TODO: MODIFY THIS TO ACCEPT A TO EMAIL
         // send email and notification
@@ -1239,14 +1257,18 @@ module.exports = {
         })
             .save()
             .tap(function successfullyCreatedGroupCreationToken() {
+                var args = {
+                    url: inviteUrl
+                };
+                var result = self.processEmailTemplate(invite, args);
                 self.sendEmail(
                     self.transactionalEmailAddress(),
                     email,
-                    invite.subject,
-                    invite.text,
-                    invite.html,
+                    result.subject,
+                    result.text,
+                    result.html,
                     undefined,
-                    invite
+                    args
                 );
                 if (next) {
                     next(invite);
