@@ -115,6 +115,7 @@ ul, ol{
 .navbar-default .navbar-toggle:hover>.icon-bar {
     background-color: #FFF;
 }
+@iphone-screen: 414px;
 /* Home Style */
 #tf-home{
     background: url(../img/01_med.jpg);
@@ -123,6 +124,10 @@ ul, ol{
     background-attachment: fixed;
     background-repeat: no-repeat;
     color: #cfcfcf;
+
+    @media (max-width: @iphone-screen) {
+        background-attachment: scroll;
+    }
 }
 
 #tf-home .overlay{
