@@ -233,7 +233,7 @@ function launchServer() {
     if (process.env.NODE_ENV !== "development") {
         app.use(function redirectToHttps(req, res, next) {
             if(req.headers['x-forwarded-proto'] == 'http') {
-                res.redirect('https://' + req.headers.host + req.path);
+                res.redirect('https://' + req.headers.host + req.originalUrl);
             } else {
                 next();
             }

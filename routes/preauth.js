@@ -771,18 +771,24 @@ module.exports = function(app, settings){
 
                     function renderPage(path, message) {
                         // reject fields that we don't want to leak to a template
-                        if (data.invited) {
-                            var validKeys = _.reject(Object.keys(data.invited), function (columnName) {
+                        if (data.invitation) {
+                            if (data.invitation.message) {
+                                data.message = data.invitation.message;
+                            }
+
+                            var validKeys = _.reject(Object.keys(data.invitation), function (columnName) {
                                 return (users.bannedFields.indexOf(columnName) < 0);
                             });
 
-                            data.invited = _.reduce(validKeys, function (memo, validColumn) {
-                                memo[validColumn] = data.invited[validColumn];
+                            data.invitation = _.reduce(validKeys, function (memo, validColumn) {
+                                memo[validColumn] = data.invitation[validColumn];
                                 return memo;
                             }, {});
                         }
 
-                        data.message = message;
+                        if (!data.message) {
+                            data.message = message;
+                        }
 
                         res.render(path, data);
                     }
@@ -1001,7 +1007,7 @@ module.exports = function(app, settings){
                                                     var newGroupUserClassToUser = _.reduce(groupuserclass_ids, function(memo, groupuserclass_id) {
                                                         if (!userclassesIdsMap.hasOwnProperty('' + groupuserclass_id)) {
                                                             memo.push({
-                                                                user_id: data.invited.id,
+                                                                user_id: data.invitation.id,
                                                                 groupuserclass_id: groupuserclass_id
                                                             });
                                                         }
