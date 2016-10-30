@@ -252,12 +252,17 @@ function printError(message, err) {
     if (err) {
         console.log(err.stack ? err.stack : err);
     } else {
-        console.log(message);
+        console.log(doNotPrintFunctionContents(message));
     }
+}
+
+function doNotPrintFunctionContents(message) {
+    return (typeof message == 'function') ? '[Function]' : message;
 }
 
 module.exports = {
     error: function(req, message, err) {
+        console.log('messager: ' + err);
         if (slack) {
             if (err === undefined || err === null) {
                 try {
@@ -269,7 +274,7 @@ module.exports = {
             printError(message, err);
             return slack.send({
                 text: prefixCluster(
-                    message + "\nip: " + (req ? req.ip : 'undefined') + "\nroute: " + (req ? req.originalUrl : 'undefined') +
+                    doNotPrintFunctionContents(message) + "\nip: " + (req ? req.ip : 'undefined') + "\nroute: " + (req ? req.originalUrl : 'undefined') +
                     "\nreq.body = " + JSON.stringify(req ? stripSensitiveData(req.body) : 'undefined') +
                     "\nuserid: " + (req ? (req.user ? req.user.id:'none') : 'undefined') +
                     (err ?
@@ -287,7 +292,7 @@ module.exports = {
         if (slack) {
             printError(message, err);
             return slack.send({
-                text: prefixCluster(message + stringify("\n", prettifyError(err))),
+                text: prefixCluster(doNotPrintFunctionContents(message) + stringify("\n", prettifyError(err))),
                 channel: "#alerts",
                 username: username
             })
@@ -299,7 +304,7 @@ module.exports = {
         if (slack) {
             printError(message, err);
             return slack.send({
-                text: prefixCluster(message + stringify("\n", prettifyError(err))),
+                text: prefixCluster(doNotPrintFunctionContents(message) + stringify("\n", prettifyError(err))),
                 channel: "#alerts",
                 username: username
             });
@@ -313,7 +318,7 @@ module.exports = {
         }
         return send({
             channel: channel,
-            text: prefixCluster(message),
+            text: prefixCluster(doNotPrintFunctionContents(message)),
             username: username
         });
     },

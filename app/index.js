@@ -210,21 +210,9 @@ App.prototype.sendToUsers = function sendToUsers(user_ids, messages, args, test,
                     },
                     email: function sendToUsersActionEmail() {
                         if (args.emailForce || (usersetting.emailnotifications && messages['email']) ) {
-                            var email = messages.email;
-                            var subject = email.subject(args);
-                            var text = email.text(args);
-                            var html = email.html(args);
-                            var from = email.from;
-                            if (!from && args.from) {
-                                from = args.from;
-                            }
-                            var template_id = email.template_id;
-                            if (template_id) {
-                                args.template_id = template_id;
-                            }
+                            var result = self.processEmailTemplate(messages, args);
                             var to = user.email;
-                            console.log("Sending email.....");
-                            self.sendEmail(from, to, subject, text, html, self.combineFirstLastName(args.firstname, args.lastname), _.omit(args, 'order', 'limit'));
+                            self.sendEmail(from, to, result.subject, result.text, result.html, self.combineFirstLastName(args.firstname, args.lastname), _.omit(args, 'order', 'limit'));
                             successfulNotifications++;
                         }
                     },
@@ -409,17 +397,11 @@ App.prototype.sendEmail = function(from, to, subject, text, html, toName, args) 
         substitutions: modifiedSubstitutions
     };
 
-    console.log('*****************');
-    console.log(email);
-    console.log('*****************');
-    console.log(args);
-
     if (!this.connections) {
         console.log("RabbitMQ not configured, sending email now in web process");
         this.handleEmailJob(forgeRabbitMessage(email));
     } else {
         console.log("Sending email to queue...");
-        console.log(email);
 
         connections.publish(connections.JOB_EXCHANGE, {
             routingKey: connections.EMAIL_KEY,
