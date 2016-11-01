@@ -141,6 +141,35 @@ module.exports = {
             }
         }
     },
+    '/passwordreset/challenge': {
+        'get': {
+            // auth: ['anyone'],
+            route: function getSecretQuestionForUserOrEmail(req, res) {
+                if (!req.body.username) {
+                    clientError(req, res, 400, 'Account information requierd');
+                }
+                var username = req.body.username.toLowerCase();
+                return models.Users.query(function findUserByUsernameOrEmail(q) {
+                    q.select('squestion')
+                        .from('users')
+                        .whereRaw("LOWER(username) LIKE '%' || ? || '%' OR LOWER(email) LIKE '%' || ? || '%'", [
+                            username,
+                            username
+                        ]);
+                })
+                    .fetch(function(squestion) {
+                        if (squestion) {
+                            res.send(squestion.get('squestion'));
+                        } else {
+                            res.sendStatus(400);
+                        }
+                    })
+                    .catch(function(err) {
+                        error(req, res, err, 'Failed to fetch password challenge');
+                    });
+            }
+        }
+    },
     '/passwordreset': {
         'get': {
             // auth: ['anyone'],
@@ -180,6 +209,7 @@ module.exports = {
                 var newpassword = req.body.password;
                 var verifypassword = req.body.verifypassword;
                 var verify = false;
+                var challenge = req.body.challenge;
                 if (usernameOrEmail) {
                     usernameOrEmail = usernameOrEmail.toLowerCase();
                 } else if (token && newpassword && verifypassword) {
