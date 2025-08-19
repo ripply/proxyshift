@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  proxyshift:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=development
+      - PORT=8080
+      - DATABASE_URL=postgres://proxyshift:proxyshift123@postgres:5432/proxyshift
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:9.6-alpine
+    environment:
+      POSTGRES_DB: proxyshift
+      POSTGRES_USER: proxyshift
+      POSTGRES_PASSWORD: proxyshift123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

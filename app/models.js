@@ -95,7 +95,7 @@ if (process.env.DATABASE_URL !== undefined ||
         // match[5] is :match[6]
         global.db_port = match[6];
         global.db_database = match[8];
-        global.db_ssl = true;
+        global.db_ssl = false; // Disable SSL for Docker development
     } else {
         var message = "WARNING: DATABASE_URL is of the INCORRECT FORMAT: '" + process.env.DATABASE_URL + "'";
         slack.info(message);
